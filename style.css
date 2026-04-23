@@ -1,0 +1,1025 @@
+/* Sidebar Button Container - Fixed 160x33px */
+#roprime-settings-tab .menu-option-content {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    
+    /* Exact Dimensions */
+    width: 160px !important;
+    height: 33px !important;
+    padding: 9px 5px 9px 9px !important;
+    box-sizing: border-box !important;
+
+}
+
+/* Sidebar Text - Font stays here */
+#roprime-settings-tab .menu-option-content .menu-text {
+    font-size: 12px;
+}
+
+#roprime-settings-tab .menu-option-content .roprime-menu-icon {
+    width: 15px;
+    height: 15px;
+    min-width: 15px;
+    min-height: 15px;
+    margin-right: 6px;
+    object-fit: contain;
+}
+
+.roprime-settings-wrapper {
+    margin-top: 8px;
+    color: #e9edf5;
+}
+
+.roprime-settings-layout {
+    display: block;
+}
+
+.roprime-settings-nav {
+    display: flex;
+    gap: 10px;
+    margin: 0 0 14px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+}
+
+.roprime-settings-nav-btn {
+    border: 1px solid rgba(121, 130, 150, 0.35);
+    background: linear-gradient(180deg, #252a31 0%, #1f242b 100%);
+    color: rgba(232, 237, 245, 0.95);
+    border-radius: 12px;
+    padding: 9px 16px;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.roprime-settings-nav-btn.is-active {
+    border-color: rgba(127, 161, 255, 0.8);
+    background:
+        radial-gradient(140% 140% at 0% 100%, rgba(69, 116, 255, 0.22) 0%, rgba(69, 116, 255, 0) 65%),
+        linear-gradient(180deg, #2b323a 0%, #242a32 100%);
+    color: #fff;
+}
+
+.roprime-settings-main {
+    min-width: 0;
+}
+
+.roprime-settings-section {
+    display: none;
+}
+
+.roprime-setting-card,
+.roprime-info-card {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    border-radius: 14px;
+    border: 1px solid rgba(115, 127, 148, 0.35);
+    background: #1c2128;
+    padding: 12px 13px;
+}
+
+.roprime-accordion::before,
+.roprime-accordion::after,
+.roprime-info-card::before,
+.roprime-info-card::after {
+    display: none !important;
+}
+
+.roprime-setting-card::before,
+.roprime-info-card::before {
+    top: 8px;
+    left: 8px;
+    border-top: 2px solid rgba(130, 168, 255, 0.9);
+    border-left: 2px solid rgba(130, 168, 255, 0.9);
+}
+
+.roprime-setting-card::after,
+.roprime-info-card::after {
+    right: 8px;
+    bottom: 8px;
+    border-right: 2px solid rgba(130, 168, 255, 0.9);
+    border-bottom: 2px solid rgba(130, 168, 255, 0.9);
+}
+
+.roprime-setting-card-spaced {
+    margin-top: 12px;
+}
+
+.roprime-setting-copy {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    text-align: left;
+    height: 100%;
+}
+
+.roprime-setting-title,
+.roprime-info-title {
+    color: #f7f8ff;
+    font-weight: 600;
+    line-height: 1.3;
+}
+
+.roprime-setting-desc,
+.roprime-info-text {
+    margin-top: 4px;
+    color: rgba(211, 217, 255, 0.78);
+    font-size: 12px;
+    line-height: 1.35;
+}
+
+.roprime-accordion {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 0;
+    overflow: hidden;
+}
+
+.roprime-accordion-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 12px 13px;
+    min-height: 56px;
+    background: transparent;
+    border: 0;
+    text-align: left;
+    cursor: pointer;
+    color: inherit;
+}
+
+.roprime-accordion.is-renames-disabled .roprime-accordion-body {
+    opacity: 0.55;
+}
+
+.roprime-accordion.is-renames-disabled .roprime-toggle-row {
+    opacity: 0.7;
+}
+
+.roprime-accordion-chevron {
+    width: 10px;
+    height: 10px;
+    border-right: 2px solid rgba(211, 217, 255, 0.8);
+    border-bottom: 2px solid rgba(211, 217, 255, 0.8);
+    transform: rotate(45deg);
+    transition: transform 140ms ease;
+    flex: 0 0 auto;
+    margin-right: 2px;
+}
+
+.roprime-accordion.is-open .roprime-accordion-chevron {
+    transform: rotate(-135deg);
+}
+
+.roprime-accordion-body {
+    padding: 0 13px;
+    max-height: 0;
+    opacity: 0;
+    transform: translateY(-4px);
+    overflow: hidden;
+    transition: max-height 240ms cubic-bezier(0.22, 1, 0.36, 1), opacity 180ms ease, transform 240ms ease;
+}
+
+.roprime-accordion.is-open .roprime-accordion-body {
+    opacity: 1;
+    transform: translateY(0);
+    padding-bottom: 14px;
+}
+
+.roprime-toggle-row {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    border-radius: 12px;
+    border: 1px solid rgba(111, 124, 146, 0.3);
+    background: #181d24;
+    padding: 10px 10px;
+}
+
+.roprime-toggle-row.is-disabled {
+    opacity: 0.55;
+}
+
+.roprime-toggle-row.is-disabled .roprime-switch {
+    pointer-events: none;
+}
+
+.roprime-toggle-row + .roprime-toggle-row {
+    margin-top: 10px;
+}
+
+.roprime-accordion-master-switch {
+    margin-left: auto;
+    flex: 0 0 auto;
+}
+
+/* Keep every switch aligned to the same x-position as the header switch. */
+.roprime-toggle-row .roprime-switch,
+.roprime-setting-card-spaced .roprime-switch {
+    margin-right: 14px;
+}
+
+.roprime-toggle-copy {
+    min-width: 0;
+    padding-left: 4px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    text-align: left;
+}
+
+.roprime-toggle-title {
+    color: #f7f8ff;
+    font-weight: 600;
+    line-height: 1.3;
+}
+
+.roprime-toggle-desc {
+    margin-top: 6px;
+    color: rgba(211, 217, 255, 0.78);
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+.roprime-settings-hero {
+    position: relative;
+    overflow: hidden;
+    border-radius: 16px;
+    border: 1px solid rgba(108, 121, 143, 0.4);
+    background:
+        radial-gradient(130% 120% at 100% 0%, rgba(70, 116, 255, 0.25) 0%, rgba(70, 116, 255, 0) 62%),
+        radial-gradient(120% 120% at 0% 100%, rgba(129, 97, 255, 0.18) 0%, rgba(129, 97, 255, 0) 64%),
+        linear-gradient(165deg, #22272f 0%, #171b22 100%);
+    padding: 16px;
+    margin-bottom: 14px;
+}
+
+.roprime-settings-hero h2 {
+    margin: 0 0 6px;
+    font-size: 24px;
+    color: #f1f5fc;
+}
+
+.roprime-settings-hero p {
+    margin: 0;
+    color: rgba(203, 212, 226, 0.9);
+    font-size: 14px;
+}
+
+.roprime-corner {
+    display: none;
+}
+
+.roprime-corner-top-left {
+    top: 8px;
+    left: 8px;
+    border-right: 0;
+    border-bottom: 0;
+}
+
+.roprime-corner-top-right {
+    top: 8px;
+    right: 8px;
+    border-left: 0;
+    border-bottom: 0;
+}
+
+.roprime-corner-bottom-left {
+    bottom: 8px;
+    left: 8px;
+    border-top: 0;
+    border-right: 0;
+}
+
+.roprime-corner-bottom-right {
+    right: 8px;
+    bottom: 8px;
+    border-top: 0;
+    border-left: 0;
+}
+
+.roprime-groups-setting-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    border-radius: 12px;
+    border: 1px solid rgba(122, 129, 179, 0.35);
+    background: rgba(20, 22, 38, 0.9);
+    padding: 14px 16px;
+}
+
+.roprime-experiences-setting-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    border-radius: 12px;
+    border: 1px solid rgba(122, 129, 179, 0.35);
+    background: rgba(20, 22, 38, 0.9);
+    padding: 14px 16px;
+    margin-top: 12px;
+}
+
+.roprime-groups-setting-copy {
+    min-width: 0;
+}
+
+.roprime-experiences-setting-copy {
+    min-width: 0;
+}
+
+.roprime-groups-setting-title {
+    color: #f7f8ff;
+    font-weight: 600;
+    line-height: 1.3;
+}
+
+.roprime-experiences-setting-title {
+    color: #f7f8ff;
+    font-weight: 600;
+    line-height: 1.3;
+}
+
+.roprime-groups-setting-desc {
+    margin-top: 4px;
+    color: rgba(211, 217, 255, 0.78);
+    font-size: 12px;
+}
+
+.roprime-experiences-setting-desc {
+    margin-top: 4px;
+    color: rgba(211, 217, 255, 0.78);
+    font-size: 12px;
+}
+
+.roprime-switch {
+    position: relative;
+    width: 44px;
+    height: 24px;
+    flex: 0 0 auto;
+    display: inline-block;
+}
+
+.roprime-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.roprime-switch-slider {
+    position: absolute;
+    inset: 0;
+    border-radius: 999px;
+    border: 1px solid rgba(105, 118, 140, 0.75);
+    background: linear-gradient(180deg, #2a3038 0%, #242a32 100%);
+    transition: background-color 120ms ease, border-color 120ms ease;
+}
+
+.roprime-switch-slider::before {
+    content: "";
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    left: 2px;
+    top: 2px;
+    border-radius: 50%;
+    background: #ffffff;
+    transition: transform 120ms ease;
+}
+
+.roprime-switch input:checked + .roprime-switch-slider {
+    background: #335fff;
+    border-color: #335fff;
+}
+
+.roprime-switch input:checked + .roprime-switch-slider::before {
+    transform: translateX(20px);
+}
+
+body.light-theme .roprime-settings-hero,
+html.light-theme .roprime-settings-hero {
+    background:
+        radial-gradient(120% 120% at 100% 0%, rgba(88, 101, 242, 0.14) 0%, rgba(88, 101, 242, 0) 60%),
+        linear-gradient(160deg, rgba(252, 252, 255, 0.98), rgba(247, 249, 255, 0.98));
+    border-color: rgba(88, 101, 242, 0.28);
+}
+
+body.light-theme .roprime-settings-hero h2,
+html.light-theme .roprime-settings-hero h2 {
+    color: #1f2442;
+}
+
+body.light-theme .roprime-settings-hero p,
+html.light-theme .roprime-settings-hero p {
+    color: #4e577f;
+}
+
+body.light-theme .roprime-groups-setting-row,
+html.light-theme .roprime-groups-setting-row {
+    background: #ffffff;
+    border-color: rgba(97, 106, 156, 0.25);
+}
+
+body.light-theme .roprime-experiences-setting-row,
+html.light-theme .roprime-experiences-setting-row {
+    background: #ffffff;
+    border-color: rgba(97, 106, 156, 0.25);
+}
+
+body.light-theme .roprime-groups-setting-title,
+html.light-theme .roprime-groups-setting-title {
+    color: #232948;
+}
+
+body.light-theme .roprime-experiences-setting-title,
+html.light-theme .roprime-experiences-setting-title {
+    color: #232948;
+}
+
+body.light-theme .roprime-groups-setting-desc,
+html.light-theme .roprime-groups-setting-desc {
+    color: #60688f;
+}
+
+body.light-theme .roprime-experiences-setting-desc,
+html.light-theme .roprime-experiences-setting-desc {
+    color: #60688f;
+}
+
+body.light-theme .roprime-settings-nav-btn,
+html.light-theme .roprime-settings-nav-btn {
+    background: #fff;
+    color: #2a3157;
+    border-color: rgba(97, 106, 156, 0.25);
+}
+
+body.light-theme .roprime-setting-card,
+html.light-theme .roprime-setting-card,
+body.light-theme .roprime-info-card,
+html.light-theme .roprime-info-card {
+    background: #ffffff;
+    border-color: rgba(97, 106, 156, 0.25);
+}
+
+body.light-theme .roprime-setting-title,
+html.light-theme .roprime-setting-title,
+body.light-theme .roprime-info-title,
+html.light-theme .roprime-info-title {
+    color: #232948;
+}
+
+body.light-theme .roprime-setting-desc,
+html.light-theme .roprime-setting-desc,
+body.light-theme .roprime-info-text,
+html.light-theme .roprime-info-text {
+    color: #60688f;
+}
+
+body.light-theme .roprime-accordion-chevron,
+html.light-theme .roprime-accordion-chevron {
+    border-right-color: rgba(96, 104, 143, 0.95);
+    border-bottom-color: rgba(96, 104, 143, 0.95);
+}
+
+body.light-theme .roprime-toggle-row,
+html.light-theme .roprime-toggle-row {
+    background: #ffffff;
+    border-color: rgba(97, 106, 156, 0.25);
+}
+
+body.light-theme .roprime-toggle-title,
+html.light-theme .roprime-toggle-title {
+    color: #232948;
+}
+
+body.light-theme .roprime-toggle-desc,
+html.light-theme .roprime-toggle-desc {
+    color: #60688f;
+}
+
+.menu-vertical .rbx-divider.thick-height.roprime-divider {
+    display: block !important;
+    width: 100%;
+    height: 2px;
+    min-height: 2px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    list-style: none;
+    background-color: var(--rbx-divider-color, rgba(255, 255, 255, 0.2));
+}
+
+#roprime-standalone-settings {
+    display: none;
+    margin-top: 8px;
+}
+
+@media (max-width: 992px) {
+    .roprime-settings-wrapper {
+        overflow-x: hidden !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    .roprime-settings-nav {
+        justify-content: center !important;
+        row-gap: 10px !important;
+    }
+
+    .roprime-settings-main {
+        max-width: 100% !important;
+        overflow-x: hidden !important;
+    }
+}
+
+@media (min-width: 1200px) {
+    .roprime-settings-layout {
+        display: grid;
+        grid-template-columns: 180px minmax(0, 1fr);
+        gap: 14px;
+        align-items: start;
+    }
+
+    .roprime-settings-nav {
+        margin: 0;
+        flex-direction: column;
+        flex-wrap: nowrap;
+    }
+
+    .roprime-settings-nav-btn {
+        width: 100%;
+        text-align: left;
+    }
+}
+
+@media (max-width: 991px) {
+    .rbx-header .rbx-navbar-header {
+        margin: 0 5px;
+    }
+}
+
+@media (max-width: 1199px) {
+    .rbx-header .rbx-navbar-header {
+        margin: 0;
+    }
+}
+
+.rbx-header .rbx-navbar-header {
+    z-index: 100;
+    float: left;
+    max-width: 76px;
+    margin: 0 5px;
+    position: relative;
+}
+/*
+.content {
+    padding-left: 0%;
+}
+
+ @media (min-width: 1141px) {
+    .no-gutter-ads.logged-in.left-nav-new-width {
+        --left-nav-reserved-width: 0px
+    }
+}
+*/
+
+/* Skip-to-content stacking (extension override). */
+#skip-to-main-content.btn-primary-xs.btn-min-width,
+#skip-to-main-content {
+    z-index: 2 !important;
+}
+
+*, :before, :after {
+    box-sizing: border-box;
+    text-rendering: auto;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* —— One-time welcome on /home —— */
+#roprime-home-welcome-root {
+    position: fixed;
+    inset: 0;
+    z-index: 2147483646;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: system-ui, "Segoe UI", Roboto, sans-serif;
+}
+
+#roprime-home-welcome-root .roprime-welcome-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    pointer-events: auto;
+}
+
+#roprime-home-welcome-root .roprime-welcome-frame {
+    position: relative;
+    z-index: 1;
+    max-width: min(440px, calc(100vw - 32px));
+    width: 100%;
+    pointer-events: auto;
+}
+
+#roprime-home-welcome-root .roprime-welcome-card {
+    margin: 0 16px;
+    padding: 28px 24px 24px;
+    border-radius: 12px;
+    background: #fff;
+    color: #121215;
+    text-align: center;
+    box-shadow:
+        0 16px 48px rgba(0, 0, 0, 0.35),
+        0 0 0 1px #d1d5db;
+    border: 2px solid #6b7280;
+}
+
+html.dark-theme #roprime-home-welcome-root .roprime-welcome-card,
+body.dark-theme #roprime-home-welcome-root .roprime-welcome-card {
+    background: #27272f;
+    color: #f2f2f5;
+    box-shadow:
+        0 16px 48px rgba(0, 0, 0, 0.45),
+        0 0 0 1px #4b5563;
+    border-color: #9ca3af;
+}
+
+#roprime-home-welcome-root .roprime-welcome-logo {
+    display: block;
+    margin: 0 auto 16px;
+    border-radius: 16px;
+}
+
+#roprime-home-welcome-root .roprime-welcome-title {
+    margin: 0 0 10px;
+    font-size: 1.35rem;
+    font-weight: 700;
+    line-height: 1.25;
+}
+
+#roprime-home-welcome-root .roprime-welcome-text {
+    margin: 0 0 22px;
+    font-size: 0.95rem;
+    line-height: 1.45;
+    opacity: 0.92;
+}
+
+#roprime-home-welcome-root .roprime-welcome-ok {
+    min-width: 120px;
+    padding: 10px 22px;
+    border: none;
+    border-radius: 8px;
+    background: #335fff;
+    color: #fff;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+#roprime-home-welcome-root .roprime-welcome-ok:hover {
+    filter: brightness(1.06);
+}
+
+/* —— Old Navigation bar (light “old Roblox” sidebar, 288px, fixed left) —— */
+#roprime-classic-left-nav-host.roprime-classic-left-nav-host {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 288px;
+    height: 100vh;
+    /* Keep it behind the main page container (container-fluid). */
+    z-index: 55;
+    box-sizing: border-box;
+    overflow: hidden;
+    pointer-events: auto;
+    font-family: "Builder Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* Menu button closes the Old Navigation bar (session-only). */
+html.roprime-old-navigation-bar-collapsed #roprime-classic-left-nav-host,
+body.roprime-old-navigation-bar-collapsed #roprime-classic-left-nav-host {
+    display: none !important;
+}
+
+/* Keep Roblox content above the Old Navigation bar (without shifting anything). */
+html.roprime-classic-left-nav-on .container-fluid,
+body.roprime-classic-left-nav-on .container-fluid {
+    position: relative !important;
+    z-index: 60 !important;
+}
+
+/* Hide Roblox’s own navigation when Old Navigation bar is on. */
+html.roprime-classic-left-nav-on .width-\[288px\],
+body.roprime-classic-left-nav-on .width-\[288px\],
+html.roprime-classic-left-nav-on [class~="width-[288px]"],
+body.roprime-classic-left-nav-on [class~="width-[288px]"],
+html.roprime-classic-left-nav-on .left-nav.fixed,
+body.roprime-classic-left-nav-on .left-nav.fixed,
+html.roprime-classic-left-nav-on .stroke-default.self-stretch,
+body.roprime-classic-left-nav-on .stroke-default.self-stretch {
+    display: none !important;
+}
+
+html.roprime-classic-left-nav-on .flex.width-\[288px\].h-full.overflow-y-auto,
+body.roprime-classic-left-nav-on .flex.width-\[288px\].h-full.overflow-y-auto,
+html.roprime-classic-left-nav-on .flex[class~="width-[288px]"][class~="h-full"],
+body.roprime-classic-left-nav-on .flex[class~="width-[288px]"][class~="h-full"] {
+    display: none !important;
+}
+
+/* Force Roblox top-left header controls visible while Old Navigation bar is enabled. */
+html.roprime-classic-left-nav-on button.menu-button.btn-navigation-nav-menu-md,
+body.roprime-classic-left-nav-on button.menu-button.btn-navigation-nav-menu-md,
+html.roprime-classic-left-nav-on .rbx-header .rbx-navbar-header,
+body.roprime-classic-left-nav-on .rbx-header .rbx-navbar-header,
+html.roprime-classic-left-nav-on .navbar-header,
+body.roprime-classic-left-nav-on .navbar-header,
+html.roprime-classic-left-nav-on a.navbar-brand,
+body.roprime-classic-left-nav-on a.navbar-brand {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+}
+
+.navbar-header,
+.rbx-header .rbx-navbar-header {
+    align-items: center;
+}
+
+/* Menu button: don't keep a "clicked gray" state; only show on hover / while holding. */
+html.roprime-classic-left-nav-on button.menu-button.btn-navigation-nav-menu-md,
+body.roprime-classic-left-nav-on button.menu-button.btn-navigation-nav-menu-md {
+    background: transparent !important;
+    box-shadow: none !important;
+    filter: none !important;
+}
+
+html.roprime-classic-left-nav-on button.menu-button.btn-navigation-nav-menu-md:hover,
+body.roprime-classic-left-nav-on button.menu-button.btn-navigation-nav-menu-md:hover {
+    background: rgba(255, 255, 255, 0.12) !important;
+}
+
+html.roprime-classic-left-nav-on button.menu-button.btn-navigation-nav-menu-md:focus:not(:hover):not(:active),
+body.roprime-classic-left-nav-on button.menu-button.btn-navigation-nav-menu-md:focus:not(:hover):not(:active),
+html.roprime-classic-left-nav-on button.menu-button.btn-navigation-nav-menu-md:focus-visible:not(:hover):not(:active),
+body.roprime-classic-left-nav-on button.menu-button.btn-navigation-nav-menu-md:focus-visible:not(:hover):not(:active) {
+    background: transparent !important;
+}
+
+/* Put :active AFTER :focus so the pressed gray still shows while holding click. */
+html.roprime-classic-left-nav-on button.menu-button.btn-navigation-nav-menu-md:active,
+body.roprime-classic-left-nav-on button.menu-button.btn-navigation-nav-menu-md:active,
+html.roprime-classic-left-nav-on button.menu-button.btn-navigation-nav-menu-md:active:focus,
+body.roprime-classic-left-nav-on button.menu-button.btn-navigation-nav-menu-md:active:focus,
+html.roprime-classic-left-nav-on button.menu-button.btn-navigation-nav-menu-md:active:focus-visible,
+body.roprime-classic-left-nav-on button.menu-button.btn-navigation-nav-menu-md:active:focus-visible {
+    background: rgba(255, 255, 255, 0.18) !important;
+}
+
+/* If Roblox applies "selected" styling, kill it except when actively pressing. */
+html.roprime-classic-left-nav-on button.menu-button.btn-navigation-nav-menu-md:not(:hover):not(:active),
+body.roprime-classic-left-nav-on button.menu-button.btn-navigation-nav-menu-md:not(:hover):not(:active) {
+    background: transparent !important;
+}
+
+.roprime-classic-left-nav {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    /* Push contents down so it doesn't sit under Roblox top bar. */
+    padding: 56px 0 0;
+    box-sizing: border-box;
+    background: #f2f4f5;
+    color: #272930;
+    border-right: 1px solid #e1e4e8;
+    box-shadow: 1px 0 0 rgba(0, 0, 0, 0.04);
+}
+
+.roprime-cln-top {
+    flex-shrink: 0;
+    padding: 12px 14px 0;
+}
+
+.roprime-cln-profile {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 6px 8px 10px;
+    margin: 0 -4px;
+    text-decoration: none;
+    color: inherit;
+    border-radius: 8px;
+}
+
+.roprime-cln-profile:hover {
+    background: rgba(0, 0, 0, 0.04);
+}
+
+.roprime-cln-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+    background: #dde1e6;
+    border: 1px solid #cfd4da;
+}
+
+.roprime-cln-avatar--ph {
+    display: inline-block;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #dde1e6;
+    border: 1px solid #cfd4da;
+}
+
+.roprime-cln-name {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: #272930;
+    text-align: left;
+}
+
+.roprime-cln-divider {
+    height: 1px;
+    margin: 4px 0 6px;
+    background: #dde1e6;
+    border: none;
+}
+
+.roprime-cln-scroll {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    padding: 2px 10px 14px;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+}
+
+.roprime-cln-list {
+    list-style: none;
+    margin: 0;
+    padding: 0 0 8px;
+}
+
+.roprime-cln-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 7px 8px;
+    margin: 1px 0;
+    border-radius: 6px;
+    text-decoration: none;
+    color: #272930;
+    font-size: 0.9375rem;
+    font-weight: 500;
+    line-height: 1.3;
+    position: relative;
+}
+
+.roprime-cln-link:hover {
+    background: rgba(0, 0, 0, 0.05);
+}
+
+.roprime-cln-icon-wrap {
+    position: relative;
+    flex-shrink: 0;
+    width: 22px;
+    height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #3a3f47;
+}
+
+.roprime-cln-icon-wrap--external::after {
+    content: "";
+    position: absolute;
+    right: 0;
+    bottom: 1px;
+    width: 5px;
+    height: 5px;
+    border-right: 1.5px solid currentColor;
+    border-bottom: 1.5px solid currentColor;
+    opacity: 0.8;
+    box-sizing: border-box;
+}
+
+.roprime-cln-svg {
+    display: block;
+    color: inherit;
+}
+
+.roprime-cln-label {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-align: left;
+}
+
+.roprime-cln-badge {
+    flex-shrink: 0;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    margin-left: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.65rem;
+    font-weight: 700;
+    line-height: 1;
+    color: #f5d24a;
+    background: #111;
+    border-radius: 999px;
+    box-sizing: border-box;
+    position: absolute;
+    right: 10px;
+}
+
+.roprime-cln-premium {
+    display: block;
+    margin: 4px 4px 0;
+    padding: 11px 14px;
+    text-align: center;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 0.9375rem;
+    letter-spacing: 0.02em;
+    color: #fff;
+    background: #1f1f1f;
+    border-radius: 999px;
+    box-sizing: border-box;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+}
+
+.roprime-cln-premium:hover {
+    background: #2a2a2a;
+    color: #fff;
+}
+
+/* Roblox dark theme: keep readable contrast */
+html.dark-theme #roprime-classic-left-nav-host .roprime-classic-left-nav,
+body.dark-theme #roprime-classic-left-nav-host .roprime-classic-left-nav {
+    background: #2b2d31;
+    color: #f2f4f5;
+    border-right-color: rgba(255, 255, 255, 0.08);
+}
+
+html.dark-theme #roprime-classic-left-nav-host .roprime-cln-name,
+body.dark-theme #roprime-classic-left-nav-host .roprime-cln-name,
+html.dark-theme #roprime-classic-left-nav-host .roprime-cln-link,
+body.dark-theme #roprime-classic-left-nav-host .roprime-cln-link {
+    color: #f2f4f5;
+}
+
+html.dark-theme #roprime-classic-left-nav-host .roprime-cln-icon-wrap,
+body.dark-theme #roprime-classic-left-nav-host .roprime-cln-icon-wrap {
+    color: #e3e5e8;
+}
+
+html.dark-theme #roprime-classic-left-nav-host .roprime-cln-divider,
+body.dark-theme #roprime-classic-left-nav-host .roprime-cln-divider {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+html.dark-theme #roprime-classic-left-nav-host .roprime-cln-profile:hover,
+body.dark-theme #roprime-classic-left-nav-host .roprime-cln-profile:hover,
+html.dark-theme #roprime-classic-left-nav-host .roprime-cln-link:hover,
+body.dark-theme #roprime-classic-left-nav-host .roprime-cln-link:hover {
+    background: rgba(255, 255, 255, 0.06);
+}
+
+html.dark-theme #roprime-classic-left-nav-host .roprime-cln-avatar,
+body.dark-theme #roprime-classic-left-nav-host .roprime-cln-avatar,
+html.dark-theme #roprime-classic-left-nav-host .roprime-cln-avatar--ph,
+body.dark-theme #roprime-classic-left-nav-host .roprime-cln-avatar--ph {
+    border-color: rgba(255, 255, 255, 0.12);
+    background: #3a3d42;
+}
