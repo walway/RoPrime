@@ -1,0 +1,25 @@
+{
+  "manifest_version": 3,
+  "name": "RoPrime - Making Roblox feel better",
+  "version": "1.1.0",
+  "description": "Making Roblox feel better with the same new UI.",
+  "permissions": ["storage"],
+  "action": {
+    "default_title": "RoPrime",
+    "default_popup": "popup.html"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["resources/roprime-icon.png", "resources/RblxPlusLogo.webp"],
+      "matches": ["*://*.roblox.com/*"]
+    }
+  ],
+  "content_scripts": [
+    {
+      "matches": ["*://*.roblox.com/*"],
+      "css": ["style.css"],
+      "js": ["content.js"],
+      "run_at": "document_start"
+    }
+  ]
+}
