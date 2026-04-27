@@ -67,6 +67,24 @@
     min-width: 0;
 }
 
+.roprime-settings-search-wrap {
+    margin-bottom: 12px;
+}
+
+.roprime-settings-search {
+    width: 100%;
+    border: 1px solid rgba(111, 124, 146, 0.45);
+    border-radius: 12px;
+    background: #141923;
+    color: #e9edf5;
+    padding: 10px 12px;
+    outline: none;
+}
+
+.roprime-settings-search:focus {
+    border-color: rgba(120, 161, 255, 0.8);
+}
+
 .roprime-settings-section {
     display: none;
 }
@@ -217,6 +235,156 @@
 
 .roprime-toggle-row + .roprime-toggle-row {
     margin-top: 10px;
+}
+
+.roprime-sidebar-size-row {
+    align-items: stretch;
+    gap: 16px;
+}
+
+.roprime-sidebar-size-control {
+    flex: 0 0 300px;
+    max-width: 100%;
+    display: flex;
+    align-items: center;
+}
+
+.roprime-sidebar-size-rail {
+    width: 100%;
+}
+
+.roprime-sidebar-size-slider {
+    width: 100%;
+    appearance: none;
+    -webkit-appearance: none;
+    height: 6px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, rgba(89, 106, 140, 0.65), rgba(60, 77, 106, 0.65));
+    outline: none;
+    margin: 4px 0 10px;
+}
+
+.roprime-sidebar-size-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #ffffff;
+    border: 2px solid #3c63ff;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.22);
+    cursor: pointer;
+    transition: transform 130ms ease;
+}
+
+.roprime-sidebar-size-slider::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #ffffff;
+    border: 2px solid #3c63ff;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.22);
+    cursor: pointer;
+    transition: transform 130ms ease;
+}
+
+.roprime-sidebar-size-slider:active::-webkit-slider-thumb,
+.roprime-sidebar-size-slider:active::-moz-range-thumb {
+    transform: scale(1.08);
+}
+
+.roprime-sidebar-size-ticks {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    align-items: center;
+    justify-items: center;
+    gap: 8px;
+}
+
+.roprime-sidebar-size-tick {
+    border: 1px solid rgba(111, 124, 146, 0.42);
+    border-radius: 999px;
+    background: #1b2028;
+    color: rgba(211, 217, 255, 0.86);
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 1;
+    padding: 6px 10px;
+    cursor: pointer;
+    transition: border-color 120ms ease, background 120ms ease, color 120ms ease;
+}
+
+.roprime-sidebar-size-tick.is-active {
+    border-color: rgba(120, 161, 255, 0.85);
+    background: rgba(57, 98, 255, 0.25);
+    color: #ffffff;
+}
+
+.roprime-language-dropdown {
+    position: relative;
+    width: 190px;
+}
+
+.roprime-language-trigger {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    border: 1px solid rgba(111, 124, 146, 0.45);
+    border-radius: 10px;
+    background: #141923;
+    color: #e9edf5;
+    padding: 9px 11px;
+    cursor: pointer;
+}
+
+.roprime-language-chevron {
+    width: 8px;
+    height: 8px;
+    border-right: 2px solid currentColor;
+    border-bottom: 2px solid currentColor;
+    transform: rotate(45deg);
+    transition: transform 120ms ease;
+}
+
+.roprime-language-dropdown.is-open .roprime-language-chevron {
+    transform: rotate(-135deg);
+}
+
+.roprime-language-menu {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    right: 0;
+    z-index: 5;
+    border: 1px solid rgba(111, 124, 146, 0.5);
+    border-radius: 10px;
+    overflow: hidden;
+    background: #141923;
+    display: flex;
+    flex-direction: column;
+}
+
+.roprime-language-option {
+    border: 0;
+    background: transparent;
+    color: #e9edf5;
+    text-align: left;
+    padding: 9px 11px;
+    cursor: pointer;
+}
+
+.roprime-language-option:hover {
+    background: rgba(57, 98, 255, 0.18);
+}
+
+/* Keep account content fluid when RoPrime panel is open. */
+#react-user-account-base:has(#roprime-standalone-settings[style*="display: block"]) .content-container,
+#react-user-account-base:has(#roprime-standalone-settings[style*="display: block"]) #content-container {
+    width: auto !important;
+    max-width: none !important;
+    flex-shrink: 1 !important;
+    min-width: 0 !important;
 }
 
 .roprime-accordion-master-switch {
@@ -566,18 +734,21 @@ html.light-theme .roprime-toggle-desc {
 }
 
 @media (max-width: 991px) {
-    .rbx-header .rbx-navbar-header {
+    html.roprime-classic-left-nav-on .rbx-header .rbx-navbar-header,
+    body.roprime-classic-left-nav-on .rbx-header .rbx-navbar-header {
         margin: 0 5px;
     }
 }
 
 @media (max-width: 1199px) {
-    .rbx-header .rbx-navbar-header {
+    html.roprime-classic-left-nav-on .rbx-header .rbx-navbar-header,
+    body.roprime-classic-left-nav-on .rbx-header .rbx-navbar-header {
         margin: 0;
     }
 }
 
-.rbx-header .rbx-navbar-header {
+html.roprime-classic-left-nav-on .rbx-header .rbx-navbar-header,
+body.roprime-classic-left-nav-on .rbx-header .rbx-navbar-header {
     z-index: 100;
     float: left;
     max-width: 76px;
@@ -602,7 +773,14 @@ html.light-theme .roprime-toggle-desc {
     z-index: 2 !important;
 }
 
-*, :before, :after {
+.roprime-settings-wrapper,
+.roprime-settings-wrapper *,
+#roprime-standalone-settings,
+#roprime-standalone-settings *,
+#roprime-home-welcome-root,
+#roprime-home-welcome-root *,
+#roprime-classic-left-nav-host,
+#roprime-classic-left-nav-host * {
     box-sizing: border-box;
     text-rendering: auto;
     -webkit-font-smoothing: antialiased;
@@ -757,8 +935,10 @@ body.roprime-classic-left-nav-on a.navbar-brand {
     pointer-events: auto !important;
 }
 
-.navbar-header,
-.rbx-header .rbx-navbar-header {
+html.roprime-classic-left-nav-on .navbar-header,
+body.roprime-classic-left-nav-on .navbar-header,
+html.roprime-classic-left-nav-on .rbx-header .rbx-navbar-header,
+body.roprime-classic-left-nav-on .rbx-header .rbx-navbar-header {
     align-items: center;
 }
 
