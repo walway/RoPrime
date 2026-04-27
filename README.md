@@ -24,13 +24,10 @@
   <li>Localization-ready structure with locale files.</li>
 </ul>
 
-<h2 id="installation">Installation</h2>
+<h2 id="installation">Manual installation</h2>
 
 <ol>
-  <li>Clone or download this repository.</li>
-  <li>Build the extension:
-    <pre><code>bun run build</code></pre>
-  </li>
+  <li>ownload this project</li>
   <li>Open <code>chrome://extensions</code> in Chrome.</li>
   <li>Enable <strong>Developer mode</strong>.</li>
   <li>Click <strong>Load unpacked</strong> and select this project folder (or <code>dist</code>).</li>
@@ -57,5 +54,5 @@ build.js / build.ts  # Build pipeline
 <hr />
 
 <p align="center">
-  Built with ❤️
+  Built with care for the Roblox community.
 </p>
