@@ -57,5 +57,5 @@ build.js / build.ts  # Build pipeline
 <hr />
 
 <p align="center">
-  Built with care for the Roblox community.
+  Built with ❤️
 </p>
