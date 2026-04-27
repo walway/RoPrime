@@ -27,7 +27,7 @@
 <h2 id="installation">Manual installation</h2>
 
 <ol>
-  <li>ownload this project</li>
+  <li>Download this project</li>
   <li>Open <code>chrome://extensions</code> in Chrome.</li>
   <li>Enable <strong>Developer mode</strong>.</li>
   <li>Click <strong>Load unpacked</strong> and select this project folder (or <code>dist</code>).</li>
@@ -54,5 +54,5 @@ build.js / build.ts  # Build pipeline
 <hr />
 
 <p align="center">
-  Built with care for the Roblox community.
+  Built with ❤️
 </p>
