@@ -10,7 +10,7 @@
   },
   "web_accessible_resources": [
     {
-      "resources": ["resources/roprime-icon.png", "resources/RblxPlusLogo.webp"],
+      "resources": ["resources/roprime-icon.png", "resources/RblxPlusLogo.webp", "language-keys.json"],
       "matches": ["*://*.roblox.com/*"]
     }
   ],

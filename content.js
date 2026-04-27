@@ -1,5 +1,5 @@
 (() => {
-  // src/content/core.js
+  // src/content/core.ts
   var RP_TAB_ID = "roprime-settings-tab";
   var RP_PANEL_CLASS = "roprime-settings-wrapper";
   var RP_PANE_ID = "roprime-settings-pane";
@@ -9,9 +9,10 @@
   var RP_FRIEND_STYLING_REIMAGNED_STYLE_ID = "roprime-friend-styling-reimagned-style";
   var RP_PARAM_KEY = "roprime";
   var RP_DEFAULT_PAGE = "design";
-  var RP_SUPPORTED_PAGES = new Set(["design", "info"]);
+  var RP_SUPPORTED_PAGES = new Set(["design", "settings", "info"]);
   var RP_SETTINGS_KEY = "rpSettings";
   var RP_DEFAULT_SETTINGS = {
+    language: "en",
     renameDropdownEnabled: true,
     renameDropdownRestore: {
       renameCommunitiesToGroups: true,
@@ -66,6 +67,7 @@
       [RP_SETTINGS_KEY]: {
         renameDropdownEnabled: settingsState.renameDropdownEnabled,
         renameDropdownRestore: settingsState.renameDropdownRestore,
+        language: settingsState.language,
         renameCommunitiesToGroups: settingsState.renameCommunitiesToGroups,
         renameExperiencesToGames: settingsState.renameExperiencesToGames,
         renameMarketplaceToAvatarShop: settingsState.renameMarketplaceToAvatarShop,
@@ -98,7 +100,7 @@
     return `${url.pathname}${url.search}`;
   }
 
-  // src/content/rename.js
+  // src/content/rename.ts
   function renameCommunityText(text) {
     return text.replace(/\bCommunities\b/g, "Groups").replace(/\bcommunities\b/g, "groups").replace(/\bCommunity\b/g, "Group").replace(/\bcommunity\b/g, "group");
   }
@@ -181,7 +183,7 @@
     }
   }
 
-  // src/content/oldNavigationBar.js
+  // src/content/oldNavigationBar.ts
   var HOST_ID = "roprime-classic-left-nav-host";
   var COLLAPSED_CLASS = "roprime-old-navigation-bar-collapsed";
   function stripLegacyInjections() {
@@ -388,7 +390,7 @@
     }
   }
 
-  // src/content/friendStylingReimagned.js
+  // src/content/friendStylingReimagned.ts
   var FRIEND_STYLING_REIMAGNED_CSS = `
 .friend-carousel-container {
     margin-bottom: 18px !important;
@@ -605,7 +607,7 @@
     scheduleFriendPresenceRefresh();
   }
 
-  // src/content/welcome.js
+  // src/content/welcome.ts
   var RP_HOME_WELCOME_DISMISSED_KEY = "rpHomeWelcomeDismissed";
   var WELCOME_ROOT_ID = "roprime-home-welcome-root";
   var welcomeKeydownHandler = null;
@@ -639,8 +641,12 @@
     document.getElementById(WELCOME_ROOT_ID)?.remove();
   }
   function getExtensionIconUrl() {
-    if (typeof chrome !== "undefined" && chrome.runtime?.getURL) {
-      return chrome.runtime.getURL("resources/roprime-icon.png");
+    try {
+      if (typeof chrome !== "undefined" && chrome.runtime?.getURL) {
+        return chrome.runtime.getURL("resources/roprime-icon.png");
+      }
+    } catch {
+      return "";
     }
     return "";
   }
@@ -747,7 +753,7 @@
     });
   }
 
-  // src/content/accountTab.js
+  // src/content/accountTab.ts
   function getRobloxAccountMenu() {
     const root = document.getElementById("react-user-account-base");
     if (!(root instanceof HTMLElement))
@@ -756,18 +762,29 @@
     const menu = menus.find((m) => m.querySelector('.menu-option a[href*="browser-preferences"], .menu-option a[href*="browserpreferences"]'));
     return menu instanceof HTMLElement ? menu : null;
   }
+  function getIconUrl() {
+    try {
+      if (typeof chrome !== "undefined" && chrome.runtime && typeof chrome.runtime.getURL === "function") {
+        return chrome.runtime.getURL("resources/roprime-icon.png");
+      }
+    } catch {
+      return "resources/roprime-icon.png";
+    }
+    return "resources/roprime-icon.png";
+  }
   function injectRoEliteTab(onNavigate) {
     if (!isAccountPage())
       return;
     const menu = getRobloxAccountMenu();
     if (!menu || document.getElementById(RP_TAB_ID))
       return;
-    const iconUrl = typeof chrome !== "undefined" && chrome.runtime && typeof chrome.runtime.getURL === "function" ? chrome.runtime.getURL("resources/roprime-icon.png") : "resources/roprime-icon.png";
+    const iconUrl = getIconUrl();
+    const settingsLabel = settingsState.language === "ru" ? "Настройки RoPrime" : "RoPrime Settings";
     const li = document.createElement("li");
     li.id = RP_TAB_ID;
     li.className = "menu-option";
     li.setAttribute("role", "tab");
-    li.innerHTML = `<a class="menu-option-content" href="#"><img class="roprime-menu-icon" src="${iconUrl}" alt="" width="15" height="15" /><span class="menu-text">RoPrime Settings</span></a>`;
+    li.innerHTML = `<a class="menu-option-content" href="#"><img class="roprime-menu-icon" src="${iconUrl}" alt="" width="15" height="15" /><span class="menu-text">${settingsLabel}</span></a>`;
     li.addEventListener("click", (event) => {
       event.preventDefault();
       event.stopPropagation();
@@ -812,7 +829,7 @@
       desiredAnchor.insertAdjacentElement(desiredPosition, activeDivider);
   }
 
-  // src/content/smallNewNav.js
+  // src/content/smallNewNav.ts
   function updateSmallNewNavVisibility() {
     const existingStyle = document.getElementById(RP_SMALL_NEW_NAV_STYLE_ID);
     if (!settingsState.smallNewNavigationBarEnabled) {
@@ -831,7 +848,7 @@
     document.documentElement.appendChild(style);
   }
 
-  // src/content/sidebarCompact.js
+  // src/content/sidebarCompact.ts
   var RP_LEFTNAV_OFFICIAL_STORE_BTN_CLASS = "roprime-leftnav-official-store";
   var RP_LEFTNAV_PROFILE_LI_CLASS = "roprime-leftnav-profile";
   var RP_SIDEBAR_PLUS_ITEM_ID = "roprime-sidebar-plus-item";
@@ -1281,36 +1298,167 @@ body.dark-theme .left-nav.fixed button.${RP_SIDEBAR_PLUS_BTN_CLASS} {
     syncSidebarCompactBottomButton();
   }
 
-  // src/content/settingsPane.js
+  // src/content/settingsPane.ts
+  var FALLBACK_LANGUAGE_KEYS = {
+    en: {
+      "settings.hero.title": "RoPrime Settings",
+      "settings.hero.subtitle": "Make Roblox things feel right again.",
+      "settings.nav.design": "Design",
+      "settings.nav.settings": "Settings",
+      "settings.nav.info": "Info",
+      "settings.search.placeholder": "Search settings...",
+      "settings.rename.title": "Rename Roblox wording",
+      "settings.rename.communities": "Communities -> Groups",
+      "settings.rename.experiences": "Experiences -> Games",
+      "settings.rename.marketplace": "Marketplace -> Avatar Shop",
+      "settings.oldNav.title": "Old Navigation bar",
+      "settings.oldNav.desc": "In development. Keep disabled unless you are testing it.",
+      "settings.sidebar.title": "Sidebar size",
+      "settings.sidebar.desc": "Drag freely, then release to snap to the nearest mode.",
+      "settings.sidebar.full": "Full",
+      "settings.sidebar.small": "Small",
+      "settings.sidebar.icon": "Icon only",
+      "settings.friend.title": "Friend styling reimagined",
+      "settings.friend.desc": "Restyles the friends carousel with a dark glass card and animated presence ring glow.",
+      "settings.language.title": "Language",
+      "settings.language.desc": "Choose your RoPrime language.",
+      "settings.language.en": "English",
+      "settings.language.ru": "Russian",
+      "settings.info.title": "RoPrime",
+      "settings.info.text": "This extension adds an RoPrime settings panel on your Roblox Account page and can rename some modern Roblox wording back to classic terms."
+    },
+    ru: {
+      "settings.hero.title": "Настройки RoPrime",
+      "settings.hero.subtitle": "Сделайте Roblox удобнее и привычнее.",
+      "settings.nav.design": "Дизайн",
+      "settings.nav.settings": "Настройки",
+      "settings.nav.info": "Инфо",
+      "settings.search.placeholder": "Поиск настроек...",
+      "settings.rename.title": "Переименование терминов Roblox",
+      "settings.rename.communities": "Communities -> Groups",
+      "settings.rename.experiences": "Experiences -> Games",
+      "settings.rename.marketplace": "Marketplace -> Avatar Shop",
+      "settings.oldNav.title": "Старая панель навигации",
+      "settings.oldNav.desc": "В разработке. Включайте только для тестов.",
+      "settings.sidebar.title": "Размер боковой панели",
+      "settings.sidebar.desc": "Перетяните ползунок и отпустите для выбора ближайшего режима.",
+      "settings.sidebar.full": "Полный",
+      "settings.sidebar.small": "Малый",
+      "settings.sidebar.icon": "Только иконки",
+      "settings.friend.title": "Новый стиль друзей",
+      "settings.friend.desc": "Обновляет карусель друзей: темная карточка и анимированное свечение статуса.",
+      "settings.language.title": "Язык",
+      "settings.language.desc": "Выберите язык RoPrime.",
+      "settings.language.en": "Английский",
+      "settings.language.ru": "Русский",
+      "settings.info.title": "RoPrime",
+      "settings.info.text": "Это расширение добавляет панель настроек RoPrime на страницу аккаунта Roblox и может возвращать классические названия разделов."
+    }
+  };
+  var languageKeysCache = null;
+  var languageKeysPromise = null;
+  function getLanguageCode() {
+    return settingsState.language === "ru" ? "ru" : "en";
+  }
+  function getLanguageLabel(langCode) {
+    const dict = languageKeysCache?.[getLanguageCode()] || FALLBACK_LANGUAGE_KEYS[getLanguageCode()];
+    if (langCode === "ru")
+      return dict["settings.language.ru"];
+    return dict["settings.language.en"];
+  }
+  async function ensureLanguageKeys() {
+    if (languageKeysCache)
+      return languageKeysCache;
+    if (languageKeysPromise)
+      return languageKeysPromise;
+    languageKeysPromise = (async () => {
+      try {
+        if (typeof chrome !== "undefined" && chrome.runtime?.getURL) {
+          const url = chrome.runtime.getURL("language-keys.json");
+          const response = await fetch(url, { cache: "no-store" });
+          if (response.ok) {
+            const data = await response.json();
+            if (data && typeof data === "object") {
+              languageKeysCache = data;
+              return languageKeysCache;
+            }
+          }
+        }
+      } catch {}
+      languageKeysCache = FALLBACK_LANGUAGE_KEYS;
+      return languageKeysCache;
+    })();
+    return languageKeysPromise;
+  }
+  function t(key) {
+    const dict = languageKeysCache?.[getLanguageCode()] || FALLBACK_LANGUAGE_KEYS[getLanguageCode()];
+    return dict?.[key] || FALLBACK_LANGUAGE_KEYS.en[key] || key;
+  }
+  async function applyPaneTranslations(pane) {
+    await ensureLanguageKeys();
+    pane.querySelectorAll("[data-i18n]").forEach((el) => {
+      const key = el.getAttribute("data-i18n");
+      if (!key)
+        return;
+      el.textContent = t(key);
+    });
+    pane.querySelectorAll("[data-i18n-placeholder]").forEach((el) => {
+      const key = el.getAttribute("data-i18n-placeholder");
+      if (!key)
+        return;
+      if (el instanceof HTMLInputElement || el instanceof HTMLTextAreaElement) {
+        el.placeholder = t(key);
+      }
+    });
+    const current = pane.querySelector("[data-roprime-lang-current]");
+    if (current instanceof HTMLElement)
+      current.textContent = getLanguageLabel(getLanguageCode());
+  }
   function buildSettingsPaneMarkup() {
     return `
         <div class="${RP_PANEL_CLASS}">
-            <div class="roprime-settings-hero"><h2>RoPrime Settings</h2><p>Make Roblox things feel right again.</p></div>
+            <div class="roprime-settings-hero"><h2 data-i18n="settings.hero.title"></h2><p data-i18n="settings.hero.subtitle"></p></div>
             <div class="roprime-settings-layout">
                 <div class="roprime-settings-nav" role="tablist" aria-label="RoPrime Settings sections">
-                    <button class="roprime-settings-nav-btn" data-roprime-page="design" type="button">Design</button>
-                    <button class="roprime-settings-nav-btn" data-roprime-page="info" type="button">Info</button>
+                    <button class="roprime-settings-nav-btn" data-roprime-page="design" type="button" data-i18n="settings.nav.design"></button>
+                    <button class="roprime-settings-nav-btn" data-roprime-page="settings" type="button" data-i18n="settings.nav.settings"></button>
+                    <button class="roprime-settings-nav-btn" data-roprime-page="info" type="button" data-i18n="settings.nav.info"></button>
                 </div>
                 <div class="roprime-settings-main">
                     <section class="roprime-settings-section" data-roprime-section="design">
+                        <div class="roprime-settings-search-wrap"><input id="roprime-settings-search" type="search" class="roprime-settings-search" data-i18n-placeholder="settings.search.placeholder" /></div>
                         <div class="roprime-setting-card roprime-accordion" data-roprime-accordion="rename">
                             <div class="roprime-accordion-header" role="button" tabindex="0" aria-expanded="false">
-                                <div class="roprime-setting-copy"><div class="roprime-setting-title">Rename Roblox wording</div></div>
+                                <div class="roprime-setting-copy"><div class="roprime-setting-title" data-i18n="settings.rename.title"></div></div>
                                 <label class="roprime-switch roprime-accordion-master-switch" for="roprime-toggle-rename-master"><input id="roprime-toggle-rename-master" type="checkbox" /><span class="roprime-switch-slider" aria-hidden="true"></span></label>
                                 <span class="roprime-accordion-chevron" aria-hidden="true"></span>
                             </div>
                             <div class="roprime-accordion-body" hidden>
-                                <div class="roprime-toggle-row"><div class="roprime-toggle-copy"><div class="roprime-toggle-title">Communities → Groups</div></div><label class="roprime-switch" for="roprime-toggle-rename-communities"><input id="roprime-toggle-rename-communities" type="checkbox" /><span class="roprime-switch-slider" aria-hidden="true"></span></label></div>
-                                <div class="roprime-toggle-row"><div class="roprime-toggle-copy"><div class="roprime-toggle-title">Experiences → Games</div></div><label class="roprime-switch" for="roprime-toggle-rename-experiences"><input id="roprime-toggle-rename-experiences" type="checkbox" /><span class="roprime-switch-slider" aria-hidden="true"></span></label></div>
-                                <div class="roprime-toggle-row"><div class="roprime-toggle-copy"><div class="roprime-toggle-title">Marketplace → Avatar Shop</div></div><label class="roprime-switch" for="roprime-toggle-rename-marketplace"><input id="roprime-toggle-rename-marketplace" type="checkbox" /><span class="roprime-switch-slider" aria-hidden="true"></span></label></div>
+                                <div class="roprime-toggle-row"><div class="roprime-toggle-copy"><div class="roprime-toggle-title" data-i18n="settings.rename.communities"></div></div><label class="roprime-switch" for="roprime-toggle-rename-communities"><input id="roprime-toggle-rename-communities" type="checkbox" /><span class="roprime-switch-slider" aria-hidden="true"></span></label></div>
+                                <div class="roprime-toggle-row"><div class="roprime-toggle-copy"><div class="roprime-toggle-title" data-i18n="settings.rename.experiences"></div></div><label class="roprime-switch" for="roprime-toggle-rename-experiences"><input id="roprime-toggle-rename-experiences" type="checkbox" /><span class="roprime-switch-slider" aria-hidden="true"></span></label></div>
+                                <div class="roprime-toggle-row"><div class="roprime-toggle-copy"><div class="roprime-toggle-title" data-i18n="settings.rename.marketplace"></div></div><label class="roprime-switch" for="roprime-toggle-rename-marketplace"><input id="roprime-toggle-rename-marketplace" type="checkbox" /><span class="roprime-switch-slider" aria-hidden="true"></span></label></div>
                             </div>
                         </div>
-                        <div class="roprime-toggle-row roprime-setting-card-spaced"><div class="roprime-toggle-copy"><div class="roprime-toggle-title">Old Navigation bar</div><div class="roprime-toggle-desc">Adds a fixed classic-style left rail (logo, profile, links, Get Premium, Events). Roblox’s own sidebar is left as-is underneath.</div></div><label class="roprime-switch" for="roprime-toggle-old-navigation-bar"><input id="roprime-toggle-old-navigation-bar" type="checkbox" /><span class="roprime-switch-slider" aria-hidden="true"></span></label></div>
-                        <div class="roprime-toggle-row roprime-setting-card-spaced"><div class="roprime-toggle-copy"><div class="roprime-toggle-title">Small new navigation bar</div><div class="roprime-toggle-desc">Narrows the new left nav column (overrides the default 288px width).</div></div><label class="roprime-switch" for="roprime-toggle-small-new-navbar"><input id="roprime-toggle-small-new-navbar" type="checkbox" /><span class="roprime-switch-slider" aria-hidden="true"></span></label></div>
-                        <div class="roprime-toggle-row roprime-setting-card-spaced"><div class="roprime-toggle-copy"><div class="roprime-toggle-title">Icon-only left sidebar</div><div class="roprime-toggle-desc">Compact rail (~72px), 48px icon targets, stacks above the page, no sidebar scrolling; hides labels, Get Premium, and Official Store.</div></div><label class="roprime-switch" for="roprime-toggle-sidebar-compact"><input id="roprime-toggle-sidebar-compact" type="checkbox" /><span class="roprime-switch-slider" aria-hidden="true"></span></label></div>
-                        <div class="roprime-toggle-row roprime-setting-card-spaced"><div class="roprime-toggle-copy"><div class="roprime-toggle-title">Friend styling reimagned</div><div class="roprime-toggle-desc">Restyles the friends carousel with a dark glass card and animated presence ring glow.</div></div><label class="roprime-switch" for="roprime-toggle-friend-styling-reimagned"><input id="roprime-toggle-friend-styling-reimagned" type="checkbox" /><span class="roprime-switch-slider" aria-hidden="true"></span></label></div>
+                        <div class="roprime-toggle-row roprime-setting-card-spaced"><div class="roprime-toggle-copy"><div class="roprime-toggle-title" data-i18n="settings.oldNav.title"></div><div class="roprime-toggle-desc" data-i18n="settings.oldNav.desc"></div></div><label class="roprime-switch" for="roprime-toggle-old-navigation-bar"><input id="roprime-toggle-old-navigation-bar" type="checkbox" /><span class="roprime-switch-slider" aria-hidden="true"></span></label></div>
+                        <div class="roprime-toggle-row roprime-setting-card-spaced roprime-sidebar-size-row"><div class="roprime-toggle-copy"><div class="roprime-toggle-title" data-i18n="settings.sidebar.title"></div><div class="roprime-toggle-desc" data-i18n="settings.sidebar.desc"></div></div><div class="roprime-sidebar-size-control"><div class="roprime-sidebar-size-rail"><input id="roprime-sidebar-size-slider" class="roprime-sidebar-size-slider" type="range" min="0" max="100" step="0.1" value="0" aria-label="Sidebar size" /><div class="roprime-sidebar-size-ticks"><button class="roprime-sidebar-size-tick" type="button" data-size-mode="full"><span data-i18n="settings.sidebar.full"></span></button><button class="roprime-sidebar-size-tick" type="button" data-size-mode="small"><span data-i18n="settings.sidebar.small"></span></button><button class="roprime-sidebar-size-tick" type="button" data-size-mode="icon"><span data-i18n="settings.sidebar.icon"></span></button></div></div></div></div>
+                        <div class="roprime-toggle-row roprime-setting-card-spaced"><div class="roprime-toggle-copy"><div class="roprime-toggle-title" data-i18n="settings.friend.title"></div><div class="roprime-toggle-desc" data-i18n="settings.friend.desc"></div></div><label class="roprime-switch" for="roprime-toggle-friend-styling-reimagned"><input id="roprime-toggle-friend-styling-reimagned" type="checkbox" /><span class="roprime-switch-slider" aria-hidden="true"></span></label></div>
                     </section>
-                    <section class="roprime-settings-section" data-roprime-section="info"><div class="roprime-info-card"><div class="roprime-info-title">RoPrime</div><div class="roprime-info-text">This extension adds an RoPrime settings panel on your Roblox Account page and can rename some modern Roblox wording back to classic terms.</div></div></section>
+                    <section class="roprime-settings-section" data-roprime-section="settings">
+                        <div class="roprime-setting-card">
+                            <div class="roprime-setting-copy">
+                                <div class="roprime-setting-title" data-i18n="settings.language.title"></div>
+                                <div class="roprime-setting-desc" data-i18n="settings.language.desc"></div>
+                            </div>
+                            <div class="roprime-language-dropdown" data-roprime-language-dropdown>
+                                <button type="button" class="roprime-language-trigger"><span data-roprime-lang-current></span><span class="roprime-language-chevron" aria-hidden="true"></span></button>
+                                <div class="roprime-language-menu" hidden>
+                                    <button type="button" class="roprime-language-option" data-lang="en" data-i18n="settings.language.en"></button>
+                                    <button type="button" class="roprime-language-option" data-lang="ru" data-i18n="settings.language.ru"></button>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                    <section class="roprime-settings-section" data-roprime-section="info"><div class="roprime-info-card"><div class="roprime-info-title" data-i18n="settings.info.title"></div><div class="roprime-info-text" data-i18n="settings.info.text"></div></div></section>
                 </div>
             </div>
         </div>`;
@@ -1327,16 +1475,16 @@ body.dark-theme .left-nav.fixed button.${RP_SIDEBAR_PLUS_BTN_CLASS} {
       accountBase.appendChild(standalone);
     } else {
       const legacyDescription = standalone.querySelector('[data-roprime-accordion="rename"] .roprime-setting-desc');
-      const missingSmallNavToggle = !standalone.querySelector("#roprime-toggle-small-new-navbar");
-      const missingSidebarCompactToggle = !standalone.querySelector("#roprime-toggle-sidebar-compact");
+      const missingSidebarSizeSlider = !standalone.querySelector("#roprime-sidebar-size-slider");
       const missingOldNavigationBarToggle = !standalone.querySelector("#roprime-toggle-old-navigation-bar");
       const missingFriendStylingReimagnedToggle = !standalone.querySelector("#roprime-toggle-friend-styling-reimagned");
-      if (legacyDescription || missingSmallNavToggle || missingSidebarCompactToggle || missingOldNavigationBarToggle || missingFriendStylingReimagnedToggle) {
+      if (legacyDescription || missingSidebarSizeSlider || missingOldNavigationBarToggle || missingFriendStylingReimagnedToggle) {
         standalone.innerHTML = buildSettingsPaneMarkup();
         standalone.removeAttribute("data-roprime-controls-bound");
         standalone.removeAttribute("data-roprime-design-toggles-bound");
       }
     }
+    applyPaneTranslations(standalone);
     return standalone;
   }
   function updateStandaloneSettingsVisibility(showPanel) {
@@ -1352,10 +1500,15 @@ body.dark-theme .left-nav.fixed button.${RP_SIDEBAR_PLUS_BTN_CLASS} {
     elementsToToggle.forEach((element) => {
       if (!(element instanceof HTMLElement))
         return;
-      if (showPanel)
+      if (showPanel) {
+        element.setAttribute("data-roprime-hidden-by-panel", "1");
         element.style.display = "none";
-      else
-        element.style.display = "";
+        return;
+      }
+      if (element.getAttribute("data-roprime-hidden-by-panel") !== "1")
+        return;
+      element.style.display = "";
+      element.removeAttribute("data-roprime-hidden-by-panel");
     });
     const standalone = ensureStandaloneSettingsView();
     if (!(standalone instanceof HTMLElement))
@@ -1367,9 +1520,9 @@ body.dark-theme .left-nav.fixed button.${RP_SIDEBAR_PLUS_BTN_CLASS} {
     if (pane.getAttribute("data-roprime-design-toggles-bound") === "1")
       return;
     const oldNavigationBarToggle = pane.querySelector("#roprime-toggle-old-navigation-bar");
-    const smallNewNavToggle = pane.querySelector("#roprime-toggle-small-new-navbar");
-    const sidebarCompactToggle = pane.querySelector("#roprime-toggle-sidebar-compact");
+    const sidebarSizeSlider = pane.querySelector("#roprime-sidebar-size-slider");
     const friendStylingReimagnedToggle = pane.querySelector("#roprime-toggle-friend-styling-reimagned");
+    const searchInput = pane.querySelector("#roprime-settings-search");
     if (oldNavigationBarToggle instanceof HTMLInputElement) {
       oldNavigationBarToggle.addEventListener("change", () => {
         settingsState.oldNavigationBarEnabled = oldNavigationBarToggle.checked;
@@ -1377,18 +1530,108 @@ body.dark-theme .left-nav.fixed button.${RP_SIDEBAR_PLUS_BTN_CLASS} {
         actions.updateOldNavigationBarVisibility();
       });
     }
-    if (smallNewNavToggle instanceof HTMLInputElement) {
-      smallNewNavToggle.addEventListener("change", () => {
-        settingsState.smallNewNavigationBarEnabled = smallNewNavToggle.checked;
+    if (sidebarSizeSlider instanceof HTMLInputElement) {
+      const modeValues = { full: 0, small: 50, icon: 100 };
+      const nearestModeForValue = (raw) => {
+        const value = Number(raw);
+        if (Number.isNaN(value))
+          return "full";
+        if (value < 25)
+          return "full";
+        if (value < 75)
+          return "small";
+        return "icon";
+      };
+      const applySidebarMode = (mode) => {
+        settingsState.smallNewNavigationBarEnabled = mode === "small";
+        settingsState.sidebarIconsOnlyEnabled = mode === "icon";
         saveSettings();
         actions.updateSmallNewNavVisibility();
+        actions.updateSidebarCompactVisibility();
+        pane.setAttribute("data-roprime-sidebar-size-mode", mode);
+        pane.querySelectorAll(".roprime-sidebar-size-tick").forEach((tick) => {
+          if (!(tick instanceof HTMLButtonElement))
+            return;
+          tick.classList.toggle("is-active", tick.dataset.sizeMode === mode);
+        });
+      };
+      sidebarSizeSlider.addEventListener("input", () => {
+        const mode = nearestModeForValue(sidebarSizeSlider.value);
+        pane.setAttribute("data-roprime-sidebar-size-mode", mode);
+        pane.querySelectorAll(".roprime-sidebar-size-tick").forEach((tick) => {
+          if (!(tick instanceof HTMLButtonElement))
+            return;
+          tick.classList.toggle("is-active", tick.dataset.sizeMode === mode);
+        });
+      });
+      const commitNearestMode = () => {
+        const mode = nearestModeForValue(sidebarSizeSlider.value);
+        sidebarSizeSlider.value = String(modeValues[mode]);
+        applySidebarMode(mode);
+      };
+      sidebarSizeSlider.addEventListener("change", commitNearestMode);
+      sidebarSizeSlider.addEventListener("pointerup", commitNearestMode);
+      sidebarSizeSlider.addEventListener("keyup", (event) => {
+        if (event.key === "ArrowLeft" || event.key === "ArrowRight" || event.key === "Home" || event.key === "End") {
+          commitNearestMode();
+        }
+      });
+      pane.querySelectorAll(".roprime-sidebar-size-tick").forEach((tick) => {
+        if (!(tick instanceof HTMLButtonElement))
+          return;
+        tick.addEventListener("click", () => {
+          const mode = tick.dataset.sizeMode || "full";
+          const nextValue = modeValues[mode] ?? modeValues.full;
+          sidebarSizeSlider.value = String(nextValue);
+          applySidebarMode(mode);
+        });
       });
     }
-    if (sidebarCompactToggle instanceof HTMLInputElement) {
-      sidebarCompactToggle.addEventListener("change", () => {
-        settingsState.sidebarIconsOnlyEnabled = sidebarCompactToggle.checked;
-        saveSettings();
-        actions.updateSidebarCompactVisibility();
+    if (searchInput instanceof HTMLInputElement) {
+      searchInput.addEventListener("input", () => {
+        const term = searchInput.value.trim().toLowerCase();
+        const designSection = pane.querySelector('[data-roprime-section="design"]');
+        if (!(designSection instanceof HTMLElement))
+          return;
+        designSection.querySelectorAll(".roprime-toggle-row, .roprime-setting-card").forEach((item) => {
+          if (!(item instanceof HTMLElement))
+            return;
+          if (item.getAttribute("data-roprime-accordion") === "rename" && !term) {
+            item.style.display = "";
+            return;
+          }
+          item.style.display = !term || item.textContent?.toLowerCase().includes(term) ? "" : "none";
+        });
+      });
+    }
+    const languageDropdown = pane.querySelector("[data-roprime-language-dropdown]");
+    const languageMenu = languageDropdown?.querySelector(".roprime-language-menu");
+    const languageTrigger = languageDropdown?.querySelector(".roprime-language-trigger");
+    if (languageDropdown instanceof HTMLElement && languageMenu instanceof HTMLElement && languageTrigger instanceof HTMLButtonElement) {
+      languageTrigger.addEventListener("click", () => {
+        const next = !languageDropdown.classList.contains("is-open");
+        languageDropdown.classList.toggle("is-open", next);
+        languageMenu.hidden = !next;
+      });
+      languageMenu.querySelectorAll(".roprime-language-option").forEach((option) => {
+        if (!(option instanceof HTMLButtonElement))
+          return;
+        option.addEventListener("click", () => {
+          const next = option.dataset.lang === "ru" ? "ru" : "en";
+          settingsState.language = next;
+          saveSettings();
+          languageDropdown.classList.remove("is-open");
+          languageMenu.hidden = true;
+          applyPaneTranslations(pane);
+        });
+      });
+      document.addEventListener("click", (event) => {
+        if (!(event.target instanceof Element))
+          return;
+        if (languageDropdown.contains(event.target))
+          return;
+        languageDropdown.classList.remove("is-open");
+        languageMenu.hidden = true;
       });
     }
     if (friendStylingReimagnedToggle instanceof HTMLInputElement) {
@@ -1581,8 +1824,7 @@ body.dark-theme .left-nav.fixed button.${RP_SIDEBAR_PLUS_BTN_CLASS} {
     const experiencesToggle = pane.querySelector("#roprime-toggle-rename-experiences");
     const marketplaceToggle = pane.querySelector("#roprime-toggle-rename-marketplace");
     const oldNavigationBarToggle = pane.querySelector("#roprime-toggle-old-navigation-bar");
-    const smallNewNavToggle = pane.querySelector("#roprime-toggle-small-new-navbar");
-    const sidebarCompactToggle = pane.querySelector("#roprime-toggle-sidebar-compact");
+    const sidebarSizeSlider = pane.querySelector("#roprime-sidebar-size-slider");
     const friendStylingReimagnedToggle = pane.querySelector("#roprime-toggle-friend-styling-reimagned");
     if (masterToggle instanceof HTMLInputElement)
       masterToggle.checked = !!settingsState.renameDropdownEnabled;
@@ -1594,10 +1836,17 @@ body.dark-theme .left-nav.fixed button.${RP_SIDEBAR_PLUS_BTN_CLASS} {
       marketplaceToggle.checked = !!settingsState.renameMarketplaceToAvatarShop;
     if (oldNavigationBarToggle instanceof HTMLInputElement)
       oldNavigationBarToggle.checked = !!settingsState.oldNavigationBarEnabled;
-    if (smallNewNavToggle instanceof HTMLInputElement)
-      smallNewNavToggle.checked = !!settingsState.smallNewNavigationBarEnabled;
-    if (sidebarCompactToggle instanceof HTMLInputElement)
-      sidebarCompactToggle.checked = !!settingsState.sidebarIconsOnlyEnabled;
+    const sidebarSizeMode = settingsState.sidebarIconsOnlyEnabled ? "icon" : settingsState.smallNewNavigationBarEnabled ? "small" : "full";
+    if (sidebarSizeSlider instanceof HTMLInputElement) {
+      const valueByMode = { full: "0", small: "50", icon: "100" };
+      sidebarSizeSlider.value = valueByMode[sidebarSizeMode];
+    }
+    pane.setAttribute("data-roprime-sidebar-size-mode", sidebarSizeMode);
+    pane.querySelectorAll(".roprime-sidebar-size-tick").forEach((tick) => {
+      if (!(tick instanceof HTMLButtonElement))
+        return;
+      tick.classList.toggle("is-active", tick.dataset.sizeMode === sidebarSizeMode);
+    });
     if (friendStylingReimagnedToggle instanceof HTMLInputElement)
       friendStylingReimagnedToggle.checked = !!settingsState.friendStylingReimagnedEnabled;
     const accordion = pane.querySelector('[data-roprime-accordion="rename"]');
@@ -1617,9 +1866,10 @@ body.dark-theme .left-nav.fixed button.${RP_SIDEBAR_PLUS_BTN_CLASS} {
       const sectionKey = section.getAttribute("data-roprime-section") || "";
       section.style.display = sectionKey === activePage ? "block" : "none";
     });
+    applyPaneTranslations(pane);
   }
 
-  // src/content/pageChrome.js
+  // src/content/pageChrome.ts
   function updateTabState(showPanel, pluginTabId) {
     const pluginTab = document.getElementById(pluginTabId);
     if (!pluginTab)
@@ -1663,19 +1913,25 @@ body.dark-theme .left-nav.fixed button.${RP_SIDEBAR_PLUS_BTN_CLASS} {
     if (!root.hasAttribute("data-roprime-original-title"))
       root.setAttribute("data-roprime-original-title", document.title || "");
     if (showPanel)
-      document.title = "RoPrime Settings";
+      document.title = settingsState.language === "ru" ? "Настройки RoPrime" : "RoPrime Settings";
     else
       document.title = root.getAttribute("data-roprime-original-title") || document.title;
   }
 
-  // src/content/dropdownMenu.js
+  // src/content/dropdownMenu.ts
   var RP_DROPDOWN_ITEM_CLASS = "roprime-dropdown-entry";
+  var dropdownObserver = null;
+  var injectQueued = false;
   function getRoPrimeSettingsUrl() {
     return `${window.location.origin}/my/account?roprime=design`;
   }
-  function getIconUrl() {
-    if (typeof chrome !== "undefined" && chrome.runtime?.getURL) {
-      return chrome.runtime.getURL("resources/roprime-icon.png");
+  function getIconUrl2() {
+    try {
+      if (typeof chrome !== "undefined" && chrome.runtime?.getURL) {
+        return chrome.runtime.getURL("resources/roprime-icon.png");
+      }
+    } catch {
+      return "resources/roprime-icon.png";
     }
     return "resources/roprime-icon.png";
   }
@@ -1683,8 +1939,9 @@ body.dark-theme .left-nav.fixed button.${RP_SIDEBAR_PLUS_BTN_CLASS} {
     const menus = document.querySelectorAll("ul.dropdown-menu");
     if (!menus.length)
       return;
-    const iconUrl = getIconUrl();
+    const iconUrl = getIconUrl2();
     const settingsUrl = getRoPrimeSettingsUrl();
+    const settingsLabel = settingsState.language === "ru" ? "Настройки RoPrime" : "RoPrime Settings";
     menus.forEach((menu) => {
       if (!(menu instanceof HTMLUListElement))
         return;
@@ -1692,12 +1949,51 @@ body.dark-theme .left-nav.fixed button.${RP_SIDEBAR_PLUS_BTN_CLASS} {
         return;
       const li = document.createElement("li");
       li.className = RP_DROPDOWN_ITEM_CLASS;
-      li.innerHTML = `<a class="rbx-menu-item" href="${settingsUrl}"><img src="${iconUrl}" alt="" width="14" height="14" style="margin-right:8px;vertical-align:middle;" /><span>RoPrime Settings</span></a>`;
+      li.innerHTML = `<a class="rbx-menu-item" href="${settingsUrl}"><img src="${iconUrl}" alt="" width="14" height="14" style="margin-right:8px;vertical-align:middle;" /><span>${settingsLabel}</span></a>`;
       menu.insertAdjacentElement("afterbegin", li);
     });
   }
+  function queueDropdownInjection() {
+    if (injectQueued)
+      return;
+    injectQueued = true;
+    requestAnimationFrame(() => {
+      injectQueued = false;
+      injectRoPrimeDropdownItem();
+    });
+  }
+  function startDropdownMenuInjection() {
+    injectRoPrimeDropdownItem();
+    if (dropdownObserver || !(document.body instanceof HTMLBodyElement))
+      return;
+    dropdownObserver = new MutationObserver((mutations) => {
+      for (const mutation of mutations) {
+        if (mutation.type === "attributes") {
+          if (mutation.target instanceof Element && mutation.target.closest("ul.dropdown-menu")) {
+            queueDropdownInjection();
+            return;
+          }
+        }
+        if (mutation.type !== "childList")
+          continue;
+        if (mutation.addedNodes.length || mutation.removedNodes.length) {
+          queueDropdownInjection();
+          return;
+        }
+      }
+    });
+    dropdownObserver.observe(document.body, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+      attributeFilter: ["class", "style", "aria-expanded"]
+    });
+    document.addEventListener("pointerdown", queueDropdownInjection, true);
+    document.addEventListener("click", queueDropdownInjection, true);
+    document.addEventListener("keydown", queueDropdownInjection, true);
+  }
 
-  // src/content/panel.js
+  // src/content/panel.ts
   function updateOldNavigationBarVisibility() {
     syncOldNavigationBar();
   }
@@ -1736,7 +2032,7 @@ body.dark-theme .left-nav.fixed button.${RP_SIDEBAR_PLUS_BTN_CLASS} {
     syncHomeWelcomeModal();
   }
 
-  // src/content/index.js
+  // src/content/index.ts
   function installStorageSyncListener() {
     if (typeof chrome === "undefined" || !chrome.storage?.onChanged)
       return;
@@ -1767,6 +2063,7 @@ body.dark-theme .left-nav.fixed button.${RP_SIDEBAR_PLUS_BTN_CLASS} {
   }
   function bootstrap() {
     installStorageSyncListener();
+    startDropdownMenuInjection();
     syncHomeWelcomeModal();
     loadSettings().finally(() => {
       installHistoryListeners();
@@ -1787,4 +2084,4 @@ body.dark-theme .left-nav.fixed button.${RP_SIDEBAR_PLUS_BTN_CLASS} {
   }
 })();
 
-//# debugId=91ACB77000F2663D64756E2164756E21
+//# debugId=142C132F82F2DC6864756E2164756E21
