@@ -1,4 +1,11 @@
-import { RP_SETTINGS_KEY, loadSettings, setSyncIntervalId, syncIntervalId } from "./core.js";
+import {
+    RP_RUNTIME_STYLE_ID,
+    RP_SETTINGS_KEY,
+    loadSettings,
+    setSyncIntervalId,
+    shouldRunRoPrimeOnCurrentPage,
+    syncIntervalId,
+} from "./core.js";
 import {
     applyCommunityRename,
     applyExperiencesRename,
@@ -36,24 +43,52 @@ function installHistoryListeners() {
         return result;
     };
 
-    window.addEventListener("popstate", syncRoEliteView);
-    window.addEventListener("roprime-location-change", syncRoEliteView);
+    const handleRouteChange = () => {
+        syncRuntimeStylesheet();
+        syncRoEliteView();
+    };
+
+    window.addEventListener("popstate", handleRouteChange);
+    window.addEventListener("roprime-location-change", handleRouteChange);
+}
+
+function syncRuntimeStylesheet() {
+    const existing = document.getElementById(RP_RUNTIME_STYLE_ID);
+    if (!shouldRunRoPrimeOnCurrentPage()) {
+        if (existing instanceof HTMLLinkElement) existing.remove();
+        return;
+    }
+    if (existing instanceof HTMLLinkElement) return;
+    if (typeof chrome === "undefined" || typeof chrome.runtime?.getURL !== "function") return;
+    const link = document.createElement("link");
+    link.id = RP_RUNTIME_STYLE_ID;
+    link.rel = "stylesheet";
+    link.href = chrome.runtime.getURL("style.css");
+    document.documentElement.appendChild(link);
 }
 
 function bootstrap() {
     installStorageSyncListener();
-    startDropdownMenuInjection();
-    syncHomeWelcomeModal();
+    syncRuntimeStylesheet();
+    if (shouldRunRoPrimeOnCurrentPage()) {
+        startDropdownMenuInjection();
+        syncHomeWelcomeModal();
+    }
     loadSettings().finally(() => {
         installHistoryListeners();
-        updateRenameLoop();
         if (syncIntervalId === null) {
             setSyncIntervalId(window.setInterval(syncRoEliteView, 1200));
         }
+        syncRuntimeStylesheet();
+        if (shouldRunRoPrimeOnCurrentPage()) {
+            updateRenameLoop();
+        }
         syncRoEliteView();
-        applyCommunityRename(document.body);
-        applyExperiencesRename(document.body);
-        applyMarketplaceRename(document.body);
+        if (shouldRunRoPrimeOnCurrentPage()) {
+            applyCommunityRename(document.body);
+            applyExperiencesRename(document.body);
+            applyMarketplaceRename(document.body);
+        }
     });
 }
 

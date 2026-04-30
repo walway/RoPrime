@@ -19,7 +19,7 @@
 <ul>
   <li>Custom <strong>RoPrime Settings</strong> panel inside Roblox Account page.</li>
   <li>UI customization toggles (sidebar modes, friend styling, navigation tweaks).</li>
-  <li>Text rename options (Communities/Groups, Experiences/Games, Marketplace/Avatar Shop).</li>
+  <li>Text rename options (Communities/Groups, Experiences/Games, Marketplace/Catalog).</li>
   <li>Dropdown + account tab shortcuts for quick access to settings.</li>
   <li>Localization-ready structure with locale files.</li>
 </ul>
