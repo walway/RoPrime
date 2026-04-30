@@ -39,11 +39,11 @@ function renameGamesBackText(text) {
 }
 
 function renameMarketplaceText(text) {
-    return text.replace(/\bMarketplace\b/g, "Avatar Shop").replace(/\bmarketplace\b/g, "avatar shop");
+    return text.replace(/\bMarketplace\b/g, "Catalog").replace(/\bmarketplace\b/g, "catalog");
 }
 
 function renameAvatarShopBackText(text) {
-    return text.replace(/\bAvatar Shop\b/g, "Marketplace").replace(/\bavatar shop\b/g, "marketplace");
+    return text.replace(/\bCatalog\b/g, "Marketplace").replace(/\bcatalog\b/g, "marketplace");
 }
 
 function shouldSkipNode(node) {
@@ -113,6 +113,13 @@ export function updateRenameLoop() {
         return;
     }
 
+    if (renameIntervalId !== null) {
+        window.clearInterval(renameIntervalId);
+        setRenameIntervalId(null);
+    }
+}
+
+export function stopRenameLoop() {
     if (renameIntervalId !== null) {
         window.clearInterval(renameIntervalId);
         setRenameIntervalId(null);

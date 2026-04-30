@@ -1,3 +1,5 @@
+@import "tailwindcss";
+
 /* Sidebar Button Container - Fixed 160x33px */
 #roprime-settings-tab .menu-option-content {
     display: flex !important;
@@ -28,25 +30,35 @@
 
 .roprime-settings-wrapper {
     margin-top: 8px;
-    color: #e9edf5;
+    --rp-settings-surface: var(--background-surface, #1c2128);
+    --rp-settings-surface-2: var(--background-surface, #181d24);
+    --rp-settings-surface-3: var(--background-surface, #141923);
+    --rp-settings-text: var(--text-primary, #e9edf5);
+    --rp-settings-text-2: var(--text-secondary, rgba(211, 217, 255, 0.78));
+    --rp-settings-border: var(--border-color, rgba(115, 127, 148, 0.35));
+    --rp-settings-accent: var(--link-color, #3c63ff);
+    color: var(--rp-settings-text);
 }
 
 .roprime-settings-layout {
     display: block;
 }
 
+.roprime-settings-sidebar {
+    margin-bottom: 12px;
+}
+
 .roprime-settings-nav {
     display: flex;
     gap: 10px;
     margin: 0 0 14px;
-    margin-top: 10px;
     flex-wrap: wrap;
 }
 
 .roprime-settings-nav-btn {
-    border: 1px solid rgba(121, 130, 150, 0.35);
-    background: linear-gradient(180deg, #252a31 0%, #1f242b 100%);
-    color: rgba(232, 237, 245, 0.95);
+    border: 1px solid var(--rp-settings-border);
+    background: var(--rp-settings-surface);
+    color: var(--rp-settings-text);
     border-radius: 12px;
     padding: 9px 16px;
     font-size: 14px;
@@ -56,11 +68,11 @@
 }
 
 .roprime-settings-nav-btn.is-active {
-    border-color: rgba(127, 161, 255, 0.8);
+    border-color: color-mix(in srgb, var(--rp-settings-accent) 65%, transparent);
     background:
-        radial-gradient(140% 140% at 0% 100%, rgba(69, 116, 255, 0.22) 0%, rgba(69, 116, 255, 0) 65%),
-        linear-gradient(180deg, #2b323a 0%, #242a32 100%);
-    color: #fff;
+        radial-gradient(140% 140% at 0% 100%, color-mix(in srgb, var(--rp-settings-accent) 22%, transparent) 0%, transparent 65%),
+        var(--rp-settings-surface);
+    color: var(--rp-settings-text);
 }
 
 .roprime-settings-main {
@@ -73,20 +85,57 @@
 
 .roprime-settings-search {
     width: 100%;
-    border: 1px solid rgba(111, 124, 146, 0.45);
+    border: 1px solid color-mix(in srgb, var(--rp-settings-border) 80%, transparent);
     border-radius: 12px;
-    background: #141923;
-    color: #e9edf5;
+    background: var(--rp-settings-surface-3);
+    color: var(--rp-settings-text);
     padding: 10px 12px;
     outline: none;
 }
 
 .roprime-settings-search:focus {
-    border-color: rgba(120, 161, 255, 0.8);
+    border-color: color-mix(in srgb, var(--rp-settings-accent) 65%, transparent);
 }
 
 .roprime-settings-section {
     display: none;
+}
+
+.roprime-search-hint {
+    display: none;
+    margin-bottom: 10px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 220, 64, 0.4);
+    background: rgba(255, 220, 64, 0.12);
+    color: #ffd84a;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.roprime-settings-wrapper.is-search-mode .roprime-settings-main {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.roprime-settings-wrapper.is-search-mode .roprime-settings-section {
+    margin: 0;
+    padding-top: 10px;
+    border-top: 1px solid rgba(111, 124, 146, 0.25);
+}
+
+.roprime-settings-wrapper.is-search-mode .roprime-settings-section:first-child {
+    padding-top: 0;
+    border-top: 0;
+}
+
+.roprime-search-mark {
+    background: rgba(255, 220, 64, 0.25);
+    color: #ffd84a;
+    font-weight: 700;
+    border-radius: 3px;
+    padding: 0 1px;
 }
 
 .roprime-setting-card,
@@ -97,8 +146,8 @@
     justify-content: space-between;
     gap: 12px;
     border-radius: 14px;
-    border: 1px solid rgba(115, 127, 148, 0.35);
-    background: #1c2128;
+    border: 1px solid var(--rp-settings-border);
+    background: var(--rp-settings-surface);
     padding: 12px 13px;
 }
 
@@ -141,7 +190,7 @@
 
 .roprime-setting-title,
 .roprime-info-title {
-    color: #f7f8ff;
+    color: var(--rp-settings-text);
     font-weight: 600;
     line-height: 1.3;
 }
@@ -149,7 +198,7 @@
 .roprime-setting-desc,
 .roprime-info-text {
     margin-top: 4px;
-    color: rgba(211, 217, 255, 0.78);
+    color: var(--rp-settings-text-2);
     font-size: 12px;
     line-height: 1.35;
 }
@@ -186,8 +235,8 @@
 .roprime-accordion-chevron {
     width: 10px;
     height: 10px;
-    border-right: 2px solid rgba(211, 217, 255, 0.8);
-    border-bottom: 2px solid rgba(211, 217, 255, 0.8);
+    border-right: 2px solid color-mix(in srgb, var(--rp-settings-text) 70%, transparent);
+    border-bottom: 2px solid color-mix(in srgb, var(--rp-settings-text) 70%, transparent);
     transform: rotate(45deg);
     transition: transform 140ms ease;
     flex: 0 0 auto;
@@ -220,8 +269,8 @@
     justify-content: space-between;
     gap: 10px;
     border-radius: 12px;
-    border: 1px solid rgba(111, 124, 146, 0.3);
-    background: #181d24;
+    border: 1px solid color-mix(in srgb, var(--rp-settings-border) 75%, transparent);
+    background: var(--rp-settings-surface-2);
     padding: 10px 10px;
 }
 
@@ -243,45 +292,56 @@
 }
 
 .roprime-sidebar-size-control {
-    flex: 0 0 300px;
+    flex: 0 0 250px;
     max-width: 100%;
     display: flex;
     align-items: center;
+    justify-content: center;
+}
+
+.roprime-sidebar-size-box {
+    width: 100%;
 }
 
 .roprime-sidebar-size-rail {
     width: 100%;
+    --roprime-sidebar-thumb-size: 14px;
 }
 
 .roprime-sidebar-size-slider {
-    width: 100%;
+    width: calc(100% - var(--roprime-sidebar-thumb-size));
+    display: block;
     appearance: none;
     -webkit-appearance: none;
     height: 6px;
     border-radius: 999px;
-    background: linear-gradient(90deg, rgba(89, 106, 140, 0.65), rgba(60, 77, 106, 0.65));
+    background: linear-gradient(
+        90deg,
+        color-mix(in srgb, var(--rp-settings-border) 85%, transparent),
+        color-mix(in srgb, var(--rp-settings-border) 55%, transparent)
+    );
     outline: none;
-    margin: 4px 0 10px;
+    margin: 4px auto 10px;
 }
 
 .roprime-sidebar-size-slider::-webkit-slider-thumb {
     -webkit-appearance: none;
-    width: 18px;
-    height: 18px;
+    width: 14px;
+    height: 14px;
     border-radius: 50%;
-    background: #ffffff;
-    border: 2px solid #3c63ff;
+    background: var(--rp-settings-text);
+    border: 2px solid var(--rp-settings-accent);
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.22);
     cursor: pointer;
     transition: transform 130ms ease;
 }
 
 .roprime-sidebar-size-slider::-moz-range-thumb {
-    width: 18px;
-    height: 18px;
+    width: 14px;
+    height: 14px;
     border-radius: 50%;
-    background: #ffffff;
-    border: 2px solid #3c63ff;
+    background: var(--rp-settings-text);
+    border: 2px solid var(--rp-settings-accent);
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.22);
     cursor: pointer;
     transition: transform 130ms ease;
@@ -293,30 +353,33 @@
 }
 
 .roprime-sidebar-size-ticks {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
+    display: flex;
+    justify-content: center;
     align-items: center;
-    justify-items: center;
-    gap: 8px;
+    width: calc(100% - var(--roprime-sidebar-thumb-size));
+    margin: 0 auto;
+    gap: 14px;
 }
 
 .roprime-sidebar-size-tick {
-    border: 1px solid rgba(111, 124, 146, 0.42);
+    border: 1px solid color-mix(in srgb, var(--rp-settings-border) 90%, transparent);
     border-radius: 999px;
-    background: #1b2028;
-    color: rgba(211, 217, 255, 0.86);
+    background: var(--rp-settings-surface);
+    color: color-mix(in srgb, var(--rp-settings-text) 85%, transparent);
     font-size: 11px;
     font-weight: 600;
     line-height: 1;
     padding: 6px 10px;
+    min-width: 64px;
+    text-align: center;
     cursor: pointer;
     transition: border-color 120ms ease, background 120ms ease, color 120ms ease;
 }
 
 .roprime-sidebar-size-tick.is-active {
-    border-color: rgba(120, 161, 255, 0.85);
-    background: rgba(57, 98, 255, 0.25);
-    color: #ffffff;
+    border-color: color-mix(in srgb, var(--rp-settings-accent) 65%, transparent);
+    background: color-mix(in srgb, var(--rp-settings-accent) 22%, transparent);
+    color: var(--rp-settings-text);
 }
 
 .roprime-language-dropdown {
@@ -330,10 +393,10 @@
     align-items: center;
     justify-content: space-between;
     gap: 10px;
-    border: 1px solid rgba(111, 124, 146, 0.45);
+    border: 1px solid color-mix(in srgb, var(--rp-settings-border) 80%, transparent);
     border-radius: 10px;
-    background: #141923;
-    color: #e9edf5;
+    background: var(--rp-settings-surface-3);
+    color: var(--rp-settings-text);
     padding: 9px 11px;
     cursor: pointer;
 }
@@ -357,10 +420,10 @@
     left: 0;
     right: 0;
     z-index: 5;
-    border: 1px solid rgba(111, 124, 146, 0.5);
+    border: 1px solid color-mix(in srgb, var(--rp-settings-border) 90%, transparent);
     border-radius: 10px;
     overflow: hidden;
-    background: #141923;
+    background: var(--rp-settings-surface-3);
     display: flex;
     flex-direction: column;
 }
@@ -368,14 +431,14 @@
 .roprime-language-option {
     border: 0;
     background: transparent;
-    color: #e9edf5;
+    color: var(--rp-settings-text);
     text-align: left;
     padding: 9px 11px;
     cursor: pointer;
 }
 
 .roprime-language-option:hover {
-    background: rgba(57, 98, 255, 0.18);
+    background: color-mix(in srgb, var(--rp-settings-accent) 18%, transparent);
 }
 
 /* Keep account content fluid when RoPrime panel is open. */
@@ -409,14 +472,14 @@
 }
 
 .roprime-toggle-title {
-    color: #f7f8ff;
+    color: var(--rp-settings-text);
     font-weight: 600;
     line-height: 1.3;
 }
 
 .roprime-toggle-desc {
     margin-top: 6px;
-    color: rgba(211, 217, 255, 0.78);
+    color: var(--rp-settings-text-2);
     font-size: 12px;
     line-height: 1.4;
 }
@@ -551,8 +614,8 @@
     position: absolute;
     inset: 0;
     border-radius: 999px;
-    border: 1px solid rgba(105, 118, 140, 0.75);
-    background: linear-gradient(180deg, #2a3038 0%, #242a32 100%);
+    border: 1px solid color-mix(in srgb, var(--rp-settings-border) 95%, transparent);
+    background: var(--rp-settings-surface);
     transition: background-color 120ms ease, border-color 120ms ease;
 }
 
@@ -564,13 +627,13 @@
     left: 2px;
     top: 2px;
     border-radius: 50%;
-    background: #ffffff;
+    background: var(--rp-settings-text);
     transition: transform 120ms ease;
 }
 
 .roprime-switch input:checked + .roprime-switch-slider {
-    background: #335fff;
-    border-color: #335fff;
+    background: var(--rp-settings-accent);
+    border-color: var(--rp-settings-accent);
 }
 
 .roprime-switch input:checked + .roprime-switch-slider::before {
@@ -716,9 +779,17 @@ html.light-theme .roprime-toggle-desc {
 @media (min-width: 1200px) {
     .roprime-settings-layout {
         display: grid;
-        grid-template-columns: 180px minmax(0, 1fr);
+        grid-template-columns: 220px minmax(0, 1fr);
         gap: 14px;
         align-items: start;
+    }
+
+    .roprime-settings-sidebar {
+        margin-bottom: 0;
+    }
+
+    .roprime-settings-search-wrap {
+        margin-bottom: 10px;
     }
 
     .roprime-settings-nav {
@@ -808,64 +879,150 @@ body.roprime-classic-left-nav-on .rbx-header .rbx-navbar-header {
 #roprime-home-welcome-root .roprime-welcome-frame {
     position: relative;
     z-index: 1;
-    max-width: min(440px, calc(100vw - 32px));
+    max-width: min(620px, calc(100vw - 28px));
     width: 100%;
     pointer-events: auto;
 }
 
 #roprime-home-welcome-root .roprime-welcome-card {
     margin: 0 16px;
-    padding: 28px 24px 24px;
-    border-radius: 12px;
-    background: #fff;
-    color: #121215;
-    text-align: center;
+    padding: 18px 22px 20px;
+    border-radius: 14px;
+    background: var(--background-surface, #121722);
+    color: var(--text-primary, #ecf0f8);
+    text-align: left;
     box-shadow:
-        0 16px 48px rgba(0, 0, 0, 0.35),
-        0 0 0 1px #d1d5db;
-    border: 2px solid #6b7280;
+        0 18px 48px rgba(0, 0, 0, 0.5),
+        0 0 0 1px var(--border-color, rgba(150, 160, 190, 0.35));
+    border: 1px solid var(--border-color, rgba(150, 160, 190, 0.35));
+    position: relative;
 }
 
 html.dark-theme #roprime-home-welcome-root .roprime-welcome-card,
 body.dark-theme #roprime-home-welcome-root .roprime-welcome-card {
-    background: #27272f;
-    color: #f2f2f5;
-    box-shadow:
-        0 16px 48px rgba(0, 0, 0, 0.45),
-        0 0 0 1px #4b5563;
-    border-color: #9ca3af;
+    background: var(--background-surface, #121722);
+    color: var(--text-primary, #ecf0f8);
+}
+
+#roprime-home-welcome-root .roprime-welcome-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
 }
 
 #roprime-home-welcome-root .roprime-welcome-logo {
     display: block;
-    margin: 0 auto 16px;
-    border-radius: 16px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid var(--border-color, rgba(150, 160, 190, 0.35));
 }
 
 #roprime-home-welcome-root .roprime-welcome-title {
-    margin: 0 0 10px;
-    font-size: 1.35rem;
+    margin: 0;
+    font-size: 28px;
     font-weight: 700;
-    line-height: 1.25;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+}
+
+#roprime-home-welcome-root .roprime-welcome-close {
+    position: absolute;
+    top: 10px;
+    right: 12px;
+    border: 0;
+    background: transparent;
+    color: var(--text-secondary, #aeb7cf);
+    font-size: 28px;
+    line-height: 1;
+    cursor: pointer;
 }
 
 #roprime-home-welcome-root .roprime-welcome-text {
-    margin: 0 0 22px;
-    font-size: 0.95rem;
+    margin: 0 0 10px;
+    font-size: 14px;
     line-height: 1.45;
-    opacity: 0.92;
+    color: var(--text-secondary, #c8d0e4);
+}
+
+#roprime-home-welcome-root .roprime-welcome-step {
+    margin: 0 0 14px;
+    padding-left: 20px;
+    font-size: 16px;
+    line-height: 1.45;
+    color: var(--text-primary, #ecf0f8);
+    font-weight: 600;
+}
+
+#roprime-home-welcome-root .roprime-welcome-mock {
+    width: 200px;
+    margin: 0 auto 16px;
+    border: 1px solid var(--border-color, rgba(150, 160, 190, 0.35));
+    border-radius: 8px;
+    padding: 8px;
+    background: #070b12;
+}
+
+#roprime-home-welcome-root .roprime-welcome-mock-header {
+    height: 34px;
+    border-radius: 6px 6px 0 0;
+    background: #0f1520;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 0 10px;
+}
+
+#roprime-home-welcome-root .roprime-welcome-mock-gear,
+#roprime-home-welcome-root .roprime-welcome-mock-bell {
+    color: #d7deef;
+    font-size: 18px;
+}
+
+#roprime-home-welcome-root .roprime-welcome-mock-menu {
+    background: #2a2f3a;
+    border-radius: 0 0 6px 6px;
+    padding: 10px 10px 8px;
+}
+
+#roprime-home-welcome-root .roprime-welcome-mock-item {
+    color: #d7deef;
+    font-size: 14px;
+    padding: 7px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+#roprime-home-welcome-root .roprime-welcome-mock-item.is-active {
+    color: #ffffff;
+    font-weight: 700;
 }
 
 #roprime-home-welcome-root .roprime-welcome-ok {
-    min-width: 120px;
-    padding: 10px 22px;
-    border: none;
+    min-width: 84px;
+    padding: 7px 13px;
+    border: 1px solid var(--border-color, rgba(150, 160, 190, 0.45));
     border-radius: 8px;
-    background: #335fff;
-    color: #fff;
+    background: var(--button-secondary, #f5f7fd);
+    color: #0f1728;
     font-size: 0.95rem;
     font-weight: 600;
     cursor: pointer;
+}
+
+#roprime-home-welcome-root .roprime-welcome-footnote {
+    margin: 0 0 14px;
+    color: var(--text-secondary, #c8d0e4);
+    font-size: 15px;
+    line-height: 1.4;
+    font-weight: 600;
+}
+
+#roprime-home-welcome-root .roprime-welcome-actions {
+    display: flex;
+    justify-content: flex-end;
 }
 
 #roprime-home-welcome-root .roprime-welcome-ok:hover {

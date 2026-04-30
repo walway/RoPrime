@@ -10,14 +10,13 @@
   },
   "web_accessible_resources": [
     {
-      "resources": ["resources/roprime-icon.png", "resources/RblxPlusLogo.webp", "language-keys.json"],
+      "resources": ["resources/roprime-icon.png", "resources/RblxPlusLogo.webp", "language-keys.json", "style.css"],
       "matches": ["*://*.roblox.com/*"]
     }
   ],
   "content_scripts": [
     {
       "matches": ["*://*.roblox.com/*"],
-      "css": ["style.css"],
       "js": ["content.js"],
       "run_at": "document_start"
     }
