@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="./resources/logo.svg" alt="RoPrime Logo" width="500" />
+  <img src="./resources/logo.svg" alt="RoPrime Logo" width="250" />
 </p>
 
 <br>
@@ -8,7 +8,7 @@
 
 <p align="center">
   <a href="#features">Features</a> •
-  <a href="#installation">Installation</a> •s
+  <a href="#installation">Installation</a>
 </p>
 
 <hr />
