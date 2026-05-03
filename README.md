@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="./resources/logo.svg" alt="RoPrime Logo" width="250" />
+  <img src="./resources/logo.svg" alt="RoPrime Logo" width="350" />
 </p>
 
 <br>
