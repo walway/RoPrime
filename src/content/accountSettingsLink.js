@@ -10,6 +10,15 @@ const TAB_ENTRY_ATTR = "data-roprime-account-menu-entry";
 const POP_ENTRY_ATTR = "data-roprime-account-popover-entry";
 const DIVIDER_ATTR = "data-roprime-account-divider";
 
+/** After reload/disable, `chrome.runtime` throws — stop observers/listeners. */
+function isExtensionContextAlive() {
+    try {
+        return typeof chrome !== "undefined" && Boolean(chrome.runtime?.id);
+    } catch {
+        return false;
+    }
+}
+
 /** Sparse retries when Roblox mounts the account menu after paint. */
 let accountMenuRetries = 0;
 
@@ -22,13 +31,11 @@ let popoverObserverFlushTimer = 0;
 
 function extensionIconUrl() {
     try {
-        if (typeof chrome !== "undefined" && chrome.runtime?.getURL) {
-            return chrome.runtime.getURL("resources/roprime-icon.png");
-        }
+        if (!isExtensionContextAlive() || typeof chrome.runtime.getURL !== "function") return "";
+        return chrome.runtime.getURL("resources/roprime-icon.png");
     } catch {
-        /* ignore */
+        return "";
     }
-    return "";
 }
 
 /** Sidebar tab + divider on `/my/account` (including `?roprime=…` in-account settings). */
@@ -82,16 +89,25 @@ function uninstallPopoverDomObserver() {
 
 /** Debounced flush so React churn does not call `addSettingsPopoverButton` on every node. */
 function schedulePopoverMenuFlush() {
+    if (!isExtensionContextAlive()) {
+        uninstallPopoverHooks();
+        return;
+    }
     if (!shouldInjectSettingsPopoverEntry()) return;
     if (popoverObserverFlushTimer) return;
     popoverObserverFlushTimer = window.setTimeout(() => {
         popoverObserverFlushTimer = 0;
+        if (!isExtensionContextAlive()) {
+            uninstallPopoverHooks();
+            return;
+        }
         addSettingsPopoverButton();
     }, 100);
 }
 
 function installPopoverDomObserver() {
     if (popoverDomObserver) return;
+    if (!isExtensionContextAlive()) return;
     if (!shouldInjectSettingsPopoverEntry()) return;
     const root =
         document.getElementById("navigation-container") ||
@@ -120,6 +136,10 @@ function installPopoverHooks() {
     installPopoverDomObserver();
     if (popoverPointerHandler) return;
     popoverPointerHandler = () => {
+        if (!isExtensionContextAlive()) {
+            uninstallPopoverHooks();
+            return;
+        }
         if (!shouldInjectSettingsPopoverEntry()) return;
         const now = Date.now();
         if (now - lastPopoverEnsureAt < 80) return;
@@ -317,6 +337,10 @@ function findNativeAccountSettingsMenuLink(popoverMenu) {
  * (DOM presence only: no `window.*` flag — React re-renders would leave the flag stuck and hide the row forever).
  */
 function addSettingsPopoverButton() {
+    if (!isExtensionContextAlive()) {
+        uninstallPopoverHooks();
+        return;
+    }
     if (!shouldInjectSettingsPopoverEntry()) {
         removePopoverInjection();
         return;
@@ -374,7 +398,10 @@ function addSettingsPopoverButton() {
 
 /** Adds RoPrime to the account vertical tabs and keeps the gear popover row in sync (DOM observer + pointer + periodic sync). */
 export function syncAccountSettingsMenuButton() {
-    if (typeof chrome === "undefined" || typeof chrome.runtime?.getURL !== "function") return;
+    if (!isExtensionContextAlive()) {
+        uninstallPopoverHooks();
+        return;
+    }
 
     if (!shouldRunRoPrimeOnCurrentPage()) {
         accountMenuRetries = 0;
@@ -402,6 +429,7 @@ export function syncAccountSettingsMenuButton() {
     if (shouldInjectVerticalAccountTab() && !tabOk && accountMenuRetries < 6) {
         accountMenuRetries += 1;
         window.setTimeout(() => {
+            if (!isExtensionContextAlive()) return;
             syncAccountSettingsMenuButton();
         }, 450);
     } else {

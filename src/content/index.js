@@ -69,11 +69,19 @@ function syncRuntimeStylesheet() {
         return;
     }
     if (existing instanceof HTMLLinkElement) return;
-    if (typeof chrome === "undefined" || typeof chrome.runtime?.getURL !== "function") return;
+    let styleHref = "";
+    try {
+        if (typeof chrome === "undefined") return;
+        if (!chrome.runtime?.id) return;
+        if (typeof chrome.runtime.getURL !== "function") return;
+        styleHref = chrome.runtime.getURL("style.css");
+    } catch {
+        return;
+    }
     const link = document.createElement("link");
     link.id = RP_RUNTIME_STYLE_ID;
     link.rel = "stylesheet";
-    link.href = chrome.runtime.getURL("style.css");
+    link.href = styleHref;
     document.documentElement.appendChild(link);
 }
 
