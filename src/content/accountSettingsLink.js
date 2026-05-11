@@ -135,14 +135,26 @@ function isThickRbxDividerLi(el) {
     );
 }
 
-/** Other extensions often add `li.rbx-divider` after the last native tab; avoid stacking a second one. */
+/** Native “Browser preferences” row — divider belongs directly under it (before extension tabs). */
+function getBrowserPreferencesMenuTab(menuList) {
+    const link =
+        menuList.querySelector('.menu-option a[href*="browser-preferences"]') ||
+        menuList.querySelector('.menu-option a[href*="browserpreferences"]');
+    const li = link?.closest("li.menu-option");
+    return li instanceof HTMLElement ? li : null;
+}
+
+/** Reuse an existing `li.rbx-divider` after the anchor when another extension already added one. */
 function getOrCreatePluginDivider(menuList) {
     menuList.querySelector(`li[${DIVIDER_ATTR}="1"]`)?.remove();
 
     const natives = [...menuList.querySelectorAll("li.menu-option[role='tab']")].filter(
         (li) => !li.hasAttribute(TAB_ENTRY_ATTR),
     );
-    const anchor = natives.length ? natives[natives.length - 1] : menuList.querySelector("li.menu-option[role='tab']");
+    const anchor =
+        getBrowserPreferencesMenuTab(menuList) ||
+        (natives.length ? natives[natives.length - 1] : null) ||
+        menuList.querySelector("li.menu-option[role='tab']");
     if (!(anchor instanceof HTMLElement)) return null;
 
     const next = anchor.nextElementSibling;
