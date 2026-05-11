@@ -127,6 +127,15 @@ function createAccountMenuDividerLi() {
     return li;
 }
 
+function isThickRbxDividerLi(el) {
+    return (
+        el instanceof HTMLLIElement &&
+        el.classList.contains("rbx-divider") &&
+        el.classList.contains("thick-height")
+    );
+}
+
+/** Other extensions often add `li.rbx-divider` after the last native tab; avoid stacking a second one. */
 function getOrCreatePluginDivider(menuList) {
     menuList.querySelector(`li[${DIVIDER_ATTR}="1"]`)?.remove();
 
@@ -136,9 +145,39 @@ function getOrCreatePluginDivider(menuList) {
     const anchor = natives.length ? natives[natives.length - 1] : menuList.querySelector("li.menu-option[role='tab']");
     if (!(anchor instanceof HTMLElement)) return null;
 
+    const next = anchor.nextElementSibling;
+    if (isThickRbxDividerLi(next)) {
+        if (next.getAttribute(DIVIDER_ATTR) !== "1") {
+            next.style.width = "100%";
+        }
+        return next;
+    }
+
     const divider = createAccountMenuDividerLi();
     anchor.insertAdjacentElement("afterend", divider);
     return divider;
+}
+
+/** Back-to-back `li.rbx-divider.thick-height` (e.g. RoPrime + another extension) reads as a double rule. */
+function collapseAdjacentRbxDividers(menuList) {
+    let changed = true;
+    while (changed) {
+        changed = false;
+        const kids = [...menuList.children];
+        for (let i = 0; i < kids.length - 1; i++) {
+            const a = kids[i];
+            const b = kids[i + 1];
+            if (!isThickRbxDividerLi(a) || !isThickRbxDividerLi(b)) continue;
+            const aOurs = a.getAttribute(DIVIDER_ATTR) === "1";
+            const bOurs = b.getAttribute(DIVIDER_ATTR) === "1";
+            if (aOurs && bOurs) b.remove();
+            else if (bOurs) b.remove();
+            else if (aOurs) a.remove();
+            else b.remove();
+            changed = true;
+            break;
+        }
+    }
 }
 
 /** After divider: last `li` wins so other extensions can load before RoPrime. */
@@ -181,6 +220,7 @@ function ensureVerticalTabEntry() {
         return true;
     }
     placeTabAfterDividerBlock(menuList, li, divider);
+    collapseAdjacentRbxDividers(menuList);
     return true;
 }
 

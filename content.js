@@ -880,6 +880,30 @@
     const currentAnchor = activeDivider.previousElementSibling === desiredAnchor || activeDivider.nextElementSibling === desiredAnchor ? desiredAnchor : null;
     if (!currentAnchor)
       desiredAnchor.insertAdjacentElement(desiredPosition, activeDivider);
+    const isThickRbx = (el) => el instanceof HTMLElement && el.tagName === "LI" && el.classList.contains("rbx-divider") && el.classList.contains("thick-height");
+    let collapsed = true;
+    while (collapsed) {
+      collapsed = false;
+      const ch = Array.from(menu.children);
+      for (let i = 0; i < ch.length - 1; i++) {
+        const a = ch[i];
+        const b = ch[i + 1];
+        if (!isThickRbx(a) || !isThickRbx(b))
+          continue;
+        const aOurs = a.getAttribute("data-roprime-contentjs-account-divider") === "1";
+        const bOurs = b.getAttribute("data-roprime-contentjs-account-divider") === "1";
+        if (aOurs && bOurs)
+          b.remove();
+        else if (bOurs)
+          b.remove();
+        else if (aOurs)
+          a.remove();
+        else
+          b.remove();
+        collapsed = true;
+        break;
+      }
+    }
   }
   function removeRoPrimeAccountUi() {
     document.getElementById(RP_TAB_ID)?.remove();
