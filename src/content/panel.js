@@ -22,6 +22,7 @@ import { updateAccountHeader, updateDocumentTitle, updateSidebarVisibility, upda
 import { injectRoPrimeDropdownItem, startDropdownMenuInjection, stopDropdownMenuInjection } from "./dropdownMenu.js";
 import { syncAlwaysShowCloseButton } from "./alwaysShowCloseButton.js";
 import { syncAccountSettingsButtons } from "./accountSettingsButton.js";
+import { initRoPrimeAccountSettingsPage } from "./roprimeAccountSettingsPage.js";
 import { initPluginsPanel } from "./pluginsPanel.js";
 
 export function updateOldNavigationBarVisibility() {
@@ -65,6 +66,7 @@ export function syncRoEliteView() {
     }
 
     syncAccountSettingsButtons();
+    initRoPrimeAccountSettingsPage();
     initPluginsPanel();
 
     startDropdownMenuInjection();
