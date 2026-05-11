@@ -18,12 +18,10 @@ import { syncHomeWelcomeModal } from "./welcome.js";
 import { injectRoEliteTab, ensureAccountDivider, removeRoPrimeAccountUi } from "./accountTab.js";
 import { updateSmallNewNavVisibility } from "./smallNewNav.js";
 import { updateSidebarCompactVisibility, syncSidebarCompactDecorations } from "./sidebarCompact.js";
-import { bindSettingsControls, refreshSettingsControls, updateStandaloneSettingsVisibility } from "./settingsPane.js";
 import { updateAccountHeader, updateDocumentTitle, updateSidebarVisibility, updateTabState } from "./pageChrome.js";
 import { injectRoPrimeDropdownItem, startDropdownMenuInjection, stopDropdownMenuInjection } from "./dropdownMenu.js";
 import { syncAlwaysShowCloseButton } from "./alwaysShowCloseButton.js";
 import { syncAccountSettingsButtons } from "./accountSettingsButton.js";
-import { initRoPrimeAccountSettingsPage } from "./roprimeAccountSettingsPage.js";
 import { initPluginsPanel } from "./pluginsPanel.js";
 
 export function updateOldNavigationBarVisibility() {
@@ -67,7 +65,6 @@ export function syncRoEliteView() {
     }
 
     syncAccountSettingsButtons();
-    initRoPrimeAccountSettingsPage();
     initPluginsPanel();
 
     startDropdownMenuInjection();
@@ -85,22 +82,6 @@ export function syncRoEliteView() {
     updateAccountHeader(showPanel);
     updateDocumentTitle(showPanel);
 
-    if (!isAccountPage()) return;
-    const standalonePanel = updateStandaloneSettingsVisibility(showPanel);
-    if (!(standalonePanel instanceof HTMLElement)) return;
-
-    bindSettingsControls(
-        standalonePanel,
-        {
-            updateOldNavigationBarVisibility,
-            updateSmallNewNavVisibility,
-            updateSidebarCompactVisibility,
-            updateAlwaysShowCloseButtonVisibility: syncAlwaysShowCloseButton,
-            updateFriendStylingReimagnedVisibility,
-        },
-        syncRoEliteView,
-    );
-    refreshSettingsControls(standalonePanel);
     updateTabState(showPanel, RP_TAB_ID);
     updateSidebarVisibility(showPanel);
 
