@@ -15,6 +15,7 @@ import { syncHomeWelcomeModal } from "./welcome.js";
 import { updateSmallNewNavVisibility } from "./smallNewNav.js";
 import { updateSidebarCompactVisibility, syncSidebarCompactDecorations } from "./sidebarCompact.js";
 import { syncAlwaysShowCloseButton } from "./alwaysShowCloseButton.js";
+import { syncAccountSettingsMenuButton } from "./accountSettingsLink.js";
 
 export function updateOldNavigationBarVisibility() {
     syncOldNavigationBar();
@@ -62,4 +63,5 @@ export function syncRoEliteView() {
     if (settingsState.renameExperiencesToGames) applyExperiencesRename(document.body);
     if (settingsState.renameMarketplaceToAvatarShop) applyMarketplaceRename(document.body);
     syncHomeWelcomeModal();
+    syncAccountSettingsMenuButton();
 }
