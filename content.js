@@ -864,7 +864,7 @@
     const oldRobloxTab = document.getElementById(RP_TAB_ID);
     if (!(oldRobloxTab instanceof HTMLElement))
       return;
-    const existingDividers = Array.from(menu.querySelectorAll(".roprime-divider"));
+    const existingDividers = Array.from(menu.querySelectorAll('li[data-roprime-contentjs-account-divider="1"]'));
     const divider = existingDividers[0] instanceof HTMLElement ? existingDividers[0] : null;
     existingDividers.slice(1).forEach((el) => el.remove());
     const browserPreferencesItem = menu.querySelector('.menu-option a[href*="browser-preferences"]')?.closest(".menu-option") || menu.querySelector('.menu-option a[href*="browserpreferences"]')?.closest(".menu-option") || null;
@@ -873,7 +873,8 @@
     const activeDivider = divider || (() => {
       const el = document.createElement("li");
       el.className = "rbx-divider thick-height";
-      el.classList.add("roprime-divider");
+      el.style.width = "100%";
+      el.setAttribute("data-roprime-contentjs-account-divider", "1");
       return el;
     })();
     const currentAnchor = activeDivider.previousElementSibling === desiredAnchor || activeDivider.nextElementSibling === desiredAnchor ? desiredAnchor : null;
@@ -882,7 +883,7 @@
   }
   function removeRoPrimeAccountUi() {
     document.getElementById(RP_TAB_ID)?.remove();
-    document.querySelectorAll(".roprime-divider").forEach((divider) => divider.remove());
+    document.querySelectorAll('li[data-roprime-contentjs-account-divider="1"]').forEach((divider) => divider.remove());
   }
 
   // src/content/smallNewNav.ts

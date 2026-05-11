@@ -751,18 +751,6 @@ html.light-theme .roprime-toggle-desc {
     color: #60688f;
 }
 
-.menu-vertical .rbx-divider.thick-height.roprime-divider {
-    display: block !important;
-    width: 100%;
-    height: 2px;
-    min-height: 2px;
-    margin: 0;
-    padding: 0;
-    border: 0;
-    list-style: none;
-    background-color: var(--rbx-divider-color, rgba(255, 255, 255, 0.2));
-}
-
 #roprime-standalone-settings {
     display: none;
     margin-top: 8px;

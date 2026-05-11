@@ -118,7 +118,15 @@ function buildVerticalTabLi() {
     return li;
 }
 
-/** Roblox-style divider (`<li class="rbx-divider thick-height" style="width: 100%;">`). Remove our previous one so multiple plugins can share a clean strip. */
+/** `<li class="rbx-divider thick-height" style="width: 100%;"></li>` (plus `data-roprime-account-divider` for cleanup). */
+function createAccountMenuDividerLi() {
+    const li = document.createElement("li");
+    li.className = "rbx-divider thick-height";
+    li.style.width = "100%";
+    li.setAttribute(DIVIDER_ATTR, "1");
+    return li;
+}
+
 function getOrCreatePluginDivider(menuList) {
     menuList.querySelector(`li[${DIVIDER_ATTR}="1"]`)?.remove();
 
@@ -128,10 +136,7 @@ function getOrCreatePluginDivider(menuList) {
     const anchor = natives.length ? natives[natives.length - 1] : menuList.querySelector("li.menu-option[role='tab']");
     if (!(anchor instanceof HTMLElement)) return null;
 
-    const divider = document.createElement("li");
-    divider.setAttribute(DIVIDER_ATTR, "1");
-    divider.className = "rbx-divider thick-height";
-    divider.style.width = "100%";
+    const divider = createAccountMenuDividerLi();
     anchor.insertAdjacentElement("afterend", divider);
     return divider;
 }
