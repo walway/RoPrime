@@ -5,9 +5,11 @@ import {
     isExtensionContextAlive,
     isExtensionContextInvalidatedError,
     isMyAccountPath,
-    settingsT,
     shouldRunRoPrimeOnCurrentPage,
 } from "./core.js";
+
+/** Account menu / sidebar entry label — fixed English; not passed through locale helpers. */
+const ROPRIME_ACCOUNT_MENU_LABEL = "RoPrime Settings";
 
 const TAB_ENTRY_ATTR = "data-roprime-account-menu-entry";
 const POP_ENTRY_ATTR = "data-roprime-account-popover-entry";
@@ -144,7 +146,7 @@ function injectSettingsPopoverRow() {
         const a = document.createElement("a");
         a.className = "rbx-menu-item";
         a.href = buildRoPrimeSettingsFullUrl();
-        a.textContent = settingsT("settings.hero.title");
+        a.textContent = ROPRIME_ACCOUNT_MENU_LABEL;
 
         a.addEventListener("click", (e) => {
             e.preventDefault();
@@ -161,8 +163,7 @@ function injectSettingsPopoverRow() {
         const a = li.querySelector("a.rbx-menu-item");
         if (a instanceof HTMLAnchorElement) {
             a.href = buildRoPrimeSettingsFullUrl();
-            const label = settingsT("settings.hero.title");
-            if (a.textContent !== label) a.textContent = label;
+            if (a.textContent !== ROPRIME_ACCOUNT_MENU_LABEL) a.textContent = ROPRIME_ACCOUNT_MENU_LABEL;
         }
     }
 
@@ -214,7 +215,7 @@ function buildVerticalTabLi() {
 
     const span = document.createElement("span");
     span.classList.add("font-caption-header");
-    span.textContent = settingsT("settings.hero.title");
+    span.textContent = ROPRIME_ACCOUNT_MENU_LABEL;
     span.style.fontSize = "12px";
 
     a.append(icon, span);
@@ -325,7 +326,7 @@ function ensureVerticalTabEntry() {
         li = buildVerticalTabLi();
     } else {
         const label = li.querySelector(".font-caption-header");
-        if (label instanceof HTMLElement) label.textContent = settingsT("settings.hero.title");
+        if (label instanceof HTMLElement) label.textContent = ROPRIME_ACCOUNT_MENU_LABEL;
         const link = li.querySelector("a");
         if (link instanceof HTMLAnchorElement) link.href = buildRoPrimeSettingsFullUrl();
     }

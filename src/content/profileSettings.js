@@ -423,6 +423,7 @@ function bindOnce(root) {
         document.addEventListener("keydown", (event) => {
             if (event.key === "Escape") closeLanguageMenu();
         });
+        clearLanguageControlSizing(inner);
     }
 
     const accordion = inner.querySelector('[data-roprime-accordion="rename"]');
@@ -452,11 +453,20 @@ function bindOnce(root) {
     }
 }
 
+function clearLanguageControlSizing(inner) {
+    const wrap = inner.querySelector("[data-roprime-language-dropdown]");
+    const trigger = inner.querySelector(".roprime-language-trigger");
+    if (wrap instanceof HTMLElement) wrap.style.removeProperty("min-width");
+    if (trigger instanceof HTMLElement) trigger.style.removeProperty("min-width");
+}
+
 function refreshProfileSettingsUi(root) {
     const inner = root.querySelector("#rp-settings-inner");
     if (!(inner instanceof HTMLElement)) return;
 
     applyI18n(root);
+
+    clearLanguageControlSizing(inner);
 
     const current = inner.querySelector("[data-roprime-lang-current]");
     if (current instanceof HTMLElement) current.textContent = getLanguageLabel(langCode());
@@ -516,7 +526,7 @@ function buildMarkup() {
     return `
 <div class="roprime-settings-wrapper" id="rp-settings-inner">
     <div class="roprime-settings-hero">
-        <h2 data-i18n="settings.hero.title"></h2>
+        <h2>RoPrime Settings</h2>
         <p data-i18n="settings.hero.subtitle"></p>
     </div>
     <div class="roprime-settings-layout">

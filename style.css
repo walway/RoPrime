@@ -388,11 +388,17 @@
 
 .roprime-language-dropdown {
     position: relative;
+    flex: 0 0 190px;
     width: 190px;
+    max-width: 190px;
+    min-width: 0;
+    box-sizing: border-box;
 }
 
 .roprime-language-trigger {
+    box-sizing: border-box;
     width: 100%;
+    min-width: 0 !important;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -403,6 +409,16 @@
     color: var(--rp-settings-text);
     padding: 9px 11px;
     cursor: pointer;
+}
+
+/* Avoid flex min-content blow-up from long locale labels (was showing as huge `min-width` on the button). */
+.roprime-language-trigger [data-roprime-lang-current] {
+    min-width: 0;
+    flex: 1 1 auto;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-align: left;
 }
 
 .roprime-language-chevron {

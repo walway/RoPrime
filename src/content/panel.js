@@ -17,6 +17,7 @@ import { updateSmallNewNavVisibility } from "./smallNewNav.js";
 import { updateSidebarCompactVisibility, syncSidebarCompactDecorations } from "./sidebarCompact.js";
 import { syncAlwaysShowCloseButton } from "./alwaysShowCloseButton.js";
 import { syncAccountSettingsMenuButton } from "./accountSettingsLink.js";
+import { stopRobloxNavDropdownButton, syncRobloxNavDropdownButton } from "./dropdownButton.js";
 
 export function updateOldNavigationBarVisibility() {
     syncOldNavigationBar();
@@ -24,6 +25,7 @@ export function updateOldNavigationBarVisibility() {
 
 function cleanupBlockedRouteUi() {
     stopRenameLoop();
+    stopRobloxNavDropdownButton();
     document.getElementById(RP_PROFILE_SETTINGS_ROOT_ID)?.remove();
     document.getElementById(RP_RUNTIME_STYLE_ID)?.remove();
     document.getElementById(RP_SMALL_NEW_NAV_STYLE_ID)?.remove();
@@ -66,6 +68,7 @@ export function syncRoEliteView() {
         if (settingsState.renameMarketplaceToAvatarShop) applyMarketplaceRename(document.body);
         syncHomeWelcomeModal();
         syncAccountSettingsMenuButton();
+        syncRobloxNavDropdownButton();
     } catch (e) {
         if (isExtensionContextInvalidatedError(e)) return;
         throw e;

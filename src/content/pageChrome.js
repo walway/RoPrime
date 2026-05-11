@@ -1,4 +1,5 @@
-import { settingsT } from "./core.js";
+/** Browser tab title while RoPrime account UI is shown — not localized. */
+const ROPRIME_ACCOUNT_PANEL_DOCUMENT_TITLE = "RoPrime Settings";
 
 export function updateTabState(showPanel, pluginTabId) {
     const pluginTab = document.getElementById(pluginTabId);
@@ -39,6 +40,6 @@ export function updateDocumentTitle(showPanel) {
     const root = document.documentElement;
     if (!(root instanceof HTMLElement)) return;
     if (!root.hasAttribute("data-roprime-original-title")) root.setAttribute("data-roprime-original-title", document.title || "");
-    if (showPanel) document.title = settingsT("settings.hero.title");
+    if (showPanel) document.title = ROPRIME_ACCOUNT_PANEL_DOCUMENT_TITLE;
     else document.title = root.getAttribute("data-roprime-original-title") || document.title;
 }
