@@ -1,5 +1,6 @@
 import {
     renameIntervalId,
+    RP_PROFILE_SETTINGS_ROOT_ID,
     setRenameIntervalId,
     settingsState,
 } from "./core.js";
@@ -48,6 +49,7 @@ function shouldSkipNode(node) {
     if (!(node.parentElement instanceof HTMLElement)) return true;
     const tag = node.parentElement.tagName;
     if (tag === "SCRIPT" || tag === "STYLE" || tag === "NOSCRIPT" || tag === "TEXTAREA") return true;
+    if (node.parentElement.closest(`#${RP_PROFILE_SETTINGS_ROOT_ID}`)) return true;
     return false;
 }
 

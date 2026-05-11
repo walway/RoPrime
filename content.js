@@ -1448,12 +1448,17 @@ body.dark-theme .left-nav.fixed button.${RP_SIDEBAR_PLUS_BTN_CLASS} {
     languageKeysPromise = (async () => {
       try {
         if (typeof chrome !== "undefined" && chrome.runtime?.getURL) {
-          const url = chrome.runtime.getURL("language-keys.json");
-          const response = await fetch(url, { cache: "no-store" });
-          if (response.ok) {
-            const data = await response.json();
-            if (data && typeof data === "object") {
-              languageKeysCache = data;
+          const enUrl = chrome.runtime.getURL(".locales/en/translation-keys.json");
+          const ruUrl = chrome.runtime.getURL(".locales/ru/translation-keys.json");
+          const [enRes, ruRes] = await Promise.all([
+            fetch(enUrl, { cache: "no-store" }),
+            fetch(ruUrl, { cache: "no-store" })
+          ]);
+          if (enRes.ok && ruRes.ok) {
+            const en = await enRes.json();
+            const ru = await ruRes.json();
+            if (en && typeof en === "object" && ru && typeof ru === "object") {
+              languageKeysCache = { en, ru };
               return languageKeysCache;
             }
           }

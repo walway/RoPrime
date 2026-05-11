@@ -79,6 +79,11 @@
     color: var(--rp-settings-text);
 }
 
+/* Author `display` on buttons/menus overrides `[hidden]` in some browsers. */
+.roprime-settings-nav-btn[hidden] {
+    display: none !important;
+}
+
 .roprime-settings-main {
     min-width: 0;
 }
@@ -432,6 +437,10 @@
     flex-direction: column;
 }
 
+.roprime-language-menu[hidden] {
+    display: none !important;
+}
+
 .roprime-language-option {
     border: 0;
     background: transparent;
@@ -447,7 +456,9 @@
 
 /* Keep account content fluid when RoPrime panel is open. */
 #react-user-account-base:has(#roprime-standalone-settings[style*="display: block"]) .content-container,
-#react-user-account-base:has(#roprime-standalone-settings[style*="display: block"]) #content-container {
+#react-user-account-base:has(#roprime-standalone-settings[style*="display: block"]) #content-container,
+#react-user-account-base:has(#roprime-profile-settings-root) .content-container,
+#react-user-account-base:has(#roprime-profile-settings-root) #content-container {
     width: auto !important;
     max-width: none !important;
     flex-shrink: 1 !important;
@@ -850,6 +861,8 @@ body.roprime-classic-left-nav-on .rbx-header .rbx-navbar-header {
 
 .roprime-settings-wrapper,
 .roprime-settings-wrapper *,
+#roprime-profile-settings-root,
+#roprime-profile-settings-root *,
 #roprime-standalone-settings,
 #roprime-standalone-settings *,
 #roprime-home-welcome-root,
@@ -1363,4 +1376,69 @@ html.dark-theme #roprime-classic-left-nav-host .roprime-cln-avatar--ph,
 body.dark-theme #roprime-classic-left-nav-host .roprime-cln-avatar--ph {
     border-color: rgba(255, 255, 255, 0.12);
     background: #3a3d42;
+}
+
+/* —— Account URL settings (/my/account?roprime=…) —— */
+#roprime-profile-settings-root.roprime-profile-settings-root {
+    position: relative;
+    z-index: 3;
+    max-width: 1120px;
+    margin: 0 auto 28px;
+    padding: 8px 12px 0;
+    font-family: system-ui, "Segoe UI", Roboto, sans-serif;
+}
+
+/* In-account settings mount: reuse global .roprime-settings-* layout; only tweak chrome. */
+#roprime-profile-settings-root .roprime-settings-hero {
+    position: relative;
+}
+
+#roprime-profile-settings-root .roprime-accordion.is-open .roprime-accordion-body {
+    max-height: 520px;
+}
+
+.roprime-settings-select {
+    min-width: 140px;
+    border-radius: 10px;
+    border: 1px solid color-mix(in srgb, var(--rp-settings-border) 85%, transparent);
+    background: var(--rp-settings-surface-3);
+    color: var(--rp-settings-text);
+    padding: 8px 10px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.roprime-settings-textarea {
+    width: 100%;
+    resize: vertical;
+    min-height: 100px;
+    border-radius: 12px;
+    border: 1px solid color-mix(in srgb, var(--rp-settings-border) 85%, transparent);
+    background: var(--rp-settings-surface-3);
+    color: var(--rp-settings-text);
+    padding: 10px 12px;
+    font-size: 13px;
+    line-height: 1.4;
+    font-family: ui-monospace, "Cascadia Mono", "Segoe UI Mono", monospace;
+}
+
+.roprime-settings-primary-btn {
+    align-self: flex-start;
+    border: 0;
+    border-radius: 12px;
+    padding: 10px 16px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    color: #fff;
+    background: var(--rp-settings-accent, #3c63ff);
+}
+
+.roprime-settings-primary-btn:hover:not(:disabled) {
+    filter: brightness(1.08);
+}
+
+.roprime-settings-primary-btn:disabled {
+    opacity: 0.45;
+    cursor: default;
 }

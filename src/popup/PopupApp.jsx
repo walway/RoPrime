@@ -1,4 +1,4 @@
-const RP_SETTINGS_URL = "https://www.roblox.com/my/account?roprime=design";
+const RP_SETTINGS_URL = "https://www.roblox.com/my/account?roprime=design#!/info";
 const RP_DONATE_URL = "https://www.roprime.com/donation";
 
 function openTabAndClose(url) {

@@ -1,4 +1,5 @@
 import { settingsState } from "./core.js";
+import { t } from "./localesI18n.js";
 
 export function updateTabState(showPanel, pluginTabId) {
     const pluginTab = document.getElementById(pluginTabId);
@@ -39,6 +40,6 @@ export function updateDocumentTitle(showPanel) {
     const root = document.documentElement;
     if (!(root instanceof HTMLElement)) return;
     if (!root.hasAttribute("data-roprime-original-title")) root.setAttribute("data-roprime-original-title", document.title || "");
-    if (showPanel) document.title = settingsState.language === "ru" ? "Настройки RoPrime" : "RoPrime Settings";
+    if (showPanel) document.title = t("settings.hero.title");
     else document.title = root.getAttribute("data-roprime-original-title") || document.title;
 }

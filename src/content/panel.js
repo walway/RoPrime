@@ -1,6 +1,7 @@
 import {
     RP_ALWAYS_SHOW_CLOSE_STYLE_ID,
     RP_FRIEND_STYLING_REIMAGNED_STYLE_ID,
+    RP_PROFILE_SETTINGS_ROOT_ID,
     RP_RUNTIME_STYLE_ID,
     RP_SIDEBAR_COMPACT_STYLE_ID,
     RP_SMALL_NEW_NAV_STYLE_ID,
@@ -14,6 +15,7 @@ import { syncHomeWelcomeModal } from "./welcome.js";
 import { updateSmallNewNavVisibility } from "./smallNewNav.js";
 import { updateSidebarCompactVisibility, syncSidebarCompactDecorations } from "./sidebarCompact.js";
 import { syncAlwaysShowCloseButton } from "./alwaysShowCloseButton.js";
+import { syncAccountSettingsMenuButton } from "./accountSettingsLink.js";
 
 export function updateOldNavigationBarVisibility() {
     syncOldNavigationBar();
@@ -21,6 +23,7 @@ export function updateOldNavigationBarVisibility() {
 
 function cleanupBlockedRouteUi() {
     stopRenameLoop();
+    document.getElementById(RP_PROFILE_SETTINGS_ROOT_ID)?.remove();
     document.getElementById(RP_RUNTIME_STYLE_ID)?.remove();
     document.getElementById(RP_SMALL_NEW_NAV_STYLE_ID)?.remove();
     document.getElementById(RP_SIDEBAR_COMPACT_STYLE_ID)?.remove();
@@ -44,6 +47,8 @@ function cleanupBlockedRouteUi() {
 }
 
 export function syncRoEliteView() {
+    syncAccountSettingsMenuButton();
+
     if (!shouldRunRoPrimeOnCurrentPage()) {
         cleanupBlockedRouteUi();
         return;

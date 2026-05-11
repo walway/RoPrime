@@ -6,8 +6,11 @@ export const RP_ALWAYS_SHOW_CLOSE_STYLE_ID = "roprime-always-show-close-style";
 export const RP_RUNTIME_STYLE_ID = "roprime-runtime-style";
 export const RP_PARAM_KEY = "roprime";
 export const RP_DEFAULT_PAGE = "design";
-export const RP_SUPPORTED_PAGES = new Set(["design"]);
+export const RP_SUPPORTED_PAGES = new Set(["design", "settings", "info", "developer"]);
 export const RP_SETTINGS_KEY = "rpSettings";
+export const RP_PROFILE_SETTINGS_ROOT_ID = "roprime-profile-settings-root";
+/** Appended to /my/account settings links so Roblox account SPA tab state stays correct (e.g. #!/info). */
+export const RP_ACCOUNT_URL_HASH_DEFAULT = "#!/info";
 
 function normalizeBlockedExecutionPages(value) {
     if (!Array.isArray(value)) return [];
@@ -150,17 +153,33 @@ export function isAccountPage() {
     return /^\/(?:[a-z]{2,3}(?:-[a-z0-9]{2,8})?\/)?my\/(?:account|profile)(?:\/|$)/i.test(path);
 }
 
+/** True only on /my/account (optional locale prefix), not /my/profile. */
+export function isMyAccountPath() {
+    const path = window.location.pathname || "";
+    return /^\/(?:[a-z]{2,3}(?:-[a-z0-9]{2,8})?\/)?my\/account(?:\/|$)/i.test(path);
+}
+
+/** Locale segment only when path is `/xx/my/...` or `/xx-yy/my/...`, never `/my/...` (avoids treating `my` as a locale). */
 export function getRobloxLocalePathPrefix() {
     const path = window.location.pathname || "";
-    const m = path.match(/^\/([a-z]{2}(?:-[a-z]{2})?)\//i);
+    const m = path.match(/^\/([a-z]{2,3}(?:-[a-z0-9]{2,8})?)\/my\//i);
     return m ? `/${m[1]}` : "";
 }
 
-export function buildRoPrimeSettingsFullUrl() {
-    return `${window.location.origin}${getRobloxLocalePathPrefix()}/my/account?roprime=design#!/info`;
+export function buildRoPrimeSettingsFullUrl(page = RP_DEFAULT_PAGE, hashFragment = RP_ACCOUNT_URL_HASH_DEFAULT) {
+    const slug = typeof page === "string" && page.trim() ? page.trim() : RP_DEFAULT_PAGE;
+    const base = `${window.location.origin}${getRobloxLocalePathPrefix()}/my/account?${RP_PARAM_KEY}=${encodeURIComponent(slug)}`;
+    const h =
+        typeof hashFragment === "string" && hashFragment.trim()
+            ? hashFragment.trim().startsWith("#")
+                ? hashFragment.trim()
+                : `#${hashFragment.trim()}`
+            : "";
+    return `${base}${h}`;
 }
 
 export function isPluginRoute() {
+    if (!isMyAccountPath()) return false;
     const params = new URLSearchParams(window.location.search);
     const route = (params.get(RP_PARAM_KEY) || "").toLowerCase();
     return RP_SUPPORTED_PAGES.has(route);
@@ -201,6 +220,7 @@ export function shouldRunRoPrimeOnCurrentPage() {
 }
 
 export function getCurrentrp() {
+    if (!isMyAccountPath()) return null;
     const params = new URLSearchParams(window.location.search);
     const route = (params.get(RP_PARAM_KEY) || "").toLowerCase();
     if (RP_SUPPORTED_PAGES.has(route)) return route;
@@ -210,5 +230,5 @@ export function getCurrentrp() {
 export function buildPluginUrl(page = RP_DEFAULT_PAGE) {
     const url = new URL(window.location.href);
     url.searchParams.set(RP_PARAM_KEY, page);
-    return `${url.pathname}${url.search}`;
+    return `${url.pathname}${url.search}${url.hash || ""}`;
 }

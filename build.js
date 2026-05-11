@@ -35,7 +35,6 @@ const copyFiles = [
     "resources/RblxPlusLogo.webp",
     "resources/plugins/rosealpluginimage.png",
     "resources/plugins/rovalrapluginimage.png",
-    "language-keys.json",
     ".locales/en/translation-keys.json",
     ".locales/ru/translation-keys.json",
     ".locales/bn/translation-keys.json",

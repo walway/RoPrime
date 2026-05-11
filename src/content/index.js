@@ -12,6 +12,9 @@ import {
     applyMarketplaceRename,
     updateRenameLoop,
 } from "./rename.js";
+import { syncAccountSettingsMenuButton } from "./accountSettingsLink.js";
+import { initLocaleMessages, reloadLocaleMessages } from "./localesI18n.js";
+import { syncProfileSettingsRoute } from "./profileSettings.js";
 import { syncRoEliteView } from "./panel.js";
 import { syncHomeWelcomeModal } from "./welcome.js";
 
@@ -20,8 +23,13 @@ function installStorageSyncListener() {
     chrome.storage.onChanged.addListener((changes, area) => {
         if (area !== "local" || !changes[RP_SETTINGS_KEY]) return;
         loadSettings().finally(() => {
-            updateRenameLoop();
-            syncRoEliteView();
+            void (async () => {
+                await reloadLocaleMessages();
+                updateRenameLoop();
+                syncRoEliteView();
+                syncProfileSettingsRoute();
+                syncAccountSettingsMenuButton();
+            })();
         });
     });
 }
@@ -45,6 +53,8 @@ function installHistoryListeners() {
     const handleRouteChange = () => {
         syncRuntimeStylesheet();
         syncRoEliteView();
+        syncProfileSettingsRoute();
+        syncAccountSettingsMenuButton();
     };
 
     window.addEventListener("popstate", handleRouteChange);
@@ -69,24 +79,27 @@ function syncRuntimeStylesheet() {
 function bootstrap() {
     installStorageSyncListener();
     syncRuntimeStylesheet();
-    if (shouldRunRoPrimeOnCurrentPage()) {
-        syncHomeWelcomeModal();
-    }
     loadSettings().finally(() => {
-        installHistoryListeners();
-        if (syncIntervalId === null) {
-            setSyncIntervalId(window.setInterval(syncRoEliteView, 1200));
-        }
-        syncRuntimeStylesheet();
-        if (shouldRunRoPrimeOnCurrentPage()) {
-            updateRenameLoop();
-        }
-        syncRoEliteView();
-        if (shouldRunRoPrimeOnCurrentPage()) {
-            applyCommunityRename(document.body);
-            applyExperiencesRename(document.body);
-            applyMarketplaceRename(document.body);
-        }
+        void (async () => {
+            await initLocaleMessages();
+            installHistoryListeners();
+            if (syncIntervalId === null) {
+                setSyncIntervalId(window.setInterval(syncRoEliteView, 1200));
+            }
+            syncRuntimeStylesheet();
+            if (shouldRunRoPrimeOnCurrentPage()) {
+                updateRenameLoop();
+            }
+            syncRoEliteView();
+            syncProfileSettingsRoute();
+            syncAccountSettingsMenuButton();
+            if (shouldRunRoPrimeOnCurrentPage()) {
+                applyCommunityRename(document.body);
+                applyExperiencesRename(document.body);
+                applyMarketplaceRename(document.body);
+                syncHomeWelcomeModal();
+            }
+        })();
     });
 }
 
