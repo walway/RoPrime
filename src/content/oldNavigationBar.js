@@ -44,7 +44,12 @@ function scrapeProfile() {
     for (const a of nav.querySelectorAll("a[href]")) {
         if (!(a instanceof HTMLAnchorElement)) continue;
         const pathOnly = (a.getAttribute("href") || "").replace(/^https?:\/\/[^/]+/i, "");
-        if (!/\/users\/\d+/i.test(pathOnly) && !/\/my\/account\b/i.test(pathOnly)) continue;
+        if (
+            !/\/users\/\d+/i.test(pathOnly) &&
+            !/\/my\/account\b/i.test(pathOnly) &&
+            !/\/my\/profile\b/i.test(pathOnly)
+        )
+            continue;
         if (!a.querySelector("img")) continue;
         profileLink = a;
         break;

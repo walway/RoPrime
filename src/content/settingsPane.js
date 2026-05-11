@@ -17,6 +17,98 @@ import {
     updateRenameLoop,
 } from "./rename.js";
 
+const FALLBACK_LANGUAGE_KEYS = {
+    en: {
+        "settings.hero.title": "RoPrime Settings",
+        "settings.hero.subtitle": "Make Roblox things feel right again.",
+        "settings.nav.design": "Design",
+        "settings.nav.other": "Features",
+        "settings.nav.settings": "Settings",
+        "settings.nav.info": "Info",
+        "settings.nav.developer": "Developer",
+        "settings.search.placeholder": "Search settings...",
+        "settings.search.minLength": "Please type at least 2 characters",
+        "settings.search.developerLocked": 'Developer page unlocked. It is highly recommended not to use it because it is mostly useless.',
+        "settings.rename.title": "Rename Roblox wording",
+        "settings.rename.communities": "Communities -> Groups",
+        "settings.rename.experiences": "Experiences -> Games",
+        "settings.rename.marketplace": "Marketplace -> Catalog",
+        "settings.oldNav.title": "Old Navigation bar",
+        "settings.oldNav.desc": "In development. Keep disabled unless you are testing it.",
+        "settings.sidebar.title": "Sidebar size",
+        "settings.sidebar.desc": "Drag freely, then release to snap to the nearest mode.",
+        "settings.sidebar.full": "Full",
+        "settings.sidebar.small": "Small",
+        "settings.sidebar.icon": "Icon only",
+        "settings.sidebar.alwaysClose.title": "Always show close button",
+        "settings.sidebar.alwaysClose.desc": "Forces Roblox’s sidebar close/menu button to always be visible.",
+        "settings.friend.title": "Friend styling reimagined",
+        "settings.friend.desc": "Restyles the friends carousel with a dark glass card and animated presence ring glow.",
+        "settings.language.title": "Language",
+        "settings.language.desc": "Choose your RoPrime language.",
+        "settings.language.en": "English",
+        "settings.language.ru": "Russian",
+        "settings.info.title": "RoPrime",
+        "settings.info.text":
+            "This extension adds an RoPrime settings panel on your Roblox Account page and can rename some modern Roblox wording back to classic terms.",
+        "settings.developer.title": "Developer tools",
+        "settings.developer.desc":
+            'This page is hidden by default. It is highly recommended not to use it because it is mostly useless.',
+        "settings.developer.blocked.title": "Blocked execution pages",
+        "settings.developer.blocked.desc":
+            "Add one URL fragment or exact page match per line. RoPrime will stop executing on any matching page.",
+        "settings.developer.blocked.placeholder": "/my/account?rovalra=info",
+        "settings.developer.blocked.save": "Save blocked pages",
+        "settings.plugins.toggle.title": "Enable control panel for plugins",
+        "settings.plugins.toggle.desc": "Adds a Plugins entry under Browser Preferences on your Account page.",
+        "settings.beta": "BETA",
+    },
+    ru: {
+        "settings.hero.title": "Настройки RoPrime",
+        "settings.hero.subtitle": "Сделайте Roblox удобнее и привычнее.",
+        "settings.nav.design": "Дизайн",
+        "settings.nav.other": "Функции",
+        "settings.nav.settings": "Настройки",
+        "settings.nav.info": "Инфо",
+        "settings.nav.developer": "Developer",
+        "settings.search.placeholder": "Поиск настроек...",
+        "settings.search.minLength": "Введите минимум 2 символа",
+        "settings.search.developerLocked": "Страница Developer разблокирована. Настоятельно не рекомендуется ее использовать, потому что она почти бесполезна.",
+        "settings.rename.title": "Переименование терминов Roblox",
+        "settings.rename.communities": "Communities -> Groups",
+        "settings.rename.experiences": "Experiences -> Games",
+        "settings.rename.marketplace": "Marketplace -> Catalog",
+        "settings.oldNav.title": "Старая панель навигации",
+        "settings.oldNav.desc": "В разработке. Включайте только для тестов.",
+        "settings.sidebar.title": "Размер боковой панели",
+        "settings.sidebar.desc": "Перетяните ползунок и отпустите для выбора ближайшего режима.",
+        "settings.sidebar.full": "Полный",
+        "settings.sidebar.small": "Малый",
+        "settings.sidebar.icon": "Только иконки",
+        "settings.sidebar.alwaysClose.title": "Всегда показывать кнопку закрытия",
+        "settings.sidebar.alwaysClose.desc": "Всегда показывает кнопку закрытия/меню боковой панели Roblox.",
+        "settings.friend.title": "Новый стиль друзей",
+        "settings.friend.desc": "Обновляет карусель друзей: темная карточка и анимированное свечение статуса.",
+        "settings.language.title": "Язык",
+        "settings.language.desc": "Выберите язык RoPrime.",
+        "settings.language.en": "Английский",
+        "settings.language.ru": "Русский",
+        "settings.info.title": "RoPrime",
+        "settings.info.text":
+            "Это расширение добавляет панель настроек RoPrime на страницу аккаунта Roblox и может возвращать классические названия разделов.",
+        "settings.developer.title": "Developer tools",
+        "settings.developer.desc":
+            "Эта страница скрыта по умолчанию. Настоятельно не рекомендуется ее использовать, потому что она почти бесполезна.",
+        "settings.developer.blocked.title": "Страницы с отключенным выполнением",
+        "settings.developer.blocked.desc":
+            "Добавьте по одной части URL или точному совпадению страницы на строку. На совпадающих страницах RoPrime не будет ничего выполнять.",
+        "settings.developer.blocked.placeholder": "/my/account?rovalra=info",
+        "settings.developer.blocked.save": "Сохранить список страниц",
+        "settings.plugins.toggle.title": "Панель управления плагинами",
+        "settings.plugins.toggle.desc": "Добавляет пункт «Plugins» в меню под настройками браузера на странице аккаунта.",
+        "settings.beta": "BETA",
+    },
+};
 const RP_DEBUG_UNLOCK_VALUE = "debug";
 
 let languageKeysCache = null;
@@ -143,7 +235,7 @@ function applySearchHighlights(root, term) {
     const highlightTargets = [
         ".roprime-setting-title",
         ".roprime-setting-desc",
-        ".roprime-toggle-title",
+        ".roprime-toggle-title:not(:has(> span))",
         ".roprime-toggle-desc",
         ".roprime-sidebar-size-tick span",
         ".roprime-info-title",
@@ -188,6 +280,7 @@ function buildSettingsPaneMarkup() {
                     <div class="roprime-settings-search-wrap" data-roprime-shared-search-wrap><input id="roprime-settings-search" type="search" class="roprime-settings-search" data-i18n-placeholder="settings.search.placeholder" /></div>
                     <div class="roprime-settings-nav" role="tablist" aria-label="RoPrime Settings sections">
                         <button class="roprime-settings-nav-btn" data-roprime-page="design" type="button" data-i18n="settings.nav.design"></button>
+                        <button class="roprime-settings-nav-btn" data-roprime-page="other" type="button"><span data-i18n="settings.nav.other"></span><span class="roprime-beta-badge" data-i18n="settings.beta"></span></button>
                         <button class="roprime-settings-nav-btn" data-roprime-page="settings" type="button" data-i18n="settings.nav.settings"></button>
                         <button class="roprime-settings-nav-btn" data-roprime-page="info" type="button" data-i18n="settings.nav.info"></button>
                         <button class="roprime-settings-nav-btn" data-roprime-page="developer" type="button" data-i18n="settings.nav.developer" hidden></button>
@@ -209,10 +302,25 @@ function buildSettingsPaneMarkup() {
                                 <div class="roprime-toggle-row"><div class="roprime-toggle-copy"><div class="roprime-toggle-title" data-i18n="settings.rename.marketplace"></div></div><label class="roprime-switch" for="roprime-toggle-rename-marketplace"><input id="roprime-toggle-rename-marketplace" type="checkbox" /><span class="roprime-switch-slider" aria-hidden="true"></span></label></div>
                             </div>
                         </div>
-                        <div class="roprime-toggle-row roprime-setting-card-spaced"><div class="roprime-toggle-copy"><div class="roprime-toggle-title" data-i18n="settings.oldNav.title"></div><div class="roprime-toggle-desc" data-i18n="settings.oldNav.desc"></div></div><label class="roprime-switch" for="roprime-toggle-old-navigation-bar"><input id="roprime-toggle-old-navigation-bar" type="checkbox" /><span class="roprime-switch-slider" aria-hidden="true"></span></label></div>
+                        <div class="roprime-toggle-row roprime-setting-card-spaced"><div class="roprime-toggle-copy"><div class="roprime-toggle-title"><span data-i18n="settings.oldNav.title"></span><span class="roprime-beta-badge" data-i18n="settings.beta"></span></div><div class="roprime-toggle-desc" data-i18n="settings.oldNav.desc"></div></div><label class="roprime-switch" for="roprime-toggle-old-navigation-bar"><input id="roprime-toggle-old-navigation-bar" type="checkbox" /><span class="roprime-switch-slider" aria-hidden="true"></span></label></div>
                         <div class="roprime-toggle-row roprime-setting-card-spaced roprime-sidebar-size-row"><div class="roprime-toggle-copy"><div class="roprime-toggle-title" data-i18n="settings.sidebar.title"></div><div class="roprime-toggle-desc" data-i18n="settings.sidebar.desc"></div></div><div class="roprime-sidebar-size-control"><div class="roprime-sidebar-size-box"><div class="roprime-sidebar-size-rail"><input id="roprime-sidebar-size-slider" class="roprime-sidebar-size-slider" type="range" min="0" max="100" step="0.1" value="0" aria-label="Sidebar size" /></div><div class="roprime-sidebar-size-ticks"><button class="roprime-sidebar-size-tick" type="button" data-size-mode="full"><span data-i18n="settings.sidebar.full"></span></button><button class="roprime-sidebar-size-tick" type="button" data-size-mode="small"><span data-i18n="settings.sidebar.small"></span></button><button class="roprime-sidebar-size-tick" type="button" data-size-mode="icon"><span data-i18n="settings.sidebar.icon"></span></button></div></div></div></div>
                         <div class="roprime-toggle-row roprime-setting-card-spaced"><div class="roprime-toggle-copy"><div class="roprime-toggle-title" data-i18n="settings.sidebar.alwaysClose.title"></div><div class="roprime-toggle-desc" data-i18n="settings.sidebar.alwaysClose.desc"></div></div><label class="roprime-switch" for="roprime-toggle-always-show-close"><input id="roprime-toggle-always-show-close" type="checkbox" /><span class="roprime-switch-slider" aria-hidden="true"></span></label></div>
                         <div class="roprime-toggle-row roprime-setting-card-spaced"><div class="roprime-toggle-copy"><div class="roprime-toggle-title" data-i18n="settings.friend.title"></div><div class="roprime-toggle-desc" data-i18n="settings.friend.desc"></div></div><label class="roprime-switch" for="roprime-toggle-friend-styling-reimagned"><input id="roprime-toggle-friend-styling-reimagned" type="checkbox" /><span class="roprime-switch-slider" aria-hidden="true"></span></label></div>
+                    </section>
+                    <section class="roprime-settings-section" data-roprime-section="other">
+                        <div class="roprime-toggle-row roprime-setting-card-spaced">
+                            <div class="roprime-toggle-copy">
+                                <div class="roprime-toggle-title">
+                                    <span data-i18n="settings.plugins.toggle.title"></span>
+                                    <span class="roprime-beta-badge" data-i18n="settings.beta"></span>
+                                </div>
+                                <div class="roprime-toggle-desc" data-i18n="settings.plugins.toggle.desc"></div>
+                            </div>
+                            <label class="roprime-switch" for="roprime-toggle-plugin-control-panel">
+                                <input id="roprime-toggle-plugin-control-panel" type="checkbox" />
+                                <span class="roprime-switch-slider" aria-hidden="true"></span>
+                            </label>
+                        </div>
                     </section>
                     <section class="roprime-settings-section" data-roprime-section="settings">
                         <div class="roprime-setting-card">
@@ -342,6 +450,7 @@ function bindIndependentDesignToggles(pane, actions, onNavigate) {
             return "icon";
         };
         const applySidebarMode = (mode) => {
+            settingsState.sidebarSize = mode;
             settingsState.smallNewNavigationBarEnabled = mode === "small";
             settingsState.sidebarIconsOnlyEnabled = mode === "icon";
             saveSettings();
@@ -484,6 +593,14 @@ function bindIndependentDesignToggles(pane, actions, onNavigate) {
             settingsState.friendStylingReimagnedEnabled = friendStylingReimagnedToggle.checked;
             saveSettings();
             actions.updateFriendStylingReimagnedVisibility();
+        });
+    }
+    const pluginPanelToggle = pane.querySelector("#roprime-toggle-plugin-control-panel");
+    if (pluginPanelToggle instanceof HTMLInputElement) {
+        pluginPanelToggle.addEventListener("change", () => {
+            settingsState.enablePluginControlPanel = !!pluginPanelToggle.checked;
+            saveSettings();
+            onNavigate();
         });
     }
     pane.querySelectorAll(".roprime-settings-nav-btn").forEach((button) => {
@@ -664,6 +781,7 @@ export async function refreshSettingsControls(pane) {
     const sidebarSizeSlider = pane.querySelector("#roprime-sidebar-size-slider");
     const alwaysShowCloseToggle = pane.querySelector("#roprime-toggle-always-show-close");
     const friendStylingReimagnedToggle = pane.querySelector("#roprime-toggle-friend-styling-reimagned");
+    const pluginPanelToggle = pane.querySelector("#roprime-toggle-plugin-control-panel");
     const developerNavButton = pane.querySelector('.roprime-settings-nav-btn[data-roprime-page="developer"]');
     const blockedPagesTextarea = pane.querySelector("#roprime-developer-blocked-pages");
     const saveBlockedPagesButton = pane.querySelector("#roprime-save-blocked-pages");
@@ -675,11 +793,10 @@ export async function refreshSettingsControls(pane) {
     if (oldNavigationBarToggle instanceof HTMLInputElement) oldNavigationBarToggle.checked = !!settingsState.oldNavigationBarEnabled;
     if (alwaysShowCloseToggle instanceof HTMLInputElement)
         alwaysShowCloseToggle.checked = !!settingsState.alwaysShowCloseButtonEnabled;
-    const sidebarSizeMode = settingsState.sidebarIconsOnlyEnabled
-        ? "icon"
-        : settingsState.smallNewNavigationBarEnabled
-          ? "small"
-          : "full";
+    if (pluginPanelToggle instanceof HTMLInputElement) pluginPanelToggle.checked = !!settingsState.enablePluginControlPanel;
+    const sidebarSizeMode =
+        settingsState.sidebarSize ||
+        (settingsState.sidebarIconsOnlyEnabled ? "icon" : settingsState.smallNewNavigationBarEnabled ? "small" : "full");
     const isSidebarSizeDragging =
         sidebarSizeSlider instanceof HTMLInputElement && sidebarSizeSlider.getAttribute("data-roprime-dragging") === "1";
     if (sidebarSizeSlider instanceof HTMLInputElement) {

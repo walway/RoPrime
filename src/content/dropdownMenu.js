@@ -1,11 +1,11 @@
-import { settingsState, shouldRunRoPrimeOnCurrentPage } from "./core.js";
+import { buildRoPrimeSettingsFullUrl, settingsState, shouldRunRoPrimeOnCurrentPage } from "./core.js";
 
 const RP_DROPDOWN_ITEM_CLASS = "roprime-dropdown-entry";
 let dropdownObserver = null;
 let injectQueued = false;
 
 function getRoPrimeSettingsUrl() {
-    return `${window.location.origin}/my/account?roprime=design`;
+    return buildRoPrimeSettingsFullUrl();
 }
 
 function getIconUrl() {
@@ -35,6 +35,9 @@ export function injectRoPrimeDropdownItem() {
 
     menus.forEach((menu) => {
         if (!(menu instanceof HTMLUListElement)) return;
+        // The account gear popover has its own dedicated injector in `accountSettingsButton.js`.
+        // Skipping it here prevents duplicated RoPrime entries.
+        if (menu.id === "settings-popover-menu") return;
         if (menu.querySelector(`li.${RP_DROPDOWN_ITEM_CLASS}`)) return;
 
         const li = document.createElement("li");

@@ -22,6 +22,9 @@ import { bindSettingsControls, refreshSettingsControls, updateStandaloneSettings
 import { updateAccountHeader, updateDocumentTitle, updateSidebarVisibility, updateTabState } from "./pageChrome.js";
 import { injectRoPrimeDropdownItem, startDropdownMenuInjection, stopDropdownMenuInjection } from "./dropdownMenu.js";
 import { syncAlwaysShowCloseButton } from "./alwaysShowCloseButton.js";
+import { syncAccountSettingsButtons } from "./accountSettingsButton.js";
+import { initRoPrimeAccountSettingsPage } from "./roprimeAccountSettingsPage.js";
+import { initPluginsPanel } from "./pluginsPanel.js";
 
 export function updateOldNavigationBarVisibility() {
     syncOldNavigationBar();
@@ -62,6 +65,10 @@ export function syncRoEliteView() {
         cleanupBlockedRouteUi();
         return;
     }
+
+    syncAccountSettingsButtons();
+    initRoPrimeAccountSettingsPage();
+    initPluginsPanel();
 
     startDropdownMenuInjection();
     injectRoPrimeDropdownItem();

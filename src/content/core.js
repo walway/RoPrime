@@ -9,7 +9,7 @@ export const RP_ALWAYS_SHOW_CLOSE_STYLE_ID = "roprime-always-show-close-style";
 export const RP_RUNTIME_STYLE_ID = "roprime-runtime-style";
 export const RP_PARAM_KEY = "roprime";
 export const RP_DEFAULT_PAGE = "design";
-export const RP_SUPPORTED_PAGES = new Set(["design", "settings", "info", "developer"]);
+export const RP_SUPPORTED_PAGES = new Set(["design", "other", "settings", "info", "developer"]);
 export const RP_SETTINGS_KEY = "rpSettings";
 
 function normalizeBlockedExecutionPages(value) {
@@ -29,6 +29,9 @@ function normalizeBlockedExecutionPages(value) {
 export const RP_DEFAULT_SETTINGS = {
     language: "en",
     renameDropdownEnabled: true,
+    renameCommunitiesToGroups: true,
+    renameExperiencesToGames: true,
+    renameMarketplaceToAvatarShop: true,
     renameDropdownRestore: {
         renameCommunitiesToGroups: true,
         renameExperiencesToGames: true,
@@ -40,6 +43,8 @@ export const RP_DEFAULT_SETTINGS = {
     alwaysShowCloseButtonEnabled: false,
     friendStylingReimagnedEnabled: false,
     developerPageUnlocked: false,
+    enablePluginControlPanel: false,
+    sidebarSize: "full",
     blockedExecutionPages: [],
 };
 
@@ -77,6 +82,9 @@ export function loadSettings() {
                 Object.assign(settingsState, RP_DEFAULT_SETTINGS, stored);
                 settingsState.blockedExecutionPages = normalizeBlockedExecutionPages(stored.blockedExecutionPages);
                 settingsState.developerPageUnlocked = !!stored.developerPageUnlocked;
+                if (stored.enablePluginControlPanel != null) {
+                    settingsState.enablePluginControlPanel = !!stored.enablePluginControlPanel;
+                }
                 if (stored.oldNavigationBarEnabled === undefined) {
                     if (stored.classicLeftNavEnabled != null) {
                         settingsState.oldNavigationBarEnabled = !!stored.classicLeftNavEnabled;
@@ -86,6 +94,29 @@ export function loadSettings() {
                 }
                 delete settingsState.classicLeftNavEnabled;
                 delete settingsState.leftGrayFrameEnabled;
+                if (stored.sidebarSize === undefined) {
+                    settingsState.sidebarSize = stored.sidebarIconsOnlyEnabled
+                        ? "icon"
+                        : stored.smallNewNavigationBarEnabled
+                          ? "small"
+                          : "full";
+                } else {
+                    settingsState.sidebarSize = String(stored.sidebarSize || "full").toLowerCase();
+                    if (!["full", "small", "icon"].includes(settingsState.sidebarSize)) {
+                        settingsState.sidebarSize = "full";
+                    }
+                }
+                if (stored.renameDropdownRestore && typeof stored.renameDropdownRestore === "object") {
+                    if (stored.renameCommunitiesToGroups === undefined) {
+                        settingsState.renameCommunitiesToGroups = !!stored.renameDropdownRestore.renameCommunitiesToGroups;
+                    }
+                    if (stored.renameExperiencesToGames === undefined) {
+                        settingsState.renameExperiencesToGames = !!stored.renameDropdownRestore.renameExperiencesToGames;
+                    }
+                    if (stored.renameMarketplaceToAvatarShop === undefined) {
+                        settingsState.renameMarketplaceToAvatarShop = !!stored.renameDropdownRestore.renameMarketplaceToAvatarShop;
+                    }
+                }
             }
             resolve();
         });
@@ -110,14 +141,26 @@ export function saveSettings() {
             alwaysShowCloseButtonEnabled: settingsState.alwaysShowCloseButtonEnabled,
             friendStylingReimagnedEnabled: settingsState.friendStylingReimagnedEnabled,
             developerPageUnlocked: !!settingsState.developerPageUnlocked,
+            enablePluginControlPanel: !!settingsState.enablePluginControlPanel,
+            sidebarSize: settingsState.sidebarSize || "full",
             blockedExecutionPages: normalizeBlockedExecutionPages(settingsState.blockedExecutionPages),
         },
     });
 }
 
 export function isAccountPage() {
-    const path = window.location.pathname;
-    return /^\/(?:[a-z]{2,3}(?:-[a-z0-9]{2,8})?\/)?my\/account(?:\/|$)/i.test(path);
+    const path = window.location.pathname || "";
+    return /^\/(?:[a-z]{2,3}(?:-[a-z0-9]{2,8})?\/)?my\/(?:account|profile)(?:\/|$)/i.test(path);
+}
+
+export function getRobloxLocalePathPrefix() {
+    const path = window.location.pathname || "";
+    const m = path.match(/^\/([a-z]{2}(?:-[a-z]{2})?)\//i);
+    return m ? `/${m[1]}` : "";
+}
+
+export function buildRoPrimeSettingsFullUrl() {
+    return `${window.location.origin}${getRobloxLocalePathPrefix()}/my/account?roprime=design#!/info`;
 }
 
 export function isPluginRoute() {

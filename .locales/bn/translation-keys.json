@@ -3,6 +3,10 @@
     "RoPrime Settings": "RoPrime সেটিংস",
     "Hero subtitle": "সবকিছু আবার ঠিকঠাক করে তোলা।",
     "Design": "ডিজাইন",
+    "Features": "ফিচার",
+    "BETA": "BETA",
+    "Enable control panel for plugins": "Enable control panel for plugins",
+    "Enable plugins control panel description": "Adds a Plugins entry under Browser Preferences on /my/account.",
     "Settings": "সেটিংস",
     "Info": "তথ্য",
     "Search settings": "সেটিংস অনুসন্ধান করুন...",
@@ -21,5 +25,11 @@
     "Friend styling description": "ফ্রেন্ডস ক্যারোসেলের পুনঃনকশা @u64k থেকে",
     "Language": "ভাষা",
     "Language description": "আপনার RoPrime ভাষা চয়ন করুন",
+    "Always show close button": "Always show close button",
+    "Always show close button description": "Forces Roblox’s sidebar close/menu button to always be visible.",
+    "Developer": "Developer",
+    "Developer page unlocked notification": "Developer page unlocked. It is highly recommended not to use it because it is mostly useless.",
+    "Developer tools title": "Developer tools",
+    "Developer tools description": "This page is hidden by default. It is highly recommended not to use it because it is mostly useless.",
     "RoPrime info text": "RoPrime Roblox ওয়েবসাইট ডিজাইনকে একটি ভিন্ন মাত্রা দেয় এবং এতে দরকারি ফাংশন যোগ করে।"
 }

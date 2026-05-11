@@ -1,23 +1,40 @@
 {
   "manifest_version": 3,
   "name": "RoPrime - Making Roblox feel better",
-  "version": "1.1.0",
-  "description": "Making Roblox feel better with the same new UI.",
+  "version": "1.6",
+  "version_name": "1.6 (Patient Pika)",
+  "description": "The new era of Roblox website.",
   "permissions": ["storage"],
+  "optional_permissions": ["management"],
+  "background": {
+        "service_worker": "background.js"
+  },
   "action": {
-    "default_title": "RoPrime",
-    "default_popup": "popup.html"
+    "default_title": "RoPrime"
   },
   "web_accessible_resources": [
     {
-      "resources": ["resources/roprime-icon.png", "resources/RblxPlusLogo.webp", "language-keys.json", "style.css"],
+      "resources": [
+        "resources/roprime-icon.png",
+        "resources/RblxPlusLogo.webp",
+        "resources/ext-icons/rovalra.png",
+        "resources/ext-icons/roseal.png",
+        "resources/plugins/rovalrapluginimage.png",
+        "resources/plugins/rosealpluginimage.png",
+        "resources/logo.svg",
+        "style.css",
+        ".locales/en/translation-keys.json",
+        ".locales/ru/translation-keys.json",
+        ".locales/bn/translation-keys.json",
+        ".locales/lang-config.js"
+      ],
       "matches": ["*://*.roblox.com/*"]
     }
   ],
   "content_scripts": [
     {
       "matches": ["*://*.roblox.com/*"],
-      "js": ["content.js"],
+      "js": ["dist/content.js"],
       "run_at": "document_start"
     }
   ]
