@@ -4,7 +4,7 @@
 
 <br>
 
-<p align="center"><strong>Making Roblox feel better.</strong></p>
+<p align="center"><strong>New era of Roblox website.</strong></p>
 
 <p align="center">
   <a href="#features">Features</a> •
