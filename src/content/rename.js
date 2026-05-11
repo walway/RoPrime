@@ -1,6 +1,4 @@
 import {
-    RP_PANE_ID,
-    RP_STANDALONE_ID,
     renameIntervalId,
     setRenameIntervalId,
     settingsState,
@@ -50,8 +48,6 @@ function shouldSkipNode(node) {
     if (!(node.parentElement instanceof HTMLElement)) return true;
     const tag = node.parentElement.tagName;
     if (tag === "SCRIPT" || tag === "STYLE" || tag === "NOSCRIPT" || tag === "TEXTAREA") return true;
-    if (node.parentElement.closest(`#${RP_PANE_ID}`)) return true;
-    if (node.parentElement.closest(`#${RP_STANDALONE_ID}`)) return true;
     return false;
 }
 

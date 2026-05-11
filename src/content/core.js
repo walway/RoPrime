@@ -1,7 +1,4 @@
-export const RP_TAB_ID = "roprime-settings-tab";
-export const RP_PANEL_CLASS = "roprime-settings-wrapper";
-export const RP_PANE_ID = "roprime-settings-pane";
-export const RP_STANDALONE_ID = "roprime-standalone-settings";
+// (Settings UI removed) - keep runtime/style constants only.
 export const RP_SMALL_NEW_NAV_STYLE_ID = "roprime-small-new-nav-style";
 export const RP_SIDEBAR_COMPACT_STYLE_ID = "roprime-sidebar-compact-style";
 export const RP_FRIEND_STYLING_REIMAGNED_STYLE_ID = "roprime-friend-styling-reimagned-style";
@@ -9,7 +6,7 @@ export const RP_ALWAYS_SHOW_CLOSE_STYLE_ID = "roprime-always-show-close-style";
 export const RP_RUNTIME_STYLE_ID = "roprime-runtime-style";
 export const RP_PARAM_KEY = "roprime";
 export const RP_DEFAULT_PAGE = "design";
-export const RP_SUPPORTED_PAGES = new Set(["design", "other", "settings", "info", "developer"]);
+export const RP_SUPPORTED_PAGES = new Set(["design"]);
 export const RP_SETTINGS_KEY = "rpSettings";
 
 function normalizeBlockedExecutionPages(value) {

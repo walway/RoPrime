@@ -4,10 +4,6 @@ import {
     RP_RUNTIME_STYLE_ID,
     RP_SIDEBAR_COMPACT_STYLE_ID,
     RP_SMALL_NEW_NAV_STYLE_ID,
-    RP_STANDALONE_ID,
-    RP_TAB_ID,
-    isAccountPage,
-    isPluginRoute,
     settingsState,
     shouldRunRoPrimeOnCurrentPage,
 } from "./core.js";
@@ -15,15 +11,9 @@ import { syncOldNavigationBar } from "./oldNavigationBar.js";
 import { applyCommunityRename, applyExperiencesRename, applyMarketplaceRename, stopRenameLoop } from "./rename.js";
 import { updateFriendStylingReimagnedVisibility } from "./friendStylingReimagned.js";
 import { syncHomeWelcomeModal } from "./welcome.js";
-import { injectRoEliteTab, ensureAccountDivider, removeRoPrimeAccountUi } from "./accountTab.js";
 import { updateSmallNewNavVisibility } from "./smallNewNav.js";
 import { updateSidebarCompactVisibility, syncSidebarCompactDecorations } from "./sidebarCompact.js";
-import { updateAccountHeader, updateDocumentTitle, updateSidebarVisibility, updateTabState } from "./pageChrome.js";
-import { injectRoPrimeDropdownItem, startDropdownMenuInjection, stopDropdownMenuInjection } from "./dropdownMenu.js";
 import { syncAlwaysShowCloseButton } from "./alwaysShowCloseButton.js";
-import { syncAccountSettingsButtons } from "./accountSettingsButton.js";
-import { initPluginsPanel } from "./pluginsPanel.js";
-import { bindSettingsControls, refreshSettingsControls, updateStandaloneSettingsVisibility } from "./settingsPane.js";
 
 export function updateOldNavigationBarVisibility() {
     syncOldNavigationBar();
@@ -31,9 +21,6 @@ export function updateOldNavigationBarVisibility() {
 
 function cleanupBlockedRouteUi() {
     stopRenameLoop();
-    stopDropdownMenuInjection();
-    removeRoPrimeAccountUi();
-    document.getElementById(RP_STANDALONE_ID)?.remove();
     document.getElementById(RP_RUNTIME_STYLE_ID)?.remove();
     document.getElementById(RP_SMALL_NEW_NAV_STYLE_ID)?.remove();
     document.getElementById(RP_SIDEBAR_COMPACT_STYLE_ID)?.remove();
@@ -54,9 +41,6 @@ function cleanupBlockedRouteUi() {
         "roprime-always-close-collapsed",
         "roprime-left-gray-frame-on",
     );
-    updateAccountHeader(false);
-    updateDocumentTitle(false);
-    updateSidebarVisibility(false);
 }
 
 export function syncRoEliteView() {
@@ -65,43 +49,12 @@ export function syncRoEliteView() {
         return;
     }
 
-    syncAccountSettingsButtons();
-    initPluginsPanel();
-
-    startDropdownMenuInjection();
-    injectRoPrimeDropdownItem();
     updateOldNavigationBarVisibility();
     updateSmallNewNavVisibility();
     updateSidebarCompactVisibility();
     syncAlwaysShowCloseButton();
     updateFriendStylingReimagnedVisibility();
     syncSidebarCompactDecorations();
-    injectRoEliteTab(syncRoEliteView);
-    ensureAccountDivider();
-
-    const showPanel = isPluginRoute();
-    updateAccountHeader(showPanel);
-    updateDocumentTitle(showPanel);
-
-    if (!isAccountPage()) return;
-    const standalonePanel = updateStandaloneSettingsVisibility(showPanel);
-    if (!(standalonePanel instanceof HTMLElement)) return;
-
-    bindSettingsControls(
-        standalonePanel,
-        {
-            updateOldNavigationBarVisibility,
-            updateSmallNewNavVisibility,
-            updateSidebarCompactVisibility,
-            updateAlwaysShowCloseButtonVisibility: syncAlwaysShowCloseButton,
-            updateFriendStylingReimagnedVisibility,
-        },
-        syncRoEliteView,
-    );
-    void refreshSettingsControls(standalonePanel);
-
-    updateTabState(showPanel, RP_TAB_ID);
-    updateSidebarVisibility(showPanel);
 
     if (settingsState.renameCommunitiesToGroups) applyCommunityRename(document.body);
     if (settingsState.renameExperiencesToGames) applyExperiencesRename(document.body);

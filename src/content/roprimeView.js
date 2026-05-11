@@ -2,15 +2,10 @@ import { updateDocumentTitle } from "./pageChrome.js";
 import { syncAlwaysShowCloseButton } from "./alwaysShowCloseButton.js";
 import { updateFriendStylingReimagnedVisibility } from "./friendStylingReimagned.js";
 import { syncOldNavigationBar } from "./oldNavigationBar.js";
-import { syncAccountSettingsButtons } from "./accountSettingsButton.js";
-import { initPluginsPanel } from "./pluginsPanel.js";
 import { updateSmallNewNavVisibility } from "./smallNewNav.js";
 import { syncSidebarCompactDecorations, updateSidebarCompactVisibility } from "./sidebarCompact.js";
 
 export function syncRoPrimeView() {
-    syncAccountSettingsButtons();
-    initPluginsPanel();
-
     // Feature toggles that apply globally.
     syncOldNavigationBar();
     updateSmallNewNavVisibility();

@@ -14,7 +14,6 @@ import {
 } from "./rename.js";
 import { syncRoEliteView } from "./panel.js";
 import { syncHomeWelcomeModal } from "./welcome.js";
-import { startDropdownMenuInjection } from "./dropdownMenu.js";
 
 function installStorageSyncListener() {
     if (typeof chrome === "undefined" || !chrome.storage?.onChanged) return;
@@ -71,7 +70,6 @@ function bootstrap() {
     installStorageSyncListener();
     syncRuntimeStylesheet();
     if (shouldRunRoPrimeOnCurrentPage()) {
-        startDropdownMenuInjection();
         syncHomeWelcomeModal();
     }
     loadSettings().finally(() => {
