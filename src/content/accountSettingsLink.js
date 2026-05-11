@@ -13,9 +13,12 @@ const DIVIDER_ATTR = "data-roprime-account-divider";
 /** Sparse retries when Roblox mounts the account menu after paint. */
 let accountMenuRetries = 0;
 
-/** Throttled popover injection — no `document.body` MutationObserver (React caused endless mutations → flicker). */
+/** Throttled popover injection + debounced DOM observer (RoValra-style: row ready before the gear opens). */
 let popoverPointerHandler = null;
 let lastPopoverEnsureAt = 0;
+/** @type {MutationObserver | null} */
+let popoverDomObserver = null;
+let popoverObserverFlushTimer = 0;
 
 function extensionIconUrl() {
     try {
@@ -62,7 +65,50 @@ function removeInjectedEntries() {
     removeVerticalAccountInjections();
 }
 
+function uninstallPopoverDomObserver() {
+    if (popoverDomObserver) {
+        try {
+            popoverDomObserver.disconnect();
+        } catch {
+            /* ignore */
+        }
+        popoverDomObserver = null;
+    }
+    if (popoverObserverFlushTimer) {
+        window.clearTimeout(popoverObserverFlushTimer);
+        popoverObserverFlushTimer = 0;
+    }
+}
+
+/** Debounced flush so React churn does not call `addSettingsPopoverButton` on every node. */
+function schedulePopoverMenuFlush() {
+    if (!shouldInjectSettingsPopoverEntry()) return;
+    if (popoverObserverFlushTimer) return;
+    popoverObserverFlushTimer = window.setTimeout(() => {
+        popoverObserverFlushTimer = 0;
+        addSettingsPopoverButton();
+    }, 100);
+}
+
+function installPopoverDomObserver() {
+    if (popoverDomObserver) return;
+    if (!shouldInjectSettingsPopoverEntry()) return;
+    const root =
+        document.getElementById("navigation-container") ||
+        document.getElementById("navigation") ||
+        document.getElementById("header") ||
+        document.body;
+    try {
+        popoverDomObserver = new MutationObserver(() => schedulePopoverMenuFlush());
+        popoverDomObserver.observe(root, { childList: true, subtree: true });
+    } catch {
+        popoverDomObserver = null;
+    }
+    schedulePopoverMenuFlush();
+}
+
 function uninstallPopoverHooks() {
+    uninstallPopoverDomObserver();
     if (popoverPointerHandler) {
         document.removeEventListener("pointerdown", popoverPointerHandler, true);
         popoverPointerHandler = null;
@@ -71,6 +117,7 @@ function uninstallPopoverHooks() {
 }
 
 function installPopoverHooks() {
+    installPopoverDomObserver();
     if (popoverPointerHandler) return;
     popoverPointerHandler = () => {
         if (!shouldInjectSettingsPopoverEntry()) return;
@@ -325,7 +372,7 @@ function addSettingsPopoverButton() {
     }
 }
 
-/** Adds RoPrime to the account vertical tabs (after divider, after other plugins) and wires popover injection on user input only. */
+/** Adds RoPrime to the account vertical tabs and keeps the gear popover row in sync (DOM observer + pointer + periodic sync). */
 export function syncAccountSettingsMenuButton() {
     if (typeof chrome === "undefined" || typeof chrome.runtime?.getURL !== "function") return;
 
