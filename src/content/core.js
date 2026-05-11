@@ -11,6 +11,70 @@ export const RP_SETTINGS_KEY = "rpSettings";
 export const RP_PROFILE_SETTINGS_ROOT_ID = "roprime-profile-settings-root";
 /** Appended to /my/account settings links so Roblox account SPA tab state stays correct (e.g. #!/info). */
 export const RP_ACCOUNT_URL_HASH_DEFAULT = "#!/info";
+/** Set on `<html>` while RoPrime account settings URL is active — hides native chrome before mount. */
+export const RP_ACCOUNT_SETTINGS_SHELL_CLASS = "roprime-account-settings-open";
+
+/** Merged per-locale `translation-keys.json` files under `.locales` for UI copy (from `settingsState.language`). */
+/** @type {Record<string, string>} */
+let settingsUiStrings = {};
+
+function normalizeUiLocale(raw) {
+    const s = String(raw || "en").toLowerCase();
+    if (s === "ru") return "ru";
+    if (s === "bn") return "bn";
+    return "en";
+}
+
+function fetchExtensionJson(path) {
+    if (typeof chrome === "undefined" || typeof chrome.runtime?.getURL !== "function") {
+        return Promise.reject(new Error("no extension runtime"));
+    }
+    return fetch(chrome.runtime.getURL(path), { cache: "no-store" });
+}
+
+async function buildSettingsUiStringMap(language) {
+    const enRes = await fetchExtensionJson(".locales/en/translation-keys.json");
+    if (!enRes.ok) throw new Error(`locales en: ${enRes.status}`);
+    const en = await enRes.json();
+    const loc = normalizeUiLocale(language);
+    if (loc === "en") return { ...en };
+    const curRes = await fetchExtensionJson(`.locales/${loc}/translation-keys.json`);
+    if (!curRes.ok) throw new Error(`locales ${loc}: ${curRes.status}`);
+    const cur = await curRes.json();
+    return { ...en, ...cur };
+}
+
+/** Load strings for `settingsState.language` (after `loadSettings()`). */
+export async function loadSettingsUiStrings() {
+    settingsUiStrings = await buildSettingsUiStringMap(settingsState.language);
+}
+
+export async function reloadSettingsUiStrings() {
+    return loadSettingsUiStrings();
+}
+
+/** Localized UI string from `.locales` keys (e.g. `settings.hero.title`). */
+export function settingsT(key) {
+    const v = settingsUiStrings[key];
+    if (typeof v === "string" && v.length > 0) return v;
+    return key;
+}
+
+/** Toggle early shell class so native account layout stays hidden until our panel mounts. */
+export function setAccountSettingsShellClass(active) {
+    if (typeof document === "undefined" || !document.documentElement) return;
+    document.documentElement.classList.toggle(RP_ACCOUNT_SETTINGS_SHELL_CLASS, active);
+}
+
+/** If URL is already a RoPrime account tab, apply shell class before first paint (content script). */
+export function applyAccountSettingsShellFromUrl() {
+    try {
+        if (!isMyAccountPath() || !isPluginRoute()) return;
+        setAccountSettingsShellClass(true);
+    } catch {
+        /* ignore */
+    }
+}
 
 function normalizeBlockedExecutionPages(value) {
     if (!Array.isArray(value)) return [];
@@ -232,3 +296,5 @@ export function buildPluginUrl(page = RP_DEFAULT_PAGE) {
     url.searchParams.set(RP_PARAM_KEY, page);
     return `${url.pathname}${url.search}${url.hash || ""}`;
 }
+
+applyAccountSettingsShellFromUrl();

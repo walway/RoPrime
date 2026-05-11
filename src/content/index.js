@@ -2,6 +2,8 @@ import {
     RP_RUNTIME_STYLE_ID,
     RP_SETTINGS_KEY,
     loadSettings,
+    loadSettingsUiStrings,
+    reloadSettingsUiStrings,
     setSyncIntervalId,
     shouldRunRoPrimeOnCurrentPage,
     syncIntervalId,
@@ -13,7 +15,6 @@ import {
     updateRenameLoop,
 } from "./rename.js";
 import { syncAccountSettingsMenuButton } from "./accountSettingsLink.js";
-import { initLocaleMessages, reloadLocaleMessages } from "./localesI18n.js";
 import { syncProfileSettingsRoute } from "./profileSettings.js";
 import { syncRoEliteView } from "./panel.js";
 import { syncHomeWelcomeModal } from "./welcome.js";
@@ -24,7 +25,7 @@ function installStorageSyncListener() {
         if (area !== "local" || !changes[RP_SETTINGS_KEY]) return;
         loadSettings().finally(() => {
             void (async () => {
-                await reloadLocaleMessages();
+                await reloadSettingsUiStrings();
                 updateRenameLoop();
                 syncRoEliteView();
                 syncProfileSettingsRoute();
@@ -81,7 +82,7 @@ function bootstrap() {
     syncRuntimeStylesheet();
     loadSettings().finally(() => {
         void (async () => {
-            await initLocaleMessages();
+            await loadSettingsUiStrings();
             installHistoryListeners();
             if (syncIntervalId === null) {
                 setSyncIntervalId(window.setInterval(syncRoEliteView, 1200));

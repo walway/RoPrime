@@ -1,11 +1,15 @@
-import { RP_PARAM_KEY, buildRoPrimeSettingsFullUrl, isMyAccountPath } from "./core.js";
-import { t } from "./localesI18n.js";
+import { RP_PARAM_KEY, buildRoPrimeSettingsFullUrl, isMyAccountPath, settingsT } from "./core.js";
 
 const TAB_ENTRY_ATTR = "data-roprime-account-menu-entry";
 const POP_ENTRY_ATTR = "data-roprime-account-popover-entry";
+const DIVIDER_ATTR = "data-roprime-account-divider";
 
-let observer = null;
-let debounceId = 0;
+/** Sparse retries when Roblox mounts the account menu after paint. */
+let accountMenuRetries = 0;
+
+/** Throttled popover injection — no `document.body` MutationObserver (React caused endless mutations → flicker). */
+let popoverPointerHandler = null;
+let lastPopoverEnsureAt = 0;
 
 function extensionIconUrl() {
     try {
@@ -24,8 +28,52 @@ function shouldInjectAccountLink() {
     return true;
 }
 
+/** Account settings sidebar tab list only (inside `#react-user-account-base`). */
+function getAccountPageMenuList() {
+    const accountBase = document.getElementById("react-user-account-base");
+    if (!(accountBase instanceof HTMLElement)) return null;
+    return (
+        accountBase.querySelector(".menu-vertical-container ul.menu-vertical[role='tablist']") ||
+        accountBase.querySelector("ul.menu-vertical[role='tablist']")
+    );
+}
+
+/** Roblox uses `ul.dropdown-menu#settings-popover-menu` with `li > a.rbx-menu-item` (menu mounts when opened). */
+function getSettingsPopoverMenu() {
+    const byId = document.getElementById("settings-popover-menu");
+    if (byId instanceof HTMLElement) return byId;
+    const ul = document.querySelector("ul#settings-popover-menu.dropdown-menu");
+    if (ul instanceof HTMLElement) return ul;
+    const alt = document.querySelector("ul.dropdown-menu#settings-popover-menu");
+    return alt instanceof HTMLElement ? alt : null;
+}
+
 function removeInjectedEntries() {
     document.querySelectorAll(`[${TAB_ENTRY_ATTR}], [${POP_ENTRY_ATTR}]`).forEach((n) => n.remove());
+    document.querySelectorAll(`li[${DIVIDER_ATTR}="1"]`).forEach((n) => n.remove());
+}
+
+function uninstallPopoverHooks() {
+    if (popoverPointerHandler) {
+        document.removeEventListener("pointerdown", popoverPointerHandler, true);
+        popoverPointerHandler = null;
+    }
+    lastPopoverEnsureAt = 0;
+}
+
+function installPopoverHooks() {
+    if (popoverPointerHandler) return;
+    popoverPointerHandler = () => {
+        if (!shouldInjectAccountLink()) return;
+        const now = Date.now();
+        if (now - lastPopoverEnsureAt < 450) return;
+        lastPopoverEnsureAt = now;
+        requestAnimationFrame(() => {
+            ensurePopoverEntry();
+            window.setTimeout(() => ensurePopoverEntry(), 90);
+        });
+    };
+    document.addEventListener("pointerdown", popoverPointerHandler, true);
 }
 
 function navigateToRoPrimeSettings(e) {
@@ -62,7 +110,7 @@ function buildVerticalTabLi() {
 
     const span = document.createElement("span");
     span.classList.add("font-caption-header");
-    span.textContent = t("settings.hero.title");
+    span.textContent = settingsT("settings.hero.title");
     span.style.fontSize = "12px";
 
     a.append(icon, span);
@@ -70,94 +118,169 @@ function buildVerticalTabLi() {
     return li;
 }
 
+/** Roblox-style divider (`<li class="rbx-divider thick-height" style="width: 100%;">`). Remove our previous one so multiple plugins can share a clean strip. */
+function getOrCreatePluginDivider(menuList) {
+    menuList.querySelector(`li[${DIVIDER_ATTR}="1"]`)?.remove();
+
+    const natives = [...menuList.querySelectorAll("li.menu-option[role='tab']")].filter(
+        (li) => !li.hasAttribute(TAB_ENTRY_ATTR),
+    );
+    const anchor = natives.length ? natives[natives.length - 1] : menuList.querySelector("li.menu-option[role='tab']");
+    if (!(anchor instanceof HTMLElement)) return null;
+
+    const divider = document.createElement("li");
+    divider.setAttribute(DIVIDER_ATTR, "1");
+    divider.className = "rbx-divider thick-height";
+    divider.style.width = "100%";
+    anchor.insertAdjacentElement("afterend", divider);
+    return divider;
+}
+
+/** After divider: last `li` wins so other extensions can load before RoPrime. */
+function placeTabAfterDividerBlock(menuList, li, divider) {
+    let insertAfter = /** @type {Element} */ (divider);
+    let cur = divider.nextElementSibling;
+    while (cur) {
+        if (cur === li) {
+            cur = cur.nextElementSibling;
+            continue;
+        }
+        if (cur instanceof HTMLLIElement && !cur.classList.contains("rbx-divider")) {
+            insertAfter = cur;
+        }
+        cur = cur.nextElementSibling;
+    }
+    if (insertAfter.nextElementSibling === li) return;
+    if (li.parentElement) li.remove();
+    insertAfter.insertAdjacentElement("afterend", li);
+}
+
 function ensureVerticalTabEntry() {
-    const menuList = document.querySelector("ul.menu-vertical[role='tablist']");
-    if (!(menuList instanceof HTMLElement)) return;
+    const menuList = getAccountPageMenuList();
+    if (!(menuList instanceof HTMLElement)) return false;
 
     let li = menuList.querySelector(`li[${TAB_ENTRY_ATTR}]`);
-    if (li instanceof HTMLLIElement) {
+    const isNew = !(li instanceof HTMLLIElement);
+    if (isNew) {
+        li = buildVerticalTabLi();
+    } else {
         const label = li.querySelector(".font-caption-header");
-        if (label instanceof HTMLElement) label.textContent = t("settings.hero.title");
+        if (label instanceof HTMLElement) label.textContent = settingsT("settings.hero.title");
         const link = li.querySelector("a");
         if (link instanceof HTMLAnchorElement) link.href = buildRoPrimeSettingsFullUrl();
-        menuList.appendChild(li);
-        return;
     }
 
-    li = buildVerticalTabLi();
-    menuList.appendChild(li);
+    const divider = getOrCreatePluginDivider(menuList);
+    if (!(divider instanceof HTMLElement)) {
+        if (menuList.lastElementChild !== li) menuList.appendChild(li);
+        return true;
+    }
+    placeTabAfterDividerBlock(menuList, li, divider);
+    return true;
+}
+
+/** Same flow as RoValra `addPopoverButton` (header `#settings-popover-menu`). See settingsbutton.js in RoValra. */
+function getRoPrimeHrefNeedle() {
+    return `?${RP_PARAM_KEY}=`;
+}
+
+function findNativeAccountMenuLink(popoverMenu) {
+    return (
+        popoverMenu.querySelector('a.rbx-menu-item[href="/my/account"]') ||
+        popoverMenu.querySelector('a.rbx-menu-item[href$="/my/account"]') ||
+        popoverMenu.querySelector('a.rbx-menu-item[href*="/my/account"]')
+    );
+}
+
+function syncPopoverRowContent(li) {
+    const link = li.querySelector("a");
+    if (!(link instanceof HTMLAnchorElement)) return;
+    link.href = buildRoPrimeSettingsFullUrl();
+    link.className = "rbx-menu-item";
+    Object.assign(link.style, { display: "flex", alignItems: "center", gap: "8px" });
+    const label = settingsT("settings.hero.title");
+    const textNode = [...link.childNodes].find((n) => n.nodeType === Node.TEXT_NODE);
+    if (textNode) textNode.textContent = label;
+    else link.appendChild(document.createTextNode(label));
+    const img = link.querySelector("img");
+    if (img instanceof HTMLImageElement) {
+        img.src = extensionIconUrl();
+        Object.assign(img.style, { width: "18px", height: "18px" });
+    }
 }
 
 function ensurePopoverEntry() {
-    const popoverMenu = document.getElementById("settings-popover-menu");
-    if (!(popoverMenu instanceof HTMLElement)) return;
-    const existing = popoverMenu.querySelector(`[${POP_ENTRY_ATTR}]`);
-    if (existing) {
-        const link = existing.querySelector("a");
-        const textNode = link?.lastChild;
-        if (textNode && textNode.nodeType === Node.TEXT_NODE) {
-            textNode.textContent = t("settings.hero.title");
+    if (!isMyAccountPath()) return false;
+    const popoverMenu = getSettingsPopoverMenu();
+    if (!(popoverMenu instanceof HTMLElement)) return false;
+
+    const hrefNeedle = getRoPrimeHrefNeedle();
+
+    /** RoValra: `if (popoverMenu.querySelector('a[href*="?rovalra=info"]')) return` — avoid duplicate rows. */
+    const existingRoPrimeLink = popoverMenu.querySelector(`a.rbx-menu-item[href*="${hrefNeedle}"]`);
+    if (existingRoPrimeLink) {
+        const dupLi = existingRoPrimeLink.closest("li");
+        if (dupLi instanceof HTMLLIElement) {
+            dupLi.setAttribute(POP_ENTRY_ATTR, "1");
+            syncPopoverRowContent(dupLi);
+            const nativeLink = findNativeAccountMenuLink(popoverMenu);
+            const nativeLi = nativeLink?.parentElement;
+            if (nativeLi instanceof HTMLElement && dupLi.parentElement === popoverMenu && nativeLi.previousElementSibling !== dupLi) {
+                nativeLi.before(dupLi);
+            }
         }
-        if (link instanceof HTMLAnchorElement) link.href = buildRoPrimeSettingsFullUrl();
-        popoverMenu.appendChild(existing);
-        return;
+        return true;
     }
 
-    const li = document.createElement("li");
-    li.setAttribute(POP_ENTRY_ATTR, "1");
+    const newButtonListItem = document.createElement("li");
+    newButtonListItem.setAttribute(POP_ENTRY_ATTR, "1");
 
-    const a = document.createElement("a");
-    a.className = "rbx-menu-item";
-    a.href = buildRoPrimeSettingsFullUrl();
-    Object.assign(a.style, { display: "flex", alignItems: "center", gap: "8px" });
-    a.addEventListener("click", navigateToRoPrimeSettings);
+    const newButtonLink = document.createElement("a");
+    newButtonLink.className = "rbx-menu-item";
+    newButtonLink.href = buildRoPrimeSettingsFullUrl();
+    Object.assign(newButtonLink.style, { display: "flex", alignItems: "center", gap: "8px" });
+    newButtonLink.addEventListener("click", navigateToRoPrimeSettings);
 
-    const icon = document.createElement("img");
-    icon.src = extensionIconUrl();
-    icon.alt = "";
-    Object.assign(icon.style, { width: "18px", height: "18px" });
+    const logo = document.createElement("img");
+    logo.src = extensionIconUrl();
+    logo.alt = "";
+    Object.assign(logo.style, { width: "18px", height: "18px" });
 
-    const text = document.createTextNode(t("settings.hero.title"));
-    a.append(icon, text);
-    li.appendChild(a);
+    const buttonText = document.createTextNode(settingsT("settings.hero.title"));
+    newButtonLink.append(logo, buttonText);
+    newButtonListItem.appendChild(newButtonLink);
 
-    popoverMenu.appendChild(li);
+    const nativeSettingsLink = findNativeAccountMenuLink(popoverMenu);
+    if (nativeSettingsLink?.parentElement instanceof HTMLElement) {
+        nativeSettingsLink.parentElement.before(newButtonListItem);
+    } else {
+        popoverMenu.prepend(newButtonListItem);
+    }
+
+    return true;
 }
 
-function scheduleEnsureAccountLink() {
-    window.clearTimeout(debounceId);
-    const run = () => {
-        if (!shouldInjectAccountLink()) {
-            removeInjectedEntries();
-            return;
-        }
-        ensureVerticalTabEntry();
-        ensurePopoverEntry();
-    };
-    debounceId = window.setTimeout(run, 0);
-}
-
-function installObserver() {
-    if (observer) return;
-    const target = document.getElementById("react-user-account-base") || document.body;
-    observer = new MutationObserver(() => {
-        if (!isMyAccountPath()) return;
-        scheduleEnsureAccountLink();
-    });
-    observer.observe(target, { childList: true, subtree: true });
-}
-
-/** Adds "RoPrime Settings" to the native /my/account sidebar (and header popover when present). */
+/** Adds RoPrime to the account vertical tabs (after divider, after other plugins) and wires popover injection on user input only. */
 export function syncAccountSettingsMenuButton() {
     if (typeof chrome === "undefined" || typeof chrome.runtime?.getURL !== "function") return;
 
     if (!shouldInjectAccountLink()) {
+        accountMenuRetries = 0;
+        uninstallPopoverHooks();
         removeInjectedEntries();
         return;
     }
 
-    installObserver();
-    ensureVerticalTabEntry();
+    installPopoverHooks();
+    const tabOk = ensureVerticalTabEntry();
     ensurePopoverEntry();
-    scheduleEnsureAccountLink();
+
+    if (!tabOk && accountMenuRetries < 6) {
+        accountMenuRetries += 1;
+        window.setTimeout(() => {
+            syncAccountSettingsMenuButton();
+        }, 450);
+    } else {
+        accountMenuRetries = 0;
+    }
 }

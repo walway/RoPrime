@@ -128,15 +128,10 @@
     gap: 10px;
 }
 
+/* Do not use border-top on sections here: first DOM child of .main is a hint div, so the first
+   visible section was incorrectly getting a top rule and looked like a stray divider. */
 .roprime-settings-wrapper.is-search-mode .roprime-settings-section {
     margin: 0;
-    padding-top: 10px;
-    border-top: 1px solid rgba(111, 124, 146, 0.25);
-}
-
-.roprime-settings-wrapper.is-search-mode .roprime-settings-section:first-child {
-    padding-top: 0;
-    border-top: 0;
 }
 
 .roprime-search-mark {
@@ -1376,6 +1371,16 @@ html.dark-theme #roprime-classic-left-nav-host .roprime-cln-avatar--ph,
 body.dark-theme #roprime-classic-left-nav-host .roprime-cln-avatar--ph {
     border-color: rgba(255, 255, 255, 0.12);
     background: #3a3d42;
+}
+
+/* Hide native account chrome immediately on RoPrime settings URL (before JS mount). */
+html.roprime-account-settings-open #react-user-account-base .content-container,
+html.roprime-account-settings-open #react-user-account-base #content-container,
+html.roprime-account-settings-open #react-user-account-base .menu-vertical,
+html.roprime-account-settings-open #react-user-account-base .menu-vertical-container {
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
 }
 
 /* —— Account URL settings (/my/account?roprime=…) —— */

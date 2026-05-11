@@ -6,15 +6,17 @@ import {
     getCurrentrp,
     isMyAccountPath,
     isPluginRoute,
+    reloadSettingsUiStrings,
     saveSettings,
+    setAccountSettingsShellClass,
     settingsState,
+    settingsT,
     shouldRunRoPrimeOnCurrentPage,
 } from "./core.js";
 import { updateAccountHeader, updateDocumentTitle } from "./pageChrome.js";
 import { syncRoEliteView } from "./panel.js";
 import { updateRenameLoop } from "./rename.js";
 import { syncAccountSettingsMenuButton } from "./accountSettingsLink.js";
-import { reloadLocaleMessages, t } from "./localesI18n.js";
 
 const RP_DEBUG_UNLOCK = "debug";
 
@@ -23,7 +25,7 @@ function langCode() {
 }
 
 function getLanguageLabel(code) {
-    return code === "ru" ? t("settings.language.ru") : t("settings.language.en");
+    return code === "ru" ? settingsT("settings.language.ru") : settingsT("settings.language.en");
 }
 
 function findMountHost() {
@@ -54,7 +56,16 @@ function snapshotRenameRestore() {
 function setNativeAccountChromeHidden(hidden) {
     const accountBase = document.getElementById("react-user-account-base");
     if (!(accountBase instanceof HTMLElement)) return;
-    const selectors = [".tab-content.rbx-tab-content", ".tab-content", "#settings-container", "#mobile-navigation-dropdown"];
+    const selectors = [
+        ".tab-content.rbx-tab-content",
+        ".tab-content",
+        "#settings-container",
+        "#mobile-navigation-dropdown",
+        ".content-container",
+        "#content-container",
+        ".menu-vertical",
+        ".menu-vertical-container",
+    ];
     for (const sel of selectors) {
         const el = accountBase.querySelector(sel);
         if (!(el instanceof HTMLElement)) continue;
@@ -77,19 +88,19 @@ function applyI18n(root) {
         if (!(node instanceof HTMLElement)) return;
         const key = node.getAttribute("data-i18n");
         if (!key) return;
-        node.textContent = t(key);
+        node.textContent = settingsT(key);
     });
     root.querySelectorAll("[data-i18n-placeholder]").forEach((node) => {
         if (!(node instanceof HTMLInputElement) && !(node instanceof HTMLTextAreaElement)) return;
         const key = node.getAttribute("data-i18n-placeholder");
         if (!key) return;
-        node.placeholder = t(key);
+        node.placeholder = settingsT(key);
     });
     root.querySelectorAll("[data-i18n-aria-label]").forEach((node) => {
         if (!(node instanceof HTMLElement)) return;
         const key = node.getAttribute("data-i18n-aria-label");
         if (!key) return;
-        node.setAttribute("aria-label", t(key));
+        node.setAttribute("aria-label", settingsT(key));
     });
 }
 
@@ -395,7 +406,7 @@ function bindOnce(root) {
                     const next = option.dataset.lang === "ru" ? "ru" : "en";
                     settingsState.language = next;
                     saveSettings();
-                    await reloadLocaleMessages();
+                    await reloadSettingsUiStrings();
                     closeLanguageMenu();
                     applyI18n(root);
                     refreshProfileSettingsUi(root);
@@ -489,7 +500,7 @@ function refreshProfileSettingsUi(root) {
     inner.querySelectorAll(".roprime-sidebar-size-tick span").forEach((span) => {
         if (!(span instanceof HTMLElement)) return;
         const key = span.getAttribute("data-i18n");
-        if (key) span.textContent = t(key);
+        if (key) span.textContent = settingsT(key);
     });
 
     const developerUnlockMessage = inner.querySelector("[data-roprime-developer-unlock-message]");
@@ -574,6 +585,7 @@ function buildMarkup() {
 
 export function syncProfileSettingsRoute() {
     if (!isMyAccountPath()) {
+        setAccountSettingsShellClass(false);
         setNativeAccountChromeHidden(false);
         document.getElementById(RP_PROFILE_SETTINGS_ROOT_ID)?.remove();
         updateDocumentTitle(false);
@@ -582,6 +594,7 @@ export function syncProfileSettingsRoute() {
     }
 
     if (!shouldRunRoPrimeOnCurrentPage() || !isPluginRoute()) {
+        setAccountSettingsShellClass(false);
         setNativeAccountChromeHidden(false);
         document.getElementById(RP_PROFILE_SETTINGS_ROOT_ID)?.remove();
         updateDocumentTitle(false);
@@ -599,17 +612,23 @@ export function syncProfileSettingsRoute() {
         }
     }
 
+    setAccountSettingsShellClass(true);
+    setNativeAccountChromeHidden(true);
     updateDocumentTitle(true);
     updateAccountHeader(true);
-    setNativeAccountChromeHidden(true);
 
     let root = document.getElementById(RP_PROFILE_SETTINGS_ROOT_ID);
     if (!(root instanceof HTMLElement)) {
         root = document.createElement("div");
         root.id = RP_PROFILE_SETTINGS_ROOT_ID;
         root.className = "roprime-profile-settings-root";
-        const host = findMountHost();
-        host.insertBefore(root, host.firstChild);
+        const acc = document.getElementById("react-user-account-base");
+        if (acc instanceof HTMLElement) {
+            acc.appendChild(root);
+        } else {
+            const host = findMountHost();
+            host.insertBefore(root, host.firstChild);
+        }
         root.innerHTML = buildMarkup();
         bindOnce(root);
     }

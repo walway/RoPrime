@@ -15,7 +15,6 @@ import { syncHomeWelcomeModal } from "./welcome.js";
 import { updateSmallNewNavVisibility } from "./smallNewNav.js";
 import { updateSidebarCompactVisibility, syncSidebarCompactDecorations } from "./sidebarCompact.js";
 import { syncAlwaysShowCloseButton } from "./alwaysShowCloseButton.js";
-import { syncAccountSettingsMenuButton } from "./accountSettingsLink.js";
 
 export function updateOldNavigationBarVisibility() {
     syncOldNavigationBar();
@@ -47,8 +46,6 @@ function cleanupBlockedRouteUi() {
 }
 
 export function syncRoEliteView() {
-    syncAccountSettingsMenuButton();
-
     if (!shouldRunRoPrimeOnCurrentPage()) {
         cleanupBlockedRouteUi();
         return;
