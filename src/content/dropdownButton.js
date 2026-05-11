@@ -9,6 +9,9 @@ import {
 
 const RP_DROPDOWN_ITEM_CLASS = "roprime-dropdown-entry";
 
+/** Roblox gear menu: only this list gets the RoPrime row (not other `ul.dropdown-menu` on the site). */
+const SETTINGS_POPOVER_MENU_ID = "settings-popover-menu";
+
 /** Fixed copy for nav dropdown rows — intentionally not wired to `settingsT` / locale files. */
 const ROPRIME_DROPDOWN_SETTINGS_LABEL = "RoPrime Settings";
 
@@ -20,7 +23,7 @@ let navObserver = null;
 /** Roots already passed to `observe()` for the current observer instance. */
 let observedNavRoots = new WeakSet();
 
-/** Observers on individual `ul.dropdown-menu` instances so we can re-append after Roblox clears the list on close. */
+/** Observer on `#settings-popover-menu` so we can re-append after Roblox clears the list on close. */
 const menuSurvivalObservers = new Set();
 
 let pointerCaptureInstalled = false;
@@ -69,6 +72,11 @@ function ensureRowTemplate() {
     a.append(img, span);
     li.appendChild(a);
     rowTemplate = li;
+}
+
+function getSettingsPopoverMenu() {
+    const el = document.getElementById(SETTINGS_POPOVER_MENU_ID);
+    return el instanceof HTMLUListElement ? el : null;
 }
 
 function cloneRowForMenu() {
@@ -134,9 +142,10 @@ function disconnectAllMenuSurvivalObservers() {
         }
     }
     menuSurvivalObservers.clear();
-    document.querySelectorAll("ul.dropdown-menu[data-roprime-dropdown-watch]").forEach((ul) => {
-        ul.removeAttribute("data-roprime-dropdown-watch");
-    });
+    const watched = document.getElementById(SETTINGS_POPOVER_MENU_ID);
+    if (watched instanceof HTMLElement && watched.getAttribute("data-roprime-dropdown-watch") === "1") {
+        watched.removeAttribute("data-roprime-dropdown-watch");
+    }
 }
 
 function ensureMenuSurvivalObserver(menu) {
@@ -196,7 +205,7 @@ function onDelegatedRoPrimeDropdownClick(ev) {
     if (!(a instanceof HTMLAnchorElement)) return;
     const li = a.closest(`li.${RP_DROPDOWN_ITEM_CLASS}`);
     if (!(li instanceof HTMLElement)) return;
-    if (!li.closest("ul.dropdown-menu")) return;
+    if (!li.closest(`#${SETTINGS_POPOVER_MENU_ID}`)) return;
 
     ev.preventDefault();
     ev.stopPropagation();
@@ -206,11 +215,14 @@ function onDelegatedRoPrimeDropdownClick(ev) {
 }
 
 function removeRobloxDropdownEntries() {
-    document.querySelectorAll(`li.${RP_DROPDOWN_ITEM_CLASS}`).forEach((n) => n.remove());
+    const menu = getSettingsPopoverMenu();
+    if (!menu) return;
+    menu.querySelectorAll(`li.${RP_DROPDOWN_ITEM_CLASS}`).forEach((n) => n.remove());
 }
 
 function injectIntoDropdownMenuIfMissing(menu) {
     if (!(menu instanceof HTMLUListElement)) return;
+    if (menu.id !== SETTINGS_POPOVER_MENU_ID) return;
     if (!shouldRunRoPrimeOnCurrentPage() || !isExtensionContextAlive()) return;
     if (menu.querySelector(`li.${RP_DROPDOWN_ITEM_CLASS}`)) {
         ensureMenuSurvivalObserver(menu);
@@ -238,11 +250,9 @@ function injectRobloxDropdownEntries() {
     }
     if (!getExtensionResourceUrl("resources/roprime-icon.png")) return;
 
-    const menus = document.querySelectorAll("ul.dropdown-menu");
-    menus.forEach((menu) => {
-        if (!(menu instanceof HTMLUListElement)) return;
-        injectIntoDropdownMenuIfMissing(menu);
-    });
+    const menu = getSettingsPopoverMenu();
+    if (!menu) return;
+    injectIntoDropdownMenuIfMissing(menu);
 }
 
 export function syncRobloxNavDropdownButton() {

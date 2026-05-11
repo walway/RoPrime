@@ -487,13 +487,14 @@ function refreshProfileSettingsUi(root) {
     const accHeader = accordion?.querySelector(".roprime-accordion-header");
     if (accordion instanceof HTMLElement) {
         accordion.classList.toggle("is-renames-disabled", !settingsState.renameDropdownEnabled);
-        accordion.classList.toggle("is-open", !!settingsState.renameDropdownEnabled);
+        // Expand/collapse is user-controlled via the accordion header, not tied to the master switch.
+        const isOpen = accordion.classList.contains("is-open");
         if (accHeader instanceof HTMLElement) {
-            accHeader.setAttribute("aria-expanded", String(!!settingsState.renameDropdownEnabled));
+            accHeader.setAttribute("aria-expanded", String(isOpen));
         }
         if (accBody instanceof HTMLElement) {
-            accBody.toggleAttribute("hidden", !settingsState.renameDropdownEnabled);
-            accBody.setAttribute("aria-hidden", String(!settingsState.renameDropdownEnabled));
+            accBody.toggleAttribute("hidden", !isOpen);
+            accBody.setAttribute("aria-hidden", String(!isOpen));
         }
     }
 
