@@ -22,8 +22,8 @@ import { updateAccountHeader, updateDocumentTitle, updateSidebarVisibility, upda
 import { injectRoPrimeDropdownItem, startDropdownMenuInjection, stopDropdownMenuInjection } from "./dropdownMenu.js";
 import { syncAlwaysShowCloseButton } from "./alwaysShowCloseButton.js";
 import { syncAccountSettingsButtons } from "./accountSettingsButton.js";
-import { initRoPrimeAccountSettingsPage } from "./roprimeAccountSettingsPage.js";
 import { initPluginsPanel } from "./pluginsPanel.js";
+import { bindSettingsControls, refreshSettingsControls, updateStandaloneSettingsVisibility } from "./settingsPane.js";
 
 export function updateOldNavigationBarVisibility() {
     syncOldNavigationBar();
@@ -66,7 +66,6 @@ export function syncRoEliteView() {
     }
 
     syncAccountSettingsButtons();
-    initRoPrimeAccountSettingsPage();
     initPluginsPanel();
 
     startDropdownMenuInjection();
@@ -83,6 +82,23 @@ export function syncRoEliteView() {
     const showPanel = isPluginRoute();
     updateAccountHeader(showPanel);
     updateDocumentTitle(showPanel);
+
+    if (!isAccountPage()) return;
+    const standalonePanel = updateStandaloneSettingsVisibility(showPanel);
+    if (!(standalonePanel instanceof HTMLElement)) return;
+
+    bindSettingsControls(
+        standalonePanel,
+        {
+            updateOldNavigationBarVisibility,
+            updateSmallNewNavVisibility,
+            updateSidebarCompactVisibility,
+            updateAlwaysShowCloseButtonVisibility: syncAlwaysShowCloseButton,
+            updateFriendStylingReimagnedVisibility,
+        },
+        syncRoEliteView,
+    );
+    void refreshSettingsControls(standalonePanel);
 
     updateTabState(showPanel, RP_TAB_ID);
     updateSidebarVisibility(showPanel);
