@@ -17,6 +17,7 @@ import { updateAccountHeader, updateDocumentTitle } from "./pageChrome.js";
 import { syncRoEliteView } from "./panel.js";
 import { updateRenameLoop } from "./rename.js";
 import { syncAccountSettingsMenuButton } from "./accountSettingsLink.js";
+import { t as accountSettingsPaneT } from "./roprimeAccountSettingsPage.js";
 
 const RP_DEBUG_UNLOCK = "debug";
 
@@ -88,19 +89,19 @@ function applyI18n(root) {
         if (!(node instanceof HTMLElement)) return;
         const key = node.getAttribute("data-i18n");
         if (!key) return;
-        node.textContent = settingsT(key);
+        node.textContent = accountSettingsPaneT(key);
     });
     root.querySelectorAll("[data-i18n-placeholder]").forEach((node) => {
         if (!(node instanceof HTMLInputElement) && !(node instanceof HTMLTextAreaElement)) return;
         const key = node.getAttribute("data-i18n-placeholder");
         if (!key) return;
-        node.placeholder = settingsT(key);
+        node.placeholder = accountSettingsPaneT(key);
     });
     root.querySelectorAll("[data-i18n-aria-label]").forEach((node) => {
         if (!(node instanceof HTMLElement)) return;
         const key = node.getAttribute("data-i18n-aria-label");
         if (!key) return;
-        node.setAttribute("aria-label", settingsT(key));
+        node.setAttribute("aria-label", accountSettingsPaneT(key));
     });
 }
 
@@ -510,7 +511,7 @@ function refreshProfileSettingsUi(root) {
     inner.querySelectorAll(".roprime-sidebar-size-tick span").forEach((span) => {
         if (!(span instanceof HTMLElement)) return;
         const key = span.getAttribute("data-i18n");
-        if (key) span.textContent = settingsT(key);
+        if (key) span.textContent = accountSettingsPaneT(key);
     });
 
     const developerUnlockMessage = inner.querySelector("[data-roprime-developer-unlock-message]");
@@ -526,7 +527,7 @@ function buildMarkup() {
     return `
 <div class="roprime-settings-wrapper" id="rp-settings-inner">
     <div class="roprime-settings-hero">
-        <h2>RoPrime Settings</h2>
+        <h2 data-i18n="settings.hero.title"></h2>
         <p data-i18n="settings.hero.subtitle"></p>
     </div>
     <div class="roprime-settings-layout">
