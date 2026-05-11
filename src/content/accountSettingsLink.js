@@ -1,6 +1,9 @@
 import {
     RP_PARAM_KEY,
     buildRoPrimeSettingsFullUrl,
+    getExtensionResourceUrl,
+    isExtensionContextAlive,
+    isExtensionContextInvalidatedError,
     isMyAccountPath,
     settingsT,
     shouldRunRoPrimeOnCurrentPage,
@@ -10,32 +13,56 @@ const TAB_ENTRY_ATTR = "data-roprime-account-menu-entry";
 const POP_ENTRY_ATTR = "data-roprime-account-popover-entry";
 const DIVIDER_ATTR = "data-roprime-account-divider";
 
-/** After reload/disable, `chrome.runtime` throws — stop observers/listeners. */
-function isExtensionContextAlive() {
-    try {
-        return typeof chrome !== "undefined" && Boolean(chrome.runtime?.id);
-    } catch {
-        return false;
-    }
-}
-
 /** Sparse retries when Roblox mounts the account menu after paint. */
 let accountMenuRetries = 0;
 
-/** Throttled popover injection + debounced DOM observer (RoValra-style: row ready before the gear opens). */
-let popoverPointerHandler = null;
-let lastPopoverEnsureAt = 0;
+/** RoValra-style: re-sync when `#settings-popover-menu` is (re)mounted or siblings change — other extensions often append after us. */
 /** @type {MutationObserver | null} */
-let popoverDomObserver = null;
-let popoverObserverFlushTimer = 0;
+let gearMenuObserver = null;
+let gearMenuDebounceTimer = 0;
+
+function uninstallGearMenuObserver() {
+    if (gearMenuObserver) {
+        try {
+            gearMenuObserver.disconnect();
+        } catch {
+            /* ignore */
+        }
+        gearMenuObserver = null;
+    }
+    if (gearMenuDebounceTimer) {
+        window.clearTimeout(gearMenuDebounceTimer);
+        gearMenuDebounceTimer = 0;
+    }
+}
+
+function queueGearMenuPopoverReconcile() {
+    if (!shouldInjectSettingsPopoverEntry()) return;
+    window.clearTimeout(gearMenuDebounceTimer);
+    gearMenuDebounceTimer = window.setTimeout(() => {
+        gearMenuDebounceTimer = 0;
+        injectSettingsPopoverRow();
+    }, 60);
+}
+
+function installGearMenuObserver() {
+    if (gearMenuObserver || !shouldInjectSettingsPopoverEntry()) return;
+    if (!isExtensionContextAlive()) return;
+    const root =
+        document.getElementById("navigation-container") ||
+        document.getElementById("navigation") ||
+        document.getElementById("header") ||
+        document.body;
+    try {
+        gearMenuObserver = new MutationObserver(() => queueGearMenuPopoverReconcile());
+        gearMenuObserver.observe(root, { childList: true, subtree: true });
+    } catch {
+        gearMenuObserver = null;
+    }
+}
 
 function extensionIconUrl() {
-    try {
-        if (!isExtensionContextAlive() || typeof chrome.runtime.getURL !== "function") return "";
-        return chrome.runtime.getURL("resources/roprime-icon.png");
-    } catch {
-        return "";
-    }
+    return getExtensionResourceUrl("resources/roprime-icon.png");
 }
 
 /** Sidebar tab + divider on `/my/account` (including `?roprime=…` in-account settings). */
@@ -43,7 +70,7 @@ function shouldInjectVerticalAccountTab() {
     return isMyAccountPath() && shouldRunRoPrimeOnCurrentPage();
 }
 
-/** Header gear `#settings-popover-menu`: only off the account page (hide while native or RoPrime account UI is open). */
+/** Header `#settings-popover-menu` — only when not on `/my/account`. */
 function shouldInjectSettingsPopoverEntry() {
     return shouldRunRoPrimeOnCurrentPage() && !isMyAccountPath();
 }
@@ -59,7 +86,88 @@ function getAccountPageMenuList() {
 }
 
 function removePopoverInjection() {
-    document.querySelectorAll(`[${POP_ENTRY_ATTR}]`).forEach((n) => n.remove());
+    uninstallGearMenuObserver();
+    document.querySelectorAll(`li[${POP_ENTRY_ATTR}="1"]`).forEach((n) => n.remove());
+}
+
+function findNativeAccountSettingsLink(ul) {
+    return (
+        ul.querySelector('a.rbx-menu-item[href="/my/account"]') ||
+        ul.querySelector('a.rbx-menu-item[href$="/my/account"]') ||
+        ul.querySelector('a.rbx-menu-item[href*="/my/account"]')
+    );
+}
+
+/**
+ * Keep RoPrime directly **before** Roblox “Settings” (`/my/account`), same anchor as RoValra’s
+ * `addPopoverButton` — so other extensions that `appendChild` still sit **below** us.
+ * If that row is missing, pin to **first** `<li>` so we are not pushed to the bottom.
+ */
+function ensureRoPrimePopoverRowOrder(ul, li) {
+    if (!(ul instanceof HTMLUListElement) || !(li instanceof HTMLLIElement) || !ul.contains(li)) return;
+    const native = findNativeAccountSettingsLink(ul);
+    const nativeLi = native?.closest("li");
+    if (nativeLi instanceof HTMLLIElement && ul.contains(nativeLi) && nativeLi !== li) {
+        if (nativeLi.previousElementSibling !== li) {
+            nativeLi.insertAdjacentElement("beforebegin", li);
+        }
+        return;
+    }
+    if (ul.firstElementChild !== li) {
+        ul.insertBefore(li, ul.firstElementChild);
+    }
+}
+
+/** Plain `<li>` (no class) + `<a class="rbx-menu-item">` in `ul#settings-popover-menu`. */
+function injectSettingsPopoverRow() {
+    if (!isExtensionContextAlive()) return;
+    if (!shouldInjectSettingsPopoverEntry()) {
+        removePopoverInjection();
+        return;
+    }
+
+    const ul = document.getElementById("settings-popover-menu");
+    if (!(ul instanceof HTMLUListElement)) return;
+
+    let li = ul.querySelector(`li[${POP_ENTRY_ATTR}="1"]`);
+    if (!(li instanceof HTMLLIElement)) {
+        const hrefNeedle = `?${RP_PARAM_KEY}=`;
+        const foreignPrime = [...ul.querySelectorAll(`a.rbx-menu-item[href*="${hrefNeedle}"]`)].find((node) => {
+            const row = node.closest("li");
+            return row instanceof HTMLLIElement && !row.hasAttribute(POP_ENTRY_ATTR);
+        });
+        if (foreignPrime) return;
+
+        li = document.createElement("li");
+        li.setAttribute(POP_ENTRY_ATTR, "1");
+
+        const a = document.createElement("a");
+        a.className = "rbx-menu-item";
+        a.href = buildRoPrimeSettingsFullUrl();
+        a.textContent = settingsT("settings.hero.title");
+
+        a.addEventListener("click", (e) => {
+            e.preventDefault();
+            if (window.location.search.includes(`${RP_PARAM_KEY}=`)) {
+                window.location.reload();
+            } else {
+                window.location.href = buildRoPrimeSettingsFullUrl();
+            }
+        });
+
+        li.appendChild(a);
+        ul.appendChild(li);
+    } else {
+        const a = li.querySelector("a.rbx-menu-item");
+        if (a instanceof HTMLAnchorElement) {
+            a.href = buildRoPrimeSettingsFullUrl();
+            const label = settingsT("settings.hero.title");
+            if (a.textContent !== label) a.textContent = label;
+        }
+    }
+
+    ensureRoPrimePopoverRowOrder(ul, li);
+    installGearMenuObserver();
 }
 
 function removeVerticalAccountInjections() {
@@ -70,86 +178,6 @@ function removeVerticalAccountInjections() {
 function removeInjectedEntries() {
     removePopoverInjection();
     removeVerticalAccountInjections();
-}
-
-function uninstallPopoverDomObserver() {
-    if (popoverDomObserver) {
-        try {
-            popoverDomObserver.disconnect();
-        } catch {
-            /* ignore */
-        }
-        popoverDomObserver = null;
-    }
-    if (popoverObserverFlushTimer) {
-        window.clearTimeout(popoverObserverFlushTimer);
-        popoverObserverFlushTimer = 0;
-    }
-}
-
-/** Debounced flush so React churn does not call `addSettingsPopoverButton` on every node. */
-function schedulePopoverMenuFlush() {
-    if (!isExtensionContextAlive()) {
-        uninstallPopoverHooks();
-        return;
-    }
-    if (!shouldInjectSettingsPopoverEntry()) return;
-    if (popoverObserverFlushTimer) return;
-    popoverObserverFlushTimer = window.setTimeout(() => {
-        popoverObserverFlushTimer = 0;
-        if (!isExtensionContextAlive()) {
-            uninstallPopoverHooks();
-            return;
-        }
-        addSettingsPopoverButton();
-    }, 100);
-}
-
-function installPopoverDomObserver() {
-    if (popoverDomObserver) return;
-    if (!isExtensionContextAlive()) return;
-    if (!shouldInjectSettingsPopoverEntry()) return;
-    const root =
-        document.getElementById("navigation-container") ||
-        document.getElementById("navigation") ||
-        document.getElementById("header") ||
-        document.body;
-    try {
-        popoverDomObserver = new MutationObserver(() => schedulePopoverMenuFlush());
-        popoverDomObserver.observe(root, { childList: true, subtree: true });
-    } catch {
-        popoverDomObserver = null;
-    }
-    schedulePopoverMenuFlush();
-}
-
-function uninstallPopoverHooks() {
-    uninstallPopoverDomObserver();
-    if (popoverPointerHandler) {
-        document.removeEventListener("pointerdown", popoverPointerHandler, true);
-        popoverPointerHandler = null;
-    }
-    lastPopoverEnsureAt = 0;
-}
-
-function installPopoverHooks() {
-    installPopoverDomObserver();
-    if (popoverPointerHandler) return;
-    popoverPointerHandler = () => {
-        if (!isExtensionContextAlive()) {
-            uninstallPopoverHooks();
-            return;
-        }
-        if (!shouldInjectSettingsPopoverEntry()) return;
-        const now = Date.now();
-        if (now - lastPopoverEnsureAt < 80) return;
-        lastPopoverEnsureAt = now;
-        addSettingsPopoverButton();
-        requestAnimationFrame(() => addSettingsPopoverButton());
-        window.setTimeout(() => addSettingsPopoverButton(), 50);
-        window.setTimeout(() => addSettingsPopoverButton(), 220);
-    };
-    document.addEventListener("pointerdown", popoverPointerHandler, true);
 }
 
 function navigateToRoPrimeSettings(e) {
@@ -312,127 +340,46 @@ function ensureVerticalTabEntry() {
     return true;
 }
 
-function syncExistingPopoverRow(li) {
-    const link = li.querySelector("a.rbx-menu-item");
-    if (!(link instanceof HTMLAnchorElement)) return;
-    link.href = buildRoPrimeSettingsFullUrl();
-    const label = settingsT("settings.hero.title");
-    const textNode = [...link.childNodes].find((n) => n.nodeType === Node.TEXT_NODE);
-    if (textNode) textNode.textContent = label;
-    const img = link.querySelector("img");
-    if (img instanceof HTMLImageElement) img.src = extensionIconUrl();
-}
-
-function findNativeAccountSettingsMenuLink(popoverMenu) {
-    return (
-        popoverMenu.querySelector('a.rbx-menu-item[href="/my/account"]') ||
-        popoverMenu.querySelector('a.rbx-menu-item[href$="/my/account"]') ||
-        popoverMenu.querySelector('a.rbx-menu-item[href*="/my/account"]')
-    );
-}
-
-/**
- * RoValra-style gear menu row — same structure as `addPopoverButton` in
- * https://github.com/NotValra/RoValra/blob/main/src/content/core/settings/ui/settingsbutton.js
- * (DOM presence only: no `window.*` flag — React re-renders would leave the flag stuck and hide the row forever).
- */
-function addSettingsPopoverButton() {
-    if (!isExtensionContextAlive()) {
-        uninstallPopoverHooks();
-        return;
-    }
-    if (!shouldInjectSettingsPopoverEntry()) {
-        removePopoverInjection();
-        return;
-    }
-
-    const popoverMenu = document.getElementById("settings-popover-menu");
-    if (!(popoverMenu instanceof HTMLElement)) return;
-
-    const ours = popoverMenu.querySelector(`li[${POP_ENTRY_ATTR}="1"]`);
-    if (ours instanceof HTMLElement && popoverMenu.contains(ours)) {
-        syncExistingPopoverRow(ours);
-        return;
-    }
-
-    const hrefParamNeedle = `?${RP_PARAM_KEY}=`;
-    const existingPrime = popoverMenu.querySelector(`a.rbx-menu-item[href*="${hrefParamNeedle}"]`);
-    if (existingPrime) {
-        const li = existingPrime.closest("li");
-        if (li instanceof HTMLElement && li.getAttribute(POP_ENTRY_ATTR) !== "1") return;
-    }
-
-    const newButtonListItem = document.createElement("li");
-    newButtonListItem.setAttribute(POP_ENTRY_ATTR, "1");
-
-    const newButtonLink = document.createElement("a");
-    newButtonLink.className = "rbx-menu-item";
-    newButtonLink.href = buildRoPrimeSettingsFullUrl();
-    Object.assign(newButtonLink.style, { display: "flex", alignItems: "center", gap: "8px" });
-
-    newButtonLink.addEventListener("click", (e) => {
-        e.preventDefault();
-        if (window.location.search.includes(`${RP_PARAM_KEY}=`)) {
-            window.location.reload();
-        } else {
-            window.location.href = buildRoPrimeSettingsFullUrl();
-        }
-    });
-
-    const logo = document.createElement("img");
-    logo.src = extensionIconUrl();
-    logo.alt = "";
-    Object.assign(logo.style, { width: "18px", height: "18px" });
-
-    const buttonText = document.createTextNode(settingsT("settings.hero.title"));
-    newButtonLink.append(logo, buttonText);
-    newButtonListItem.appendChild(newButtonLink);
-
-    const nativeSettingsLink = findNativeAccountSettingsMenuLink(popoverMenu);
-    if (nativeSettingsLink?.parentElement) {
-        nativeSettingsLink.parentElement.before(newButtonListItem);
-    } else {
-        popoverMenu.prepend(newButtonListItem);
-    }
-}
-
-/** Adds RoPrime to the account vertical tabs and keeps the gear popover row in sync (DOM observer + pointer + periodic sync). */
+/** Vertical tab on `/my/account` + optional row in `#settings-popover-menu` off account. */
 export function syncAccountSettingsMenuButton() {
-    if (!isExtensionContextAlive()) {
-        uninstallPopoverHooks();
-        return;
-    }
+    try {
+        if (!isExtensionContextAlive()) {
+            return;
+        }
 
-    if (!shouldRunRoPrimeOnCurrentPage()) {
-        accountMenuRetries = 0;
-        uninstallPopoverHooks();
-        removeInjectedEntries();
-        return;
-    }
+        if (!shouldRunRoPrimeOnCurrentPage()) {
+            accountMenuRetries = 0;
+            removeInjectedEntries();
+            return;
+        }
 
-    if (isMyAccountPath()) {
-        uninstallPopoverHooks();
-        removePopoverInjection();
-    } else {
-        removeVerticalAccountInjections();
-        installPopoverHooks();
-        addSettingsPopoverButton();
-    }
+        if (isMyAccountPath()) {
+            removePopoverInjection();
+        } else {
+            removeVerticalAccountInjections();
+            injectSettingsPopoverRow();
+        }
 
-    let tabOk = true;
-    if (shouldInjectVerticalAccountTab()) {
-        tabOk = ensureVerticalTabEntry();
-    } else {
-        removeVerticalAccountInjections();
-    }
+        let tabOk = true;
+        if (shouldInjectVerticalAccountTab()) {
+            tabOk = ensureVerticalTabEntry();
+        } else {
+            removeVerticalAccountInjections();
+        }
 
-    if (shouldInjectVerticalAccountTab() && !tabOk && accountMenuRetries < 6) {
-        accountMenuRetries += 1;
-        window.setTimeout(() => {
-            if (!isExtensionContextAlive()) return;
-            syncAccountSettingsMenuButton();
-        }, 450);
-    } else {
-        accountMenuRetries = 0;
+        if (shouldInjectVerticalAccountTab() && !tabOk && accountMenuRetries < 6) {
+            accountMenuRetries += 1;
+            window.setTimeout(() => {
+                if (!isExtensionContextAlive()) return;
+                syncAccountSettingsMenuButton();
+            }, 450);
+        } else {
+            accountMenuRetries = 0;
+        }
+    } catch (e) {
+        if (isExtensionContextInvalidatedError(e)) {
+            return;
+        }
+        throw e;
     }
 }

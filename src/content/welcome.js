@@ -1,4 +1,4 @@
-import { getStorageApi, settingsT } from "./core.js";
+import { getExtensionResourceUrl, getStorageApi, isExtensionContextInvalidatedError, settingsT } from "./core.js";
 
 export const RP_HOME_WELCOME_DISMISSED_KEY = "rpHomeWelcomeDismissed";
 
@@ -12,8 +12,12 @@ function attachDismissStorageListener() {
     if (typeof chrome === "undefined" || !chrome.storage?.onChanged) return;
     storageDismissListenerAttached = true;
     chrome.storage.onChanged.addListener((changes, area) => {
-        if (area !== "local") return;
-        if (changes[RP_HOME_WELCOME_DISMISSED_KEY]?.newValue === true) removeWelcomeIfPresent();
+        try {
+            if (area !== "local") return;
+            if (changes[RP_HOME_WELCOME_DISMISSED_KEY]?.newValue === true) removeWelcomeIfPresent();
+        } catch (e) {
+            if (!isExtensionContextInvalidatedError(e)) throw e;
+        }
     });
 }
 
@@ -35,14 +39,7 @@ function removeWelcomeIfPresent() {
 }
 
 function getExtensionIconUrl() {
-    try {
-        if (typeof chrome !== "undefined" && chrome.runtime?.getURL) {
-            return chrome.runtime.getURL("resources/roprime-icon.png");
-        }
-    } catch {
-        return "";
-    }
-    return "";
+    return getExtensionResourceUrl("resources/roprime-icon.png");
 }
 
 async function getRobloxViewer() {
@@ -164,9 +161,13 @@ async function showWelcomeModal() {
     `;
 
     const dismiss = () => {
-        const storage = getStorageApi();
-        if (storage) {
-            storage.set({ [RP_HOME_WELCOME_DISMISSED_KEY]: true });
+        try {
+            const storage = getStorageApi();
+            if (storage) {
+                storage.set({ [RP_HOME_WELCOME_DISMISSED_KEY]: true });
+            }
+        } catch {
+            /* ignore */
         }
         removeWelcomeIfPresent();
     };
@@ -200,18 +201,27 @@ export function syncHomeWelcomeModal() {
         return;
     }
 
-    storage.get([RP_HOME_WELCOME_DISMISSED_KEY], (result) => {
-        if (chrome.runtime?.lastError) {
-            if (!isRobloxHomePage()) return;
-            showWelcomeModal();
-            return;
-        }
+    try {
+        storage.get([RP_HOME_WELCOME_DISMISSED_KEY], (result) => {
+            try {
+                if (chrome.runtime?.lastError) {
+                    if (!isRobloxHomePage()) return;
+                    showWelcomeModal();
+                    return;
+                }
+                if (!isRobloxHomePage()) return;
+                const dismissed = result?.[RP_HOME_WELCOME_DISMISSED_KEY];
+                if (dismissed === true) {
+                    removeWelcomeIfPresent();
+                    return;
+                }
+                showWelcomeModal();
+            } catch {
+                /* ignore */
+            }
+        });
+    } catch {
         if (!isRobloxHomePage()) return;
-        const dismissed = result?.[RP_HOME_WELCOME_DISMISSED_KEY];
-        if (dismissed === true) {
-            removeWelcomeIfPresent();
-            return;
-        }
         showWelcomeModal();
-    });
+    }
 }

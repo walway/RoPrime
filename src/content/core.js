@@ -14,6 +14,34 @@ export const RP_ACCOUNT_URL_HASH_DEFAULT = "#!/info";
 /** Set on `<html>` while RoPrime account settings URL is active — hides native chrome before mount. */
 export const RP_ACCOUNT_SETTINGS_SHELL_CLASS = "roprime-account-settings-open";
 
+/**
+ * After reload/disable, `chrome.runtime.getURL` can throw even when `getURL` is a function.
+ * Probe with a real call so stale content scripts stop touching extension APIs.
+ */
+export function isExtensionContextAlive() {
+    try {
+        if (typeof chrome === "undefined" || typeof chrome.runtime?.getURL !== "function") return false;
+        chrome.runtime.getURL(".");
+        return true;
+    } catch {
+        return false;
+    }
+}
+
+export function isExtensionContextInvalidatedError(err) {
+    const msg = err instanceof Error ? err.message : String(err ?? "");
+    return /extension context invalidated|context invalidated/i.test(msg);
+}
+
+export function getExtensionResourceUrl(relativePath) {
+    try {
+        if (!isExtensionContextAlive()) return "";
+        return chrome.runtime.getURL(relativePath);
+    } catch {
+        return "";
+    }
+}
+
 /** Merged per-locale `translation-keys.json` files under `.locales` for UI copy (from `settingsState.language`). */
 /** @type {Record<string, string>} */
 let settingsUiStrings = {};
@@ -26,10 +54,14 @@ function normalizeUiLocale(raw) {
 }
 
 function fetchExtensionJson(path) {
-    if (typeof chrome === "undefined" || typeof chrome.runtime?.getURL !== "function") {
-        return Promise.reject(new Error("no extension runtime"));
+    try {
+        if (!isExtensionContextAlive()) {
+            return Promise.reject(new Error("no extension runtime"));
+        }
+        return fetch(chrome.runtime.getURL(path), { cache: "no-store" });
+    } catch (e) {
+        return Promise.reject(e);
     }
-    return fetch(chrome.runtime.getURL(path), { cache: "no-store" });
 }
 
 async function buildSettingsUiStringMap(language) {
@@ -130,9 +162,11 @@ export function setRenameIntervalId(value) {
 }
 
 export function getStorageApi() {
-    return typeof chrome !== "undefined" && chrome.storage && chrome.storage.local
-        ? chrome.storage.local
-        : null;
+    try {
+        return typeof chrome !== "undefined" && chrome.storage?.local ? chrome.storage.local : null;
+    } catch {
+        return null;
+    }
 }
 
 export function loadSettings() {
@@ -140,76 +174,90 @@ export function loadSettings() {
     if (!storage) return Promise.resolve();
 
     return new Promise((resolve) => {
-        storage.get([RP_SETTINGS_KEY], (result) => {
-            const stored = result?.[RP_SETTINGS_KEY];
-            if (stored && typeof stored === "object") {
-                Object.assign(settingsState, RP_DEFAULT_SETTINGS, stored);
-                settingsState.blockedExecutionPages = normalizeBlockedExecutionPages(stored.blockedExecutionPages);
-                settingsState.developerPageUnlocked = !!stored.developerPageUnlocked;
-                if (stored.enablePluginControlPanel != null) {
-                    settingsState.enablePluginControlPanel = !!stored.enablePluginControlPanel;
+        try {
+            storage.get([RP_SETTINGS_KEY], (result) => {
+                try {
+                    const stored = result?.[RP_SETTINGS_KEY];
+                    if (stored && typeof stored === "object") {
+                        Object.assign(settingsState, RP_DEFAULT_SETTINGS, stored);
+                        settingsState.blockedExecutionPages = normalizeBlockedExecutionPages(stored.blockedExecutionPages);
+                        settingsState.developerPageUnlocked = !!stored.developerPageUnlocked;
+                        if (stored.enablePluginControlPanel != null) {
+                            settingsState.enablePluginControlPanel = !!stored.enablePluginControlPanel;
+                        }
+                        if (stored.oldNavigationBarEnabled === undefined) {
+                            if (stored.classicLeftNavEnabled != null) {
+                                settingsState.oldNavigationBarEnabled = !!stored.classicLeftNavEnabled;
+                            } else if (stored.leftGrayFrameEnabled != null) {
+                                settingsState.oldNavigationBarEnabled = !!stored.leftGrayFrameEnabled;
+                            }
+                        }
+                        delete settingsState.classicLeftNavEnabled;
+                        delete settingsState.leftGrayFrameEnabled;
+                        if (stored.sidebarSize === undefined) {
+                            settingsState.sidebarSize = stored.sidebarIconsOnlyEnabled
+                                ? "icon"
+                                : stored.smallNewNavigationBarEnabled
+                                  ? "small"
+                                  : "full";
+                        } else {
+                            settingsState.sidebarSize = String(stored.sidebarSize || "full").toLowerCase();
+                            if (!["full", "small", "icon"].includes(settingsState.sidebarSize)) {
+                                settingsState.sidebarSize = "full";
+                            }
+                        }
+                        if (stored.renameDropdownRestore && typeof stored.renameDropdownRestore === "object") {
+                            if (stored.renameCommunitiesToGroups === undefined) {
+                                settingsState.renameCommunitiesToGroups =
+                                    !!stored.renameDropdownRestore.renameCommunitiesToGroups;
+                            }
+                            if (stored.renameExperiencesToGames === undefined) {
+                                settingsState.renameExperiencesToGames = !!stored.renameDropdownRestore.renameExperiencesToGames;
+                            }
+                            if (stored.renameMarketplaceToAvatarShop === undefined) {
+                                settingsState.renameMarketplaceToAvatarShop =
+                                    !!stored.renameDropdownRestore.renameMarketplaceToAvatarShop;
+                            }
+                        }
+                    }
+                } catch {
+                    /* ignore */
                 }
-                if (stored.oldNavigationBarEnabled === undefined) {
-                    if (stored.classicLeftNavEnabled != null) {
-                        settingsState.oldNavigationBarEnabled = !!stored.classicLeftNavEnabled;
-                    } else if (stored.leftGrayFrameEnabled != null) {
-                        settingsState.oldNavigationBarEnabled = !!stored.leftGrayFrameEnabled;
-                    }
-                }
-                delete settingsState.classicLeftNavEnabled;
-                delete settingsState.leftGrayFrameEnabled;
-                if (stored.sidebarSize === undefined) {
-                    settingsState.sidebarSize = stored.sidebarIconsOnlyEnabled
-                        ? "icon"
-                        : stored.smallNewNavigationBarEnabled
-                          ? "small"
-                          : "full";
-                } else {
-                    settingsState.sidebarSize = String(stored.sidebarSize || "full").toLowerCase();
-                    if (!["full", "small", "icon"].includes(settingsState.sidebarSize)) {
-                        settingsState.sidebarSize = "full";
-                    }
-                }
-                if (stored.renameDropdownRestore && typeof stored.renameDropdownRestore === "object") {
-                    if (stored.renameCommunitiesToGroups === undefined) {
-                        settingsState.renameCommunitiesToGroups = !!stored.renameDropdownRestore.renameCommunitiesToGroups;
-                    }
-                    if (stored.renameExperiencesToGames === undefined) {
-                        settingsState.renameExperiencesToGames = !!stored.renameDropdownRestore.renameExperiencesToGames;
-                    }
-                    if (stored.renameMarketplaceToAvatarShop === undefined) {
-                        settingsState.renameMarketplaceToAvatarShop = !!stored.renameDropdownRestore.renameMarketplaceToAvatarShop;
-                    }
-                }
-            }
+                resolve();
+            });
+        } catch {
             resolve();
-        });
+        }
     });
 }
 
 export function saveSettings() {
-    const storage = getStorageApi();
-    if (!storage) return;
+    try {
+        const storage = getStorageApi();
+        if (!storage) return;
 
-    storage.set({
-        [RP_SETTINGS_KEY]: {
-            renameDropdownEnabled: settingsState.renameDropdownEnabled,
-            renameDropdownRestore: settingsState.renameDropdownRestore,
-            language: settingsState.language,
-            renameCommunitiesToGroups: settingsState.renameCommunitiesToGroups,
-            renameExperiencesToGames: settingsState.renameExperiencesToGames,
-            renameMarketplaceToAvatarShop: settingsState.renameMarketplaceToAvatarShop,
-            oldNavigationBarEnabled: settingsState.oldNavigationBarEnabled,
-            smallNewNavigationBarEnabled: settingsState.smallNewNavigationBarEnabled,
-            sidebarIconsOnlyEnabled: settingsState.sidebarIconsOnlyEnabled,
-            alwaysShowCloseButtonEnabled: settingsState.alwaysShowCloseButtonEnabled,
-            friendStylingReimagnedEnabled: settingsState.friendStylingReimagnedEnabled,
-            developerPageUnlocked: !!settingsState.developerPageUnlocked,
-            enablePluginControlPanel: !!settingsState.enablePluginControlPanel,
-            sidebarSize: settingsState.sidebarSize || "full",
-            blockedExecutionPages: normalizeBlockedExecutionPages(settingsState.blockedExecutionPages),
-        },
-    });
+        storage.set({
+            [RP_SETTINGS_KEY]: {
+                renameDropdownEnabled: settingsState.renameDropdownEnabled,
+                renameDropdownRestore: settingsState.renameDropdownRestore,
+                language: settingsState.language,
+                renameCommunitiesToGroups: settingsState.renameCommunitiesToGroups,
+                renameExperiencesToGames: settingsState.renameExperiencesToGames,
+                renameMarketplaceToAvatarShop: settingsState.renameMarketplaceToAvatarShop,
+                oldNavigationBarEnabled: settingsState.oldNavigationBarEnabled,
+                smallNewNavigationBarEnabled: settingsState.smallNewNavigationBarEnabled,
+                sidebarIconsOnlyEnabled: settingsState.sidebarIconsOnlyEnabled,
+                alwaysShowCloseButtonEnabled: settingsState.alwaysShowCloseButtonEnabled,
+                friendStylingReimagnedEnabled: settingsState.friendStylingReimagnedEnabled,
+                developerPageUnlocked: !!settingsState.developerPageUnlocked,
+                enablePluginControlPanel: !!settingsState.enablePluginControlPanel,
+                sidebarSize: settingsState.sidebarSize || "full",
+                blockedExecutionPages: normalizeBlockedExecutionPages(settingsState.blockedExecutionPages),
+            },
+        });
+    } catch {
+        /* ignore */
+    }
 }
 
 export function isAccountPage() {

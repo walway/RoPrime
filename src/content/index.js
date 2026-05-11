@@ -1,6 +1,8 @@
 import {
     RP_RUNTIME_STYLE_ID,
     RP_SETTINGS_KEY,
+    getExtensionResourceUrl,
+    isExtensionContextInvalidatedError,
     loadSettings,
     loadSettingsUiStrings,
     reloadSettingsUiStrings,
@@ -22,16 +24,24 @@ import { syncHomeWelcomeModal } from "./welcome.js";
 function installStorageSyncListener() {
     if (typeof chrome === "undefined" || !chrome.storage?.onChanged) return;
     chrome.storage.onChanged.addListener((changes, area) => {
-        if (area !== "local" || !changes[RP_SETTINGS_KEY]) return;
-        loadSettings().finally(() => {
-            void (async () => {
-                await reloadSettingsUiStrings();
-                updateRenameLoop();
-                syncRoEliteView();
-                syncProfileSettingsRoute();
-                syncAccountSettingsMenuButton();
-            })();
-        });
+        try {
+            if (area !== "local" || !changes[RP_SETTINGS_KEY]) return;
+            loadSettings().finally(() => {
+                void (async () => {
+                    try {
+                        await reloadSettingsUiStrings();
+                        updateRenameLoop();
+                        syncRoEliteView();
+                        syncProfileSettingsRoute();
+                        syncAccountSettingsMenuButton();
+                    } catch (e) {
+                        if (!isExtensionContextInvalidatedError(e)) throw e;
+                    }
+                })();
+            });
+        } catch (e) {
+            if (!isExtensionContextInvalidatedError(e)) throw e;
+        }
     });
 }
 
@@ -52,10 +62,14 @@ function installHistoryListeners() {
     };
 
     const handleRouteChange = () => {
-        syncRuntimeStylesheet();
-        syncRoEliteView();
-        syncProfileSettingsRoute();
-        syncAccountSettingsMenuButton();
+        try {
+            syncRuntimeStylesheet();
+            syncRoEliteView();
+            syncProfileSettingsRoute();
+            syncAccountSettingsMenuButton();
+        } catch (e) {
+            if (!isExtensionContextInvalidatedError(e)) throw e;
+        }
     };
 
     window.addEventListener("popstate", handleRouteChange);
@@ -69,15 +83,8 @@ function syncRuntimeStylesheet() {
         return;
     }
     if (existing instanceof HTMLLinkElement) return;
-    let styleHref = "";
-    try {
-        if (typeof chrome === "undefined") return;
-        if (!chrome.runtime?.id) return;
-        if (typeof chrome.runtime.getURL !== "function") return;
-        styleHref = chrome.runtime.getURL("style.css");
-    } catch {
-        return;
-    }
+    const styleHref = getExtensionResourceUrl("style.css");
+    if (!styleHref) return;
     const link = document.createElement("link");
     link.id = RP_RUNTIME_STYLE_ID;
     link.rel = "stylesheet";
@@ -90,23 +97,27 @@ function bootstrap() {
     syncRuntimeStylesheet();
     loadSettings().finally(() => {
         void (async () => {
-            await loadSettingsUiStrings();
-            installHistoryListeners();
-            if (syncIntervalId === null) {
-                setSyncIntervalId(window.setInterval(syncRoEliteView, 1200));
-            }
-            syncRuntimeStylesheet();
-            if (shouldRunRoPrimeOnCurrentPage()) {
-                updateRenameLoop();
-            }
-            syncRoEliteView();
-            syncProfileSettingsRoute();
-            syncAccountSettingsMenuButton();
-            if (shouldRunRoPrimeOnCurrentPage()) {
-                applyCommunityRename(document.body);
-                applyExperiencesRename(document.body);
-                applyMarketplaceRename(document.body);
-                syncHomeWelcomeModal();
+            try {
+                await loadSettingsUiStrings();
+                installHistoryListeners();
+                if (syncIntervalId === null) {
+                    setSyncIntervalId(window.setInterval(syncRoEliteView, 1200));
+                }
+                syncRuntimeStylesheet();
+                if (shouldRunRoPrimeOnCurrentPage()) {
+                    updateRenameLoop();
+                }
+                syncRoEliteView();
+                syncProfileSettingsRoute();
+                syncAccountSettingsMenuButton();
+                if (shouldRunRoPrimeOnCurrentPage()) {
+                    applyCommunityRename(document.body);
+                    applyExperiencesRename(document.body);
+                    applyMarketplaceRename(document.body);
+                    syncHomeWelcomeModal();
+                }
+            } catch (e) {
+                if (!isExtensionContextInvalidatedError(e)) throw e;
             }
         })();
     });

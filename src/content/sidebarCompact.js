@@ -1,14 +1,11 @@
-import { RP_SIDEBAR_COMPACT_STYLE_ID, settingsState } from "./core.js";
+import { RP_SIDEBAR_COMPACT_STYLE_ID, getExtensionResourceUrl, settingsState } from "./core.js";
 
 const RP_LEFTNAV_OFFICIAL_STORE_BTN_CLASS = "roprime-leftnav-official-store";
 const RP_LEFTNAV_PROFILE_LI_CLASS = "roprime-leftnav-profile";
 const RP_SIDEBAR_PLUS_ITEM_ID = "roprime-sidebar-plus-item";
 const RP_SIDEBAR_PLUS_BTN_CLASS = "roprime-sidebar-plus-btn";
 const RP_SIDEBAR_PLUS_ICON_CLASS = "roprime-sidebar-plus-icon";
-const RP_RBLX_PLUS_LOGO_URL =
-    typeof chrome !== "undefined" && chrome.runtime && typeof chrome.runtime.getURL === "function"
-        ? chrome.runtime.getURL("resources/RblxPlusLogo.webp")
-        : "resources/RblxPlusLogo.webp";
+const RP_RBLX_PLUS_LOGO_URL = getExtensionResourceUrl("resources/RblxPlusLogo.webp") || "resources/RblxPlusLogo.webp";
 const ROBLOX_LOCALE_SEGMENT_REGEX = /^[a-z]{2}(?:-[a-z]{2})?$/i;
 
 const SIDEBAR_COMPACT_RAIL_PX = 72;

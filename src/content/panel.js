@@ -5,6 +5,7 @@ import {
     RP_RUNTIME_STYLE_ID,
     RP_SIDEBAR_COMPACT_STYLE_ID,
     RP_SMALL_NEW_NAV_STYLE_ID,
+    isExtensionContextInvalidatedError,
     settingsState,
     shouldRunRoPrimeOnCurrentPage,
 } from "./core.js";
@@ -47,21 +48,26 @@ function cleanupBlockedRouteUi() {
 }
 
 export function syncRoEliteView() {
-    if (!shouldRunRoPrimeOnCurrentPage()) {
-        cleanupBlockedRouteUi();
-        return;
+    try {
+        if (!shouldRunRoPrimeOnCurrentPage()) {
+            cleanupBlockedRouteUi();
+            return;
+        }
+
+        updateOldNavigationBarVisibility();
+        updateSmallNewNavVisibility();
+        updateSidebarCompactVisibility();
+        syncAlwaysShowCloseButton();
+        updateFriendStylingReimagnedVisibility();
+        syncSidebarCompactDecorations();
+
+        if (settingsState.renameCommunitiesToGroups) applyCommunityRename(document.body);
+        if (settingsState.renameExperiencesToGames) applyExperiencesRename(document.body);
+        if (settingsState.renameMarketplaceToAvatarShop) applyMarketplaceRename(document.body);
+        syncHomeWelcomeModal();
+        syncAccountSettingsMenuButton();
+    } catch (e) {
+        if (isExtensionContextInvalidatedError(e)) return;
+        throw e;
     }
-
-    updateOldNavigationBarVisibility();
-    updateSmallNewNavVisibility();
-    updateSidebarCompactVisibility();
-    syncAlwaysShowCloseButton();
-    updateFriendStylingReimagnedVisibility();
-    syncSidebarCompactDecorations();
-
-    if (settingsState.renameCommunitiesToGroups) applyCommunityRename(document.body);
-    if (settingsState.renameExperiencesToGames) applyExperiencesRename(document.body);
-    if (settingsState.renameMarketplaceToAvatarShop) applyMarketplaceRename(document.body);
-    syncHomeWelcomeModal();
-    syncAccountSettingsMenuButton();
 }
