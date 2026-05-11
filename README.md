@@ -11,6 +11,13 @@
   <a href="#installation">Installation</a>
 </p>
 
+<div align="center">
+
+  ![GitHub Release](https://img.shields.io/github/v/release/walway/RoPrime)
+  ![GitHub Release Date](https://img.shields.io/github/release-date/walway/RoPrime)
+
+</div>
+
 <hr />
 
 <br>
