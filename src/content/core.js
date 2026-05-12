@@ -1,3 +1,5 @@
+import { langList } from "../../.locales/lang-config.js";
+
 // (Settings UI removed) - keep runtime/style constants only.
 export const RP_SMALL_NEW_NAV_STYLE_ID = "roprime-small-new-nav-style";
 export const RP_SIDEBAR_COMPACT_STYLE_ID = "roprime-sidebar-compact-style";
@@ -48,8 +50,7 @@ let settingsUiStrings = {};
 
 function normalizeUiLocale(raw) {
     const s = String(raw || "en").toLowerCase();
-    if (s === "ru") return "ru";
-    if (s === "bn") return "bn";
+    if (s in langList) return s;
     return "en";
 }
 
@@ -85,7 +86,7 @@ export async function reloadSettingsUiStrings() {
     return loadSettingsUiStrings();
 }
 
-/** Localized UI string from `.locales` keys (e.g. `settings.hero.title`). */
+/** Localized UI string from `.locales` phrase keys (e.g. `Settings hero title`). */
 export function settingsT(key) {
     const v = settingsUiStrings[key];
     if (typeof v === "string" && v.length > 0) return v;

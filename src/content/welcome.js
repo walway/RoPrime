@@ -139,15 +139,15 @@ async function showWelcomeModal() {
                 </div>
                 <p class="roprime-welcome-text">Thank you for installing RoPrime.</p>
                 <p class="roprime-welcome-text">To change settings and explore all features:</p>
-                <p class="roprime-welcome-step">${settingsT("settings.welcome.stepBefore")}<strong>${settingsT("settings.hero.title")}</strong>${settingsT("settings.welcome.stepAfter")}</p>
+                <p class="roprime-welcome-step">${settingsT("Welcome step before")}<strong>${settingsT("Settings hero title")}</strong>${settingsT("Welcome step after")}</p>
                 <div class="roprime-welcome-mock">
                     <div class="roprime-welcome-mock-header">
                         <span class="roprime-welcome-mock-bell">&#128276;</span>
                         <span class="roprime-welcome-mock-gear">&#9881;</span>
                     </div>
                     <div class="roprime-welcome-mock-menu">
-                        <div class="roprime-welcome-mock-item is-active"><img src="${iconSrc}" alt="" width="16" height="16" />${settingsT("settings.hero.title")}</div>
-                        <div class="roprime-welcome-mock-item">${settingsT("settings.nav.settings")}</div>
+                        <div class="roprime-welcome-mock-item is-active"><img src="${iconSrc}" alt="" width="16" height="16" />${settingsT("Settings hero title")}</div>
+                        <div class="roprime-welcome-mock-item">${settingsT("Nav tab settings")}</div>
                         <div class="roprime-welcome-mock-item">Quick Sign In</div>
                         <div class="roprime-welcome-mock-item">Help &amp; Safety</div>
                         <div class="roprime-welcome-mock-item">Switch Accounts</div>
