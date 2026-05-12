@@ -1,8 +1,7 @@
 {
   "manifest_version": 3,
   "name": "RoPrime - Making Roblox feel better",
-  "version": "1.6",
-  "version_name": "1.6 (Patient Pika)",
+  "version": "1.1.2",
   "description": "The new era of Roblox website.",
   "permissions": ["storage"],
   "optional_permissions": ["management"],
