@@ -1548,6 +1548,31 @@ body.dark-theme .left-nav.fixed button.${RP_SIDEBAR_PLUS_BTN_CLASS} {
     const threshold = query.length > 5 ? 2 : 1;
     return words.some((word) => getLevenshteinDistance(query, word) <= threshold);
   }
+  function buildSearchHighlightFragment(sourceText, matcher) {
+    const fragment = document.createDocumentFragment();
+    let lastIndex = 0;
+    let match;
+    matcher.lastIndex = 0;
+    while ((match = matcher.exec(sourceText)) !== null) {
+      const matchText = match[0];
+      const matchIndex = match.index;
+      if (matchIndex > lastIndex) {
+        fragment.append(document.createTextNode(sourceText.slice(lastIndex, matchIndex)));
+      }
+      const mark = document.createElement("mark");
+      mark.className = "roprime-search-mark";
+      mark.textContent = matchText;
+      fragment.append(mark);
+      lastIndex = matchIndex + matchText.length;
+      if (matchText.length === 0) {
+        matcher.lastIndex++;
+      }
+    }
+    if (lastIndex < sourceText.length) {
+      fragment.append(document.createTextNode(sourceText.slice(lastIndex)));
+    }
+    return fragment;
+  }
   function clearSearchHighlights(root) {
     if (!(root instanceof Element))
       return;
@@ -1586,8 +1611,8 @@ body.dark-theme .left-nav.fixed button.${RP_SIDEBAR_PLUS_BTN_CLASS} {
         return;
       const sourceText = element.dataset.roprimeSearchOriginalText ?? element.textContent ?? "";
       element.dataset.roprimeSearchOriginalText = sourceText;
-      const highlighted = sourceText.replace(matcher, '<mark class="roprime-search-mark">$1</mark>');
-      element.innerHTML = highlighted;
+      const highlightedFragment = buildSearchHighlightFragment(sourceText, matcher);
+      element.replaceChildren(highlightedFragment);
       element.dataset.roprimeSearchHighlight = "1";
     });
   }
