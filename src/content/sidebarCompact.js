@@ -4,7 +4,7 @@ const RP_LEFTNAV_OFFICIAL_STORE_BTN_CLASS = "roprime-leftnav-official-store";
 const RP_LEFTNAV_PROFILE_LI_CLASS = "roprime-leftnav-profile";
 const ROBLOX_LOCALE_SEGMENT_REGEX = /^[a-z]{2}(?:-[a-z]{2})?$/i;
 
-const SIDEBAR_COMPACT_RAIL_PX = 72;
+const SIDEBAR_COMPACT_RAIL_PX = 82;
 const SIDEBAR_COMPACT_ICON_PX = 48;
 
 const SIDEBAR_COMPACT_CSS = `
@@ -76,6 +76,15 @@ body .no-gutter-ads.logged-in.left-nav-new-width {
   height: 0 !important;
   min-height: 0 !important;
 }
+.nav-item-text {
+  display: none !important;
+}
+.roseal-events-nav {
+  display: none !important;
+}
+.padding-top-xsmall  {
+  display: none !important;
+}
 .left-nav.fixed.width-\\[288px\\],
 .left-nav.fixed.width-\\[289px\\],
 .left-nav.fixed .width-\\[288px\\],
@@ -119,7 +128,6 @@ body .no-gutter-ads.logged-in.left-nav-new-width {
   max-height: ${SIDEBAR_COMPACT_ICON_PX}px !important;
   padding: 0 !important;
   margin: 0 !important;
-  display: flex !important;
   align-items: center !important;
   justify-content: center !important;
   flex-grow: 0 !important;

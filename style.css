@@ -180,6 +180,10 @@
     margin-top: 12px;
 }
 
+.game-thumbnail {
+    z-index: 6 !important;
+    position: relative !important;
+}
 .roprime-setting-copy {
     min-width: 0;
     display: flex;

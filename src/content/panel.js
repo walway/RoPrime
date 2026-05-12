@@ -18,6 +18,7 @@ import { updateSidebarCompactVisibility, syncSidebarCompactDecorations } from ".
 import { syncAlwaysShowCloseButton } from "./alwaysShowCloseButton.js";
 import { syncAccountSettingsMenuButton } from "./accountSettingsLink.js";
 import { stopRobloxNavDropdownButton, syncRobloxNavDropdownButton } from "./dropdownButton.js";
+import { RP_EARLY_PAGE_COSMETICS_STYLE_ID, syncEarlyPageCosmetics } from "./earlyPageCosmetics.js";
 
 export function updateOldNavigationBarVisibility() {
     syncOldNavigationBar();
@@ -32,6 +33,7 @@ function cleanupBlockedRouteUi() {
     document.getElementById(RP_SIDEBAR_COMPACT_STYLE_ID)?.remove();
     document.getElementById(RP_ALWAYS_SHOW_CLOSE_STYLE_ID)?.remove();
     document.getElementById(RP_FRIEND_STYLING_REIMAGNED_STYLE_ID)?.remove();
+    document.getElementById(RP_EARLY_PAGE_COSMETICS_STYLE_ID)?.remove();
     document.getElementById("roprime-classic-left-nav-host")?.remove();
     document.getElementById("roprime-old-navbar-style")?.remove();
     document.getElementById("roprime-left-gray-frame")?.remove();
@@ -56,6 +58,7 @@ export function syncRoEliteView() {
             return;
         }
 
+        syncEarlyPageCosmetics();
         updateOldNavigationBarVisibility();
         updateSmallNewNavVisibility();
         updateSidebarCompactVisibility();
