@@ -1,22 +1,36 @@
-#!/usr/bin/env bun
+#!/usr/bin/env node
+import { spawn } from "node:child_process";
 import { cpSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 
-const root = import.meta.dir;
+const root = dirname(fileURLToPath(import.meta.url));
 const distDir = join(root, "dist");
 
-console.log("Building RoPrime with Vite + React + Tailwind...");
+function runNode(scriptPath, args, opts) {
+    return new Promise((resolve, reject) => {
+        const child = spawn(process.execPath, [scriptPath, ...args], {
+            stdio: "inherit",
+            cwd: root,
+            ...opts,
+        });
+        child.on("error", reject);
+        child.on("close", (code) => {
+            if (code === 0) resolve();
+            else reject(new Error(`process exited with code ${code}`));
+        });
+    });
+}
+
+console.log("Building RoPrime with Vite + React...");
 rmSync(distDir, { recursive: true, force: true });
-const viteProc = Bun.spawn({
-    cmd: ["bunx", "vite", "build"],
-    cwd: root,
-    stdout: "inherit",
-    stderr: "inherit",
-});
-const viteCode = await viteProc.exited;
-if (viteCode !== 0) {
+
+const viteCli = join(root, "node_modules", "vite", "bin", "vite.js");
+if (!existsSync(viteCli)) {
+    console.error("Missing Vite CLI. Run `npm install` first.");
     process.exit(1);
 }
+await runNode(viteCli, ["build"]);
 
 function writeDistManifest(distPath) {
     const raw = readFileSync(join(root, "manifest.json"), "utf8");
@@ -52,4 +66,3 @@ writeDistManifest(join(distDir, "manifest.json"));
 
 console.log("Build complete.");
 console.log("Load unpacked from project root RoPrime (uses dist/content.js) or from RoPrime/dist (uses content.js).");
-

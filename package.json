@@ -2,17 +2,18 @@
   "name": "roprime-extension",
   "private": true,
   "type": "module",
+  "engines": {
+    "node": ">=26.1.0"
+  },
   "scripts": {
-    "build": "bun run build.js"
+    "build": "node build.js"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^6.0.1",
     "vite": "^8.0.10"
   },
   "dependencies": {
-    "@tailwindcss/vite": "^4.2.4",
     "react": "^19.2.5",
-    "react-dom": "^19.2.5",
-    "tailwindcss": "^4.2.4"
+    "react-dom": "^19.2.5"
   }
 }

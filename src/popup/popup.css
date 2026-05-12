@@ -1,4 +1,4 @@
-@import "tailwindcss";
+/* Extension popup: no Tailwind — theme via html.dark-theme / html.light-theme */
 
 :root {
     color-scheme: dark;
@@ -8,4 +8,132 @@ html,
 body {
     margin: 0;
     padding: 0;
+}
+
+html.light-theme {
+    color-scheme: light;
+}
+
+html.dark-theme {
+    color-scheme: dark;
+}
+
+.rp-popup {
+    display: flex;
+    min-height: 220px;
+    width: 300px;
+    box-sizing: border-box;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+html.dark-theme .rp-popup {
+    background: #020617;
+    color: #f1f5f9;
+}
+
+html.light-theme .rp-popup {
+    background: #f8fafc;
+    color: #0f172a;
+}
+
+.rp-popup__card {
+    width: 100%;
+    box-sizing: border-box;
+    border-radius: 16px;
+    padding: 16px;
+}
+
+html.dark-theme .rp-popup__card {
+    border: 1px solid rgba(51, 65, 85, 0.7);
+    background: rgba(15, 23, 42, 0.85);
+    box-shadow: 0 10px 25px rgba(2, 6, 23, 0.45);
+}
+
+html.light-theme .rp-popup__card {
+    border: 1px solid rgba(148, 163, 184, 0.55);
+    background: rgba(255, 255, 255, 0.92);
+    box-shadow: 0 10px 25px rgba(15, 23, 42, 0.08);
+}
+
+.rp-popup__header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.rp-popup__header .ri-rocket-2-fill {
+    font-size: 1.35rem;
+}
+
+html.dark-theme .rp-popup__header .ri-rocket-2-fill {
+    color: #38bdf8;
+}
+
+html.light-theme .rp-popup__header .ri-rocket-2-fill {
+    color: #0284c7;
+}
+
+.rp-popup__title {
+    margin: 0;
+    text-align: center;
+    font-size: 1.25rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+}
+
+.rp-popup__actions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.rp-popup__btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    box-sizing: border-box;
+    border: none;
+    border-radius: 12px;
+    padding: 10px 12px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #fff;
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+.rp-popup__btn--secondary {
+    background: #334155;
+}
+
+html.dark-theme .rp-popup__btn--secondary:hover {
+    background: #475569;
+}
+
+html.light-theme .rp-popup__btn--secondary {
+    background: #64748b;
+    color: #fff;
+}
+
+html.light-theme .rp-popup__btn--secondary:hover {
+    background: #475569;
+}
+
+.rp-popup__btn--primary {
+    background: #4f46e5;
+}
+
+html.dark-theme .rp-popup__btn--primary:hover {
+    background: #6366f1;
+}
+
+html.light-theme .rp-popup__btn--primary:hover {
+    background: #4338ca;
 }

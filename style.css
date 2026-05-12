@@ -1,6 +1,4 @@
-﻿@import "tailwindcss";
-
-/* Sidebar Button Container - Fixed 160x33px */
+﻿/* Sidebar Button Container - Fixed 160x33px */
 #roprime-settings-tab .menu-option-content {
     display: flex !important;
     align-items: center !important;
