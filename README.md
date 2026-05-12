@@ -13,6 +13,7 @@
 
 <div align="center">
 
+  ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/walway/RoPrime/node.js.yml)
   ![GitHub Release](https://img.shields.io/github/v/release/walway/RoPrime)
   ![GitHub Release Date](https://img.shields.io/github/release-date/walway/RoPrime)
 
