@@ -2,10 +2,6 @@ import { RP_SIDEBAR_COMPACT_STYLE_ID, getExtensionResourceUrl, settingsState } f
 
 const RP_LEFTNAV_OFFICIAL_STORE_BTN_CLASS = "roprime-leftnav-official-store";
 const RP_LEFTNAV_PROFILE_LI_CLASS = "roprime-leftnav-profile";
-const RP_SIDEBAR_PLUS_ITEM_ID = "roprime-sidebar-plus-item";
-const RP_SIDEBAR_PLUS_BTN_CLASS = "roprime-sidebar-plus-btn";
-const RP_SIDEBAR_PLUS_ICON_CLASS = "roprime-sidebar-plus-icon";
-const RP_RBLX_PLUS_LOGO_URL = getExtensionResourceUrl("resources/RblxPlusLogo.webp") || "resources/RblxPlusLogo.webp";
 const ROBLOX_LOCALE_SEGMENT_REGEX = /^[a-z]{2}(?:-[a-z]{2})?$/i;
 
 const SIDEBAR_COMPACT_RAIL_PX = 72;
@@ -251,48 +247,6 @@ body .no-gutter-ads.logged-in.left-nav-new-width {
   max-height: ${SIDEBAR_COMPACT_ICON_PX}px !important;
   overflow: hidden !important;
 }
-.left-nav.fixed li#${RP_SIDEBAR_PLUS_ITEM_ID} {
-  margin-top: auto !important;
-}
-.left-nav.fixed button.${RP_SIDEBAR_PLUS_BTN_CLASS} {
-  box-sizing: border-box !important;
-  width: ${SIDEBAR_COMPACT_ICON_PX}px !important;
-  height: ${SIDEBAR_COMPACT_ICON_PX}px !important;
-  min-width: ${SIDEBAR_COMPACT_ICON_PX}px !important;
-  max-width: ${SIDEBAR_COMPACT_ICON_PX}px !important;
-  min-height: ${SIDEBAR_COMPACT_ICON_PX}px !important;
-  max-height: ${SIDEBAR_COMPACT_ICON_PX}px !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  padding: 0 !important;
-  margin: 0 !important;
-  border-radius: 12px !important;
-  border: 1px solid rgba(255, 255, 255, 0.12) !important;
-  background: #3a3d43 !important;
-  cursor: pointer !important;
-  overflow: hidden !important;
-}
-.left-nav.fixed button.${RP_SIDEBAR_PLUS_BTN_CLASS}:hover {
-  filter: brightness(1.06) !important;
-}
-.left-nav.fixed button.${RP_SIDEBAR_PLUS_BTN_CLASS} .${RP_SIDEBAR_PLUS_ICON_CLASS} {
-  width: 26px !important;
-  height: 26px !important;
-  max-width: 26px !important;
-  max-height: 26px !important;
-  object-fit: contain !important;
-}
-html.light-theme .left-nav.fixed button.${RP_SIDEBAR_PLUS_BTN_CLASS},
-body.light-theme .left-nav.fixed button.${RP_SIDEBAR_PLUS_BTN_CLASS} {
-  background: #e2e6ea !important;
-  border-color: rgba(39, 43, 50, 0.16) !important;
-}
-html.dark-theme .left-nav.fixed button.${RP_SIDEBAR_PLUS_BTN_CLASS},
-body.dark-theme .left-nav.fixed button.${RP_SIDEBAR_PLUS_BTN_CLASS} {
-  background: #3a3d43 !important;
-  border-color: rgba(255, 255, 255, 0.12) !important;
-}
 .left-nav.fixed li:has(a[href*="/messages" i]) {
   overflow: visible !important;
   position: relative !important;
@@ -385,50 +339,6 @@ function tagProfileLeftNavItem() {
     }
 }
 
-function getPremiumMembershipUrl() {
-    const origin = window.location.origin || "https://www.roblox.com";
-    const pathParts = (window.location.pathname || "/").split("/").filter(Boolean);
-    const localeSegment = pathParts[0];
-    const localizedPath =
-        localeSegment && ROBLOX_LOCALE_SEGMENT_REGEX.test(localeSegment)
-            ? `/${localeSegment}/premium/membership`
-            : "/premium/membership";
-    return `${origin}${localizedPath}`;
-}
-
-function syncSidebarCompactBottomButton() {
-    const nav = document.querySelector(".left-nav.fixed");
-    if (!(nav instanceof HTMLElement)) return;
-    const existing = nav.querySelector(`#${RP_SIDEBAR_PLUS_ITEM_ID}`);
-    if (!settingsState.sidebarIconsOnlyEnabled) {
-        if (existing instanceof HTMLElement) existing.remove();
-        return;
-    }
-    const listCandidates = Array.from(nav.querySelectorAll("ul, ol")).filter((list) => list.querySelector("li"));
-    const hostList = listCandidates[listCandidates.length - 1];
-    if (!(hostList instanceof HTMLElement)) return;
-
-    let item = existing;
-    if (!(item instanceof HTMLLIElement)) {
-        item = document.createElement("li");
-        item.id = RP_SIDEBAR_PLUS_ITEM_ID;
-        const button = document.createElement("button");
-        button.type = "button";
-        button.className = RP_SIDEBAR_PLUS_BTN_CLASS;
-        button.setAttribute("aria-label", "RblxPlus");
-        button.addEventListener("click", () => {
-            window.location.assign(getPremiumMembershipUrl());
-        });
-        const icon = document.createElement("img");
-        icon.className = RP_SIDEBAR_PLUS_ICON_CLASS;
-        icon.src = RP_RBLX_PLUS_LOGO_URL;
-        icon.alt = "RblxPlus";
-        button.appendChild(icon);
-        item.appendChild(button);
-    }
-    if (item.parentElement !== hostList) hostList.appendChild(item);
-}
-
 export function updateSidebarCompactVisibility() {
     const existingStyle = document.getElementById(RP_SIDEBAR_COMPACT_STYLE_ID);
     if (!settingsState.sidebarIconsOnlyEnabled) {
@@ -447,5 +357,4 @@ export function updateSidebarCompactVisibility() {
 export function syncSidebarCompactDecorations() {
     tagOfficialStoreLeftNavButton();
     tagProfileLeftNavItem();
-    syncSidebarCompactBottomButton();
 }
