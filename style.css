@@ -153,6 +153,37 @@
     padding: 12px 13px;
 }
 
+.game-details-carousel-container .carousel-item,
+#game-details-carousel-container .carousel-item {
+    border-radius: 12px;
+}
+
+/*
+ * Game preview <video> in the experience carousel. Roblox TSS emits unstable
+ * class names (web-blox-css-tss-*, web-blox-css-mui-*) on reload; only stable
+ * layout tokens are matched (carousel + game-preview-video-container + MUI
+ * surface names on the media node are not required in the selector).
+ */
+.game-details-carousel-container .carousel-item.carousel-video.game-preview-video-container .video-preview-wrapper.is-ready video,
+.game-details-carousel-container .carousel-item.carousel-video.game-preview-video-container .video-preview-wrapper video,
+#game-details-carousel-container .carousel-item.carousel-video.game-preview-video-container .video-preview-wrapper.is-ready video,
+#game-details-carousel-container .carousel-item.carousel-video.game-preview-video-container .video-preview-wrapper video {
+    border-radius: 12px;
+}
+
+/* Same tree when the carousel root is not wrapped by the stable id/class above */
+.carousel-item.carousel-video.game-preview-video-container .video-preview-wrapper.is-ready video,
+.carousel-item.carousel-video.game-preview-video-container .video-preview-wrapper video {
+    border-radius: 12px;
+}
+
+/* Video controls wrapper — class is web-blox-css-tss-<hash>-controlsWrapper; hash changes each load */
+.game-details-carousel-container .carousel-item.carousel-video.game-preview-video-container [class*="web-blox-css-tss"][class*="controlsWrapper"],
+#game-details-carousel-container .carousel-item.carousel-video.game-preview-video-container [class*="web-blox-css-tss"][class*="controlsWrapper"],
+.carousel-item.carousel-video.game-preview-video-container [class*="web-blox-css-tss"][class*="controlsWrapper"] {
+    border-radius: 12px;
+}
+
 .roprime-accordion::before,
 .roprime-accordion::after,
 .roprime-info-card::before,
