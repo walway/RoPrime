@@ -40,7 +40,7 @@
 <h2 id="installation">Manual installation</h2>
 
 <ol>
-  <li>Download this project</li>
+  <li>Download the latest version of the project</li>
   <li>Open <code>chrome://extensions</code> in Chrome.</li>
   <li>Enable <strong>Developer mode</strong>.</li>
   <li>Click <strong>Load unpacked</strong> and select this project folder (or <code>/dist</code>).</li>
