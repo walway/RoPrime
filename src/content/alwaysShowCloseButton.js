@@ -4,7 +4,7 @@ const RP_ALWAYS_CLOSE_COLLAPSED_CLASS = "roprime-always-close-collapsed";
 const boundCloseButtons = new WeakSet();
 
 function getAlwaysShowCloseCss() {
-  const base = `
+	const base = `
 /* Always show Roblox sidebar close/menu control */
 button.menu-button.btn-navigation-nav-menu-md {
   display: inline-flex !important;
@@ -99,80 +99,88 @@ a.navbar-brand span.icon-logo-r,
 }
 
 `.trim();
-  return base;
+	return base;
 }
 
 function forceCloseButtonInline() {
-  // Some Roblox pages hide the button via inline styles / utility classes.
-  // Setting these inline avoids fighting specificity, while keeping layout stable.
-  const btn = document.querySelector("button.menu-button.btn-navigation-nav-menu-md");
-  if (!(btn instanceof HTMLButtonElement)) return;
-  // If Roblox sets `display:none` inline, undo it.
-  if (btn.style.display === "none") btn.style.display = "inline-flex";
-  btn.style.visibility = "visible";
-  btn.style.opacity = "1";
-  btn.style.pointerEvents = "auto";
-  bindCloseButtonClick(btn);
+	// Some Roblox pages hide the button via inline styles / utility classes.
+	// Setting these inline avoids fighting specificity, while keeping layout stable.
+	const btn = document.querySelector(
+		"button.menu-button.btn-navigation-nav-menu-md",
+	);
+	if (!(btn instanceof HTMLButtonElement)) return;
+	// If Roblox sets `display:none` inline, undo it.
+	if (btn.style.display === "none") btn.style.display = "inline-flex";
+	btn.style.visibility = "visible";
+	btn.style.opacity = "1";
+	btn.style.pointerEvents = "auto";
+	bindCloseButtonClick(btn);
 }
 
 function toggleOldNavHostCollapsed() {
-  const root = document.documentElement;
-  if (!root) return;
-  const host = document.getElementById("roprime-classic-left-nav-host");
-  if (host) root.classList.toggle(RP_ALWAYS_CLOSE_COLLAPSED_CLASS);
+	const root = document.documentElement;
+	if (!root) return;
+	const host = document.getElementById("roprime-classic-left-nav-host");
+	if (host) root.classList.toggle(RP_ALWAYS_CLOSE_COLLAPSED_CLASS);
 
-  const rails289 = Array.from(document.querySelectorAll(".width-\\[289px\\], [class~='width-[289px]']")).filter(
-    (el) => el instanceof HTMLElement,
-  );
-  rails289.forEach((el) => {
-    if (!(el instanceof HTMLElement)) return;
-    const hidden = getComputedStyle(el).display === "none";
-    if (hidden) {
-      el.style.display = el.dataset.rpPrevDisplay || "";
-      delete el.dataset.rpPrevDisplay;
-      return;
-    }
-    if (!el.dataset.rpPrevDisplay) el.dataset.rpPrevDisplay = el.style.display || "";
-    el.style.display = "none";
-  });
+	const rails289 = Array.from(
+		document.querySelectorAll(".width-\\[289px\\], [class~='width-[289px]']"),
+	).filter((el) => el instanceof HTMLElement);
+	rails289.forEach((el) => {
+		if (!(el instanceof HTMLElement)) return;
+		const hidden = getComputedStyle(el).display === "none";
+		if (hidden) {
+			el.style.display = el.dataset.rpPrevDisplay || "";
+			delete el.dataset.rpPrevDisplay;
+			return;
+		}
+		if (!el.dataset.rpPrevDisplay)
+			el.dataset.rpPrevDisplay = el.style.display || "";
+		el.style.display = "none";
+	});
 }
 
 function bindCloseButtonClick(btn) {
-  if (!(btn instanceof HTMLButtonElement)) return;
-  if (boundCloseButtons.has(btn)) return;
-  boundCloseButtons.add(btn);
-  btn.addEventListener("click", toggleOldNavHostCollapsed, true);
+	if (!(btn instanceof HTMLButtonElement)) return;
+	if (boundCloseButtons.has(btn)) return;
+	boundCloseButtons.add(btn);
+	btn.addEventListener("click", toggleOldNavHostCollapsed, true);
 }
 
 function ensureObserver() {
-  const root = document.documentElement;
-  if (!root || root.getAttribute("data-roprime-always-close-observer") === "1") return;
-  root.setAttribute("data-roprime-always-close-observer", "1");
+	const root = document.documentElement;
+	if (!root || root.getAttribute("data-roprime-always-close-observer") === "1")
+		return;
+	root.setAttribute("data-roprime-always-close-observer", "1");
 
-  const obs = new MutationObserver(() => {
-    if (!settingsState.alwaysShowCloseButtonEnabled) return;
-    forceCloseButtonInline();
-  });
-  obs.observe(document.documentElement, { subtree: true, childList: true, attributes: true, attributeFilter: ["style", "class"] });
+	const obs = new MutationObserver(() => {
+		if (!settingsState.alwaysShowCloseButtonEnabled) return;
+		forceCloseButtonInline();
+	});
+	obs.observe(document.documentElement, {
+		subtree: true,
+		childList: true,
+		attributes: true,
+		attributeFilter: ["style", "class"],
+	});
 }
 
 export function syncAlwaysShowCloseButton() {
-  const existingStyle = document.getElementById(RP_ALWAYS_SHOW_CLOSE_STYLE_ID);
-  if (!settingsState.alwaysShowCloseButtonEnabled) {
-    if (existingStyle instanceof HTMLStyleElement) existingStyle.remove();
-    return;
-  }
-  ensureObserver();
-  const css = getAlwaysShowCloseCss();
-  if (existingStyle instanceof HTMLStyleElement) {
-    if (existingStyle.textContent !== css) existingStyle.textContent = css;
-    forceCloseButtonInline();
-    return;
-  }
-  const style = document.createElement("style");
-  style.id = RP_ALWAYS_SHOW_CLOSE_STYLE_ID;
-  style.textContent = css;
-  document.documentElement.appendChild(style);
-  forceCloseButtonInline();
+	const existingStyle = document.getElementById(RP_ALWAYS_SHOW_CLOSE_STYLE_ID);
+	if (!settingsState.alwaysShowCloseButtonEnabled) {
+		if (existingStyle instanceof HTMLStyleElement) existingStyle.remove();
+		return;
+	}
+	ensureObserver();
+	const css = getAlwaysShowCloseCss();
+	if (existingStyle instanceof HTMLStyleElement) {
+		if (existingStyle.textContent !== css) existingStyle.textContent = css;
+		forceCloseButtonInline();
+		return;
+	}
+	const style = document.createElement("style");
+	style.id = RP_ALWAYS_SHOW_CLOSE_STYLE_ID;
+	style.textContent = css;
+	document.documentElement.appendChild(style);
+	forceCloseButtonInline();
 }
-

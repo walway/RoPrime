@@ -1,40 +1,40 @@
 {
-  "manifest_version": 3,
-  "name": "RoPrime - Making Roblox feel better",
-  "version": "1.1.2",
-  "description": "The new era of Roblox website.",
-  "permissions": ["storage"],
-  "optional_permissions": ["management"],
-  "background": {
-        "service_worker": "background.js"
-  },
-  "action": {
-    "default_title": "RoPrime"
-  },
-  "web_accessible_resources": [
-    {
-      "resources": [
-        "resources/roprime-icon.png",
-        "resources/RblxPlusLogo.webp",
-        "resources/ext-icons/rovalra.png",
-        "resources/ext-icons/roseal.png",
-        "resources/plugins/rovalrapluginimage.png",
-        "resources/plugins/rosealpluginimage.png",
-        "resources/logo.svg",
-        "style.css",
-        ".locales/en/translation-keys.json",
-        ".locales/ru/translation-keys.json",
-        ".locales/bn/translation-keys.json",
-        ".locales/lang-config.js"
-      ],
-      "matches": ["*://*.roblox.com/*"]
-    }
-  ],
-  "content_scripts": [
-    {
-      "matches": ["*://*.roblox.com/*"],
-      "js": ["dist/content.js"],
-      "run_at": "document_start"
-    }
-  ]
+	"manifest_version": 3,
+	"name": "RoPrime - Making Roblox feel better",
+	"version": "1.1.3",
+	"description": "The new era of Roblox website.",
+	"permissions": ["storage"],
+	"optional_permissions": ["management"],
+	"background": {
+		"service_worker": "background.js"
+	},
+	"action": {
+		"default_title": "RoPrime"
+	},
+	"web_accessible_resources": [
+		{
+			"resources": [
+				"resources/roprime-icon.png",
+				"resources/RblxPlusLogo.webp",
+				"resources/ext-icons/rovalra.png",
+				"resources/ext-icons/roseal.png",
+				"resources/plugins/rovalrapluginimage.png",
+				"resources/plugins/rosealpluginimage.png",
+				"resources/logo.svg",
+				"style.css",
+				".locales/en/translation-keys.json",
+				".locales/ru/translation-keys.json",
+				".locales/bn/translation-keys.json",
+				".locales/lang-config.js"
+			],
+			"matches": ["*://*.roblox.com/*"]
+		}
+	],
+	"content_scripts": [
+		{
+			"matches": ["*://*.roblox.com/*"],
+			"js": ["dist/content.js"],
+			"run_at": "document_start"
+		}
+	]
 }

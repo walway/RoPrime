@@ -114,107 +114,119 @@ const FRIEND_STYLING_REIMAGNED_CSS = `
 const GLOW_TILE_SELECTOR = ".friends-carousel-tile";
 const FRIEND_CAROUSEL_SELECTOR = ".friend-carousel-container";
 const GLOW_PRESENCE_CLASSES = [
-    "rologic-presence-offline",
-    "rologic-presence-online",
-    "rologic-presence-game",
-    "rologic-presence-studio",
+	"rologic-presence-offline",
+	"rologic-presence-online",
+	"rologic-presence-game",
+	"rologic-presence-studio",
 ];
 
 let friendStylingObserver = null;
 let friendStylingRafId = null;
 
 function getPresenceClass(tile) {
-    const presenceIcon = tile.querySelector('[data-testid="presence-icon"]');
-    if (!(presenceIcon instanceof HTMLElement)) return "rologic-presence-offline";
-    const presenceText = [presenceIcon.getAttribute("class"), presenceIcon.getAttribute("title"), presenceIcon.ariaLabel]
-        .filter(Boolean)
-        .join(" ")
-        .toLowerCase();
-    if (presenceText.includes("studio")) return "rologic-presence-studio";
-    if (presenceText.includes("game") || presenceText.includes("playing")) return "rologic-presence-game";
-    if (presenceText.includes("online")) return "rologic-presence-online";
-    return "rologic-presence-offline";
+	const presenceIcon = tile.querySelector('[data-testid="presence-icon"]');
+	if (!(presenceIcon instanceof HTMLElement)) return "rologic-presence-offline";
+	const presenceText = [
+		presenceIcon.getAttribute("class"),
+		presenceIcon.getAttribute("title"),
+		presenceIcon.ariaLabel,
+	]
+		.filter(Boolean)
+		.join(" ")
+		.toLowerCase();
+	if (presenceText.includes("studio")) return "rologic-presence-studio";
+	if (presenceText.includes("game") || presenceText.includes("playing"))
+		return "rologic-presence-game";
+	if (presenceText.includes("online")) return "rologic-presence-online";
+	return "rologic-presence-offline";
 }
 
 function applyFriendPresenceClasses() {
-    document.querySelectorAll(GLOW_TILE_SELECTOR).forEach((tile) => {
-        if (!(tile instanceof HTMLElement)) return;
-        const nextPresenceClass = getPresenceClass(tile);
-        if (tile.dataset.rpPresenceClass === nextPresenceClass) return;
-        tile.classList.remove(...GLOW_PRESENCE_CLASSES);
-        tile.classList.add(nextPresenceClass);
-        tile.dataset.rpPresenceClass = nextPresenceClass;
-    });
+	document.querySelectorAll(GLOW_TILE_SELECTOR).forEach((tile) => {
+		if (!(tile instanceof HTMLElement)) return;
+		const nextPresenceClass = getPresenceClass(tile);
+		if (tile.dataset.rpPresenceClass === nextPresenceClass) return;
+		tile.classList.remove(...GLOW_PRESENCE_CLASSES);
+		tile.classList.add(nextPresenceClass);
+		tile.dataset.rpPresenceClass = nextPresenceClass;
+	});
 }
 
 function scheduleFriendPresenceRefresh() {
-    if (friendStylingRafId !== null) return;
-    friendStylingRafId = window.requestAnimationFrame(() => {
-        friendStylingRafId = null;
-        if (!settingsState.friendStylingReimagnedEnabled) return;
-        applyFriendPresenceClasses();
-    });
+	if (friendStylingRafId !== null) return;
+	friendStylingRafId = window.requestAnimationFrame(() => {
+		friendStylingRafId = null;
+		if (!settingsState.friendStylingReimagnedEnabled) return;
+		applyFriendPresenceClasses();
+	});
 }
 
 function startFriendStylingObserver() {
-    if (friendStylingObserver instanceof MutationObserver) return;
-    if (!(document.body instanceof HTMLBodyElement)) return;
-    friendStylingObserver = new MutationObserver((mutations) => {
-        for (const mutation of mutations) {
-            if (!(mutation.target instanceof Element)) continue;
-            if (
-                mutation.target.closest(FRIEND_CAROUSEL_SELECTOR) ||
-                Array.from(mutation.addedNodes).some(
-                    (node) => node instanceof Element && (node.matches(FRIEND_CAROUSEL_SELECTOR) || !!node.querySelector(GLOW_TILE_SELECTOR)),
-                )
-            ) {
-                scheduleFriendPresenceRefresh();
-                return;
-            }
-        }
-    });
-    friendStylingObserver.observe(document.body, {
-        childList: true,
-        subtree: true,
-        attributes: true,
-        attributeFilter: ["class", "title", "aria-label"],
-    });
+	if (friendStylingObserver instanceof MutationObserver) return;
+	if (!(document.body instanceof HTMLBodyElement)) return;
+	friendStylingObserver = new MutationObserver((mutations) => {
+		for (const mutation of mutations) {
+			if (!(mutation.target instanceof Element)) continue;
+			if (
+				mutation.target.closest(FRIEND_CAROUSEL_SELECTOR) ||
+				Array.from(mutation.addedNodes).some(
+					(node) =>
+						node instanceof Element &&
+						(node.matches(FRIEND_CAROUSEL_SELECTOR) ||
+							!!node.querySelector(GLOW_TILE_SELECTOR)),
+				)
+			) {
+				scheduleFriendPresenceRefresh();
+				return;
+			}
+		}
+	});
+	friendStylingObserver.observe(document.body, {
+		childList: true,
+		subtree: true,
+		attributes: true,
+		attributeFilter: ["class", "title", "aria-label"],
+	});
 }
 
 function stopFriendStylingObserver() {
-    if (friendStylingObserver instanceof MutationObserver) {
-        friendStylingObserver.disconnect();
-        friendStylingObserver = null;
-    }
-    if (friendStylingRafId !== null) {
-        window.cancelAnimationFrame(friendStylingRafId);
-        friendStylingRafId = null;
-    }
+	if (friendStylingObserver instanceof MutationObserver) {
+		friendStylingObserver.disconnect();
+		friendStylingObserver = null;
+	}
+	if (friendStylingRafId !== null) {
+		window.cancelAnimationFrame(friendStylingRafId);
+		friendStylingRafId = null;
+	}
 }
 
 export function updateFriendStylingReimagnedVisibility() {
-    const existingStyle = document.getElementById(RP_FRIEND_STYLING_REIMAGNED_STYLE_ID);
-    if (!settingsState.friendStylingReimagnedEnabled) {
-        stopFriendStylingObserver();
-        if (existingStyle instanceof HTMLStyleElement) existingStyle.remove();
-        document.querySelectorAll(GLOW_TILE_SELECTOR).forEach((tile) => {
-            if (!(tile instanceof HTMLElement)) return;
-            tile.classList.remove(...GLOW_PRESENCE_CLASSES);
-            delete tile.dataset.rpPresenceClass;
-        });
-        return;
-    }
+	const existingStyle = document.getElementById(
+		RP_FRIEND_STYLING_REIMAGNED_STYLE_ID,
+	);
+	if (!settingsState.friendStylingReimagnedEnabled) {
+		stopFriendStylingObserver();
+		if (existingStyle instanceof HTMLStyleElement) existingStyle.remove();
+		document.querySelectorAll(GLOW_TILE_SELECTOR).forEach((tile) => {
+			if (!(tile instanceof HTMLElement)) return;
+			tile.classList.remove(...GLOW_PRESENCE_CLASSES);
+			delete tile.dataset.rpPresenceClass;
+		});
+		return;
+	}
 
-    let style = existingStyle;
-    if (!(style instanceof HTMLStyleElement)) {
-        style = document.createElement("style");
-        style.id = RP_FRIEND_STYLING_REIMAGNED_STYLE_ID;
-        style.textContent = FRIEND_STYLING_REIMAGNED_CSS;
-        document.documentElement.appendChild(style);
-    }
+	let style = existingStyle;
+	if (!(style instanceof HTMLStyleElement)) {
+		style = document.createElement("style");
+		style.id = RP_FRIEND_STYLING_REIMAGNED_STYLE_ID;
+		style.textContent = FRIEND_STYLING_REIMAGNED_CSS;
+		document.documentElement.appendChild(style);
+	}
 
-    if (style.textContent !== FRIEND_STYLING_REIMAGNED_CSS) style.textContent = FRIEND_STYLING_REIMAGNED_CSS;
-    if (style.parentElement !== document.documentElement) document.documentElement.appendChild(style);
-    startFriendStylingObserver();
-    scheduleFriendPresenceRefresh();
+	if (style.textContent !== FRIEND_STYLING_REIMAGNED_CSS)
+		style.textContent = FRIEND_STYLING_REIMAGNED_CSS;
+	if (style.parentElement !== document.documentElement)
+		document.documentElement.appendChild(style);
+	startFriendStylingObserver();
+	scheduleFriendPresenceRefresh();
 }

@@ -1,877 +1,934 @@
 ﻿/* Sidebar Button Container - Fixed 160x33px */
 #roprime-settings-tab .menu-option-content {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: flex-start !important;
-    
-    /* Exact Dimensions */
-    width: 160px !important;
-    height: 33px !important;
-    padding: 9px 5px 9px 9px !important;
-    box-sizing: border-box !important;
+	display: flex !important;
+	align-items: center !important;
+	justify-content: flex-start !important;
 
+	/* Exact Dimensions */
+	width: 160px !important;
+	height: 33px !important;
+	padding: 9px 5px 9px 9px !important;
+	box-sizing: border-box !important;
 }
 
 /* Sidebar Text - Font stays here */
 #roprime-settings-tab .menu-option-content .menu-text {
-    font-size: 12px;
+	font-size: 12px;
 }
 
 #roprime-settings-tab .menu-option-content .roprime-menu-icon {
-    width: 15px;
-    height: 15px;
-    min-width: 15px;
-    min-height: 15px;
-    margin-right: 6px;
-    object-fit: contain;
+	width: 15px;
+	height: 15px;
+	min-width: 15px;
+	min-height: 15px;
+	margin-right: 6px;
+	object-fit: contain;
 }
 
 .roprime-settings-wrapper {
-    margin-top: 8px;
-    --rp-settings-surface: var(--background-surface, #1c2128);
-    --rp-settings-surface-2: var(--background-surface, #181d24);
-    --rp-settings-surface-3: var(--background-surface, #141923);
-    --rp-settings-text: var(--text-primary, #e9edf5);
-    --rp-settings-text-2: var(--text-secondary, rgba(211, 217, 255, 0.78));
-    --rp-settings-border: var(--border-color, rgba(115, 127, 148, 0.35));
-    --rp-settings-accent: var(--link-color, #3c63ff);
-    color: var(--rp-settings-text);
+	margin-top: 8px;
+	--rp-settings-surface: var(--background-surface, #1c2128);
+	--rp-settings-surface-2: var(--background-surface, #181d24);
+	--rp-settings-surface-3: var(--background-surface, #141923);
+	--rp-settings-text: var(--text-primary, #e9edf5);
+	--rp-settings-text-2: var(--text-secondary, rgba(211, 217, 255, 0.78));
+	--rp-settings-border: var(--border-color, rgba(115, 127, 148, 0.35));
+	--rp-settings-accent: var(--link-color, #3c63ff);
+	color: var(--rp-settings-text);
 }
 
 .roprime-settings-layout {
-    display: block;
+	display: block;
 }
 
 .roprime-settings-sidebar {
-    margin-bottom: 12px;
+	margin-bottom: 12px;
 }
 
 .roprime-settings-nav {
-    display: flex;
-    gap: 10px;
-    margin: 0 0 14px;
-    flex-wrap: wrap;
+	display: flex;
+	gap: 10px;
+	margin: 0 0 14px;
+	flex-wrap: wrap;
 }
 
 .roprime-settings-nav-btn {
-    display: inline-flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 8px;
-    border: 1px solid var(--rp-settings-border);
-    background: var(--rp-settings-surface);
-    color: var(--rp-settings-text);
-    border-radius: 12px;
-    padding: 9px 16px;
-    font-size: 14px;
-    font-weight: 600;
-    line-height: 1;
-    cursor: pointer;
+	display: inline-flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 8px;
+	border: 1px solid var(--rp-settings-border);
+	background: var(--rp-settings-surface);
+	color: var(--rp-settings-text);
+	border-radius: 12px;
+	padding: 9px 16px;
+	font-size: 14px;
+	font-weight: 600;
+	line-height: 1;
+	cursor: pointer;
 }
 
 .roprime-settings-nav-btn.is-active {
-    border-color: color-mix(in srgb, var(--rp-settings-accent) 65%, transparent);
-    background:
-        radial-gradient(140% 140% at 0% 100%, color-mix(in srgb, var(--rp-settings-accent) 22%, transparent) 0%, transparent 65%),
-        var(--rp-settings-surface);
-    color: var(--rp-settings-text);
+	border-color: color-mix(in srgb, var(--rp-settings-accent) 65%, transparent);
+	background:
+		radial-gradient(
+			140% 140% at 0% 100%,
+			color-mix(in srgb, var(--rp-settings-accent) 22%, transparent) 0%,
+			transparent 65%
+		),
+		var(--rp-settings-surface);
+	color: var(--rp-settings-text);
 }
 
 /* Author `display` on buttons/menus overrides `[hidden]` in some browsers. */
 .roprime-settings-nav-btn[hidden] {
-    display: none !important;
+	display: none !important;
 }
 
 .roprime-settings-main {
-    min-width: 0;
+	min-width: 0;
 }
 
 .roprime-settings-search-wrap {
-    margin-bottom: 12px;
+	margin-bottom: 12px;
 }
 
 .roprime-settings-search {
-    width: 100%;
-    border: 1px solid color-mix(in srgb, var(--rp-settings-border) 80%, transparent);
-    border-radius: 12px;
-    background: var(--rp-settings-surface-3);
-    color: var(--rp-settings-text);
-    padding: 10px 12px;
-    outline: none;
+	width: 100%;
+	border: 1px solid
+		color-mix(in srgb, var(--rp-settings-border) 80%, transparent);
+	border-radius: 12px;
+	background: var(--rp-settings-surface-3);
+	color: var(--rp-settings-text);
+	padding: 10px 12px;
+	outline: none;
 }
 
 .roprime-settings-search:focus {
-    border-color: color-mix(in srgb, var(--rp-settings-accent) 65%, transparent);
+	border-color: color-mix(in srgb, var(--rp-settings-accent) 65%, transparent);
 }
 
 .roprime-settings-section {
-    display: none;
+	display: none;
 }
 
 .roprime-search-hint {
-    display: none;
-    margin-bottom: 10px;
-    padding: 10px 12px;
-    border-radius: 10px;
-    border: 1px solid rgba(255, 220, 64, 0.4);
-    background: rgba(255, 220, 64, 0.12);
-    color: #ffd84a;
-    font-size: 12px;
-    font-weight: 600;
+	display: none;
+	margin-bottom: 10px;
+	padding: 10px 12px;
+	border-radius: 10px;
+	border: 1px solid rgba(255, 220, 64, 0.4);
+	background: rgba(255, 220, 64, 0.12);
+	color: #ffd84a;
+	font-size: 12px;
+	font-weight: 600;
 }
 
 .roprime-settings-wrapper.is-search-mode .roprime-settings-main {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
 }
 
 /* Do not use border-top on sections here: first DOM child of .main is a hint div, so the first
    visible section was incorrectly getting a top rule and looked like a stray divider. */
 .roprime-settings-wrapper.is-search-mode .roprime-settings-section {
-    margin: 0;
+	margin: 0;
 }
 
 .roprime-search-mark {
-    background: rgba(255, 220, 64, 0.25);
-    color: #ffd84a;
-    font-weight: 700;
-    border-radius: 3px;
-    padding: 0 1px;
+	background: rgba(255, 220, 64, 0.25);
+	color: #ffd84a;
+	font-weight: 700;
+	border-radius: 3px;
+	padding: 0 1px;
 }
 
 .roprime-setting-card,
 .roprime-info-card {
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    border-radius: 14px;
-    border: 1px solid var(--rp-settings-border);
-    background: var(--rp-settings-surface);
-    padding: 12px 13px;
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	border-radius: 14px;
+	border: 1px solid var(--rp-settings-border);
+	background: var(--rp-settings-surface);
+	padding: 12px 13px;
 }
 
 .game-details-carousel-container .carousel-item,
 #game-details-carousel-container .carousel-item {
-    border-radius: 12px;
+	border-radius: 12px;
 }
 
 /*
- * Game preview <video> in the experience carousel. Roblox TSS emits unstable
- * class names (web-blox-css-tss-*, web-blox-css-mui-*) on reload; only stable
- * layout tokens are matched (carousel + game-preview-video-container + MUI
- * surface names on the media node are not required in the selector).
+stupid MUI
  */
-.game-details-carousel-container .carousel-item.carousel-video.game-preview-video-container .video-preview-wrapper.is-ready video,
-.game-details-carousel-container .carousel-item.carousel-video.game-preview-video-container .video-preview-wrapper video,
-#game-details-carousel-container .carousel-item.carousel-video.game-preview-video-container .video-preview-wrapper.is-ready video,
-#game-details-carousel-container .carousel-item.carousel-video.game-preview-video-container .video-preview-wrapper video {
-    border-radius: 12px;
+.game-details-carousel-container .carousel-item.carousel-video.game-preview-video-container
+	.video-preview-wrapper.is-ready
+	video,
+.game-details-carousel-container
+	.carousel-item.carousel-video.game-preview-video-container
+	.video-preview-wrapper
+	video,
+#game-details-carousel-container
+	.carousel-item.carousel-video.game-preview-video-container
+	.video-preview-wrapper.is-ready
+	video,
+#game-details-carousel-container
+	.carousel-item.carousel-video.game-preview-video-container
+	.video-preview-wrapper
+	video {
+	border-radius: 12px;
 }
 
 /* Same tree when the carousel root is not wrapped by the stable id/class above */
-.carousel-item.carousel-video.game-preview-video-container .video-preview-wrapper.is-ready video,
-.carousel-item.carousel-video.game-preview-video-container .video-preview-wrapper video {
-    border-radius: 12px;
+.carousel-item.carousel-video.game-preview-video-container .video-preview-wrapper.is-ready
+	video,
+.carousel-item.carousel-video.game-preview-video-container
+	.video-preview-wrapper
+	video {
+	border-radius: 12px;
 }
 
 /* Video controls wrapper — class is web-blox-css-tss-<hash>-controlsWrapper; hash changes each load */
-.game-details-carousel-container .carousel-item.carousel-video.game-preview-video-container [class*="web-blox-css-tss"][class*="controlsWrapper"],
-#game-details-carousel-container .carousel-item.carousel-video.game-preview-video-container [class*="web-blox-css-tss"][class*="controlsWrapper"],
-.carousel-item.carousel-video.game-preview-video-container [class*="web-blox-css-tss"][class*="controlsWrapper"] {
-    border-radius: 12px;
+.game-details-carousel-container .carousel-item.carousel-video.game-preview-video-container
+	[class*="web-blox-css-tss"][class*="controlsWrapper"],
+#game-details-carousel-container
+	.carousel-item.carousel-video.game-preview-video-container
+	[class*="web-blox-css-tss"][class*="controlsWrapper"],
+.carousel-item.carousel-video.game-preview-video-container
+	[class*="web-blox-css-tss"][class*="controlsWrapper"] {
+	border-radius: 12px;
 }
 
 .roprime-accordion::before,
 .roprime-accordion::after,
 .roprime-info-card::before,
 .roprime-info-card::after {
-    display: none !important;
+	display: none !important;
 }
 
 .roprime-setting-card::before,
 .roprime-info-card::before {
-    top: 8px;
-    left: 8px;
-    border-top: 2px solid rgba(130, 168, 255, 0.9);
-    border-left: 2px solid rgba(130, 168, 255, 0.9);
+	top: 8px;
+	left: 8px;
+	border-top: 2px solid rgba(130, 168, 255, 0.9);
+	border-left: 2px solid rgba(130, 168, 255, 0.9);
 }
 
 .roprime-setting-card::after,
 .roprime-info-card::after {
-    right: 8px;
-    bottom: 8px;
-    border-right: 2px solid rgba(130, 168, 255, 0.9);
-    border-bottom: 2px solid rgba(130, 168, 255, 0.9);
+	right: 8px;
+	bottom: 8px;
+	border-right: 2px solid rgba(130, 168, 255, 0.9);
+	border-bottom: 2px solid rgba(130, 168, 255, 0.9);
 }
 
 .roprime-setting-card-spaced {
-    margin-top: 12px;
+	margin-top: 12px;
 }
 
 .game-thumbnail {
-    z-index: 6 !important;
-    position: relative !important;
+	z-index: 6 !important;
+	position: relative !important;
 }
 .roprime-setting-copy {
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: flex-start;
-    text-align: left;
-    height: 100%;
+	min-width: 0;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: flex-start;
+	text-align: left;
+	height: 100%;
 }
 
 .roprime-setting-title,
 .roprime-info-title {
-    color: var(--rp-settings-text);
-    font-weight: 600;
-    line-height: 1.3;
+	color: var(--rp-settings-text);
+	font-weight: 600;
+	line-height: 1.3;
 }
 
 .roprime-setting-desc,
 .roprime-info-text {
-    margin-top: 4px;
-    color: var(--rp-settings-text-2);
-    font-size: 12px;
-    line-height: 1.35;
+	margin-top: 4px;
+	color: var(--rp-settings-text-2);
+	font-size: 12px;
+	line-height: 1.35;
 }
 
 .roprime-accordion {
-    flex-direction: column;
-    align-items: stretch;
-    padding: 0;
-    overflow: hidden;
+	flex-direction: column;
+	align-items: stretch;
+	padding: 0;
+	overflow: hidden;
 }
 
 .roprime-accordion-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-    padding: 12px 13px;
-    min-height: 56px;
-    background: transparent;
-    border: 0;
-    text-align: left;
-    cursor: pointer;
-    color: inherit;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 10px;
+	padding: 12px 13px;
+	min-height: 56px;
+	background: transparent;
+	border: 0;
+	text-align: left;
+	cursor: pointer;
+	color: inherit;
 }
 
 .roprime-accordion.is-renames-disabled .roprime-accordion-body {
-    opacity: 0.55;
+	opacity: 0.55;
 }
 
 .roprime-accordion.is-renames-disabled .roprime-toggle-row {
-    opacity: 0.7;
+	opacity: 0.7;
 }
 
 .roprime-accordion-chevron {
-    width: 10px;
-    height: 10px;
-    border-right: 2px solid color-mix(in srgb, var(--rp-settings-text) 70%, transparent);
-    border-bottom: 2px solid color-mix(in srgb, var(--rp-settings-text) 70%, transparent);
-    transform: rotate(45deg);
-    transition: transform 140ms ease;
-    flex: 0 0 auto;
-    margin-right: 2px;
+	width: 10px;
+	height: 10px;
+	border-right: 2px solid
+		color-mix(in srgb, var(--rp-settings-text) 70%, transparent);
+	border-bottom: 2px solid
+		color-mix(in srgb, var(--rp-settings-text) 70%, transparent);
+	transform: rotate(45deg);
+	transition: transform 140ms ease;
+	flex: 0 0 auto;
+	margin-right: 2px;
 }
 
 .roprime-accordion.is-open .roprime-accordion-chevron {
-    transform: rotate(-135deg);
+	transform: rotate(-135deg);
 }
 
 .roprime-accordion-body {
-    padding: 0 13px;
-    max-height: 0;
-    opacity: 0;
-    transform: translateY(-4px);
-    overflow: hidden;
-    transition: max-height 240ms cubic-bezier(0.22, 1, 0.36, 1), opacity 180ms ease, transform 240ms ease;
+	padding: 0 13px;
+	max-height: 0;
+	opacity: 0;
+	transform: translateY(-4px);
+	overflow: hidden;
+	transition:
+		max-height 240ms cubic-bezier(0.22, 1, 0.36, 1),
+		opacity 180ms ease,
+		transform 240ms ease;
 }
 
 .roprime-accordion.is-open .roprime-accordion-body {
-    opacity: 1;
-    transform: translateY(0);
-    padding-bottom: 14px;
+	opacity: 1;
+	transform: translateY(0);
+	padding-bottom: 14px;
 }
 
 .roprime-toggle-row {
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-    border-radius: 12px;
-    border: 1px solid color-mix(in srgb, var(--rp-settings-border) 75%, transparent);
-    background: var(--rp-settings-surface-2);
-    padding: 10px 10px;
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 10px;
+	border-radius: 12px;
+	border: 1px solid
+		color-mix(in srgb, var(--rp-settings-border) 75%, transparent);
+	background: var(--rp-settings-surface-2);
+	padding: 10px 10px;
 }
 
 .roprime-toggle-row.is-disabled {
-    opacity: 0.55;
+	opacity: 0.55;
 }
 
 .roprime-toggle-row.is-disabled .roprime-switch {
-    pointer-events: none;
+	pointer-events: none;
 }
 
 .roprime-toggle-row + .roprime-toggle-row {
-    margin-top: 10px;
+	margin-top: 10px;
 }
 
 .roprime-sidebar-size-row {
-    align-items: stretch;
-    gap: 16px;
+	align-items: stretch;
+	gap: 16px;
 }
 
 .roprime-sidebar-size-control {
-    flex: 0 0 250px;
-    max-width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+	flex: 0 0 250px;
+	max-width: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 }
 
 .roprime-sidebar-size-box {
-    width: 100%;
+	width: 100%;
 }
 
 .roprime-sidebar-size-rail {
-    width: 100%;
-    --roprime-sidebar-thumb-size: 14px;
+	width: 100%;
+	--roprime-sidebar-thumb-size: 14px;
 }
 
 .roprime-sidebar-size-slider {
-    width: calc(100% - var(--roprime-sidebar-thumb-size));
-    display: block;
-    appearance: none;
-    -webkit-appearance: none;
-    height: 6px;
-    border-radius: 999px;
-    background: linear-gradient(
-        90deg,
-        color-mix(in srgb, var(--rp-settings-border) 85%, transparent),
-        color-mix(in srgb, var(--rp-settings-border) 55%, transparent)
-    );
-    outline: none;
-    margin: 4px auto 10px;
+	width: calc(100% - var(--roprime-sidebar-thumb-size));
+	display: block;
+	appearance: none;
+	-webkit-appearance: none;
+	height: 6px;
+	border-radius: 999px;
+	background: linear-gradient(
+		90deg,
+		color-mix(in srgb, var(--rp-settings-border) 85%, transparent),
+		color-mix(in srgb, var(--rp-settings-border) 55%, transparent)
+	);
+	outline: none;
+	margin: 4px auto 10px;
 }
 
 .roprime-sidebar-size-slider::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    width: 14px;
-    height: 14px;
-    border-radius: 50%;
-    background: var(--rp-settings-text);
-    border: 2px solid var(--rp-settings-accent);
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.22);
-    cursor: pointer;
-    transition: transform 130ms ease;
+	-webkit-appearance: none;
+	width: 14px;
+	height: 14px;
+	border-radius: 50%;
+	background: var(--rp-settings-text);
+	border: 2px solid var(--rp-settings-accent);
+	box-shadow: 0 4px 10px rgba(0, 0, 0, 0.22);
+	cursor: pointer;
+	transition: transform 130ms ease;
 }
 
 .roprime-sidebar-size-slider::-moz-range-thumb {
-    width: 14px;
-    height: 14px;
-    border-radius: 50%;
-    background: var(--rp-settings-text);
-    border: 2px solid var(--rp-settings-accent);
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.22);
-    cursor: pointer;
-    transition: transform 130ms ease;
+	width: 14px;
+	height: 14px;
+	border-radius: 50%;
+	background: var(--rp-settings-text);
+	border: 2px solid var(--rp-settings-accent);
+	box-shadow: 0 4px 10px rgba(0, 0, 0, 0.22);
+	cursor: pointer;
+	transition: transform 130ms ease;
 }
 
 .roprime-sidebar-size-slider:active::-webkit-slider-thumb,
 .roprime-sidebar-size-slider:active::-moz-range-thumb {
-    transform: scale(1.08);
+	transform: scale(1.08);
 }
 
 .roprime-sidebar-size-ticks {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: calc(100% - var(--roprime-sidebar-thumb-size));
-    margin: 0 auto;
-    gap: 14px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: calc(100% - var(--roprime-sidebar-thumb-size));
+	margin: 0 auto;
+	gap: 14px;
 }
 
 .roprime-sidebar-size-tick {
-    border: 1px solid color-mix(in srgb, var(--rp-settings-border) 90%, transparent);
-    border-radius: 999px;
-    background: var(--rp-settings-surface);
-    color: color-mix(in srgb, var(--rp-settings-text) 85%, transparent);
-    font-size: 11px;
-    font-weight: 600;
-    line-height: 1;
-    padding: 6px 10px;
-    min-width: 64px;
-    text-align: center;
-    cursor: pointer;
-    transition: border-color 120ms ease, background 120ms ease, color 120ms ease;
+	border: 1px solid
+		color-mix(in srgb, var(--rp-settings-border) 90%, transparent);
+	border-radius: 999px;
+	background: var(--rp-settings-surface);
+	color: color-mix(in srgb, var(--rp-settings-text) 85%, transparent);
+	font-size: 11px;
+	font-weight: 600;
+	line-height: 1;
+	padding: 6px 10px;
+	min-width: 64px;
+	text-align: center;
+	cursor: pointer;
+	transition:
+		border-color 120ms ease,
+		background 120ms ease,
+		color 120ms ease;
 }
 
 .roprime-sidebar-size-tick.is-active {
-    border-color: color-mix(in srgb, var(--rp-settings-accent) 65%, transparent);
-    background: color-mix(in srgb, var(--rp-settings-accent) 22%, transparent);
-    color: var(--rp-settings-text);
+	border-color: color-mix(in srgb, var(--rp-settings-accent) 65%, transparent);
+	background: color-mix(in srgb, var(--rp-settings-accent) 22%, transparent);
+	color: var(--rp-settings-text);
 }
 
 .roprime-language-dropdown {
-    position: relative;
-    flex: 0 0 190px;
-    width: 190px;
-    max-width: 190px;
-    min-width: 0;
-    box-sizing: border-box;
+	position: relative;
+	flex: 0 0 190px;
+	width: 190px;
+	max-width: 190px;
+	min-width: 0;
+	box-sizing: border-box;
 }
 
 .roprime-language-trigger {
-    box-sizing: border-box;
-    width: 100%;
-    min-width: 0 !important;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-    border: 1px solid color-mix(in srgb, var(--rp-settings-border) 80%, transparent);
-    border-radius: 10px;
-    background: var(--rp-settings-surface-3);
-    color: var(--rp-settings-text);
-    padding: 9px 11px;
-    cursor: pointer;
+	box-sizing: border-box;
+	width: 100%;
+	min-width: 0 !important;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 10px;
+	border: 1px solid
+		color-mix(in srgb, var(--rp-settings-border) 80%, transparent);
+	border-radius: 10px;
+	background: var(--rp-settings-surface-3);
+	color: var(--rp-settings-text);
+	padding: 9px 11px;
+	cursor: pointer;
 }
 
 /* Avoid flex min-content blow-up from long locale labels (was showing as huge `min-width` on the button). */
 .roprime-language-trigger [data-roprime-lang-current] {
-    min-width: 0;
-    flex: 1 1 auto;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    text-align: left;
+	min-width: 0;
+	flex: 1 1 auto;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	text-align: left;
 }
 
 .roprime-language-chevron {
-    width: 8px;
-    height: 8px;
-    border-right: 2px solid currentColor;
-    border-bottom: 2px solid currentColor;
-    transform: rotate(45deg);
-    transition: transform 120ms ease;
+	width: 8px;
+	height: 8px;
+	border-right: 2px solid currentColor;
+	border-bottom: 2px solid currentColor;
+	transform: rotate(45deg);
+	transition: transform 120ms ease;
 }
 
 .roprime-language-dropdown.is-open .roprime-language-chevron {
-    transform: rotate(-135deg);
+	transform: rotate(-135deg);
 }
 
 .roprime-language-menu {
-    position: absolute;
-    top: calc(100% + 6px);
-    left: 0;
-    right: 0;
-    z-index: 5;
-    border: 1px solid color-mix(in srgb, var(--rp-settings-border) 90%, transparent);
-    border-radius: 10px;
-    overflow: hidden;
-    background: var(--rp-settings-surface-3);
-    display: flex;
-    flex-direction: column;
+	position: absolute;
+	top: calc(100% + 6px);
+	left: 0;
+	right: 0;
+	z-index: 5;
+	border: 1px solid
+		color-mix(in srgb, var(--rp-settings-border) 90%, transparent);
+	border-radius: 10px;
+	overflow: hidden;
+	background: var(--rp-settings-surface-3);
+	display: flex;
+	flex-direction: column;
 }
 
 .roprime-language-menu[hidden] {
-    display: none !important;
+	display: none !important;
 }
 
 .roprime-language-option {
-    border: 0;
-    background: transparent;
-    color: var(--rp-settings-text);
-    text-align: left;
-    padding: 9px 11px;
-    cursor: pointer;
+	border: 0;
+	background: transparent;
+	color: var(--rp-settings-text);
+	text-align: left;
+	padding: 9px 11px;
+	cursor: pointer;
 }
 
 .roprime-language-option:hover {
-    background: color-mix(in srgb, var(--rp-settings-accent) 18%, transparent);
+	background: color-mix(in srgb, var(--rp-settings-accent) 18%, transparent);
 }
 
 /* Keep account content fluid when RoPrime panel is open. */
-#react-user-account-base:has(#roprime-standalone-settings[style*="display: block"]) .content-container,
-#react-user-account-base:has(#roprime-standalone-settings[style*="display: block"]) #content-container,
+#react-user-account-base:has(
+		#roprime-standalone-settings[style*="display: block"]
+	)
+	.content-container,
+#react-user-account-base:has(
+		#roprime-standalone-settings[style*="display: block"]
+	)
+	#content-container,
 #react-user-account-base:has(#roprime-profile-settings-root) .content-container,
-#react-user-account-base:has(#roprime-profile-settings-root) #content-container {
-    width: auto !important;
-    max-width: none !important;
-    flex-shrink: 1 !important;
-    min-width: 0 !important;
+#react-user-account-base:has(#roprime-profile-settings-root)
+	#content-container {
+	width: auto !important;
+	max-width: none !important;
+	flex-shrink: 1 !important;
+	min-width: 0 !important;
 }
 
 .roprime-accordion-master-switch {
-    margin-left: auto;
-    flex: 0 0 auto;
+	margin-left: auto;
+	flex: 0 0 auto;
 }
 
 /* Keep every switch aligned to the same x-position as the header switch. */
 .roprime-toggle-row .roprime-switch,
 .roprime-setting-card-spaced .roprime-switch {
-    margin-right: 14px;
+	margin-right: 14px;
 }
 
 .roprime-toggle-copy {
-    min-width: 0;
-    padding-left: 4px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: flex-start;
-    text-align: left;
+	min-width: 0;
+	padding-left: 4px;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: flex-start;
+	text-align: left;
 }
 
 .roprime-toggle-title {
-    color: var(--rp-settings-text);
-    font-weight: 600;
-    line-height: 1.3;
+	color: var(--rp-settings-text);
+	font-weight: 600;
+	line-height: 1.3;
 }
 
 .roprime-toggle-desc {
-    margin-top: 6px;
-    color: var(--rp-settings-text-2);
-    font-size: 12px;
-    line-height: 1.4;
+	margin-top: 6px;
+	color: var(--rp-settings-text-2);
+	font-size: 12px;
+	line-height: 1.4;
 }
 
 .roprime-settings-hero {
-    position: relative;
-    overflow: hidden;
-    border-radius: 16px;
-    border: 1px solid rgba(108, 121, 143, 0.4);
-    background:
-        radial-gradient(130% 120% at 100% 0%, rgba(70, 116, 255, 0.25) 0%, rgba(70, 116, 255, 0) 62%),
-        radial-gradient(120% 120% at 0% 100%, rgba(129, 97, 255, 0.18) 0%, rgba(129, 97, 255, 0) 64%),
-        linear-gradient(165deg, #22272f 0%, #171b22 100%);
-    padding: 16px;
-    margin-bottom: 14px;
+	position: relative;
+	overflow: hidden;
+	border-radius: 16px;
+	border: 1px solid rgba(108, 121, 143, 0.4);
+	background:
+		radial-gradient(
+			130% 120% at 100% 0%,
+			rgba(70, 116, 255, 0.25) 0%,
+			rgba(70, 116, 255, 0) 62%
+		),
+		radial-gradient(
+			120% 120% at 0% 100%,
+			rgba(129, 97, 255, 0.18) 0%,
+			rgba(129, 97, 255, 0) 64%
+		),
+		linear-gradient(165deg, #22272f 0%, #171b22 100%);
+	padding: 16px;
+	margin-bottom: 14px;
 }
 
 .roprime-settings-hero h2 {
-    margin: 0 0 6px;
-    font-size: 24px;
-    color: #f1f5fc;
+	margin: 0 0 6px;
+	font-size: 24px;
+	color: #f1f5fc;
 }
 
 .roprime-settings-hero p {
-    margin: 0;
-    color: rgba(203, 212, 226, 0.9);
-    font-size: 14px;
+	margin: 0;
+	color: rgba(203, 212, 226, 0.9);
+	font-size: 14px;
 }
 
 .roprime-corner {
-    display: none;
+	display: none;
 }
 
 .roprime-corner-top-left {
-    top: 8px;
-    left: 8px;
-    border-right: 0;
-    border-bottom: 0;
+	top: 8px;
+	left: 8px;
+	border-right: 0;
+	border-bottom: 0;
 }
 
 .roprime-corner-top-right {
-    top: 8px;
-    right: 8px;
-    border-left: 0;
-    border-bottom: 0;
+	top: 8px;
+	right: 8px;
+	border-left: 0;
+	border-bottom: 0;
 }
 
 .roprime-corner-bottom-left {
-    bottom: 8px;
-    left: 8px;
-    border-top: 0;
-    border-right: 0;
+	bottom: 8px;
+	left: 8px;
+	border-top: 0;
+	border-right: 0;
 }
 
 .roprime-corner-bottom-right {
-    right: 8px;
-    bottom: 8px;
-    border-top: 0;
-    border-left: 0;
+	right: 8px;
+	bottom: 8px;
+	border-top: 0;
+	border-left: 0;
 }
 
 .roprime-groups-setting-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    border-radius: 12px;
-    border: 1px solid rgba(122, 129, 179, 0.35);
-    background: rgba(20, 22, 38, 0.9);
-    padding: 14px 16px;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	border-radius: 12px;
+	border: 1px solid rgba(122, 129, 179, 0.35);
+	background: rgba(20, 22, 38, 0.9);
+	padding: 14px 16px;
 }
 
 .roprime-experiences-setting-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    border-radius: 12px;
-    border: 1px solid rgba(122, 129, 179, 0.35);
-    background: rgba(20, 22, 38, 0.9);
-    padding: 14px 16px;
-    margin-top: 12px;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	border-radius: 12px;
+	border: 1px solid rgba(122, 129, 179, 0.35);
+	background: rgba(20, 22, 38, 0.9);
+	padding: 14px 16px;
+	margin-top: 12px;
 }
 
 .roprime-groups-setting-copy {
-    min-width: 0;
+	min-width: 0;
 }
 
 .roprime-experiences-setting-copy {
-    min-width: 0;
+	min-width: 0;
 }
 
 .roprime-groups-setting-title {
-    color: #f7f8ff;
-    font-weight: 600;
-    line-height: 1.3;
+	color: #f7f8ff;
+	font-weight: 600;
+	line-height: 1.3;
 }
 
 .roprime-experiences-setting-title {
-    color: #f7f8ff;
-    font-weight: 600;
-    line-height: 1.3;
+	color: #f7f8ff;
+	font-weight: 600;
+	line-height: 1.3;
 }
 
 .roprime-groups-setting-desc {
-    margin-top: 4px;
-    color: rgba(211, 217, 255, 0.78);
-    font-size: 12px;
+	margin-top: 4px;
+	color: rgba(211, 217, 255, 0.78);
+	font-size: 12px;
 }
 
 .roprime-experiences-setting-desc {
-    margin-top: 4px;
-    color: rgba(211, 217, 255, 0.78);
-    font-size: 12px;
+	margin-top: 4px;
+	color: rgba(211, 217, 255, 0.78);
+	font-size: 12px;
 }
 
 .roprime-switch {
-    position: relative;
-    width: 44px;
-    height: 24px;
-    flex: 0 0 auto;
-    display: inline-block;
+	position: relative;
+	width: 44px;
+	height: 24px;
+	flex: 0 0 auto;
+	display: inline-block;
 }
 
 .roprime-switch input {
-    opacity: 0;
-    width: 0;
-    height: 0;
+	opacity: 0;
+	width: 0;
+	height: 0;
 }
 
 .roprime-switch-slider {
-    position: absolute;
-    inset: 0;
-    border-radius: 999px;
-    border: 1px solid color-mix(in srgb, var(--rp-settings-border) 95%, transparent);
-    background: var(--rp-settings-surface);
-    transition: background-color 120ms ease, border-color 120ms ease;
+	position: absolute;
+	inset: 0;
+	border-radius: 999px;
+	border: 1px solid
+		color-mix(in srgb, var(--rp-settings-border) 95%, transparent);
+	background: var(--rp-settings-surface);
+	transition:
+		background-color 120ms ease,
+		border-color 120ms ease;
 }
 
 .roprime-switch-slider::before {
-    content: "";
-    position: absolute;
-    width: 18px;
-    height: 18px;
-    left: 2px;
-    top: 2px;
-    border-radius: 50%;
-    background: var(--rp-settings-text);
-    transition: transform 120ms ease;
+	content: "";
+	position: absolute;
+	width: 18px;
+	height: 18px;
+	left: 2px;
+	top: 2px;
+	border-radius: 50%;
+	background: var(--rp-settings-text);
+	transition: transform 120ms ease;
 }
 
 .roprime-switch input:checked + .roprime-switch-slider {
-    background: var(--rp-settings-accent);
-    border-color: var(--rp-settings-accent);
+	background: var(--rp-settings-accent);
+	border-color: var(--rp-settings-accent);
 }
 
 .roprime-switch input:checked + .roprime-switch-slider::before {
-    transform: translateX(20px);
+	transform: translateX(20px);
 }
 
 body.light-theme .roprime-settings-hero,
 html.light-theme .roprime-settings-hero {
-    background:
-        radial-gradient(120% 120% at 100% 0%, rgba(88, 101, 242, 0.14) 0%, rgba(88, 101, 242, 0) 60%),
-        linear-gradient(160deg, rgba(252, 252, 255, 0.98), rgba(247, 249, 255, 0.98));
-    border-color: rgba(88, 101, 242, 0.28);
+	background:
+		radial-gradient(
+			120% 120% at 100% 0%,
+			rgba(88, 101, 242, 0.14) 0%,
+			rgba(88, 101, 242, 0) 60%
+		),
+		linear-gradient(
+			160deg,
+			rgba(252, 252, 255, 0.98),
+			rgba(247, 249, 255, 0.98)
+		);
+	border-color: rgba(88, 101, 242, 0.28);
 }
 
 body.light-theme .roprime-settings-hero h2,
 html.light-theme .roprime-settings-hero h2 {
-    color: #1f2442;
+	color: #1f2442;
 }
 
 body.light-theme .roprime-settings-hero p,
 html.light-theme .roprime-settings-hero p {
-    color: #4e577f;
+	color: #4e577f;
 }
 
 body.light-theme .roprime-groups-setting-row,
 html.light-theme .roprime-groups-setting-row {
-    background: #ffffff;
-    border-color: rgba(97, 106, 156, 0.25);
+	background: #ffffff;
+	border-color: rgba(97, 106, 156, 0.25);
 }
 
 body.light-theme .roprime-experiences-setting-row,
 html.light-theme .roprime-experiences-setting-row {
-    background: #ffffff;
-    border-color: rgba(97, 106, 156, 0.25);
+	background: #ffffff;
+	border-color: rgba(97, 106, 156, 0.25);
 }
 
 body.light-theme .roprime-groups-setting-title,
 html.light-theme .roprime-groups-setting-title {
-    color: #232948;
+	color: #232948;
 }
 
 body.light-theme .roprime-experiences-setting-title,
 html.light-theme .roprime-experiences-setting-title {
-    color: #232948;
+	color: #232948;
 }
 
 body.light-theme .roprime-groups-setting-desc,
 html.light-theme .roprime-groups-setting-desc {
-    color: #60688f;
+	color: #60688f;
 }
 
 body.light-theme .roprime-experiences-setting-desc,
 html.light-theme .roprime-experiences-setting-desc {
-    color: #60688f;
+	color: #60688f;
 }
 
 body.light-theme .roprime-settings-nav-btn,
 html.light-theme .roprime-settings-nav-btn {
-    background: #fff;
-    color: #2a3157;
-    border-color: rgba(97, 106, 156, 0.25);
+	background: #fff;
+	color: #2a3157;
+	border-color: rgba(97, 106, 156, 0.25);
 }
 
 body.light-theme .roprime-setting-card,
 html.light-theme .roprime-setting-card,
 body.light-theme .roprime-info-card,
 html.light-theme .roprime-info-card {
-    background: #ffffff;
-    border-color: rgba(97, 106, 156, 0.25);
+	background: #ffffff;
+	border-color: rgba(97, 106, 156, 0.25);
 }
 
 body.light-theme .roprime-setting-title,
 html.light-theme .roprime-setting-title,
 body.light-theme .roprime-info-title,
 html.light-theme .roprime-info-title {
-    color: #232948;
+	color: #232948;
 }
 
 body.light-theme .roprime-setting-desc,
 html.light-theme .roprime-setting-desc,
 body.light-theme .roprime-info-text,
 html.light-theme .roprime-info-text {
-    color: #60688f;
+	color: #60688f;
 }
 
 body.light-theme .roprime-accordion-chevron,
 html.light-theme .roprime-accordion-chevron {
-    border-right-color: rgba(96, 104, 143, 0.95);
-    border-bottom-color: rgba(96, 104, 143, 0.95);
+	border-right-color: rgba(96, 104, 143, 0.95);
+	border-bottom-color: rgba(96, 104, 143, 0.95);
 }
 
 body.light-theme .roprime-toggle-row,
 html.light-theme .roprime-toggle-row {
-    background: #ffffff;
-    border-color: rgba(97, 106, 156, 0.25);
+	background: #ffffff;
+	border-color: rgba(97, 106, 156, 0.25);
 }
 
 body.light-theme .roprime-toggle-title,
 html.light-theme .roprime-toggle-title {
-    color: #232948;
+	color: #232948;
 }
 
 body.light-theme .roprime-toggle-desc,
 html.light-theme .roprime-toggle-desc {
-    color: #60688f;
+	color: #60688f;
 }
 
 #roprime-standalone-settings {
-    display: none;
-    margin-top: 8px;
+	display: none;
+	margin-top: 8px;
 }
 
 @media (max-width: 992px) {
-    .roprime-settings-wrapper {
-        overflow-x: hidden !important;
-        max-width: 100% !important;
-        box-sizing: border-box !important;
-    }
+	.roprime-settings-wrapper {
+		overflow-x: hidden !important;
+		max-width: 100% !important;
+		box-sizing: border-box !important;
+	}
 
-    .roprime-settings-nav {
-        justify-content: center !important;
-        row-gap: 10px !important;
-    }
+	.roprime-settings-nav {
+		justify-content: center !important;
+		row-gap: 10px !important;
+	}
 
-    .roprime-settings-main {
-        max-width: 100% !important;
-        overflow-x: hidden !important;
-    }
+	.roprime-settings-main {
+		max-width: 100% !important;
+		overflow-x: hidden !important;
+	}
 }
 
 @media (min-width: 1200px) {
-    .roprime-settings-layout {
-        display: grid;
-        grid-template-columns: 220px minmax(0, 1fr);
-        gap: 14px;
-        align-items: start;
-    }
+	.roprime-settings-layout {
+		display: grid;
+		grid-template-columns: 220px minmax(0, 1fr);
+		gap: 14px;
+		align-items: start;
+	}
 
-    .roprime-settings-sidebar {
-        margin-bottom: 0;
-    }
+	.roprime-settings-sidebar {
+		margin-bottom: 0;
+	}
 
-    .roprime-settings-search-wrap {
-        margin-bottom: 10px;
-    }
+	.roprime-settings-search-wrap {
+		margin-bottom: 10px;
+	}
 
-    .roprime-settings-nav {
-        margin: 0;
-        flex-direction: column;
-        flex-wrap: nowrap;
-    }
+	.roprime-settings-nav {
+		margin: 0;
+		flex-direction: column;
+		flex-wrap: nowrap;
+	}
 
-    .roprime-settings-nav-btn {
-        width: 100%;
-        text-align: left;
-    }
+	.roprime-settings-nav-btn {
+		width: 100%;
+		text-align: left;
+	}
 }
 
 @media (max-width: 991px) {
-    html.roprime-classic-left-nav-on .rbx-header .rbx-navbar-header,
-    body.roprime-classic-left-nav-on .rbx-header .rbx-navbar-header {
-        margin: 0 5px;
-    }
+	html.roprime-classic-left-nav-on .rbx-header .rbx-navbar-header,
+	body.roprime-classic-left-nav-on .rbx-header .rbx-navbar-header {
+		margin: 0 5px;
+	}
 }
 
 @media (max-width: 1199px) {
-    html.roprime-classic-left-nav-on .rbx-header .rbx-navbar-header,
-    body.roprime-classic-left-nav-on .rbx-header .rbx-navbar-header {
-        margin: 0;
-    }
+	html.roprime-classic-left-nav-on .rbx-header .rbx-navbar-header,
+	body.roprime-classic-left-nav-on .rbx-header .rbx-navbar-header {
+		margin: 0;
+	}
 }
 
 html.roprime-classic-left-nav-on .rbx-header .rbx-navbar-header,
 body.roprime-classic-left-nav-on .rbx-header .rbx-navbar-header {
-    z-index: 100;
-    float: left;
-    max-width: 76px;
-    margin: 0 5px;
-    position: relative;
+	z-index: 100;
+	float: left;
+	max-width: 76px;
+	margin: 0 5px;
+	position: relative;
 }
 /*
 .content {
@@ -888,7 +945,7 @@ body.roprime-classic-left-nav-on .rbx-header .rbx-navbar-header {
 /* Skip-to-content stacking (extension override). */
 #skip-to-main-content.btn-primary-xs.btn-min-width,
 #skip-to-main-content {
-    z-index: 2 !important;
+	z-index: 2 !important;
 }
 
 .roprime-settings-wrapper,
@@ -901,210 +958,210 @@ body.roprime-classic-left-nav-on .rbx-header .rbx-navbar-header {
 #roprime-home-welcome-root *,
 #roprime-classic-left-nav-host,
 #roprime-classic-left-nav-host * {
-    box-sizing: border-box;
-    text-rendering: auto;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+	box-sizing: border-box;
+	text-rendering: auto;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
 }
 
 /* —— One-time welcome on /home —— */
 #roprime-home-welcome-root {
-    position: fixed;
-    inset: 0;
-    z-index: 2147483646;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: system-ui, "Segoe UI", Roboto, sans-serif;
+	position: fixed;
+	inset: 0;
+	z-index: 2147483646;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-family: system-ui, "Segoe UI", Roboto, sans-serif;
 }
 
 #roprime-home-welcome-root .roprime-welcome-backdrop {
-    position: absolute;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.55);
-    pointer-events: auto;
+	position: absolute;
+	inset: 0;
+	background: rgba(0, 0, 0, 0.55);
+	pointer-events: auto;
 }
 
 #roprime-home-welcome-root .roprime-welcome-frame {
-    position: relative;
-    z-index: 1;
-    max-width: min(620px, calc(100vw - 28px));
-    width: 100%;
-    pointer-events: auto;
+	position: relative;
+	z-index: 1;
+	max-width: min(620px, calc(100vw - 28px));
+	width: 100%;
+	pointer-events: auto;
 }
 
 #roprime-home-welcome-root .roprime-welcome-card {
-    margin: 0 16px;
-    padding: 18px 22px 20px;
-    border-radius: 14px;
-    background: var(--background-surface, #121722);
-    color: var(--text-primary, #ecf0f8);
-    text-align: left;
-    box-shadow:
-        0 18px 48px rgba(0, 0, 0, 0.5),
-        0 0 0 1px var(--border-color, rgba(150, 160, 190, 0.35));
-    border: 1px solid var(--border-color, rgba(150, 160, 190, 0.35));
-    position: relative;
+	margin: 0 16px;
+	padding: 18px 22px 20px;
+	border-radius: 14px;
+	background: var(--background-surface, #121722);
+	color: var(--text-primary, #ecf0f8);
+	text-align: left;
+	box-shadow:
+		0 18px 48px rgba(0, 0, 0, 0.5),
+		0 0 0 1px var(--border-color, rgba(150, 160, 190, 0.35));
+	border: 1px solid var(--border-color, rgba(150, 160, 190, 0.35));
+	position: relative;
 }
 
 html.dark-theme #roprime-home-welcome-root .roprime-welcome-card,
 body.dark-theme #roprime-home-welcome-root .roprime-welcome-card {
-    background: var(--background-surface, #121722);
-    color: var(--text-primary, #ecf0f8);
+	background: var(--background-surface, #121722);
+	color: var(--text-primary, #ecf0f8);
 }
 
 #roprime-home-welcome-root .roprime-welcome-header {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 12px;
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	margin-bottom: 12px;
 }
 
 #roprime-home-welcome-root .roprime-welcome-logo {
-    display: block;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 1px solid var(--border-color, rgba(150, 160, 190, 0.35));
+	display: block;
+	border-radius: 50%;
+	object-fit: cover;
+	border: 1px solid var(--border-color, rgba(150, 160, 190, 0.35));
 }
 
 #roprime-home-welcome-root .roprime-welcome-title {
-    margin: 0;
-    font-size: 28px;
-    font-weight: 700;
-    line-height: 1.15;
-    letter-spacing: -0.02em;
+	margin: 0;
+	font-size: 28px;
+	font-weight: 700;
+	line-height: 1.15;
+	letter-spacing: -0.02em;
 }
 
 #roprime-home-welcome-root .roprime-welcome-close {
-    position: absolute;
-    top: 10px;
-    right: 12px;
-    border: 0;
-    background: transparent;
-    color: var(--text-secondary, #aeb7cf);
-    font-size: 28px;
-    line-height: 1;
-    cursor: pointer;
+	position: absolute;
+	top: 10px;
+	right: 12px;
+	border: 0;
+	background: transparent;
+	color: var(--text-secondary, #aeb7cf);
+	font-size: 28px;
+	line-height: 1;
+	cursor: pointer;
 }
 
 #roprime-home-welcome-root .roprime-welcome-text {
-    margin: 0 0 10px;
-    font-size: 14px;
-    line-height: 1.45;
-    color: var(--text-secondary, #c8d0e4);
+	margin: 0 0 10px;
+	font-size: 14px;
+	line-height: 1.45;
+	color: var(--text-secondary, #c8d0e4);
 }
 
 #roprime-home-welcome-root .roprime-welcome-step {
-    margin: 0 0 14px;
-    padding-left: 20px;
-    font-size: 16px;
-    line-height: 1.45;
-    color: var(--text-primary, #ecf0f8);
-    font-weight: 600;
+	margin: 0 0 14px;
+	padding-left: 20px;
+	font-size: 16px;
+	line-height: 1.45;
+	color: var(--text-primary, #ecf0f8);
+	font-weight: 600;
 }
 
 #roprime-home-welcome-root .roprime-welcome-mock {
-    width: 200px;
-    margin: 0 auto 16px;
-    border: 1px solid var(--border-color, rgba(150, 160, 190, 0.35));
-    border-radius: 8px;
-    padding: 8px;
-    background: #070b12;
+	width: 200px;
+	margin: 0 auto 16px;
+	border: 1px solid var(--border-color, rgba(150, 160, 190, 0.35));
+	border-radius: 8px;
+	padding: 8px;
+	background: #070b12;
 }
 
 #roprime-home-welcome-root .roprime-welcome-mock-header {
-    height: 34px;
-    border-radius: 6px 6px 0 0;
-    background: #0f1520;
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    gap: 10px;
-    padding: 0 10px;
+	height: 34px;
+	border-radius: 6px 6px 0 0;
+	background: #0f1520;
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
+	gap: 10px;
+	padding: 0 10px;
 }
 
 #roprime-home-welcome-root .roprime-welcome-mock-gear,
 #roprime-home-welcome-root .roprime-welcome-mock-bell {
-    color: #d7deef;
-    font-size: 18px;
+	color: #d7deef;
+	font-size: 18px;
 }
 
 #roprime-home-welcome-root .roprime-welcome-mock-menu {
-    background: #2a2f3a;
-    border-radius: 0 0 6px 6px;
-    padding: 10px 10px 8px;
+	background: #2a2f3a;
+	border-radius: 0 0 6px 6px;
+	padding: 10px 10px 8px;
 }
 
 #roprime-home-welcome-root .roprime-welcome-mock-item {
-    color: #d7deef;
-    font-size: 14px;
-    padding: 7px 0;
-    display: flex;
-    align-items: center;
-    gap: 8px;
+	color: #d7deef;
+	font-size: 14px;
+	padding: 7px 0;
+	display: flex;
+	align-items: center;
+	gap: 8px;
 }
 
 #roprime-home-welcome-root .roprime-welcome-mock-item.is-active {
-    color: #ffffff;
-    font-weight: 700;
+	color: #ffffff;
+	font-weight: 700;
 }
 
 #roprime-home-welcome-root .roprime-welcome-ok {
-    min-width: 84px;
-    padding: 7px 13px;
-    border: 1px solid var(--border-color, rgba(150, 160, 190, 0.45));
-    border-radius: 8px;
-    background: var(--button-secondary, #f5f7fd);
-    color: #0f1728;
-    font-size: 0.95rem;
-    font-weight: 600;
-    cursor: pointer;
+	min-width: 84px;
+	padding: 7px 13px;
+	border: 1px solid var(--border-color, rgba(150, 160, 190, 0.45));
+	border-radius: 8px;
+	background: var(--button-secondary, #f5f7fd);
+	color: #0f1728;
+	font-size: 0.95rem;
+	font-weight: 600;
+	cursor: pointer;
 }
 
 #roprime-home-welcome-root .roprime-welcome-footnote {
-    margin: 0 0 14px;
-    color: var(--text-secondary, #c8d0e4);
-    font-size: 15px;
-    line-height: 1.4;
-    font-weight: 600;
+	margin: 0 0 14px;
+	color: var(--text-secondary, #c8d0e4);
+	font-size: 15px;
+	line-height: 1.4;
+	font-weight: 600;
 }
 
 #roprime-home-welcome-root .roprime-welcome-actions {
-    display: flex;
-    justify-content: flex-end;
+	display: flex;
+	justify-content: flex-end;
 }
 
 #roprime-home-welcome-root .roprime-welcome-ok:hover {
-    filter: brightness(1.06);
+	filter: brightness(1.06);
 }
 
 /* —— Old Navigation bar (light “old Roblox” sidebar, 288px, fixed left) —— */
 #roprime-classic-left-nav-host.roprime-classic-left-nav-host {
-    position: fixed;
-    left: 0;
-    top: 0;
-    width: 288px;
-    height: 100vh;
-    /* Keep it behind the main page container (container-fluid). */
-    z-index: 55;
-    box-sizing: border-box;
-    overflow: hidden;
-    pointer-events: auto;
-    font-family: "Builder Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
-    -webkit-font-smoothing: antialiased;
+	position: fixed;
+	left: 0;
+	top: 0;
+	width: 288px;
+	height: 100vh;
+	/* Keep it behind the main page container (container-fluid). */
+	z-index: 55;
+	box-sizing: border-box;
+	overflow: hidden;
+	pointer-events: auto;
+	font-family: "Builder Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+	-webkit-font-smoothing: antialiased;
 }
 
 /* Menu button closes the Old Navigation bar (session-only). */
 html.roprime-old-navigation-bar-collapsed #roprime-classic-left-nav-host,
 body.roprime-old-navigation-bar-collapsed #roprime-classic-left-nav-host {
-    display: none !important;
+	display: none !important;
 }
 
 /* Keep Roblox content above the Old Navigation bar (without shifting anything). */
 html.roprime-classic-left-nav-on .container-fluid,
 body.roprime-classic-left-nav-on .container-fluid {
-    position: relative !important;
-    z-index: 60 !important;
+	position: relative !important;
+	z-index: 60 !important;
 }
 
 /* Hide Roblox’s own navigation when Old Navigation bar is on. */
@@ -1116,14 +1173,15 @@ html.roprime-classic-left-nav-on .left-nav.fixed,
 body.roprime-classic-left-nav-on .left-nav.fixed,
 html.roprime-classic-left-nav-on .stroke-default.self-stretch,
 body.roprime-classic-left-nav-on .stroke-default.self-stretch {
-    display: none !important;
+	display: none !important;
 }
 
 html.roprime-classic-left-nav-on .flex.width-\[288px\].h-full.overflow-y-auto,
 body.roprime-classic-left-nav-on .flex.width-\[288px\].h-full.overflow-y-auto,
 html.roprime-classic-left-nav-on .flex[class~="width-[288px]"][class~="h-full"],
-body.roprime-classic-left-nav-on .flex[class~="width-[288px]"][class~="h-full"] {
-    display: none !important;
+body.roprime-classic-left-nav-on
+	.flex[class~="width-[288px]"][class~="h-full"] {
+	display: none !important;
 }
 
 /* Force Roblox top-left header controls visible while Old Navigation bar is enabled. */
@@ -1135,352 +1193,376 @@ html.roprime-classic-left-nav-on .navbar-header,
 body.roprime-classic-left-nav-on .navbar-header,
 html.roprime-classic-left-nav-on a.navbar-brand,
 body.roprime-classic-left-nav-on a.navbar-brand {
-    display: flex !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-    pointer-events: auto !important;
+	display: flex !important;
+	visibility: visible !important;
+	opacity: 1 !important;
+	pointer-events: auto !important;
 }
 
 html.roprime-classic-left-nav-on .navbar-header,
 body.roprime-classic-left-nav-on .navbar-header,
 html.roprime-classic-left-nav-on .rbx-header .rbx-navbar-header,
 body.roprime-classic-left-nav-on .rbx-header .rbx-navbar-header {
-    align-items: center;
+	align-items: center;
 }
 
 /* Menu button: don't keep a "clicked gray" state; only show on hover / while holding. */
 html.roprime-classic-left-nav-on button.menu-button.btn-navigation-nav-menu-md,
 body.roprime-classic-left-nav-on button.menu-button.btn-navigation-nav-menu-md {
-    background: transparent !important;
-    box-shadow: none !important;
-    filter: none !important;
+	background: transparent !important;
+	box-shadow: none !important;
+	filter: none !important;
 }
 
-html.roprime-classic-left-nav-on button.menu-button.btn-navigation-nav-menu-md:hover,
-body.roprime-classic-left-nav-on button.menu-button.btn-navigation-nav-menu-md:hover {
-    background: rgba(255, 255, 255, 0.12) !important;
+html.roprime-classic-left-nav-on
+	button.menu-button.btn-navigation-nav-menu-md:hover,
+body.roprime-classic-left-nav-on
+	button.menu-button.btn-navigation-nav-menu-md:hover {
+	background: rgba(255, 255, 255, 0.12) !important;
 }
 
-html.roprime-classic-left-nav-on button.menu-button.btn-navigation-nav-menu-md:focus:not(:hover):not(:active),
-body.roprime-classic-left-nav-on button.menu-button.btn-navigation-nav-menu-md:focus:not(:hover):not(:active),
-html.roprime-classic-left-nav-on button.menu-button.btn-navigation-nav-menu-md:focus-visible:not(:hover):not(:active),
-body.roprime-classic-left-nav-on button.menu-button.btn-navigation-nav-menu-md:focus-visible:not(:hover):not(:active) {
-    background: transparent !important;
+html.roprime-classic-left-nav-on
+	button.menu-button.btn-navigation-nav-menu-md:focus:not(:hover):not(:active),
+body.roprime-classic-left-nav-on
+	button.menu-button.btn-navigation-nav-menu-md:focus:not(:hover):not(:active),
+html.roprime-classic-left-nav-on
+	button.menu-button.btn-navigation-nav-menu-md:focus-visible:not(:hover):not(
+		:active
+	),
+body.roprime-classic-left-nav-on
+	button.menu-button.btn-navigation-nav-menu-md:focus-visible:not(:hover):not(
+		:active
+	) {
+	background: transparent !important;
 }
 
 /* Put :active AFTER :focus so the pressed gray still shows while holding click. */
-html.roprime-classic-left-nav-on button.menu-button.btn-navigation-nav-menu-md:active,
-body.roprime-classic-left-nav-on button.menu-button.btn-navigation-nav-menu-md:active,
-html.roprime-classic-left-nav-on button.menu-button.btn-navigation-nav-menu-md:active:focus,
-body.roprime-classic-left-nav-on button.menu-button.btn-navigation-nav-menu-md:active:focus,
-html.roprime-classic-left-nav-on button.menu-button.btn-navigation-nav-menu-md:active:focus-visible,
-body.roprime-classic-left-nav-on button.menu-button.btn-navigation-nav-menu-md:active:focus-visible {
-    background: rgba(255, 255, 255, 0.18) !important;
+html.roprime-classic-left-nav-on
+button.menu-button.btn-navigation-nav-menu-md:active,
+body.roprime-classic-left-nav-on
+	button.menu-button.btn-navigation-nav-menu-md:active,
+html.roprime-classic-left-nav-on
+	button.menu-button.btn-navigation-nav-menu-md:active:focus,
+body.roprime-classic-left-nav-on
+	button.menu-button.btn-navigation-nav-menu-md:active:focus,
+html.roprime-classic-left-nav-on
+	button.menu-button.btn-navigation-nav-menu-md:active:focus-visible,
+body.roprime-classic-left-nav-on
+	button.menu-button.btn-navigation-nav-menu-md:active:focus-visible {
+	background: rgba(255, 255, 255, 0.18) !important;
 }
 
 /* If Roblox applies "selected" styling, kill it except when actively pressing. */
-html.roprime-classic-left-nav-on button.menu-button.btn-navigation-nav-menu-md:not(:hover):not(:active),
-body.roprime-classic-left-nav-on button.menu-button.btn-navigation-nav-menu-md:not(:hover):not(:active) {
-    background: transparent !important;
+html.roprime-classic-left-nav-on
+button.menu-button.btn-navigation-nav-menu-md:not(:hover):not(:active),
+body.roprime-classic-left-nav-on
+	button.menu-button.btn-navigation-nav-menu-md:not(:hover):not(:active) {
+	background: transparent !important;
 }
 
 .roprime-classic-left-nav {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    width: 100%;
-    margin: 0;
-    /* Push contents down so it doesn't sit under Roblox top bar. */
-    padding: 56px 0 0;
-    box-sizing: border-box;
-    background: #f2f4f5;
-    color: #272930;
-    border-right: 1px solid #e1e4e8;
-    box-shadow: 1px 0 0 rgba(0, 0, 0, 0.04);
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	width: 100%;
+	margin: 0;
+	/* Push contents down so it doesn't sit under Roblox top bar. */
+	padding: 56px 0 0;
+	box-sizing: border-box;
+	background: #f2f4f5;
+	color: #272930;
+	border-right: 1px solid #e1e4e8;
+	box-shadow: 1px 0 0 rgba(0, 0, 0, 0.04);
 }
 
 .roprime-cln-top {
-    flex-shrink: 0;
-    padding: 12px 14px 0;
+	flex-shrink: 0;
+	padding: 12px 14px 0;
 }
 
 .roprime-cln-profile {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 6px 8px 10px;
-    margin: 0 -4px;
-    text-decoration: none;
-    color: inherit;
-    border-radius: 8px;
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	padding: 6px 8px 10px;
+	margin: 0 -4px;
+	text-decoration: none;
+	color: inherit;
+	border-radius: 8px;
 }
 
 .roprime-cln-profile:hover {
-    background: rgba(0, 0, 0, 0.04);
+	background: rgba(0, 0, 0, 0.04);
 }
 
 .roprime-cln-avatar {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    object-fit: cover;
-    flex-shrink: 0;
-    background: #dde1e6;
-    border: 1px solid #cfd4da;
+	width: 36px;
+	height: 36px;
+	border-radius: 50%;
+	object-fit: cover;
+	flex-shrink: 0;
+	background: #dde1e6;
+	border: 1px solid #cfd4da;
 }
 
 .roprime-cln-avatar--ph {
-    display: inline-block;
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    background: #dde1e6;
-    border: 1px solid #cfd4da;
+	display: inline-block;
+	width: 36px;
+	height: 36px;
+	border-radius: 50%;
+	background: #dde1e6;
+	border: 1px solid #cfd4da;
 }
 
 .roprime-cln-name {
-    font-size: 0.9375rem;
-    font-weight: 600;
-    letter-spacing: 0.01em;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    color: #272930;
-    text-align: left;
+	font-size: 0.9375rem;
+	font-weight: 600;
+	letter-spacing: 0.01em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	color: #272930;
+	text-align: left;
 }
 
 .roprime-cln-divider {
-    height: 1px;
-    margin: 4px 0 6px;
-    background: #dde1e6;
-    border: none;
+	height: 1px;
+	margin: 4px 0 6px;
+	background: #dde1e6;
+	border: none;
 }
 
 .roprime-cln-scroll {
-    flex: 1 1 auto;
-    min-height: 0;
-    overflow-x: hidden;
-    overflow-y: auto;
-    padding: 2px 10px 14px;
-    scrollbar-width: thin;
-    scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+	flex: 1 1 auto;
+	min-height: 0;
+	overflow-x: hidden;
+	overflow-y: auto;
+	padding: 2px 10px 14px;
+	scrollbar-width: thin;
+	scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
 }
 
 .roprime-cln-list {
-    list-style: none;
-    margin: 0;
-    padding: 0 0 8px;
+	list-style: none;
+	margin: 0;
+	padding: 0 0 8px;
 }
 
 .roprime-cln-link {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 7px 8px;
-    margin: 1px 0;
-    border-radius: 6px;
-    text-decoration: none;
-    color: #272930;
-    font-size: 0.9375rem;
-    font-weight: 500;
-    line-height: 1.3;
-    position: relative;
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	padding: 7px 8px;
+	margin: 1px 0;
+	border-radius: 6px;
+	text-decoration: none;
+	color: #272930;
+	font-size: 0.9375rem;
+	font-weight: 500;
+	line-height: 1.3;
+	position: relative;
 }
 
 .roprime-cln-link:hover {
-    background: rgba(0, 0, 0, 0.05);
+	background: rgba(0, 0, 0, 0.05);
 }
 
 .roprime-cln-icon-wrap {
-    position: relative;
-    flex-shrink: 0;
-    width: 22px;
-    height: 22px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #3a3f47;
+	position: relative;
+	flex-shrink: 0;
+	width: 22px;
+	height: 22px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: #3a3f47;
 }
 
 .roprime-cln-icon-wrap--external::after {
-    content: "";
-    position: absolute;
-    right: 0;
-    bottom: 1px;
-    width: 5px;
-    height: 5px;
-    border-right: 1.5px solid currentColor;
-    border-bottom: 1.5px solid currentColor;
-    opacity: 0.8;
-    box-sizing: border-box;
+	content: "";
+	position: absolute;
+	right: 0;
+	bottom: 1px;
+	width: 5px;
+	height: 5px;
+	border-right: 1.5px solid currentColor;
+	border-bottom: 1.5px solid currentColor;
+	opacity: 0.8;
+	box-sizing: border-box;
 }
 
 .roprime-cln-svg {
-    display: block;
-    color: inherit;
+	display: block;
+	color: inherit;
 }
 
 .roprime-cln-label {
-    flex: 1;
-    min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    text-align: left;
+	flex: 1;
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	text-align: left;
 }
 
 .roprime-cln-badge {
-    flex-shrink: 0;
-    min-width: 18px;
-    height: 18px;
-    padding: 0 5px;
-    margin-left: 0;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.65rem;
-    font-weight: 700;
-    line-height: 1;
-    color: #f5d24a;
-    background: #111;
-    border-radius: 999px;
-    box-sizing: border-box;
-    position: absolute;
-    right: 10px;
+	flex-shrink: 0;
+	min-width: 18px;
+	height: 18px;
+	padding: 0 5px;
+	margin-left: 0;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 0.65rem;
+	font-weight: 700;
+	line-height: 1;
+	color: #f5d24a;
+	background: #111;
+	border-radius: 999px;
+	box-sizing: border-box;
+	position: absolute;
+	right: 10px;
 }
 
 .roprime-cln-premium {
-    display: block;
-    margin: 4px 4px 0;
-    padding: 11px 14px;
-    text-align: center;
-    text-decoration: none;
-    font-weight: 700;
-    font-size: 0.9375rem;
-    letter-spacing: 0.02em;
-    color: #fff;
-    background: #1f1f1f;
-    border-radius: 999px;
-    box-sizing: border-box;
-    border: 1px solid rgba(0, 0, 0, 0.15);
+	display: block;
+	margin: 4px 4px 0;
+	padding: 11px 14px;
+	text-align: center;
+	text-decoration: none;
+	font-weight: 700;
+	font-size: 0.9375rem;
+	letter-spacing: 0.02em;
+	color: #fff;
+	background: #1f1f1f;
+	border-radius: 999px;
+	box-sizing: border-box;
+	border: 1px solid rgba(0, 0, 0, 0.15);
 }
 
 .roprime-cln-premium:hover {
-    background: #2a2a2a;
-    color: #fff;
+	background: #2a2a2a;
+	color: #fff;
 }
 
 /* Roblox dark theme: keep readable contrast */
 html.dark-theme #roprime-classic-left-nav-host .roprime-classic-left-nav,
 body.dark-theme #roprime-classic-left-nav-host .roprime-classic-left-nav {
-    background: #2b2d31;
-    color: #f2f4f5;
-    border-right-color: rgba(255, 255, 255, 0.08);
+	background: #2b2d31;
+	color: #f2f4f5;
+	border-right-color: rgba(255, 255, 255, 0.08);
 }
 
 html.dark-theme #roprime-classic-left-nav-host .roprime-cln-name,
 body.dark-theme #roprime-classic-left-nav-host .roprime-cln-name,
 html.dark-theme #roprime-classic-left-nav-host .roprime-cln-link,
 body.dark-theme #roprime-classic-left-nav-host .roprime-cln-link {
-    color: #f2f4f5;
+	color: #f2f4f5;
 }
 
 html.dark-theme #roprime-classic-left-nav-host .roprime-cln-icon-wrap,
 body.dark-theme #roprime-classic-left-nav-host .roprime-cln-icon-wrap {
-    color: #e3e5e8;
+	color: #e3e5e8;
 }
 
 html.dark-theme #roprime-classic-left-nav-host .roprime-cln-divider,
 body.dark-theme #roprime-classic-left-nav-host .roprime-cln-divider {
-    background: rgba(255, 255, 255, 0.1);
+	background: rgba(255, 255, 255, 0.1);
 }
 
 html.dark-theme #roprime-classic-left-nav-host .roprime-cln-profile:hover,
 body.dark-theme #roprime-classic-left-nav-host .roprime-cln-profile:hover,
 html.dark-theme #roprime-classic-left-nav-host .roprime-cln-link:hover,
 body.dark-theme #roprime-classic-left-nav-host .roprime-cln-link:hover {
-    background: rgba(255, 255, 255, 0.06);
+	background: rgba(255, 255, 255, 0.06);
 }
 
 html.dark-theme #roprime-classic-left-nav-host .roprime-cln-avatar,
 body.dark-theme #roprime-classic-left-nav-host .roprime-cln-avatar,
 html.dark-theme #roprime-classic-left-nav-host .roprime-cln-avatar--ph,
 body.dark-theme #roprime-classic-left-nav-host .roprime-cln-avatar--ph {
-    border-color: rgba(255, 255, 255, 0.12);
-    background: #3a3d42;
+	border-color: rgba(255, 255, 255, 0.12);
+	background: #3a3d42;
 }
 
 /* Hide native account chrome immediately on RoPrime settings URL (before JS mount). */
 html.roprime-account-settings-open #react-user-account-base .content-container,
 html.roprime-account-settings-open #react-user-account-base #content-container,
 html.roprime-account-settings-open #react-user-account-base .menu-vertical,
-html.roprime-account-settings-open #react-user-account-base .menu-vertical-container {
-    visibility: hidden !important;
-    opacity: 0 !important;
-    pointer-events: none !important;
+html.roprime-account-settings-open
+	#react-user-account-base
+	.menu-vertical-container {
+	visibility: hidden !important;
+	opacity: 0 !important;
+	pointer-events: none !important;
 }
 
 /* —— Account URL settings (/my/account?roprime=…) —— */
 #roprime-profile-settings-root.roprime-profile-settings-root {
-    position: relative;
-    z-index: 3;
-    max-width: 1120px;
-    margin: 0 auto 28px;
-    padding: 8px 12px 0;
-    font-family: system-ui, "Segoe UI", Roboto, sans-serif;
+	position: relative;
+	z-index: 3;
+	max-width: 1120px;
+	margin: 0 auto 28px;
+	padding: 8px 12px 0;
+	font-family: system-ui, "Segoe UI", Roboto, sans-serif;
 }
 
 /* In-account settings mount: reuse global .roprime-settings-* layout; only tweak chrome. */
 #roprime-profile-settings-root .roprime-settings-hero {
-    position: relative;
+	position: relative;
 }
 
-#roprime-profile-settings-root .roprime-accordion.is-open .roprime-accordion-body {
-    max-height: 520px;
+#roprime-profile-settings-root
+	.roprime-accordion.is-open
+	.roprime-accordion-body {
+	max-height: 520px;
 }
 
 .roprime-settings-select {
-    min-width: 140px;
-    border-radius: 10px;
-    border: 1px solid color-mix(in srgb, var(--rp-settings-border) 85%, transparent);
-    background: var(--rp-settings-surface-3);
-    color: var(--rp-settings-text);
-    padding: 8px 10px;
-    font-size: 13px;
-    font-weight: 600;
+	min-width: 140px;
+	border-radius: 10px;
+	border: 1px solid
+		color-mix(in srgb, var(--rp-settings-border) 85%, transparent);
+	background: var(--rp-settings-surface-3);
+	color: var(--rp-settings-text);
+	padding: 8px 10px;
+	font-size: 13px;
+	font-weight: 600;
 }
 
 .roprime-settings-textarea {
-    width: 100%;
-    resize: vertical;
-    min-height: 100px;
-    border-radius: 12px;
-    border: 1px solid color-mix(in srgb, var(--rp-settings-border) 85%, transparent);
-    background: var(--rp-settings-surface-3);
-    color: var(--rp-settings-text);
-    padding: 10px 12px;
-    font-size: 13px;
-    line-height: 1.4;
-    font-family: ui-monospace, "Cascadia Mono", "Segoe UI Mono", monospace;
+	width: 100%;
+	resize: vertical;
+	min-height: 100px;
+	border-radius: 12px;
+	border: 1px solid
+		color-mix(in srgb, var(--rp-settings-border) 85%, transparent);
+	background: var(--rp-settings-surface-3);
+	color: var(--rp-settings-text);
+	padding: 10px 12px;
+	font-size: 13px;
+	line-height: 1.4;
+	font-family: ui-monospace, "Cascadia Mono", "Segoe UI Mono", monospace;
 }
 
 .roprime-settings-primary-btn {
-    align-self: flex-start;
-    border: 0;
-    border-radius: 12px;
-    padding: 10px 16px;
-    font-size: 14px;
-    font-weight: 700;
-    cursor: pointer;
-    color: #fff;
-    background: var(--rp-settings-accent, #3c63ff);
+	align-self: flex-start;
+	border: 0;
+	border-radius: 12px;
+	padding: 10px 16px;
+	font-size: 14px;
+	font-weight: 700;
+	cursor: pointer;
+	color: #fff;
+	background: var(--rp-settings-accent, #3c63ff);
 }
 
 .roprime-settings-primary-btn:hover:not(:disabled) {
-    filter: brightness(1.08);
+	filter: brightness(1.08);
 }
 
 .roprime-settings-primary-btn:disabled {
-    opacity: 0.45;
-    cursor: default;
+	opacity: 0.45;
+	cursor: default;
 }

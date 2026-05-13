@@ -1,4 +1,9 @@
-import { getExtensionResourceUrl, getStorageApi, isExtensionContextInvalidatedError, settingsT } from "./core.js";
+import {
+	getExtensionResourceUrl,
+	getStorageApi,
+	isExtensionContextInvalidatedError,
+	settingsT,
+} from "./core.js";
 
 export const RP_HOME_WELCOME_DISMISSED_KEY = "rpHomeWelcomeDismissed";
 
@@ -8,127 +13,133 @@ let welcomeKeydownHandler = null;
 let storageDismissListenerAttached = false;
 
 function attachDismissStorageListener() {
-    if (storageDismissListenerAttached) return;
-    if (typeof chrome === "undefined" || !chrome.storage?.onChanged) return;
-    storageDismissListenerAttached = true;
-    chrome.storage.onChanged.addListener((changes, area) => {
-        try {
-            if (area !== "local") return;
-            if (changes[RP_HOME_WELCOME_DISMISSED_KEY]?.newValue === true) removeWelcomeIfPresent();
-        } catch (e) {
-            if (!isExtensionContextInvalidatedError(e)) throw e;
-        }
-    });
+	if (storageDismissListenerAttached) return;
+	if (typeof chrome === "undefined" || !chrome.storage?.onChanged) return;
+	storageDismissListenerAttached = true;
+	chrome.storage.onChanged.addListener((changes, area) => {
+		try {
+			if (area !== "local") return;
+			if (changes[RP_HOME_WELCOME_DISMISSED_KEY]?.newValue === true)
+				removeWelcomeIfPresent();
+		} catch (e) {
+			if (!isExtensionContextInvalidatedError(e)) throw e;
+		}
+	});
 }
 
 /** True for /home, /en-us/home, /de/home, etc. */
 export function isRobloxHomePage() {
-    const raw = window.location.pathname || "/";
-    const p = raw.replace(/\/+$/, "") || "/";
-    if (p === "/home") return true;
-    const parts = p.split("/").filter(Boolean);
-    return parts.length >= 1 && parts[parts.length - 1].toLowerCase() === "home";
+	const raw = window.location.pathname || "/";
+	const p = raw.replace(/\/+$/, "") || "/";
+	if (p === "/home") return true;
+	const parts = p.split("/").filter(Boolean);
+	return parts.length >= 1 && parts[parts.length - 1].toLowerCase() === "home";
 }
 
 function removeWelcomeIfPresent() {
-    if (welcomeKeydownHandler) {
-        document.removeEventListener("keydown", welcomeKeydownHandler, true);
-        welcomeKeydownHandler = null;
-    }
-    document.getElementById(WELCOME_ROOT_ID)?.remove();
+	if (welcomeKeydownHandler) {
+		document.removeEventListener("keydown", welcomeKeydownHandler, true);
+		welcomeKeydownHandler = null;
+	}
+	document.getElementById(WELCOME_ROOT_ID)?.remove();
 }
 
 function getExtensionIconUrl() {
-    return getExtensionResourceUrl("resources/roprime-icon.png");
+	return getExtensionResourceUrl("resources/roprime-icon.png");
 }
 
 async function getRobloxViewer() {
-    try {
-        const authResponse = await fetch("https://users.roblox.com/v1/users/authenticated", {
-            credentials: "include",
-        });
-        if (!authResponse.ok) return null;
-        const authData = await authResponse.json();
-        const userId = Number(authData?.id);
-        if (!userId) return null;
-        let avatarUrl = "";
-        try {
-            const thumbResponse = await fetch(
-                `https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=${userId}&size=150x150&format=Png&isCircular=true`,
-                { credentials: "include" },
-            );
-            if (thumbResponse.ok) {
-                const thumbData = await thumbResponse.json();
-                avatarUrl = thumbData?.data?.[0]?.imageUrl || "";
-            }
-        } catch {
-            avatarUrl = "";
-        }
-        return {
-            id: userId,
-            name: authData?.displayName || authData?.name || "there",
-            avatarUrl,
-        };
-    } catch {
-        return null;
-    }
+	try {
+		const authResponse = await fetch(
+			"https://users.roblox.com/v1/users/authenticated",
+			{
+				credentials: "include",
+			},
+		);
+		if (!authResponse.ok) return null;
+		const authData = await authResponse.json();
+		const userId = Number(authData?.id);
+		if (!userId) return null;
+		let avatarUrl = "";
+		try {
+			const thumbResponse = await fetch(
+				`https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=${userId}&size=150x150&format=Png&isCircular=true`,
+				{ credentials: "include" },
+			);
+			if (thumbResponse.ok) {
+				const thumbData = await thumbResponse.json();
+				avatarUrl = thumbData?.data?.[0]?.imageUrl || "";
+			}
+		} catch {
+			avatarUrl = "";
+		}
+		return {
+			id: userId,
+			name: authData?.displayName || authData?.name || "there",
+			avatarUrl,
+		};
+	} catch {
+		return null;
+	}
 }
 
 /** Prefer `document.body` once it exists (avoids missing modal when storage resolves before body). */
 function appendWelcomeWhenBodyReady(root) {
-    const mount = () => {
-        const parent = document.body;
-        if (parent) {
-            parent.appendChild(root);
-            return true;
-        }
-        return false;
-    };
-    if (mount()) return;
+	const mount = () => {
+		const parent = document.body;
+		if (parent) {
+			parent.appendChild(root);
+			return true;
+		}
+		return false;
+	};
+	if (mount()) return;
 
-    const tryMount = () => {
-        if (!isRobloxHomePage()) {
-            mo.disconnect();
-            document.removeEventListener("DOMContentLoaded", onDomReady);
-            return;
-        }
-        if (mount()) {
-            mo.disconnect();
-            document.removeEventListener("DOMContentLoaded", onDomReady);
-        }
-    };
+	const tryMount = () => {
+		if (!isRobloxHomePage()) {
+			mo.disconnect();
+			document.removeEventListener("DOMContentLoaded", onDomReady);
+			return;
+		}
+		if (mount()) {
+			mo.disconnect();
+			document.removeEventListener("DOMContentLoaded", onDomReady);
+		}
+	};
 
-    const mo = new MutationObserver(() => tryMount());
-    mo.observe(document.documentElement, { childList: true });
+	const mo = new MutationObserver(() => tryMount());
+	mo.observe(document.documentElement, { childList: true });
 
-    function onDomReady() {
-        tryMount();
-    }
-    document.addEventListener("DOMContentLoaded", onDomReady, { once: true });
+	function onDomReady() {
+		tryMount();
+	}
+	document.addEventListener("DOMContentLoaded", onDomReady, { once: true });
 
-    window.setTimeout(() => {
-        mo.disconnect();
-        document.removeEventListener("DOMContentLoaded", onDomReady);
-        if (!isRobloxHomePage()) return;
-        if (root.parentElement) return;
-        (document.body || document.documentElement).appendChild(root);
-    }, 8000);
+	window.setTimeout(() => {
+		mo.disconnect();
+		document.removeEventListener("DOMContentLoaded", onDomReady);
+		if (!isRobloxHomePage()) return;
+		if (root.parentElement) return;
+		(document.body || document.documentElement).appendChild(root);
+	}, 8000);
 }
 
 async function showWelcomeModal() {
-    if (document.getElementById(WELCOME_ROOT_ID)) return;
+	if (document.getElementById(WELCOME_ROOT_ID)) return;
 
-    const root = document.createElement("div");
-    root.id = WELCOME_ROOT_ID;
-    root.setAttribute("role", "dialog");
-    root.setAttribute("aria-modal", "true");
-    root.setAttribute("aria-labelledby", "roprime-welcome-title");
+	const root = document.createElement("div");
+	root.id = WELCOME_ROOT_ID;
+	root.setAttribute("role", "dialog");
+	root.setAttribute("aria-modal", "true");
+	root.setAttribute("aria-labelledby", "roprime-welcome-title");
 
-    const iconSrc = getExtensionIconUrl();
-    const viewer = await getRobloxViewer();
-    const viewerName = viewer?.name ? String(viewer.name).replace(/[<>&"]/g, "") : "there";
-    const avatarSrc = viewer?.avatarUrl || iconSrc;
-    root.innerHTML = `
+	const iconSrc = getExtensionIconUrl();
+	const viewer = await getRobloxViewer();
+	const viewerName = viewer?.name
+		? String(viewer.name).replace(/[<>&"]/g, "")
+		: "there";
+	const avatarSrc = viewer?.avatarUrl || iconSrc;
+	root.innerHTML = `
         <div class="roprime-welcome-backdrop" data-roprime-welcome-dismiss="backdrop"></div>
         <div class="roprime-welcome-frame">
             <div class="roprime-welcome-card">
@@ -160,28 +171,32 @@ async function showWelcomeModal() {
         </div>
     `;
 
-    const dismiss = () => {
-        try {
-            const storage = getStorageApi();
-            if (storage) {
-                storage.set({ [RP_HOME_WELCOME_DISMISSED_KEY]: true });
-            }
-        } catch {
-            /* ignore */
-        }
-        removeWelcomeIfPresent();
-    };
+	const dismiss = () => {
+		try {
+			const storage = getStorageApi();
+			if (storage) {
+				storage.set({ [RP_HOME_WELCOME_DISMISSED_KEY]: true });
+			}
+		} catch {
+			/* ignore */
+		}
+		removeWelcomeIfPresent();
+	};
 
-    root.querySelector(".roprime-welcome-ok")?.addEventListener("click", dismiss);
-    root.querySelector(".roprime-welcome-close")?.addEventListener("click", dismiss);
-    root.querySelector("[data-roprime-welcome-dismiss='backdrop']")?.addEventListener("click", dismiss);
+	root.querySelector(".roprime-welcome-ok")?.addEventListener("click", dismiss);
+	root
+		.querySelector(".roprime-welcome-close")
+		?.addEventListener("click", dismiss);
+	root
+		.querySelector("[data-roprime-welcome-dismiss='backdrop']")
+		?.addEventListener("click", dismiss);
 
-    welcomeKeydownHandler = (e) => {
-        if (e.key === "Escape") dismiss();
-    };
-    document.addEventListener("keydown", welcomeKeydownHandler, true);
+	welcomeKeydownHandler = (e) => {
+		if (e.key === "Escape") dismiss();
+	};
+	document.addEventListener("keydown", welcomeKeydownHandler, true);
 
-    appendWelcomeWhenBodyReady(root);
+	appendWelcomeWhenBodyReady(root);
 }
 
 /**
@@ -189,39 +204,39 @@ async function showWelcomeModal() {
  * (missing/false = show — existing users without the key still see it once).
  */
 export function syncHomeWelcomeModal() {
-    attachDismissStorageListener();
-    if (!isRobloxHomePage()) {
-        removeWelcomeIfPresent();
-        return;
-    }
+	attachDismissStorageListener();
+	if (!isRobloxHomePage()) {
+		removeWelcomeIfPresent();
+		return;
+	}
 
-    const storage = getStorageApi();
-    if (!storage) {
-        showWelcomeModal();
-        return;
-    }
+	const storage = getStorageApi();
+	if (!storage) {
+		showWelcomeModal();
+		return;
+	}
 
-    try {
-        storage.get([RP_HOME_WELCOME_DISMISSED_KEY], (result) => {
-            try {
-                if (chrome.runtime?.lastError) {
-                    if (!isRobloxHomePage()) return;
-                    showWelcomeModal();
-                    return;
-                }
-                if (!isRobloxHomePage()) return;
-                const dismissed = result?.[RP_HOME_WELCOME_DISMISSED_KEY];
-                if (dismissed === true) {
-                    removeWelcomeIfPresent();
-                    return;
-                }
-                showWelcomeModal();
-            } catch {
-                /* ignore */
-            }
-        });
-    } catch {
-        if (!isRobloxHomePage()) return;
-        showWelcomeModal();
-    }
+	try {
+		storage.get([RP_HOME_WELCOME_DISMISSED_KEY], (result) => {
+			try {
+				if (chrome.runtime?.lastError) {
+					if (!isRobloxHomePage()) return;
+					showWelcomeModal();
+					return;
+				}
+				if (!isRobloxHomePage()) return;
+				const dismissed = result?.[RP_HOME_WELCOME_DISMISSED_KEY];
+				if (dismissed === true) {
+					removeWelcomeIfPresent();
+					return;
+				}
+				showWelcomeModal();
+			} catch {
+				/* ignore */
+			}
+		});
+	} catch {
+		if (!isRobloxHomePage()) return;
+		showWelcomeModal();
+	}
 }

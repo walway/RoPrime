@@ -1,19 +1,20 @@
 {
-  "name": "roprime-extension",
-  "private": true,
-  "type": "module",
-  "engines": {
-    "node": ">=26.1.0"
-  },
-  "scripts": {
-    "build": "node build.js"
-  },
-  "devDependencies": {
-    "@vitejs/plugin-react": "^6.0.1",
-    "vite": "^8.0.12"
-  },
-  "dependencies": {
-    "react": "^19.2.5",
-    "react-dom": "^19.2.5"
-  }
+	"name": "roprime-extension",
+	"private": true,
+	"type": "module",
+	"engines": {
+		"node": ">=26.1.0"
+	},
+	"scripts": {
+		"build": "node build.js"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "2.4.15",
+		"@vitejs/plugin-react": "^6.0.1",
+		"vite": "^8.0.12"
+	},
+	"dependencies": {
+		"react": "^19.2.6",
+		"react-dom": "^19.2.6"
+	}
 }

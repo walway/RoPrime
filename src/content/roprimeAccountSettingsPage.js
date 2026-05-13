@@ -5,6 +5,6 @@ import { settingsT } from "./core.js";
  * `.locales` translation-keys.json files (phrase keys, no dots).
  */
 export function t(key) {
-    if (typeof key !== "string" || !key) return "";
-    return settingsT(key);
+	if (typeof key !== "string" || !key) return "";
+	return settingsT(key);
 }
