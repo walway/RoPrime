@@ -48,7 +48,7 @@ body .no-gutter-ads.logged-in.left-nav-new-width {
   pointer-events: none !important;
   box-sizing: border-box !important;
   border: none !important;
-  border-right: 1px solid var(--stroke-default, rgba(255, 255, 255, 0.16)) !important;
+  border-right: 1px solid var(--color-stroke-default) !important;
   background-color: transparent !important;
   background-image: none !important;
   overflow: visible !important;
