@@ -12,8 +12,6 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { globSync } from 'glob';
 import chalk from 'chalk';
-import { globSync } from 'glob';
-import chalk from 'chalk';
 
 const root = dirname(fileURLToPath(import.meta.url));
 const distDir = join(root, "dist");
@@ -69,7 +67,6 @@ const copyFiles = [
 	"resources/plugins/rosealpluginimage.png",
 	"resources/plugins/rovalrapluginimage.png",
   	...localeFiles,
-  	...localeFiles,
 	".locales/lang-config.js",
 ];
 for (const file of copyFiles) {
@@ -86,15 +83,6 @@ console.log("Build complete.");
 console.log(
 	"Load unpacked from project root RoPrime (uses dist/content.js) or from RoPrime/dist (uses content.js).",
 );
-console.log();
-console.log(error("WARNING!!! MAKE SURE TO UPDATE THE VERSION IN THE MANIFEST.JSON"));
-console.log(warning("USE THIS PATTERN MAP TO CREATE VERSION - "));
-console.log();
-console.log(warning("The version map should be Major.Minor.Patch"));
-console.log();
-console.log(chalk.bold("fix: fix typo- automatically bumps Patch (1.1.2) !!!"));
-console.log(chalk.bold("feat: add login - automatically bumps Minor (1.2.0) !!!"));
-console.log(chalk.bold("feat!: breaking change - automatically bumps Major (2.0.0) !!!"))
 console.log();
 console.log(error("WARNING!!! MAKE SURE TO UPDATE THE VERSION IN THE MANIFEST.JSON"));
 console.log(warning("USE THIS PATTERN MAP TO CREATE VERSION - "));
