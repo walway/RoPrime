@@ -5,6 +5,7 @@ export const langList = {
 	en: "English",
 	ru: "Русский",
 	bn: "বাংলা",
+	hi: "हिन्दी",
 };
 
 // uses basic latin characters if not included
@@ -12,6 +13,7 @@ export const subsets = {
 	en: "en",
 	ru: "ru",
 	bn: "bn",
+	hi: "hi",
 };
 
 export const defaultLang = "en";
