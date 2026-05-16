@@ -10,9 +10,14 @@ import {
 } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { globSync } from 'glob';
+import chalk from 'chalk';
 
 const root = dirname(fileURLToPath(import.meta.url));
 const distDir = join(root, "dist");
+const localeFiles = globSync('.locales/**/*.*');
+const error = chalk.bold.red;
+const warning = chalk.hex('#FFA500');
 
 function runNode(scriptPath, args, opts) {
 	return new Promise((resolve, reject) => {
@@ -58,9 +63,7 @@ const copyFiles = [
 	"resources/RblxPlusLogo.webp",
 	"resources/plugins/rosealpluginimage.png",
 	"resources/plugins/rovalrapluginimage.png",
-	".locales/en/translation-keys.json",
-	".locales/ru/translation-keys.json",
-	".locales/bn/translation-keys.json",
+  	...localeFiles,
 	".locales/lang-config.js",
 ];
 for (const file of copyFiles) {
@@ -77,3 +80,12 @@ console.log("Build complete.");
 console.log(
 	"Load unpacked from project root RoPrime (uses dist/content.js) or from RoPrime/dist (uses content.js).",
 );
+console.log();
+console.log(error("WARNING!!! MAKE SURE TO UPDATE THE VERSION IN THE MANIFEST.JSON"));
+console.log(warning("USE THIS PATTERN MAP TO CREATE VERSION - "));
+console.log();
+console.log(warning("The version map should be Major.Minor.Patch"));
+console.log();
+console.log(chalk.bold("fix: fix typo- automatically bumps Patch (1.1.2) !!!"));
+console.log(chalk.bold("feat: add login - automatically bumps Minor (1.2.0) !!!"));
+console.log(chalk.bold("feat!: breaking change - automatically bumps Major (2.0.0) !!!"))
