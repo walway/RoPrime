@@ -64,13 +64,8 @@
 <ul>
   <li>You can contribute to the project by donating, translating or opening a pull request</li>
 </ul>
-  
-<div id="user-content-toc">
-  <ul>
-    <summary>
-      <h2 id="contribution">Localization</h2>
-    </summary>
-  </ul>
+
+<h2 id="contribution">Localization</h2>
 <ol>
   <li><a href="https://github.com/walway/RoPrime/fork">Fork</a> this project</li>
   <li>Navigate to the <code>/.locales</code> folder</li>
@@ -79,8 +74,6 @@
   <li>After finishing, verify that your language code exists in <code>lang-config.js</code>. If it doesn't, add your <a href="https://wikipedia.org/wiki/List_of_ISO_639_language_codes">ISO 639 code</a> to the <code>subsets</code> constant, and the name of your language in its native tongue to the <code>langList</code> constant, for example: "English", "普通话", "Español"</li>
   <li>Open a pull request</li>
 </ol>
-
-<br>
 
 <hr >
 
