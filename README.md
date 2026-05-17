@@ -69,6 +69,8 @@
 <h2 id="contribution">Contribution</h2>
 <ul>
   <li>You can contribute to the project by donating, translating or opening a pull request</li>
+  <li>Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):</li>
+  <li>This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!</li>
 </ul>
 
 <h2 id="contribution">Localization</h2>
@@ -86,16 +88,3 @@
 <p align="center">
   Built with ❤️
 </p>
-
-## Contributors ✨
-
-Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
-
-<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
-<!-- prettier-ignore-start -->
-<!-- markdownlint-disable -->
-<!-- markdownlint-restore -->
-<!-- prettier-ignore-end -->
-<!-- ALL-CONTRIBUTORS-LIST:END -->
-
-This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
