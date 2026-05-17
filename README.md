@@ -69,8 +69,8 @@
 <h2 id="contribution">Contribution</h2>
 <ul>
   <li>You can contribute to the project by donating, translating or opening a pull request</li>
-  Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
-  This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
+  <li>Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):</li>
+  <li>This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!</li>
 </ul>
 
 <h2 id="contribution">Localization</h2>
