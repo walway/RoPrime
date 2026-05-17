@@ -17,10 +17,13 @@ const root = dirname(fileURLToPath(import.meta.url));
 const distDir = join(root, "dist");
 const error = chalk.bold.red;
 const warning = chalk.hex('#FFA500');
-const localeFiles = globSync('.locales/**/*', {
-  nodir: true,
-  ignore: ['.locales/example.md']
+const localeFiles = globSync(".locales/**/*", {
+	nodir: true,
+	ignore: [".locales/example.md"],
 });
+const lottieFiles = globSync("resources/lottie/**/*", { nodir: true });
+const vendorFiles = globSync("resources/vendor/**/*", { nodir: true });
+const dataFiles = globSync("resources/data/**/*", { nodir: true });
 
 function runNode(scriptPath, args, opts) {
 	return new Promise((resolve, reject) => {
@@ -46,6 +49,7 @@ if (!existsSync(viteCli)) {
 	process.exit(1);
 }
 await runNode(viteCli, ["build"]);
+await runNode(viteCli, ["build", "--config", "vite.content.config.js"]);
 
 function writeDistManifest(distPath) {
 	const raw = readFileSync(join(root, "manifest.json"), "utf8");
@@ -66,10 +70,13 @@ const copyFiles = [
 	"resources/RblxPlusLogo.webp",
 	"resources/plugins/rosealpluginimage.png",
 	"resources/plugins/rovalrapluginimage.png",
-  	...localeFiles,
+	...lottieFiles,
+	...vendorFiles,
+	...dataFiles,
+	...localeFiles,
 	".locales/lang-config.js",
 ];
-for (const file of copyFiles) {
+	for (const file of copyFiles) {
 	const src = join(root, file);
 	if (!existsSync(src)) continue;
 	const dst = join(distDir, file);

@@ -13,6 +13,12 @@ import {
 	settingsState,
 	shouldRunRoPrimeOnCurrentPage,
 } from "./core.js";
+import {
+	bindCosmeticsControls,
+	buildProfileEffectsMarkup,
+	resizeCosmeticsPreviews,
+	syncCosmeticsUi,
+} from "./other.js";
 import { updateAccountHeader, updateDocumentTitle } from "./pageChrome.js";
 import { syncRoEliteView } from "./panel.js";
 import { updateRenameLoop } from "./rename.js";
@@ -236,7 +242,7 @@ function refreshLayoutAndNav(root) {
 				}
 				section
 					.querySelectorAll(
-						".roprime-toggle-row, .roprime-setting-card, .roprime-info-card",
+						".roprime-toggle-row, .roprime-setting-card, .roprime-info-card, .roprime-profile-effect-card",
 					)
 					.forEach((item) => {
 						if (item instanceof HTMLElement) item.style.display = "";
@@ -252,7 +258,7 @@ function refreshLayoutAndNav(root) {
 			let hasVisibleItems = false;
 			section
 				.querySelectorAll(
-					".roprime-toggle-row, .roprime-setting-card, .roprime-info-card",
+					".roprime-toggle-row, .roprime-setting-card, .roprime-info-card, .roprime-profile-effect-card",
 				)
 				.forEach((item) => {
 					if (!(item instanceof HTMLElement)) return;
@@ -266,7 +272,7 @@ function refreshLayoutAndNav(root) {
 		}
 		section
 			.querySelectorAll(
-				".roprime-toggle-row, .roprime-setting-card, .roprime-info-card",
+				".roprime-toggle-row, .roprime-setting-card, .roprime-info-card, .roprime-profile-effect-card",
 			)
 			.forEach((item) => {
 				if (item instanceof HTMLElement) item.style.display = "";
@@ -290,7 +296,7 @@ function refreshLayoutAndNav(root) {
 		searchInput.value = "";
 		inner
 			.querySelectorAll(
-				".roprime-settings-section .roprime-toggle-row, .roprime-settings-section .roprime-setting-card, .roprime-settings-section .roprime-info-card",
+				".roprime-settings-section .roprime-toggle-row, .roprime-settings-section .roprime-setting-card, .roprime-settings-section .roprime-info-card, .roprime-settings-section .roprime-profile-effect-card",
 			)
 			.forEach((item) => {
 				if (item instanceof HTMLElement) item.style.display = "";
@@ -552,6 +558,8 @@ function bindOnce(root) {
 			?.addEventListener("click", (e) => e.stopPropagation());
 		syncA11y();
 	}
+
+	bindCosmeticsControls(inner);
 }
 
 function clearLanguageControlSizing(inner) {
@@ -636,7 +644,18 @@ function refreshProfileSettingsUi(root) {
 		developerUnlockMessage.style.display = showUnlockMessage ? "block" : "none";
 	}
 
+	syncCosmeticsUi(inner);
+
 	refreshLayoutAndNav(root);
+
+	syncCosmeticsUi(inner);
+	const cosmeticsShop = inner.querySelector("[data-roprime-cosmetics-shop]");
+	if (
+		settingsState.cosmeticsEnabled &&
+		cosmeticsShop instanceof HTMLElement
+	) {
+		resizeCosmeticsPreviews(cosmeticsShop);
+	}
 }
 
 function buildMarkup() {
@@ -654,6 +673,7 @@ function buildMarkup() {
             <div class="roprime-settings-nav" role="tablist" data-i18n-aria-label="Settings nav sections label">
                 <button class="roprime-settings-nav-btn" data-roprime-page="design" type="button" data-i18n="Nav tab design"></button>
                 <button class="roprime-settings-nav-btn" data-roprime-page="settings" type="button" data-i18n="Nav tab settings"></button>
+                <button class="roprime-settings-nav-btn" data-roprime-page="other" type="button" data-i18n="Nav tab other"></button>
                 <button class="roprime-settings-nav-btn" data-roprime-page="info" type="button" data-i18n="Nav tab info"></button>
                 <button class="roprime-settings-nav-btn" data-roprime-page="developer" type="button" data-i18n="Nav tab developer" hidden></button>
             </div>
@@ -692,6 +712,29 @@ function buildMarkup() {
                         <div class="roprime-language-menu" hidden>
                             ${languageMenuOptionsHtml()}
                         </div>
+                    </div>
+                </div>
+            </section>
+            <section class="roprime-settings-section" data-roprime-section="other">
+                <div class="roprime-toggle-row roprime-setting-card-spaced">
+                    <div class="roprime-toggle-copy">
+                        <div class="roprime-toggle-title" data-i18n="Enable cosmetics title"></div>
+                        <div class="roprime-toggle-desc" data-i18n="Enable cosmetics description"></div>
+                    </div>
+                    <label class="roprime-switch" for="roprime-toggle-cosmetics-enabled">
+                        <input id="roprime-toggle-cosmetics-enabled" type="checkbox" />
+                        <span class="roprime-switch-slider" aria-hidden="true"></span>
+                    </label>
+                </div>
+                <div class="roprime-cosmetics-shop" data-roprime-cosmetics-shop hidden>
+                    <div class="roprime-setting-card roprime-cosmetics-shop-intro">
+                        <div class="roprime-setting-copy">
+                            <div class="roprime-setting-title" data-i18n="Profile effects title"></div>
+                            <div class="roprime-setting-desc" data-i18n="Profile effects description"></div>
+                        </div>
+                    </div>
+                    <div class="roprime-profile-effects-grid">
+                        ${buildProfileEffectsMarkup()}
                     </div>
                 </div>
             </section>

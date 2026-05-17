@@ -19,6 +19,10 @@ import {
 	applyMarketplaceRename,
 	updateRenameLoop,
 } from "./rename.js";
+import {
+	installProfilePageEffectObserver,
+	syncProfilePageEffect,
+} from "./profileEffectsDisplay.js";
 import { syncHomeWelcomeModal } from "./welcome.js";
 
 function installStorageSyncListener() {
@@ -34,6 +38,7 @@ function installStorageSyncListener() {
 						syncRoEliteView();
 						syncProfileSettingsRoute();
 						syncAccountSettingsMenuButton();
+						void syncProfilePageEffect();
 					} catch (e) {
 						if (!isExtensionContextInvalidatedError(e)) throw e;
 					}
@@ -67,6 +72,7 @@ function installHistoryListeners() {
 			syncRoEliteView();
 			syncProfileSettingsRoute();
 			syncAccountSettingsMenuButton();
+			void syncProfilePageEffect();
 		} catch (e) {
 			if (!isExtensionContextInvalidatedError(e)) throw e;
 		}
@@ -100,6 +106,7 @@ function bootstrap() {
 			try {
 				await loadSettingsUiStrings();
 				installHistoryListeners();
+				installProfilePageEffectObserver();
 				if (syncIntervalId === null) {
 					setSyncIntervalId(window.setInterval(syncRoEliteView, 1200));
 				}
@@ -110,6 +117,7 @@ function bootstrap() {
 				syncRoEliteView();
 				syncProfileSettingsRoute();
 				syncAccountSettingsMenuButton();
+				void syncProfilePageEffect();
 				if (shouldRunRoPrimeOnCurrentPage()) {
 					applyCommunityRename(document.body);
 					applyExperiencesRename(document.body);

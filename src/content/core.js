@@ -12,6 +12,7 @@ export const RP_DEFAULT_PAGE = "design";
 export const RP_SUPPORTED_PAGES = new Set([
 	"design",
 	"settings",
+	"other",
 	"info",
 	"developer",
 ]);
@@ -158,6 +159,10 @@ export const RP_DEFAULT_SETTINGS = {
 	enablePluginControlPanel: false,
 	sidebarSize: "full",
 	blockedExecutionPages: [],
+	cosmeticsEnabled: false,
+	ownedProfileEffects: [],
+	equippedProfileEffect: "",
+	profileEffectsEquippedByUser: {},
 };
 
 export let isSyncing = false;
@@ -290,6 +295,30 @@ export function saveSettings() {
 				blockedExecutionPages: normalizeBlockedExecutionPages(
 					settingsState.blockedExecutionPages,
 				),
+				cosmeticsEnabled: !!settingsState.cosmeticsEnabled,
+				ownedProfileEffects: Array.isArray(settingsState.ownedProfileEffects)
+					? settingsState.ownedProfileEffects.filter(
+							(id) => typeof id === "string" && id.trim(),
+						)
+					: [],
+				equippedProfileEffect:
+					typeof settingsState.equippedProfileEffect === "string"
+						? settingsState.equippedProfileEffect.trim()
+						: "",
+				profileEffectsEquippedByUser:
+					settingsState.profileEffectsEquippedByUser &&
+					typeof settingsState.profileEffectsEquippedByUser === "object"
+						? Object.fromEntries(
+								Object.entries(
+									settingsState.profileEffectsEquippedByUser,
+								).filter(
+									([key, value]) =>
+										/^\d+$/.test(String(key)) &&
+										typeof value === "string" &&
+										value.trim(),
+								),
+							)
+						: {},
 			},
 		});
 	} catch {

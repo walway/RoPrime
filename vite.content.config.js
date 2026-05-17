@@ -1,24 +1,24 @@
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
+/** Chrome content scripts cannot use bare `import` — bundle as one IIFE file. */
 export default defineConfig({
-	plugins: [react()],
 	build: {
 		outDir: "dist",
-		emptyOutDir: true,
+		emptyOutDir: false,
 		sourcemap: true,
+		lib: {
+			entry: resolve(__dirname, "content.entry.js"),
+			name: "RoPrime",
+			formats: ["iife"],
+			fileName: () => "content.js",
+		},
 		rollupOptions: {
-			input: {
-				popup: resolve(__dirname, "popup.html"),
-			},
 			output: {
-				entryFileNames: "[name].js",
-				chunkFileNames: "chunks/[name].js",
-				assetFileNames: "assets/[name][extname]",
+				inlineDynamicImports: true,
 			},
 		},
 	},

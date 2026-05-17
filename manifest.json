@@ -23,7 +23,11 @@
 				"resources/logo.svg",
 				"style.css",
 				".locales/*",
-				".locales/lang-config.js"
+				".locales/lang-config.js",
+				"resources/lottie/*",
+				"resources/data/*",
+				"resources/vendor/dotlottie-player.js",
+				"resources/vendor/dotlottie-player.wasm"
 			],
 			"matches": ["*://*.roblox.com/*"]
 		}
