@@ -415,6 +415,97 @@ stupid MUI
 	gap: 16px;
 }
 
+.roprime-sidebar-configure-wrap {
+	padding: 12px 13px;
+}
+
+.roprime-sidebar-configure-btn {
+	width: 100%;
+}
+
+.roprime-sidebar-content-back {
+	display: inline-flex;
+	align-items: center;
+	margin-bottom: 12px;
+	padding: 8px 12px;
+	border-radius: 10px;
+	border: 1px solid
+		color-mix(in srgb, var(--rp-settings-border) 80%, transparent);
+	background: var(--rp-settings-surface-2);
+	color: var(--rp-settings-text);
+	font-size: 13px;
+	font-weight: 600;
+	cursor: pointer;
+}
+
+.roprime-sidebar-content-back:hover {
+	border-color: color-mix(in srgb, var(--rp-settings-accent) 50%, transparent);
+}
+
+.roprime-sidebar-content-panel {
+	margin-top: 4px;
+}
+
+.roprime-sidebar-content-list {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	margin-top: 12px;
+}
+
+.roprime-sidebar-content-row {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 10px;
+	padding: 10px 12px;
+	border-radius: 10px;
+	border: 1px solid
+		color-mix(in srgb, var(--rp-settings-border) 75%, transparent);
+	background: var(--rp-settings-surface-2);
+}
+
+.roprime-sidebar-content-row.is-hidden-item {
+	opacity: 0.55;
+}
+
+.roprime-sidebar-content-row-label {
+	font-size: 13px;
+	font-weight: 600;
+	color: var(--rp-settings-text);
+}
+
+.roprime-sidebar-content-delete {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 32px;
+	height: 32px;
+	padding: 0;
+	border: 0;
+	border-radius: 8px;
+	background: transparent;
+	color: #ef4444;
+	cursor: pointer;
+}
+
+.roprime-sidebar-content-delete:hover {
+	background: color-mix(in srgb, #ef4444 16%, transparent);
+}
+
+.roprime-sidebar-content-empty {
+	margin: 12px 0 0;
+	font-size: 12px;
+	line-height: 1.4;
+	color: color-mix(in srgb, var(--rp-settings-text) 70%, transparent);
+}
+
+span.icon-nav-menu.roprime-icon-nav-menu-replaced {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+}
+
 .roprime-sidebar-size-control {
 	flex: 0 0 250px;
 	max-width: 100%;
@@ -1643,18 +1734,120 @@ html.roprime-account-settings-open
 	margin-top: 14px;
 }
 
+.roprime-profile-effects-toolbar {
+	display: flex;
+	align-items: flex-start;
+	gap: 10px;
+	margin-bottom: 12px;
+}
+
+.roprime-profile-effects-search {
+	flex: 1;
+	min-width: 0;
+	border: 1px solid
+		color-mix(in srgb, var(--rp-settings-border) 80%, transparent);
+	border-radius: 10px;
+	background: var(--rp-settings-surface-3);
+	color: var(--rp-settings-text);
+	padding: 8px 10px;
+	font-size: 13px;
+	outline: none;
+}
+
+.roprime-profile-effects-search:focus {
+	border-color: color-mix(in srgb, var(--rp-settings-accent) 65%, transparent);
+}
+
+.roprime-profile-effects-layout {
+	flex: 0 0 auto;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 5px;
+}
+
+.roprime-profile-effects-layout-buttons {
+	display: flex;
+	align-items: center;
+	gap: 4px;
+}
+
+.roprime-profile-effects-layout-btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 28px;
+	height: 28px;
+	padding: 0;
+	border-radius: 8px;
+	border: 1px solid
+		color-mix(in srgb, var(--rp-settings-border) 80%, transparent);
+	background: var(--rp-settings-surface-3);
+	color: color-mix(in srgb, var(--rp-settings-text) 78%, transparent);
+	cursor: pointer;
+	transition:
+		background 120ms ease,
+		border-color 120ms ease,
+		color 120ms ease;
+}
+
+.roprime-profile-effects-layout-btn:hover {
+	border-color: color-mix(in srgb, var(--rp-settings-accent) 45%, transparent);
+	color: var(--rp-settings-text);
+}
+
+.roprime-profile-effects-layout-btn.is-active {
+	border-color: color-mix(in srgb, var(--rp-settings-accent) 70%, transparent);
+	background: color-mix(in srgb, var(--rp-settings-accent) 18%, transparent);
+	color: var(--rp-settings-text);
+}
+
+.roprime-profile-effects-layout-indicator {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 5px;
+	min-height: 4px;
+}
+
+.roprime-profile-effects-layout-indicator-dot {
+	width: 4px;
+	height: 4px;
+	border-radius: 999px;
+	background: color-mix(in srgb, var(--rp-settings-text) 28%, transparent);
+	transition:
+		width 140ms ease,
+		background 140ms ease;
+}
+
+.roprime-profile-effects-layout-indicator-dot.is-active {
+	width: 14px;
+	background: color-mix(in srgb, var(--rp-settings-accent) 85%, transparent);
+}
+
 .roprime-cosmetics-shop-section + .roprime-cosmetics-shop-section {
 	margin-top: 20px;
 }
 
 .roprime-cosmetics-shop-intro {
-	margin-bottom: 16px;
+	margin-bottom: 12px;
 }
 
 .roprime-profile-effects-grid {
 	display: grid;
 	grid-template-columns: repeat(auto-fill, minmax(132px, 1fr));
 	gap: 12px;
+}
+
+.roprime-profile-effects-grid--wide {
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 10px;
+}
+
+.roprime-profile-effects-grid--list {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
 }
 
 .roprime-profile-effect-card {
@@ -1685,7 +1878,7 @@ html.roprime-account-settings-open
 	max-width: 100%;
 	aspect-ratio: 1;
 	overflow: hidden;
-	background: #181d24;
+	background: transparent;
 	border-radius: 10px;
 }
 
@@ -1697,6 +1890,9 @@ html.roprime-account-settings-open
 	width: 100%;
 	height: 100%;
 	border: 0;
+	background: transparent !important;
+	background-color: transparent !important;
+	color-scheme: normal;
 	transform: translate(-50%, -50%) scale(0.68);
 	transform-origin: center center;
 	-webkit-user-select: none;
@@ -1749,6 +1945,74 @@ html.roprime-account-settings-open
 
 .roprime-profile-effect-action--equipped {
 	opacity: 0.92;
+}
+
+.roprime-profile-effects-grid--wide .roprime-profile-effect-card {
+	padding: 8px;
+	gap: 6px;
+}
+
+.roprime-profile-effects-grid--wide .roprime-profile-effect-lottie {
+	width: 72px;
+	height: 72px;
+}
+
+.roprime-profile-effects-grid--wide .roprime-profile-effect-footer {
+	padding: 0 4px;
+}
+
+.roprime-profile-effects-grid--wide
+	.roprime-profile-effect-footer
+	.roprime-profile-effect-action {
+	padding: 10px 10px;
+	font-size: 13px;
+}
+
+.roprime-profile-effects-grid--list .roprime-profile-effect-card {
+	flex-direction: row;
+	align-items: center;
+	gap: 10px;
+	padding: 8px 10px;
+	text-align: left;
+}
+
+.roprime-profile-effects-grid--list .roprime-profile-effect-preview {
+	width: auto;
+	flex: 0 0 auto;
+}
+
+.roprime-profile-effects-grid--list .roprime-profile-effect-lottie {
+	width: 52px;
+	height: 52px;
+}
+
+.roprime-profile-effects-grid--list .roprime-profile-effect-footer {
+	flex: 1;
+	flex-direction: row;
+	align-items: center;
+	justify-content: space-between;
+	gap: 10px;
+	padding: 0;
+}
+
+.roprime-profile-effects-grid--list .roprime-profile-effect-title {
+	flex: 1;
+	min-width: 0;
+	text-align: left;
+}
+
+.roprime-profile-effects-grid--list
+	.roprime-profile-effect-footer
+	.roprime-profile-effect-action {
+	width: auto;
+	flex: 0 0 auto;
+	min-width: 84px;
+	padding: 8px 12px;
+	font-size: 13px;
+}
+
+.roprime-profile-effect-card--hidden {
+	display: none !important;
 }
 
 /* —— Profile page equipped effect —— */

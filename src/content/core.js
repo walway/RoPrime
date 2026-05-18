@@ -15,6 +15,7 @@ export const RP_SUPPORTED_PAGES = new Set([
 	"other",
 	"info",
 	"developer",
+	"sidebar-content",
 ]);
 export const RP_SETTINGS_KEY = "rpSettings";
 export const RP_PROFILE_SETTINGS_ROOT_ID = "roprime-profile-settings-root";
@@ -158,8 +159,11 @@ export const RP_DEFAULT_SETTINGS = {
 	developerPageUnlocked: false,
 	enablePluginControlPanel: false,
 	sidebarSize: "full",
+	sidebarCollapseMenuEnabled: false,
+	hiddenSidebarItems: [],
 	blockedExecutionPages: [],
 	cosmeticsEnabled: false,
+	profileEffectsLayoutView: "grid",
 	ownedProfileEffects: [],
 	/** @deprecated Migrated to equippedProfilePictureEffect / equippedProfilePageEffect */
 	equippedProfileEffect: "",
@@ -295,10 +299,21 @@ export function saveSettings() {
 				developerPageUnlocked: !!settingsState.developerPageUnlocked,
 				enablePluginControlPanel: !!settingsState.enablePluginControlPanel,
 				sidebarSize: settingsState.sidebarSize || "full",
+				sidebarCollapseMenuEnabled: !!settingsState.sidebarCollapseMenuEnabled,
+				hiddenSidebarItems: Array.isArray(settingsState.hiddenSidebarItems)
+					? settingsState.hiddenSidebarItems.filter(
+							(id) => typeof id === "string" && id.trim(),
+						)
+					: [],
 				blockedExecutionPages: normalizeBlockedExecutionPages(
 					settingsState.blockedExecutionPages,
 				),
 				cosmeticsEnabled: !!settingsState.cosmeticsEnabled,
+				profileEffectsLayoutView: ["grid", "list", "wide"].includes(
+					settingsState.profileEffectsLayoutView,
+				)
+					? settingsState.profileEffectsLayoutView
+					: "grid",
 				ownedProfileEffects: Array.isArray(settingsState.ownedProfileEffects)
 					? settingsState.ownedProfileEffects.filter(
 							(id) => typeof id === "string" && id.trim(),

@@ -1,5 +1,6 @@
 import { settingsState, shouldRunRoPrimeOnCurrentPage } from "./core.js";
 import {
+	configureProfileEffectIframe,
 	getProfileEffectById,
 	getProfileEffectProfileEmbedSrc,
 } from "./profileEffectsCatalog.js";
@@ -96,9 +97,7 @@ function mountProfileEffectLayer(host, effect, options) {
 	iframe.title = effect.titleKey;
 	iframe.loading = "lazy";
 	iframe.setAttribute("tabindex", "-1");
-	iframe.setAttribute("allowtransparency", "true");
-	iframe.style.background = "transparent";
-	iframe.style.backgroundColor = "transparent";
+	configureProfileEffectIframe(iframe);
 
 	layer.appendChild(iframe);
 

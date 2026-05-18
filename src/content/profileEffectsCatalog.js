@@ -19,6 +19,17 @@ export function getProfileEffectCdnEmbedSrc(effect) {
 	return `${PROFILE_EFFECT_CDN_BASE}?effect=${encodeURIComponent(name)}`;
 }
 
+/** Inline attrs for shop preview iframes (allowTransparency + transparent chrome). */
+export const PROFILE_EFFECT_IFRAME_TRANSPARENT_ATTRS =
+	'allowtransparency="true" style="background:transparent;background-color:transparent"';
+
+/** @param {HTMLIFrameElement} iframe */
+export function configureProfileEffectIframe(iframe) {
+	iframe.setAttribute("allowtransparency", "true");
+	iframe.style.background = "transparent";
+	iframe.style.backgroundColor = "transparent";
+}
+
 /** @type {ProfileEffect[]} */
 export const PROFILE_PICTURE_EFFECTS = [
 	{

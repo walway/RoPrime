@@ -3,6 +3,7 @@ import {
 	getAllProfileEffectIds,
 	getProfileEffectById,
 	getProfileEffectShopEmbedSrc,
+	PROFILE_EFFECT_IFRAME_TRANSPARENT_ATTRS,
 	PROFILE_EFFECTS,
 	PROFILE_PICTURE_EFFECTS,
 } from "./profileEffectsCatalog.js";
@@ -158,13 +159,21 @@ function setEquippedForUser(userId, effectId, kind) {
 	}
 }
 
+const PROFILE_EFFECT_LAYOUTS = ["grid", "list", "wide"];
+
+const PROFILE_EFFECT_LAYOUT_ICONS = {
+	grid: `<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M3 3v8h8V3H3zm6 6V5H5v4h4zm-6 4v8h8v-8H3zm6 6v-4H5v4h4zm4-16v8h8V3h-8zm6 6V5h-4v4h4zm-6 4v8h8v-8h-8zm6 6v-4h-4v4h4z"/></svg>`,
+	list: `<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M4 10.5c-.83 0-1.5.67-1.5 1.5s.67 1.5 1.5 1.5 1.5-.67 1.5-1.5-.67-1.5-1.5-1.5zm0-6c-.83 0-1.5.67-1.5 1.5S3.17 7.5 4 7.5 5.5 6.83 5.5 6 4.83 4.5 4 4.5zm0 12c-.83 0-1.5.68-1.5 1.5s.68 1.5 1.5 1.5 1.5-.68 1.5-1.5-.67-1.5-1.5-1.5zM7 19h14v-2H7v2zm0-6h14v-2H7v2zm0-8v2h14V5H7z"/></svg>`,
+	wide: `<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v3h-5c-1.1 0-2 .9-2 2v5c0 1.1.9 2 2 2h5v3z"/></svg>`,
+};
+
 export function buildProfileEffectsMarkup(effects = PROFILE_EFFECTS) {
 	return effects.map(
 		(effect) => `
 		<article class="roprime-profile-effect-card" data-roprime-profile-effect="${effect.id}">
 			<div class="roprime-profile-effect-preview">
 				<div class="roprime-profile-effect-lottie">
-					<iframe src="${getProfileEffectShopEmbedSrc(effect)}" title="${effect.titleKey}" loading="lazy"></iframe>
+					<iframe src="${getProfileEffectShopEmbedSrc(effect)}" title="${effect.titleKey}" loading="lazy" ${PROFILE_EFFECT_IFRAME_TRANSPARENT_ATTRS}></iframe>
 				</div>
 			</div>
 			<div class="roprime-profile-effect-footer">
@@ -173,6 +182,111 @@ export function buildProfileEffectsMarkup(effects = PROFILE_EFFECTS) {
 			</div>
 		</article>`,
 	).join("");
+}
+
+function buildProfileEffectsLayoutToolbarHtml() {
+	const layout = settingsState.profileEffectsLayoutView || "grid";
+	const buttons = PROFILE_EFFECT_LAYOUTS.map((view) => {
+		const titleKey =
+			view === "grid"
+				? "Profile effects layout grid"
+				: view === "list"
+					? "Profile effects layout list"
+					: "Profile effects layout wide";
+		return `<button type="button" class="roprime-profile-effects-layout-btn${view === layout ? " is-active" : ""}" data-roprime-profile-effects-layout="${view}" data-i18n-aria-label="${titleKey}" aria-pressed="${view === layout ? "true" : "false"}">${PROFILE_EFFECT_LAYOUT_ICONS[view]}</button>`;
+	}).join("");
+	const indicators = PROFILE_EFFECT_LAYOUTS.map(
+		(view) =>
+			`<span class="roprime-profile-effects-layout-indicator-dot${view === layout ? " is-active" : ""}" data-roprime-layout-indicator="${view}" aria-hidden="true"></span>`,
+	).join("");
+	return `
+		<div class="roprime-profile-effects-toolbar">
+			<input type="search" class="roprime-profile-effects-search" data-roprime-profile-effects-search data-i18n-placeholder="Profile effects search placeholder" autocomplete="off" />
+			<div class="roprime-profile-effects-layout">
+				<div class="roprime-profile-effects-layout-buttons" role="group" data-i18n-aria-label="Profile effects layout">
+					${buttons}
+				</div>
+				<div class="roprime-profile-effects-layout-indicator">${indicators}</div>
+			</div>
+		</div>`;
+}
+
+function buildProfileEffectsSectionHtml(titleKey, descKey, effects) {
+	return `
+		<div class="roprime-cosmetics-shop-section">
+			<div class="roprime-setting-card roprime-cosmetics-shop-intro">
+				<div class="roprime-setting-copy">
+					<div class="roprime-setting-title" data-i18n="${titleKey}"></div>
+					<div class="roprime-setting-desc" data-i18n="${descKey}"></div>
+				</div>
+			</div>
+			<div class="roprime-profile-effects-grid" data-roprime-profile-effects-grid>
+				${buildProfileEffectsMarkup(effects)}
+			</div>
+		</div>`;
+}
+
+export function buildCosmeticsShopHtml() {
+	return `
+		${buildProfileEffectsLayoutToolbarHtml()}
+		${buildProfileEffectsSectionHtml(
+			"Profile picture effects title",
+			"Profile picture effects description",
+			PROFILE_PICTURE_EFFECTS,
+		)}
+		${buildProfileEffectsSectionHtml(
+			"Profile effects title",
+			"Profile effects description",
+			PROFILE_EFFECTS,
+		)}`;
+}
+
+function normalizeProfileEffectsLayoutView(layout) {
+	return PROFILE_EFFECT_LAYOUTS.includes(layout) ? layout : "grid";
+}
+
+function applyProfileEffectsLayout(shop, layout) {
+	const view = normalizeProfileEffectsLayoutView(layout);
+	shop.querySelectorAll("[data-roprime-profile-effects-grid]").forEach((grid) => {
+		if (!(grid instanceof HTMLElement)) return;
+		grid.classList.remove(
+			"roprime-profile-effects-grid--list",
+			"roprime-profile-effects-grid--wide",
+		);
+		if (view === "list") grid.classList.add("roprime-profile-effects-grid--list");
+		if (view === "wide") grid.classList.add("roprime-profile-effects-grid--wide");
+	});
+	shop.querySelectorAll("[data-roprime-profile-effects-layout]").forEach((btn) => {
+		if (!(btn instanceof HTMLButtonElement)) return;
+		const active =
+			btn.getAttribute("data-roprime-profile-effects-layout") === view;
+		btn.classList.toggle("is-active", active);
+		btn.setAttribute("aria-pressed", String(active));
+	});
+	shop.querySelectorAll("[data-roprime-layout-indicator]").forEach((dot) => {
+		if (!(dot instanceof HTMLElement)) return;
+		dot.classList.toggle(
+			"is-active",
+			dot.getAttribute("data-roprime-layout-indicator") === view,
+		);
+	});
+}
+
+function filterProfileEffectsSearch(shop, query) {
+	const q = String(query || "")
+		.trim()
+		.toLowerCase();
+	shop.querySelectorAll("[data-roprime-profile-effect]").forEach((card) => {
+		if (!(card instanceof HTMLElement)) return;
+		const effectId = card.getAttribute("data-roprime-profile-effect") || "";
+		const effect = getProfileEffectById(effectId);
+		const title = effect
+			? accountSettingsPaneT(effect.titleKey).toLowerCase()
+			: "";
+		const hidden = !!q && !title.includes(q);
+		card.hidden = hidden;
+		card.classList.toggle("roprime-profile-effect-card--hidden", hidden);
+	});
 }
 
 export { PROFILE_EFFECTS, PROFILE_PICTURE_EFFECTS };
@@ -258,6 +372,15 @@ export function syncCosmeticsUi(inner) {
 
 	if (!enabled) return;
 
+	applyProfileEffectsLayout(
+		shop,
+		settingsState.profileEffectsLayoutView || "grid",
+	);
+	const search = shop.querySelector("[data-roprime-profile-effects-search]");
+	if (search instanceof HTMLInputElement) {
+		filterProfileEffectsSearch(shop, search.value);
+	}
+
 	void refreshAuthUserId().then(() => {
 		normalizeEquippedProfileEffects();
 		syncEffectButtons(shop);
@@ -280,6 +403,25 @@ export function bindCosmeticsControls(inner) {
 
 	const shop = inner.querySelector("[data-roprime-cosmetics-shop]");
 	if (shop instanceof HTMLElement) {
+		const search = shop.querySelector("[data-roprime-profile-effects-search]");
+		if (search instanceof HTMLInputElement) {
+			search.addEventListener("input", () => {
+				filterProfileEffectsSearch(shop, search.value);
+			});
+		}
+
+		shop.querySelectorAll("[data-roprime-profile-effects-layout]").forEach((btn) => {
+			if (!(btn instanceof HTMLButtonElement)) return;
+			btn.addEventListener("click", () => {
+				const layout = btn.getAttribute("data-roprime-profile-effects-layout");
+				if (!layout) return;
+				settingsState.profileEffectsLayoutView =
+					normalizeProfileEffectsLayoutView(layout);
+				saveSettings();
+				applyProfileEffectsLayout(shop, settingsState.profileEffectsLayoutView);
+			});
+		});
+
 		shop.addEventListener("click", (event) => {
 			const target = event.target;
 			if (!(target instanceof Element)) return;

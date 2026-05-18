@@ -23,6 +23,7 @@ import {
 	applyMarketplaceRename,
 	stopRenameLoop,
 } from "./rename.js";
+import { syncSidebarContent } from "./sidebarContent.js";
 import {
 	syncSidebarCompactDecorations,
 	updateSidebarCompactVisibility,
@@ -43,6 +44,7 @@ function cleanupBlockedRouteUi() {
 	document.getElementById(RP_SIDEBAR_COMPACT_STYLE_ID)?.remove();
 	document.getElementById(RP_ALWAYS_SHOW_CLOSE_STYLE_ID)?.remove();
 	document.getElementById(RP_FRIEND_STYLING_REIMAGNED_STYLE_ID)?.remove();
+	document.getElementById("roprime-sidebar-content-hide-style")?.remove();
 	document.getElementById("roprime-classic-left-nav-host")?.remove();
 	document.getElementById("roprime-old-navbar-style")?.remove();
 	document.getElementById("roprime-left-gray-frame")?.remove();
@@ -73,6 +75,7 @@ export function syncRoEliteView() {
 		syncAlwaysShowCloseButton();
 		updateFriendStylingReimagnedVisibility();
 		syncSidebarCompactDecorations();
+		syncSidebarContent();
 
 		if (settingsState.renameCommunitiesToGroups)
 			applyCommunityRename(document.body);
