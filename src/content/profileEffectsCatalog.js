@@ -3,10 +3,9 @@
  * @typedef {{ id: string, kind: ProfileEffectKind, cdnEffect?: string, titleKey: string }} ProfileEffect
  */
 
-const PROFILE_EFFECT_CDN_BASE =
-	"https://walway.github.io/cdn/index.html";
+const PROFILE_EFFECT_CDN_BASE = "https://walway.github.io/cdn/";
 
-/** CDN slug for ?effect= (e.g. yawning512 → yawning, clockwork → clockwork). */
+/** CDN slug for ?effect= (e.g. dizzy512 → dizzy, clockwork → clockwork). */
 export function getProfileEffectCdnName(effect) {
 	if (!effect) return "";
 	if (effect.cdnEffect) return String(effect.cdnEffect);
@@ -23,10 +22,9 @@ export function getProfileEffectCdnEmbedSrc(effect) {
 /** @type {ProfileEffect[]} */
 export const PROFILE_PICTURE_EFFECTS = [
 	{
-		id: "yawning512",
+		id: "dizzy",
 		kind: "picture",
-		cdnEffect: "yawning",
-		titleKey: "Profile effect yawning title",
+		titleKey: "Profile effect dizzy title",
 	},
 ];
 

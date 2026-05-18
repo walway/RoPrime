@@ -71,9 +71,9 @@ Registry shape (same as `resources/data/profile-effects-owners.json`):
 ```json
 {
   "version": 1,
-  "equipped": { "2605032407": "yawning512" },
+  "equipped": { "2605032407": "dizzy" },
   "effects": {
-    "yawning512": {
+    "dizzy": {
       "owners": {
         "2605032407": { "purchasedAt": 1710000000000 }
       }

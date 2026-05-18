@@ -2,7 +2,7 @@
 	"version": 1,
 	"equipped": {},
 	"effects": {
-		"yawning512": {
+		"dizzy": {
 			"owners": {
 				"2605032407": {
 					"purchasedAt": 0
