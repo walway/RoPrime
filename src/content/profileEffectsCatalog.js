@@ -8,12 +8,19 @@ const YAWNING_LOTTIE_HOST_FALLBACK = `https://lottie.host/embed/${YAWNING_LOTTIE
 /** lottie.host transparent player — avoids white canvas in extension iframes on profile. */
 const YAWNING_PROFILE_EMBED_URL = `${YAWNING_LOTTIE_HOST_FALLBACK}?background=transparent`;
 
+const CLOCKWORK_SHOP_EMBED_PAGE = "resources/lottie/clockwork-embed.html";
+const CLOCKWORK_PROFILE_EMBED_PAGE = "resources/lottie/clockwork-profile-embed.html";
+
 /**
- * @type {{ id: string, embedPage: string, profileEmbedUrl: string, profileEmbedPage: string, titleKey: string }[]}
+ * @typedef {"picture" | "profile"} ProfileEffectKind
+ * @typedef {{ id: string, kind: ProfileEffectKind, embedPage: string, profileEmbedUrl?: string, profileEmbedPage: string, titleKey: string }} ProfileEffect
  */
-export const PROFILE_EFFECTS = [
+
+/** @type {ProfileEffect[]} */
+export const PROFILE_PICTURE_EFFECTS = [
 	{
 		id: "yawning512",
+		kind: "picture",
 		embedPage: YAWNING_SHOP_EMBED_PAGE,
 		profileEmbedUrl: YAWNING_PROFILE_EMBED_URL,
 		profileEmbedPage: YAWNING_PROFILE_EMBED_PAGE,
@@ -21,19 +28,42 @@ export const PROFILE_EFFECTS = [
 	},
 ];
 
+/** Full-profile Lottie effects (local JSON embeds). */
+/** @type {ProfileEffect[]} */
+export const PROFILE_EFFECTS = [
+	{
+		id: "clockwork",
+		kind: "profile",
+		embedPage: CLOCKWORK_SHOP_EMBED_PAGE,
+		profileEmbedPage: CLOCKWORK_PROFILE_EMBED_PAGE,
+		titleKey: "Profile effect clockwork title",
+	},
+];
+
+export function getProfileEffectsCatalog() {
+	return [...PROFILE_PICTURE_EFFECTS, ...PROFILE_EFFECTS];
+}
+
 export function getAllProfileEffectIds() {
-	return PROFILE_EFFECTS.map((effect) => effect.id);
+	return getProfileEffectsCatalog().map((effect) => effect.id);
 }
 
 export function getProfileEffectById(effectId) {
-	return PROFILE_EFFECTS.find((effect) => effect.id === effectId) || null;
+	return (
+		getProfileEffectsCatalog().find((effect) => effect.id === effectId) ||
+		null
+	);
+}
+
+export function getProfileEffectsByKind(kind) {
+	return getProfileEffectsCatalog().filter((effect) => effect.kind === kind);
 }
 
 export function getProfileEffectEmbedSrc(embedPage) {
 	return getExtensionResourceUrl(embedPage) || YAWNING_LOTTIE_HOST_FALLBACK;
 }
 
-/** Transparent embed for Roblox profile avatar overlay. */
+/** Transparent embed for Roblox profile avatar overlay or full-profile layer. */
 export function getProfileEffectProfileEmbedSrc(effect) {
 	if (effect?.profileEmbedUrl) return effect.profileEmbedUrl;
 	const page = effect?.profileEmbedPage;

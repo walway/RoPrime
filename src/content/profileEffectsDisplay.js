@@ -11,8 +11,10 @@ import {
 	userOwnsOnRegistry,
 } from "./profileEffectsRegistry.js";
 
-const LAYER_ATTR = "data-roprime-profile-effect-layer";
-const LAYER_ID = "roprime-profile-page-effect-layer";
+const PICTURE_LAYER_ATTR = "data-roprime-profile-picture-effect-layer";
+const PICTURE_LAYER_ID = "roprime-profile-page-effect-layer";
+const PROFILE_LAYER_ATTR = "data-roprime-profile-effect-layer";
+const PROFILE_LAYER_ID = "roprime-profile-page-profile-effect-layer";
 
 let syncPromise = null;
 let observer = null;
@@ -31,20 +33,36 @@ export function isUserProfilePage(loc = window.location) {
 	return parseUserProfileIdFromLocation(loc) != null;
 }
 
-function removeProfileEffectLayer() {
-	document.getElementById(LAYER_ID)?.remove();
+function removeProfileEffectLayers() {
+	document.getElementById(PICTURE_LAYER_ID)?.remove();
+	document.getElementById(PROFILE_LAYER_ID)?.remove();
 }
 
 function findAvatarHost() {
 	return document.querySelector(".avatar.avatar-card-fullbody");
 }
 
-async function resolveEquippedEffectId(profileUserId) {
+function findProfilePageEffectHost() {
+	return (
+		document.querySelector("#profile-header") ||
+		document.querySelector(".rbx-public-profile-container") ||
+		document.querySelector("#content")
+	);
+}
+
+async function resolveLocalEquippedByKind(profileUserId) {
 	const authId = await getRobloxUserId();
-	const localEquipped =
-		authId === profileUserId
-			? String(settingsState.equippedProfileEffect || "").trim()
-			: "";
+	if (authId !== profileUserId) {
+		return { picture: "", profile: "" };
+	}
+	return {
+		picture: String(settingsState.equippedProfilePictureEffect || "").trim(),
+		profile: String(settingsState.equippedProfilePageEffect || "").trim(),
+	};
+}
+
+async function resolveEquippedEffectId(profileUserId, kind) {
+	const localEquipped = await resolveLocalEquippedByKind(profileUserId);
 	const equippedByUser =
 		settingsState.profileEffectsEquippedByUser &&
 		typeof settingsState.profileEffectsEquippedByUser === "object"
@@ -53,6 +71,7 @@ async function resolveEquippedEffectId(profileUserId) {
 
 	return getEquippedEffectForProfileUser(
 		profileUserId,
+		kind,
 		localEquipped,
 		equippedByUser,
 	);
@@ -66,13 +85,13 @@ async function profileUserMayShowEffect(profileUserId, effectId) {
 	return userOwnsOnRegistry(registry, profileUserId, effectId);
 }
 
-function mountProfileEffectLayer(avatarHost, effect) {
-	removeProfileEffectLayer();
+function mountProfileEffectLayer(host, effect, options) {
+	const { layerId, layerClass, layerAttr } = options;
 
 	const layer = document.createElement("div");
-	layer.id = LAYER_ID;
-	layer.setAttribute(LAYER_ATTR, effect.id);
-	layer.className = "roprime-profile-page-effect-layer";
+	layer.id = layerId;
+	layer.setAttribute(layerAttr, effect.id);
+	layer.className = layerClass;
 
 	const iframe = document.createElement("iframe");
 	iframe.src = getProfileEffectProfileEmbedSrc(effect);
@@ -85,50 +104,71 @@ function mountProfileEffectLayer(avatarHost, effect) {
 
 	layer.appendChild(iframe);
 
-	if (getComputedStyle(avatarHost).position === "static") {
-		avatarHost.style.position = "relative";
+	if (getComputedStyle(host).position === "static") {
+		host.style.position = "relative";
 	}
 
-	avatarHost.appendChild(layer);
+	host.appendChild(layer);
+}
+
+function layerIsCurrent(host, layerId, layerAttr, effectId) {
+	const existing = document.getElementById(layerId);
+	return (
+		existing instanceof HTMLElement &&
+		existing.parentElement === host &&
+		existing.getAttribute(layerAttr) === effectId
+	);
+}
+
+async function syncEquippedKindLayer(profileUserId, kind) {
+	const layerId = kind === "picture" ? PICTURE_LAYER_ID : PROFILE_LAYER_ID;
+	const layerAttr =
+		kind === "picture" ? PICTURE_LAYER_ATTR : PROFILE_LAYER_ATTR;
+	const layerClass =
+		kind === "picture"
+			? "roprime-profile-page-effect-layer"
+			: "roprime-profile-page-profile-effect-layer";
+
+	const effectId = await resolveEquippedEffectId(profileUserId, kind);
+	if (!effectId || !(await profileUserMayShowEffect(profileUserId, effectId))) {
+		document.getElementById(layerId)?.remove();
+		return;
+	}
+
+	const effect = getProfileEffectById(effectId);
+	if (!effect || effect.kind !== kind) {
+		document.getElementById(layerId)?.remove();
+		return;
+	}
+
+	const host =
+		kind === "picture" ? findAvatarHost() : findProfilePageEffectHost();
+	if (!host) return;
+
+	if (layerIsCurrent(host, layerId, layerAttr, effect.id)) return;
+
+	document.getElementById(layerId)?.remove();
+	mountProfileEffectLayer(host, effect, {
+		layerId,
+		layerClass,
+		layerAttr,
+	});
 }
 
 async function syncProfilePageEffectNow() {
 	if (!shouldRunRoPrimeOnCurrentPage()) {
-		removeProfileEffectLayer();
+		removeProfileEffectLayers();
 		return;
 	}
 
 	const profileUserId = parseUserProfileIdFromLocation();
 	if (!profileUserId) {
-		removeProfileEffectLayer();
+		removeProfileEffectLayers();
 		return;
 	}
 
-	const effectId = await resolveEquippedEffectId(profileUserId);
-	if (!effectId || !(await profileUserMayShowEffect(profileUserId, effectId))) {
-		removeProfileEffectLayer();
-		return;
-	}
-
-	const effect = getProfileEffectById(effectId);
-	if (!effect) {
-		removeProfileEffectLayer();
-		return;
-	}
-
-	const avatarHost = findAvatarHost();
-	if (!avatarHost) return;
-
-	const existing = document.getElementById(LAYER_ID);
-	if (
-		existing instanceof HTMLElement &&
-		existing.parentElement === avatarHost &&
-		existing.getAttribute(LAYER_ATTR) === effect.id
-	) {
-		return;
-	}
-
-	mountProfileEffectLayer(avatarHost, effect);
+	await syncEquippedKindLayer(profileUserId, "picture");
+	await syncEquippedKindLayer(profileUserId, "profile");
 }
 
 export function syncProfilePageEffect() {

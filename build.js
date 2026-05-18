@@ -12,11 +12,40 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { globSync } from 'glob';
 import chalk from 'chalk';
+import AdmZip from "adm-zip";
 
 const root = dirname(fileURLToPath(import.meta.url));
 const distDir = join(root, "dist");
 const error = chalk.bold.red;
 const warning = chalk.hex('#FFA500');
+
+function prepareLottieVendorAssets() {
+	const lottieMinSrc = join(root, "node_modules/lottie-web/build/player/lottie.min.js");
+	const lottieMinDst = join(root, "resources/vendor/lottie.min.js");
+	if (!existsSync(lottieMinSrc)) {
+		throw new Error("Missing lottie-web. Run `npm install` first.");
+	}
+	cpSync(lottieMinSrc, lottieMinDst);
+
+	const clockworkLottie = join(root, "resources/lottie/Clockwork.lottie");
+	const clockworkJson = join(root, "resources/lottie/Clockwork.animation.json");
+	if (!existsSync(clockworkLottie)) return;
+
+	const zip = new AdmZip(clockworkLottie);
+	const manifest = JSON.parse(zip.readAsText("manifest.json"));
+	const animationId = manifest?.animations?.[0]?.id;
+	if (!animationId) {
+		throw new Error("Clockwork.lottie: manifest has no animations");
+	}
+	const entryPath = `a/${animationId}.json`;
+	if (!zip.getEntry(entryPath)) {
+		throw new Error(`Clockwork.lottie: missing ${entryPath}`);
+	}
+	writeFileSync(clockworkJson, zip.readAsText(entryPath));
+}
+
+prepareLottieVendorAssets();
+
 const localeFiles = globSync(".locales/**/*", {
 	nodir: true,
 	ignore: [".locales/example.md"],
@@ -67,6 +96,11 @@ const copyFiles = [
 	"background.js",
 	"style.css",
 	"resources/roprime-icon.png",
+	"resources/icons/icon16.png",
+	"resources/icons/icon32.png",
+	"resources/icons/icon48.png",
+	"resources/icons/icon64.png",
+	"resources/icons/icon128.png",
 	"resources/RblxPlusLogo.webp",
 	"resources/plugins/rosealpluginimage.png",
 	"resources/plugins/rovalrapluginimage.png",

@@ -85,6 +85,68 @@
 	display: none !important;
 }
 
+.roprime-settings-nav-alert {
+	display: block;
+	position: relative;
+	margin: 10px 0 14px;
+	flex-shrink: 0;
+	padding: 12px 14px 12px 44px;
+	border-radius: 12px;
+	border: 1px solid color-mix(in srgb, var(--rp-settings-accent) 45%, transparent);
+	background:
+		radial-gradient(
+			120% 120% at 0% 0%,
+			color-mix(in srgb, var(--rp-settings-accent) 18%, transparent) 0%,
+			transparent 70%
+		),
+		var(--rp-settings-surface);
+	color: var(--rp-settings-text);
+	text-decoration: none;
+	font-size: 14px;
+	font-weight: 600;
+	line-height: 1.35;
+	transition:
+		border-color 0.15s ease,
+		background 0.15s ease;
+}
+
+.roprime-settings-nav-alert:hover {
+	border-color: color-mix(in srgb, var(--rp-settings-accent) 65%, transparent);
+	color: var(--rp-settings-text);
+	text-decoration: none;
+}
+
+.roprime-settings-nav-alert.is-active {
+	border-color: color-mix(in srgb, var(--rp-settings-accent) 65%, transparent);
+	background:
+		radial-gradient(
+			140% 140% at 0% 100%,
+			color-mix(in srgb, var(--rp-settings-accent) 22%, transparent) 0%,
+			transparent 65%
+		),
+		var(--rp-settings-surface);
+}
+
+.roprime-settings-nav-alert-icon {
+	position: absolute;
+	top: 12px;
+	left: 12px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 22px;
+	height: 22px;
+	color: var(--rp-settings-accent);
+}
+
+.roprime-settings-nav-alert-icon svg {
+	display: block;
+}
+
+.roprime-settings-nav-alert-text {
+	display: block;
+}
+
 .roprime-settings-main {
 	min-width: 0;
 }
@@ -889,11 +951,14 @@ html.light-theme .roprime-toggle-desc {
 	}
 
 	.roprime-settings-sidebar {
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
 		margin-bottom: 0;
 	}
 
 	.roprime-settings-search-wrap {
-		margin-bottom: 10px;
+		margin-bottom: 0;
 	}
 
 	.roprime-settings-nav {
@@ -905,6 +970,12 @@ html.light-theme .roprime-toggle-desc {
 	.roprime-settings-nav-btn {
 		width: 100%;
 		text-align: left;
+	}
+
+	.roprime-settings-nav-alert {
+		width: 100%;
+		margin: 0;
+		box-sizing: border-box;
 	}
 }
 
@@ -1572,23 +1643,27 @@ html.roprime-account-settings-open
 	margin-top: 14px;
 }
 
+.roprime-cosmetics-shop-section + .roprime-cosmetics-shop-section {
+	margin-top: 20px;
+}
+
 .roprime-cosmetics-shop-intro {
 	margin-bottom: 16px;
 }
 
 .roprime-profile-effects-grid {
 	display: grid;
-	grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-	gap: 16px;
+	grid-template-columns: repeat(auto-fill, minmax(132px, 1fr));
+	gap: 12px;
 }
 
 .roprime-profile-effect-card {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	gap: 12px;
-	padding: 16px;
-	border-radius: 16px;
+	gap: 8px;
+	padding: 10px;
+	border-radius: 14px;
 	border: 1px solid
 		color-mix(in srgb, var(--rp-settings-border) 85%, transparent);
 	background: var(--rp-settings-surface-2);
@@ -1604,20 +1679,26 @@ html.roprime-account-settings-open
 }
 
 .roprime-profile-effect-lottie {
-	width: 350px;
-	height: 350px;
+	position: relative;
+	width: 104px;
+	height: 104px;
 	max-width: 100%;
 	aspect-ratio: 1;
 	overflow: hidden;
 	background: #181d24;
-	border-radius: 12px;
+	border-radius: 10px;
 }
 
 .roprime-profile-effect-lottie iframe {
+	position: absolute;
+	top: 50%;
+	left: 50%;
 	display: block;
 	width: 100%;
 	height: 100%;
 	border: 0;
+	transform: translate(-50%, -50%) scale(0.68);
+	transform-origin: center center;
 	-webkit-user-select: none;
 	-ms-user-select: none;
 	user-select: none;
@@ -1639,19 +1720,26 @@ html.roprime-account-settings-open
 .roprime-profile-effect-footer {
 	display: flex;
 	flex-direction: column;
-	align-items: center;
-	gap: 10px;
+	align-items: stretch;
+	gap: 8px;
 	width: 100%;
+	padding: 0 10px;
+	box-sizing: border-box;
 }
 
 .roprime-profile-effect-title {
-	font-size: 15px;
+	font-size: 13px;
 	font-weight: 700;
+	line-height: 1.25;
 	color: var(--rp-settings-text);
 }
 
-.roprime-profile-effect-action {
-	min-width: 120px;
+.roprime-profile-effect-footer .roprime-settings-primary-btn.roprime-profile-effect-action {
+	align-self: stretch;
+	width: 100%;
+	min-width: 0;
+	padding: 12px 14px;
+	font-size: 14px;
 }
 
 .roprime-profile-effect-card--equipped {
@@ -1676,6 +1764,19 @@ html.roprime-account-settings-open
 	user-select: none;
 }
 
+.roprime-profile-page-profile-effect-layer {
+	position: absolute;
+	inset: 0;
+	z-index: 1;
+	pointer-events: none;
+	overflow: hidden;
+	background: transparent;
+	-webkit-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+
+.roprime-profile-page-profile-effect-layer iframe,
 .avatar.avatar-card-fullbody .roprime-profile-page-effect-layer iframe {
 	display: block;
 	width: 100%;

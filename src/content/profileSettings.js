@@ -16,6 +16,8 @@ import {
 import {
 	bindCosmeticsControls,
 	buildProfileEffectsMarkup,
+	PROFILE_EFFECTS,
+	PROFILE_PICTURE_EFFECTS,
 	resizeCosmeticsPreviews,
 	syncCosmeticsUi,
 } from "./other.js";
@@ -212,6 +214,17 @@ function refreshLayoutAndNav(root) {
 		button.classList.toggle("is-active", isActive);
 	});
 
+	const profileEffectsAlert = inner.querySelector(
+		"[data-roprime-profile-effects-alert]",
+	);
+	if (profileEffectsAlert instanceof HTMLElement) {
+		profileEffectsAlert.style.display = isSearchMode ? "none" : "";
+		profileEffectsAlert.classList.toggle(
+			"is-active",
+			!isSearchMode && activePage === "other",
+		);
+	}
+
 	const devBtn = inner.querySelector(
 		'.roprime-settings-nav-btn[data-roprime-page="developer"]',
 	);
@@ -347,22 +360,36 @@ function bindOnce(root) {
 		});
 	}
 
+	const navigateToPage = (nextPage) => {
+		inner.removeAttribute("data-roprime-search-mode");
+		inner.removeAttribute("data-roprime-search-source-page");
+		const searchBox = inner.querySelector("#roprime-settings-search");
+		if (searchBox instanceof HTMLInputElement) searchBox.value = "";
+		const nextUrl = buildPluginUrl(nextPage);
+		const currentUrl = `${window.location.pathname}${window.location.search}${window.location.hash}`;
+		if (currentUrl !== nextUrl) window.history.pushState({}, "", nextUrl);
+		window.dispatchEvent(new Event("roprime-location-change"));
+	};
+
 	inner.querySelectorAll(".roprime-settings-nav-btn").forEach((btn) => {
 		if (!(btn instanceof HTMLButtonElement)) return;
 		btn.addEventListener("click", () => {
 			if (btn.dataset.roprimePage === "developer" && !isDeveloperPageUnlocked())
 				return;
-			inner.removeAttribute("data-roprime-search-mode");
-			inner.removeAttribute("data-roprime-search-source-page");
-			const searchBox = inner.querySelector("#roprime-settings-search");
-			if (searchBox instanceof HTMLInputElement) searchBox.value = "";
-			const nextPage = btn.dataset.roprimePage || RP_DEFAULT_PAGE;
-			const nextUrl = buildPluginUrl(nextPage);
-			const currentUrl = `${window.location.pathname}${window.location.search}${window.location.hash}`;
-			if (currentUrl !== nextUrl) window.history.pushState({}, "", nextUrl);
-			window.dispatchEvent(new Event("roprime-location-change"));
+			navigateToPage(btn.dataset.roprimePage || RP_DEFAULT_PAGE);
 		});
 	});
+
+	const profileEffectsAlert = inner.querySelector(
+		"[data-roprime-profile-effects-alert]",
+	);
+	if (profileEffectsAlert instanceof HTMLAnchorElement) {
+		profileEffectsAlert.href = buildPluginUrl("other");
+		profileEffectsAlert.addEventListener("click", (event) => {
+			event.preventDefault();
+			navigateToPage("other");
+		});
+	}
 
 	const renameMaster = inner.querySelector("#roprime-toggle-rename-master");
 	if (renameMaster instanceof HTMLInputElement) {
@@ -677,6 +704,14 @@ function buildMarkup() {
                 <button class="roprime-settings-nav-btn" data-roprime-page="info" type="button" data-i18n="Nav tab info"></button>
                 <button class="roprime-settings-nav-btn" data-roprime-page="developer" type="button" data-i18n="Nav tab developer" hidden></button>
             </div>
+            <a class="roprime-settings-nav-alert" data-roprime-profile-effects-alert data-roprime-page="other" href="#">
+                <span class="roprime-settings-nav-alert-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" width="22" height="22" focusable="false">
+                        <path fill="currentColor" d="M14 2H4c-1.11 0-2 .9-2 2v10h2V4h10zm4 4H8c-1.11 0-2 .9-2 2v10h2V8h10zm2 4h-8c-1.11 0-2 .9-2 2v8c0 1.1.89 2 2 2h8c1.1 0 2-.9 2-2v-8c0-1.1-.9-2-2-2"/>
+                    </svg>
+                </span>
+                <span class="roprime-settings-nav-alert-text" data-i18n="Try out new profile animations"></span>
+            </a>
         </div>
         <div class="roprime-settings-main">
             <div class="roprime-search-hint" data-roprime-search-hint data-i18n="Search min length hint"></div>
@@ -727,6 +762,18 @@ function buildMarkup() {
                     </label>
                 </div>
                 <div class="roprime-cosmetics-shop" data-roprime-cosmetics-shop hidden>
+                    <div class="roprime-cosmetics-shop-section">
+                    <div class="roprime-setting-card roprime-cosmetics-shop-intro">
+                        <div class="roprime-setting-copy">
+                            <div class="roprime-setting-title" data-i18n="Profile picture effects title"></div>
+                            <div class="roprime-setting-desc" data-i18n="Profile picture effects description"></div>
+                        </div>
+                    </div>
+                    <div class="roprime-profile-effects-grid">
+                        ${buildProfileEffectsMarkup(PROFILE_PICTURE_EFFECTS)}
+                    </div>
+                    </div>
+                    <div class="roprime-cosmetics-shop-section">
                     <div class="roprime-setting-card roprime-cosmetics-shop-intro">
                         <div class="roprime-setting-copy">
                             <div class="roprime-setting-title" data-i18n="Profile effects title"></div>
@@ -734,7 +781,8 @@ function buildMarkup() {
                         </div>
                     </div>
                     <div class="roprime-profile-effects-grid">
-                        ${buildProfileEffectsMarkup()}
+                        ${buildProfileEffectsMarkup(PROFILE_EFFECTS)}
+                    </div>
                     </div>
                 </div>
             </section>

@@ -19,6 +19,7 @@ import {
 	applyMarketplaceRename,
 	updateRenameLoop,
 } from "./rename.js";
+import { normalizeEquippedProfileEffects } from "./other.js";
 import {
 	installProfilePageEffectObserver,
 	syncProfilePageEffect,
@@ -33,6 +34,10 @@ function installStorageSyncListener() {
 			loadSettings().finally(() => {
 				void (async () => {
 					try {
+						if (normalizeEquippedProfileEffects()) {
+							const { saveSettings } = await import("./core.js");
+							saveSettings();
+						}
 						await reloadSettingsUiStrings();
 						updateRenameLoop();
 						syncRoEliteView();
@@ -104,6 +109,10 @@ function bootstrap() {
 	loadSettings().finally(() => {
 		void (async () => {
 			try {
+				if (normalizeEquippedProfileEffects()) {
+					const { saveSettings } = await import("./core.js");
+					saveSettings();
+				}
 				await loadSettingsUiStrings();
 				installHistoryListeners();
 				installProfilePageEffectObserver();

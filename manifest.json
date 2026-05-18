@@ -11,6 +11,13 @@
 	"action": {
 		"default_title": "RoPrime"
 	},
+	"icons": {
+		"16": "resources/icons/icon16.png",
+		"32": "resources/icons/icon32.png",
+		"48": "resources/icons/icon48.png",
+		"64": "resources/icons/icon64.png",
+		"128": "resources/icons/icon128.png"
+	},
 	"web_accessible_resources": [
 		{
 			"resources": [
@@ -27,7 +34,8 @@
 				"resources/lottie/*",
 				"resources/data/*",
 				"resources/vendor/dotlottie-player.js",
-				"resources/vendor/dotlottie-player.wasm"
+				"resources/vendor/dotlottie-player.wasm",
+				"resources/vendor/lottie.min.js"
 			],
 			"matches": ["*://*.roblox.com/*"]
 		}

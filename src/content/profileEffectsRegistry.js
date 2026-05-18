@@ -28,6 +28,8 @@ export const PROFILE_EFFECTS_EQUIP_API_URL = PROFILE_EFFECTS_API_BASE
 
 const LOCAL_REGISTRY_PATH = "resources/data/profile-effects-owners.json";
 
+/** @typedef {"picture" | "profile"} ProfileEffectEquipKind */
+
 let registryCache = null;
 let registryFetchPromise = null;
 
@@ -49,6 +51,27 @@ export async function getRobloxUserId() {
 	} catch {
 		return null;
 	}
+}
+
+/** @returns {{ picture: string, profile: string }} */
+export function normalizeEquippedEntry(entry) {
+	if (!entry) return { picture: "", profile: "" };
+	if (typeof entry === "string") {
+		const id = entry.trim();
+		return { picture: id, profile: "" };
+	}
+	if (typeof entry === "object") {
+		return {
+			picture: String(entry.picture || "").trim(),
+			profile: String(entry.profile || "").trim(),
+		};
+	}
+	return { picture: "", profile: "" };
+}
+
+/** @param {ProfileEffectEquipKind} kind */
+export function equipSlotForKind(kind) {
+	return kind === "picture" ? "picture" : "profile";
 }
 
 function parseRegistry(raw) {
@@ -108,7 +131,14 @@ export async function fetchProfileEffectsRegistry() {
 				}
 			}
 			if (source.equipped && typeof source.equipped === "object") {
-				Object.assign(merged.equipped, source.equipped);
+				for (const [userKey, entry] of Object.entries(source.equipped)) {
+					const prev = normalizeEquippedEntry(merged.equipped[userKey]);
+					const next = normalizeEquippedEntry(entry);
+					merged.equipped[userKey] = {
+						picture: next.picture || prev.picture,
+						profile: next.profile || prev.profile,
+					};
+				}
 			}
 		}
 
@@ -153,16 +183,26 @@ export async function registerProfileEffectPurchase(userId, effectId) {
 	return false;
 }
 
-export async function registerProfileEffectEquip(userId, effectId) {
+/**
+ * @param {string | number} userId
+ * @param {string} effectId Empty string clears the slot for `kind`.
+ * @param {ProfileEffectEquipKind} kind
+ */
+export async function registerProfileEffectEquip(userId, effectId, kind) {
 	if (!userId) return false;
 
+	const slot = equipSlotForKind(kind);
 	const registry = await fetchProfileEffectsRegistry();
 	if (!registry.equipped || typeof registry.equipped !== "object") {
 		registry.equipped = {};
 	}
 	const key = String(userId);
-	if (effectId) registry.equipped[key] = effectId;
-	else delete registry.equipped[key];
+	const entry = normalizeEquippedEntry(registry.equipped[key]);
+	if (effectId) entry[slot] = effectId;
+	else entry[slot] = "";
+
+	if (!entry.picture && !entry.profile) delete registry.equipped[key];
+	else registry.equipped[key] = entry;
 
 	if (PROFILE_EFFECTS_EQUIP_API_URL) {
 		try {
@@ -172,6 +212,7 @@ export async function registerProfileEffectEquip(userId, effectId) {
 				body: JSON.stringify({
 					userId,
 					effectId: effectId || null,
+					kind: slot,
 					equippedAt: Date.now(),
 				}),
 			});
@@ -187,20 +228,33 @@ export async function registerProfileEffectEquip(userId, effectId) {
 	return false;
 }
 
+/**
+ * @param {string | number} profileUserId
+ * @param {ProfileEffectEquipKind} kind
+ * @param {{ picture?: string, profile?: string }} localEquipped
+ * @param {Record<string, unknown>} equippedByUser
+ */
 export async function getEquippedEffectForProfileUser(
 	profileUserId,
-	localEquippedEffectId,
+	kind,
+	localEquipped,
 	equippedByUser,
 ) {
+	const slot = equipSlotForKind(kind);
 	const key = String(profileUserId);
-	const fromMap =
-		equippedByUser && typeof equippedByUser === "object"
-			? String(equippedByUser[key] || "").trim()
-			: "";
 
 	const registry = await fetchProfileEffectsRegistry();
-	const fromRegistry = String(registry.equipped?.[key] || "").trim();
-	const fromLocal = String(localEquippedEffectId || "").trim();
+	const fromRegistry = normalizeEquippedEntry(registry.equipped?.[key])[slot];
+
+	const fromMap =
+		equippedByUser && typeof equippedByUser === "object"
+			? normalizeEquippedEntry(equippedByUser[key])[slot]
+			: "";
+
+	const fromLocal =
+		localEquipped && typeof localEquipped === "object"
+			? String(localEquipped[slot] || "").trim()
+			: "";
 
 	return fromRegistry || fromMap || fromLocal || "";
 }

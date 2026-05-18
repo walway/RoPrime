@@ -107,16 +107,41 @@ async function handleEquip(request, env) {
 		return jsonResponse(request, env, { error: "Invalid userId" }, 400);
 	}
 
+	const kind = String(body?.kind || "").trim();
+	const slot =
+		kind === "profile" ? "profile" : kind === "picture" ? "picture" : "";
+
 	const registry = await readRegistry(env);
 	const key = String(userId);
-	if (effectId) {
+
+	if (slot) {
+		const prev =
+			registry.equipped[key] && typeof registry.equipped[key] === "object"
+				? registry.equipped[key]
+				: typeof registry.equipped[key] === "string"
+					? { picture: registry.equipped[key], profile: "" }
+					: { picture: "", profile: "" };
+		const entry = {
+			picture: String(prev.picture || "").trim(),
+			profile: String(prev.profile || "").trim(),
+		};
+		if (effectId) entry[slot] = effectId;
+		else entry[slot] = "";
+		if (!entry.picture && !entry.profile) delete registry.equipped[key];
+		else registry.equipped[key] = entry;
+	} else if (effectId) {
 		registry.equipped[key] = effectId;
 	} else {
 		delete registry.equipped[key];
 	}
 
 	await writeRegistry(env, registry);
-	return jsonResponse(request, env, { ok: true, userId, effectId: effectId || null });
+	return jsonResponse(request, env, {
+		ok: true,
+		userId,
+		effectId: effectId || null,
+		kind: slot || null,
+	});
 }
 
 export default {

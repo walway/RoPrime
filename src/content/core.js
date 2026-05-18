@@ -161,7 +161,10 @@ export const RP_DEFAULT_SETTINGS = {
 	blockedExecutionPages: [],
 	cosmeticsEnabled: false,
 	ownedProfileEffects: [],
+	/** @deprecated Migrated to equippedProfilePictureEffect / equippedProfilePageEffect */
 	equippedProfileEffect: "",
+	equippedProfilePictureEffect: "",
+	equippedProfilePageEffect: "",
 	profileEffectsEquippedByUser: {},
 };
 
@@ -301,23 +304,18 @@ export function saveSettings() {
 							(id) => typeof id === "string" && id.trim(),
 						)
 					: [],
-				equippedProfileEffect:
-					typeof settingsState.equippedProfileEffect === "string"
-						? settingsState.equippedProfileEffect.trim()
+				equippedProfilePictureEffect:
+					typeof settingsState.equippedProfilePictureEffect === "string"
+						? settingsState.equippedProfilePictureEffect.trim()
+						: "",
+				equippedProfilePageEffect:
+					typeof settingsState.equippedProfilePageEffect === "string"
+						? settingsState.equippedProfilePageEffect.trim()
 						: "",
 				profileEffectsEquippedByUser:
 					settingsState.profileEffectsEquippedByUser &&
 					typeof settingsState.profileEffectsEquippedByUser === "object"
-						? Object.fromEntries(
-								Object.entries(
-									settingsState.profileEffectsEquippedByUser,
-								).filter(
-									([key, value]) =>
-										/^\d+$/.test(String(key)) &&
-										typeof value === "string" &&
-										value.trim(),
-								),
-							)
+						? settingsState.profileEffectsEquippedByUser
 						: {},
 			},
 		});
