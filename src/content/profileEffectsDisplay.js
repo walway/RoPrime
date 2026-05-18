@@ -43,10 +43,8 @@ function findAvatarHost() {
 }
 
 function findProfilePageEffectHost() {
-	return (
-		document.querySelector("#profile-header") ||
-		document.querySelector(".rbx-public-profile-container") ||
-		document.querySelector("#content")
+	return document.querySelector(
+		".user-profile-header.flex.flex-col.gap-large",
 	);
 }
 

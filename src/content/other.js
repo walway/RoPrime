@@ -2,7 +2,7 @@ import { saveSettings, settingsState } from "./core.js";
 import {
 	getAllProfileEffectIds,
 	getProfileEffectById,
-	getProfileEffectEmbedSrc,
+	getProfileEffectShopEmbedSrc,
 	PROFILE_EFFECTS,
 	PROFILE_PICTURE_EFFECTS,
 } from "./profileEffectsCatalog.js";
@@ -164,7 +164,7 @@ export function buildProfileEffectsMarkup(effects = PROFILE_EFFECTS) {
 		<article class="roprime-profile-effect-card" data-roprime-profile-effect="${effect.id}">
 			<div class="roprime-profile-effect-preview">
 				<div class="roprime-profile-effect-lottie">
-					<iframe src="${getProfileEffectEmbedSrc(effect.embedPage)}" title="${effect.titleKey}" loading="lazy"></iframe>
+					<iframe src="${getProfileEffectShopEmbedSrc(effect)}" title="${effect.titleKey}" loading="lazy"></iframe>
 				</div>
 			</div>
 			<div class="roprime-profile-effect-footer">

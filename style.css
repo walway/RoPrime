@@ -1764,10 +1764,19 @@ html.roprime-account-settings-open
 	user-select: none;
 }
 
+.user-profile-header.flex.flex-col.gap-large {
+	position: relative;
+}
+
 .roprime-profile-page-profile-effect-layer {
 	position: absolute;
-	inset: 0;
+	left: 50%;
+	top: 50%;
 	z-index: 1;
+	width: min(100%, 520px);
+	height: min(72vh, 440px);
+	max-height: 100%;
+	transform: translate(-50%, -50%);
 	pointer-events: none;
 	overflow: hidden;
 	background: transparent;
