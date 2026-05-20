@@ -23,11 +23,11 @@ import {
 	applyMarketplaceRename,
 	stopRenameLoop,
 } from "./rename.js";
-import { syncSidebarContent } from "./sidebarContent.js";
 import {
 	syncSidebarCompactDecorations,
 	updateSidebarCompactVisibility,
 } from "./sidebarCompact.js";
+import { syncSidebarContent } from "./sidebarContent.js";
 import { updateSmallNewNavVisibility } from "./smallNewNav.js";
 import { syncHomeWelcomeModal } from "./welcome.js";
 

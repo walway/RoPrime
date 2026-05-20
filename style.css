@@ -92,7 +92,8 @@
 	flex-shrink: 0;
 	padding: 12px 14px 12px 44px;
 	border-radius: 12px;
-	border: 1px solid color-mix(in srgb, var(--rp-settings-accent) 45%, transparent);
+	border: 1px solid
+		color-mix(in srgb, var(--rp-settings-accent) 45%, transparent);
 	background:
 		radial-gradient(
 			120% 120% at 0% 0%,
@@ -1930,7 +1931,8 @@ html.roprime-account-settings-open
 	color: var(--rp-settings-text);
 }
 
-.roprime-profile-effect-footer .roprime-settings-primary-btn.roprime-profile-effect-action {
+.roprime-profile-effect-footer
+	.roprime-settings-primary-btn.roprime-profile-effect-action {
 	align-self: stretch;
 	width: 100%;
 	min-width: 0;

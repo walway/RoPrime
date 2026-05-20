@@ -10,17 +10,20 @@ import {
 } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { globSync } from 'glob';
-import chalk from 'chalk';
 import AdmZip from "adm-zip";
+import chalk from "chalk";
+import { globSync } from "glob";
 
 const root = dirname(fileURLToPath(import.meta.url));
 const distDir = join(root, "dist");
 const error = chalk.bold.red;
-const warning = chalk.hex('#FFA500');
+const warning = chalk.hex("#FFA500");
 
 function prepareLottieVendorAssets() {
-	const lottieMinSrc = join(root, "node_modules/lottie-web/build/player/lottie.min.js");
+	const lottieMinSrc = join(
+		root,
+		"node_modules/lottie-web/build/player/lottie.min.js",
+	);
 	const lottieMinDst = join(root, "resources/vendor/lottie.min.js");
 	if (!existsSync(lottieMinSrc)) {
 		throw new Error("Missing lottie-web. Run `npm install` first.");
@@ -110,7 +113,7 @@ const copyFiles = [
 	...localeFiles,
 	".locales/lang-config.js",
 ];
-	for (const file of copyFiles) {
+for (const file of copyFiles) {
 	const src = join(root, file);
 	if (!existsSync(src)) continue;
 	const dst = join(distDir, file);
@@ -125,11 +128,17 @@ console.log(
 	"Load unpacked from project root RoPrime (uses dist/content.js) or from RoPrime/dist (uses content.js).",
 );
 console.log();
-console.log(error("WARNING!!! MAKE SURE TO UPDATE THE VERSION IN THE MANIFEST.JSON"));
+console.log(
+	error("WARNING!!! MAKE SURE TO UPDATE THE VERSION IN THE MANIFEST.JSON"),
+);
 console.log(warning("USE THIS PATTERN MAP TO CREATE VERSION - "));
 console.log();
 console.log(warning("The version map should be Major.Minor.Patch"));
 console.log();
 console.log(chalk.bold("fix: fix typo- automatically bumps Patch (1.1.2) !!!"));
-console.log(chalk.bold("feat: add login - automatically bumps Minor (1.2.0) !!!"));
-console.log(chalk.bold("feat!: breaking change - automatically bumps Major (2.0.0) !!!"))
+console.log(
+	chalk.bold("feat: add login - automatically bumps Minor (1.2.0) !!!"),
+);
+console.log(
+	chalk.bold("feat!: breaking change - automatically bumps Major (2.0.0) !!!"),
+);

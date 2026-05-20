@@ -78,7 +78,8 @@ function parseRegistry(raw) {
 	if (!raw || typeof raw !== "object") {
 		return { version: 1, effects: {}, equipped: {} };
 	}
-	const effects = raw.effects && typeof raw.effects === "object" ? raw.effects : {};
+	const effects =
+		raw.effects && typeof raw.effects === "object" ? raw.effects : {};
 	const equipped =
 		raw.equipped && typeof raw.equipped === "object" ? raw.equipped : {};
 	return { version: raw.version ?? 1, effects, equipped };

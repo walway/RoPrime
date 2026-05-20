@@ -11,7 +11,12 @@ import {
 	shouldRunRoPrimeOnCurrentPage,
 	syncIntervalId,
 } from "./core.js";
+import { normalizeEquippedProfileEffects } from "./other.js";
 import { syncRoEliteView } from "./panel.js";
+import {
+	installProfilePageEffectObserver,
+	syncProfilePageEffect,
+} from "./profileEffectsDisplay.js";
 import { syncProfileSettingsRoute } from "./profileSettings.js";
 import {
 	applyCommunityRename,
@@ -19,11 +24,6 @@ import {
 	applyMarketplaceRename,
 	updateRenameLoop,
 } from "./rename.js";
-import { normalizeEquippedProfileEffects } from "./other.js";
-import {
-	installProfilePageEffectObserver,
-	syncProfilePageEffect,
-} from "./profileEffectsDisplay.js";
 import { syncHomeWelcomeModal } from "./welcome.js";
 
 function installStorageSyncListener() {

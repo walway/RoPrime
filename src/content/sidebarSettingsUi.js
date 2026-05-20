@@ -1,10 +1,10 @@
-import { DELETE_ICON_SVG } from "./sidebarIcons.js";
+import { t as accountSettingsPaneT } from "./roprimeAccountSettingsPage.js";
 import {
 	discoverSidebarNavItems,
 	hideSidebarItem,
 	isSidebarItemHidden,
 } from "./sidebarContent.js";
-import { t as accountSettingsPaneT } from "./roprimeAccountSettingsPage.js";
+import { DELETE_ICON_SVG } from "./sidebarIcons.js";
 
 const SIDEBAR_SIZE_CONTROL_INNER =
 	'<div class="roprime-sidebar-size-box"><div class="roprime-sidebar-size-rail"><input id="{{id}}" class="roprime-sidebar-size-slider" type="range" min="0" max="100" step="0.1" value="0" data-i18n-aria-label="Sidebar size title" /></div><div class="roprime-sidebar-size-ticks"><button class="roprime-sidebar-size-tick" type="button" data-size-mode="full"><span data-i18n="Sidebar size full"></span></button><button class="roprime-sidebar-size-tick" type="button" data-size-mode="small"><span data-i18n="Sidebar size small"></span></button><button class="roprime-sidebar-size-tick" type="button" data-size-mode="icon"><span data-i18n="Sidebar size icon only"></span></button></div></div>';
@@ -12,10 +12,10 @@ const SIDEBAR_SIZE_CONTROL_INNER =
 export function buildSidebarSizeControlHtml(
 	sliderId = "roprime-sidebar-size-slider",
 ) {
-	const inner = SIDEBAR_SIZE_CONTROL_INNER.replace(/\{\{id\}\}/g, sliderId).replace(
-		/motion\.div/g,
-		"div",
-	);
+	const inner = SIDEBAR_SIZE_CONTROL_INNER.replace(
+		/\{\{id\}\}/g,
+		sliderId,
+	).replace(/motion\.div/g, "div");
 	return `<div class="roprime-sidebar-size-control">${inner}</div>`.replace(
 		/motion\.div/g,
 		"div",

@@ -44,9 +44,7 @@ function findAvatarHost() {
 }
 
 function findProfilePageEffectHost() {
-	return document.querySelector(
-		".user-profile-header.flex.flex-col.gap-large",
-	);
+	return document.querySelector(".user-profile-header.flex.flex-col.gap-large");
 }
 
 async function resolveLocalEquippedByKind(profileUserId) {

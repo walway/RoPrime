@@ -58,8 +58,7 @@ export function getAllProfileEffectIds() {
 
 export function getProfileEffectById(effectId) {
 	return (
-		getProfileEffectsCatalog().find((effect) => effect.id === effectId) ||
-		null
+		getProfileEffectsCatalog().find((effect) => effect.id === effectId) || null
 	);
 }
 

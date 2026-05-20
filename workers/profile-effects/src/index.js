@@ -76,7 +76,12 @@ async function handlePurchase(request, env) {
 	const userId = Number(body?.userId);
 	const effectId = String(body?.effectId || "").trim();
 	if (!Number.isFinite(userId) || userId <= 0 || !effectId) {
-		return jsonResponse(request, env, { error: "Invalid userId or effectId" }, 400);
+		return jsonResponse(
+			request,
+			env,
+			{ error: "Invalid userId or effectId" },
+			400,
+		);
 	}
 
 	const registry = await readRegistry(env);
@@ -147,7 +152,10 @@ async function handleEquip(request, env) {
 export default {
 	async fetch(request, env) {
 		if (request.method === "OPTIONS") {
-			return new Response(null, { status: 204, headers: corsHeaders(request, env) });
+			return new Response(null, {
+				status: 204,
+				headers: corsHeaders(request, env),
+			});
 		}
 
 		const url = new URL(request.url);

@@ -132,8 +132,7 @@ function normalizeEquippedForKind(kind) {
 
 export function normalizeEquippedProfileEffects() {
 	const migrated =
-		migrateLegacyEquippedProfileEffect() ||
-		migrateLegacyEquippedByUserMap();
+		migrateLegacyEquippedProfileEffect() || migrateLegacyEquippedByUserMap();
 	normalizeEquippedForKind("picture");
 	normalizeEquippedForKind("profile");
 	return migrated;
@@ -168,8 +167,9 @@ const PROFILE_EFFECT_LAYOUT_ICONS = {
 };
 
 export function buildProfileEffectsMarkup(effects = PROFILE_EFFECTS) {
-	return effects.map(
-		(effect) => `
+	return effects
+		.map(
+			(effect) => `
 		<article class="roprime-profile-effect-card" data-roprime-profile-effect="${effect.id}">
 			<div class="roprime-profile-effect-preview">
 				<div class="roprime-profile-effect-lottie">
@@ -181,7 +181,8 @@ export function buildProfileEffectsMarkup(effects = PROFILE_EFFECTS) {
 				<button type="button" class="roprime-settings-primary-btn roprime-profile-effect-action" data-roprime-effect-id="${effect.id}" data-roprime-effect-action="buy" data-i18n="Buy profile effect"></button>
 			</div>
 		</article>`,
-	).join("");
+		)
+		.join("");
 }
 
 function buildProfileEffectsLayoutToolbarHtml() {
@@ -247,22 +248,28 @@ function normalizeProfileEffectsLayoutView(layout) {
 
 function applyProfileEffectsLayout(shop, layout) {
 	const view = normalizeProfileEffectsLayoutView(layout);
-	shop.querySelectorAll("[data-roprime-profile-effects-grid]").forEach((grid) => {
-		if (!(grid instanceof HTMLElement)) return;
-		grid.classList.remove(
-			"roprime-profile-effects-grid--list",
-			"roprime-profile-effects-grid--wide",
-		);
-		if (view === "list") grid.classList.add("roprime-profile-effects-grid--list");
-		if (view === "wide") grid.classList.add("roprime-profile-effects-grid--wide");
-	});
-	shop.querySelectorAll("[data-roprime-profile-effects-layout]").forEach((btn) => {
-		if (!(btn instanceof HTMLButtonElement)) return;
-		const active =
-			btn.getAttribute("data-roprime-profile-effects-layout") === view;
-		btn.classList.toggle("is-active", active);
-		btn.setAttribute("aria-pressed", String(active));
-	});
+	shop
+		.querySelectorAll("[data-roprime-profile-effects-grid]")
+		.forEach((grid) => {
+			if (!(grid instanceof HTMLElement)) return;
+			grid.classList.remove(
+				"roprime-profile-effects-grid--list",
+				"roprime-profile-effects-grid--wide",
+			);
+			if (view === "list")
+				grid.classList.add("roprime-profile-effects-grid--list");
+			if (view === "wide")
+				grid.classList.add("roprime-profile-effects-grid--wide");
+		});
+	shop
+		.querySelectorAll("[data-roprime-profile-effects-layout]")
+		.forEach((btn) => {
+			if (!(btn instanceof HTMLButtonElement)) return;
+			const active =
+				btn.getAttribute("data-roprime-profile-effects-layout") === view;
+			btn.classList.toggle("is-active", active);
+			btn.setAttribute("aria-pressed", String(active));
+		});
 	shop.querySelectorAll("[data-roprime-layout-indicator]").forEach((dot) => {
 		if (!(dot instanceof HTMLElement)) return;
 		dot.classList.toggle(
@@ -410,17 +417,24 @@ export function bindCosmeticsControls(inner) {
 			});
 		}
 
-		shop.querySelectorAll("[data-roprime-profile-effects-layout]").forEach((btn) => {
-			if (!(btn instanceof HTMLButtonElement)) return;
-			btn.addEventListener("click", () => {
-				const layout = btn.getAttribute("data-roprime-profile-effects-layout");
-				if (!layout) return;
-				settingsState.profileEffectsLayoutView =
-					normalizeProfileEffectsLayoutView(layout);
-				saveSettings();
-				applyProfileEffectsLayout(shop, settingsState.profileEffectsLayoutView);
+		shop
+			.querySelectorAll("[data-roprime-profile-effects-layout]")
+			.forEach((btn) => {
+				if (!(btn instanceof HTMLButtonElement)) return;
+				btn.addEventListener("click", () => {
+					const layout = btn.getAttribute(
+						"data-roprime-profile-effects-layout",
+					);
+					if (!layout) return;
+					settingsState.profileEffectsLayoutView =
+						normalizeProfileEffectsLayoutView(layout);
+					saveSettings();
+					applyProfileEffectsLayout(
+						shop,
+						settingsState.profileEffectsLayoutView,
+					);
+				});
 			});
-		});
 
 		shop.addEventListener("click", (event) => {
 			const target = event.target;

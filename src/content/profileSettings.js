@@ -19,16 +19,16 @@ import {
 	resizeCosmeticsPreviews,
 	syncCosmeticsUi,
 } from "./other.js";
+import { updateAccountHeader, updateDocumentTitle } from "./pageChrome.js";
+import { syncRoEliteView } from "./panel.js";
+import { updateRenameLoop } from "./rename.js";
+import { t as accountSettingsPaneT } from "./roprimeAccountSettingsPage.js";
+import { syncSidebarContent } from "./sidebarContent.js";
 import {
 	bindSidebarContentList,
 	buildSidebarSizeControlHtml,
 	refreshSidebarContentList,
 } from "./sidebarSettingsUi.js";
-import { updateAccountHeader, updateDocumentTitle } from "./pageChrome.js";
-import { syncRoEliteView } from "./panel.js";
-import { syncSidebarContent } from "./sidebarContent.js";
-import { updateRenameLoop } from "./rename.js";
-import { t as accountSettingsPaneT } from "./roprimeAccountSettingsPage.js";
 
 const RP_DEBUG_UNLOCK = "debug";
 
@@ -736,10 +736,7 @@ function refreshProfileSettingsUi(root) {
 
 	syncCosmeticsUi(inner);
 	const cosmeticsShop = inner.querySelector("[data-roprime-cosmetics-shop]");
-	if (
-		settingsState.cosmeticsEnabled &&
-		cosmeticsShop instanceof HTMLElement
-	) {
+	if (settingsState.cosmeticsEnabled && cosmeticsShop instanceof HTMLElement) {
 		resizeCosmeticsPreviews(cosmeticsShop);
 	}
 }

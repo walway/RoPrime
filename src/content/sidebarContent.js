@@ -1,9 +1,9 @@
 import { saveSettings, settingsState } from "./core.js";
-import { DELETE_ICON_SVG, MENU_OPEN_ICON_SVG } from "./sidebarIcons.js";
 import {
 	syncSidebarCompactDecorations,
 	updateSidebarCompactVisibility,
 } from "./sidebarCompact.js";
+import { MENU_OPEN_ICON_SVG } from "./sidebarIcons.js";
 import { updateSmallNewNavVisibility } from "./smallNewNav.js";
 
 const RP_SIDEBAR_CONTENT_STYLE_ID = "roprime-sidebar-content-hide-style";
@@ -165,7 +165,9 @@ export function hideSidebarItem(itemId) {
 }
 
 export function restoreSidebarItem(itemId) {
-	setHiddenSidebarItemIds(getHiddenSidebarItemIds().filter((id) => id !== itemId));
+	setHiddenSidebarItemIds(
+		getHiddenSidebarItemIds().filter((id) => id !== itemId),
+	);
 	saveSettings();
 	syncSidebarContent();
 }
@@ -174,10 +176,12 @@ export function restoreSidebarItem(itemId) {
 export function discoverSidebarNavItems() {
 	const nav = getLeftNav();
 	if (!nav) {
-		return SIDEBAR_NAV_ITEM_DEFS.filter((def) => !def.conditional).map((def) => ({
-			...def,
-			present: false,
-		}));
+		return SIDEBAR_NAV_ITEM_DEFS.filter((def) => !def.conditional).map(
+			(def) => ({
+				...def,
+				present: false,
+			}),
+		);
 	}
 
 	return SIDEBAR_NAV_ITEM_DEFS.map((def) => {
@@ -195,7 +199,8 @@ function tagSidebarNavItems(nav) {
 		document
 			.querySelectorAll(`[data-roprime-sidebar-item="${def.id}"]`)
 			.forEach((node) => {
-				if (node instanceof HTMLElement) node.removeAttribute("data-roprime-sidebar-item");
+				if (node instanceof HTMLElement)
+					node.removeAttribute("data-roprime-sidebar-item");
 			});
 		if (el instanceof HTMLElement) {
 			el.setAttribute("data-roprime-sidebar-item", def.id);
