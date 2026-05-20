@@ -19,6 +19,20 @@ const distDir = join(root, "dist");
 const error = chalk.bold.red;
 const warning = chalk.hex("#FFA500");
 
+/** Load order for extension CSS (manifest content_scripts). */
+export const STYLE_CSS_ORDER = [
+	"src/style/main.css",
+	"src/style/account/menu-tab.css",
+	"src/style/settings/panel.css",
+	"src/style/layout/chrome.css",
+	"src/style/welcome/welcome.css",
+	"src/style/navigation/old-nav.css",
+	"src/style/settings/light-overrides.css",
+	"src/style/profile/cosmetics-shop.css",
+	"src/style/profile/page-effects.css",
+	"src/style/profile/carousel-effects.css",
+];
+
 function prepareLottieVendorAssets() {
 	const lottieMinSrc = join(
 		root,
@@ -47,16 +61,6 @@ function prepareLottieVendorAssets() {
 	writeFileSync(clockworkJson, zip.readAsText(entryPath));
 }
 
-prepareLottieVendorAssets();
-
-const localeFiles = globSync(".locales/**/*", {
-	nodir: true,
-	ignore: [".locales/example.md"],
-});
-const lottieFiles = globSync("resources/lottie/**/*", { nodir: true });
-const vendorFiles = globSync("resources/vendor/**/*", { nodir: true });
-const dataFiles = globSync("resources/data/**/*", { nodir: true });
-
 function runNode(scriptPath, args, opts) {
 	return new Promise((resolve, reject) => {
 		const child = spawn(process.execPath, [scriptPath, ...args], {
@@ -72,6 +76,40 @@ function runNode(scriptPath, args, opts) {
 	});
 }
 
+function copyStyleTreeToDist() {
+	for (const rel of STYLE_CSS_ORDER) {
+		const src = join(root, rel);
+		if (!existsSync(src)) {
+			throw new Error(`Missing stylesheet: ${rel}`);
+		}
+		const dst = join(distDir, rel);
+		mkdirSync(dirname(dst), { recursive: true });
+		cpSync(src, dst);
+	}
+}
+
+function writeDistManifest(distPath) {
+	const raw = readFileSync(join(root, "manifest.json"), "utf8");
+	const manifest = JSON.parse(raw);
+	for (const entry of manifest.content_scripts || []) {
+		if (Array.isArray(entry.js)) {
+			entry.js = entry.js.map((p) =>
+				typeof p === "string" ? p.replace(/^\/?dist\//, "") : p,
+			);
+		}
+		entry.css = [...STYLE_CSS_ORDER];
+	}
+	writeFileSync(distPath, `${JSON.stringify(manifest, null, 2)}\n`, "utf8");
+}
+
+prepareLottieVendorAssets();
+
+const localeFiles = globSync(".locales/**/*", {
+	nodir: true,
+	ignore: [".locales/example.md"],
+});
+const dataFiles = globSync("resources/data/**/*", { nodir: true });
+
 console.log("Building RoPrime with Vite + React...");
 rmSync(distDir, { recursive: true, force: true });
 
@@ -83,21 +121,10 @@ if (!existsSync(viteCli)) {
 await runNode(viteCli, ["build"]);
 await runNode(viteCli, ["build", "--config", "vite.content.config.js"]);
 
-function writeDistManifest(distPath) {
-	const raw = readFileSync(join(root, "manifest.json"), "utf8");
-	const manifest = JSON.parse(raw);
-	for (const entry of manifest.content_scripts || []) {
-		if (!Array.isArray(entry.js)) continue;
-		entry.js = entry.js.map((p) =>
-			typeof p === "string" ? p.replace(/^\/?dist\//, "") : p,
-		);
-	}
-	writeFileSync(distPath, `${JSON.stringify(manifest, null, 2)}\n`, "utf8");
-}
+copyStyleTreeToDist();
 
 const copyFiles = [
 	"background.js",
-	"style.css",
 	"resources/roprime-icon.png",
 	"resources/icons/icon16.png",
 	"resources/icons/icon32.png",
@@ -107,8 +134,6 @@ const copyFiles = [
 	"resources/RblxPlusLogo.webp",
 	"resources/plugins/rosealpluginimage.png",
 	"resources/plugins/rovalrapluginimage.png",
-	...lottieFiles,
-	...vendorFiles,
 	...dataFiles,
 	...localeFiles,
 	".locales/lang-config.js",

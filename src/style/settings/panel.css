@@ -1,0 +1,1126 @@
+.roprime-settings-wrapper {
+	margin-top: 8px;
+}
+
+.roprime-settings-layout {
+	display: block;
+}
+
+.roprime-settings-sidebar {
+	margin-bottom: 12px;
+}
+
+.roprime-settings-nav {
+	display: flex;
+	gap: 10px;
+	margin: 0 0 14px;
+	flex-wrap: wrap;
+}
+
+.roprime-settings-nav-btn {
+	display: inline-flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 8px;
+	border: 1px solid var(--rp-settings-border);
+	background: var(--rp-settings-surface);
+	color: var(--rp-settings-text);
+	border-radius: 12px;
+	padding: 9px 16px;
+	font-size: 14px;
+	font-weight: 600;
+	line-height: 1;
+	cursor: pointer;
+}
+
+.roprime-settings-nav-btn.is-active {
+	border-color: color-mix(in srgb, var(--rp-settings-accent) 65%, transparent);
+	background:
+		radial-gradient(
+			140% 140% at 0% 100%,
+			color-mix(in srgb, var(--rp-settings-accent) 22%, transparent) 0%,
+			transparent 65%
+		),
+		var(--rp-settings-surface);
+	color: var(--rp-settings-text);
+}
+
+/* Author `display` on buttons/menus overrides `[hidden]` in some browsers. */
+.roprime-settings-nav-btn[hidden] {
+	display: none !important;
+}
+
+.roprime-settings-nav-alert {
+	display: block;
+	position: relative;
+	margin: 10px 0 14px;
+	flex-shrink: 0;
+	padding: 12px 14px 12px 44px;
+	border-radius: 12px;
+	border: 1px solid
+		color-mix(in srgb, var(--rp-settings-accent) 45%, transparent);
+	background:
+		radial-gradient(
+			120% 120% at 0% 0%,
+			color-mix(in srgb, var(--rp-settings-accent) 18%, transparent) 0%,
+			transparent 70%
+		),
+		var(--rp-settings-surface);
+	color: var(--rp-settings-text);
+	text-decoration: none;
+	font-size: 14px;
+	font-weight: 600;
+	line-height: 1.35;
+	transition:
+		border-color 0.15s ease,
+		background 0.15s ease;
+}
+
+.roprime-settings-nav-alert:hover {
+	border-color: color-mix(in srgb, var(--rp-settings-accent) 65%, transparent);
+	color: var(--rp-settings-text);
+	text-decoration: none;
+}
+
+.roprime-settings-nav-alert.is-active {
+	border-color: color-mix(in srgb, var(--rp-settings-accent) 65%, transparent);
+	background:
+		radial-gradient(
+			140% 140% at 0% 100%,
+			color-mix(in srgb, var(--rp-settings-accent) 22%, transparent) 0%,
+			transparent 65%
+		),
+		var(--rp-settings-surface);
+}
+
+.roprime-settings-nav-alert-icon {
+	position: absolute;
+	top: 12px;
+	left: 12px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 22px;
+	height: 22px;
+	color: var(--rp-settings-accent);
+}
+
+.roprime-settings-nav-alert-icon svg {
+	display: block;
+}
+
+.roprime-settings-nav-alert-text {
+	display: block;
+}
+
+.roprime-settings-main {
+	min-width: 0;
+}
+
+.roprime-settings-search-wrap {
+	margin-bottom: 12px;
+}
+
+.roprime-settings-search {
+	width: 100%;
+	border: 1px solid
+		color-mix(in srgb, var(--rp-settings-border) 80%, transparent);
+	border-radius: 12px;
+	background: var(--rp-settings-surface-3);
+	color: var(--rp-settings-text);
+	padding: 10px 12px;
+	outline: none;
+}
+
+.roprime-settings-search:focus {
+	border-color: color-mix(in srgb, var(--rp-settings-accent) 65%, transparent);
+}
+
+.roprime-settings-section {
+	display: none;
+}
+
+.roprime-search-hint {
+	display: none;
+	margin-bottom: 10px;
+	padding: 10px 12px;
+	border-radius: 10px;
+	border: 1px solid rgba(255, 220, 64, 0.4);
+	background: rgba(255, 220, 64, 0.12);
+	color: #ffd84a;
+	font-size: 12px;
+	font-weight: 600;
+}
+
+.roprime-settings-wrapper.is-search-mode .roprime-settings-main {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+}
+
+/* Do not use border-top on sections here: first DOM child of .main is a hint div, so the first
+   visible section was incorrectly getting a top rule and looked like a stray divider. */
+.roprime-settings-wrapper.is-search-mode .roprime-settings-section {
+	margin: 0;
+}
+
+.roprime-search-mark {
+	background: rgba(255, 220, 64, 0.25);
+	color: #ffd84a;
+	font-weight: 700;
+	border-radius: 3px;
+	padding: 0 1px;
+}
+
+.roprime-setting-card,
+.roprime-info-card {
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	border-radius: 14px;
+	border: 1px solid var(--rp-settings-border);
+	background: var(--rp-settings-surface);
+	padding: 12px 13px;
+}
+
+.game-details-carousel-container .carousel-item,
+#game-details-carousel-container .carousel-item {
+	border-radius: 12px;
+}
+
+/*
+stupid MUI
+ */
+.game-details-carousel-container .carousel-item.carousel-video.game-preview-video-container
+	.video-preview-wrapper.is-ready
+	video,
+.game-details-carousel-container
+	.carousel-item.carousel-video.game-preview-video-container
+	.video-preview-wrapper
+	video,
+#game-details-carousel-container
+	.carousel-item.carousel-video.game-preview-video-container
+	.video-preview-wrapper.is-ready
+	video,
+#game-details-carousel-container
+	.carousel-item.carousel-video.game-preview-video-container
+	.video-preview-wrapper
+	video {
+	border-radius: 12px;
+}
+
+/* Same tree when the carousel root is not wrapped by the stable id/class above */
+.carousel-item.carousel-video.game-preview-video-container .video-preview-wrapper.is-ready
+	video,
+.carousel-item.carousel-video.game-preview-video-container
+	.video-preview-wrapper
+	video {
+	border-radius: 12px;
+}
+
+/* Video controls wrapper — class is web-blox-css-tss-<hash>-controlsWrapper; hash changes each load */
+.game-details-carousel-container .carousel-item.carousel-video.game-preview-video-container
+	[class*="web-blox-css-tss"][class*="controlsWrapper"],
+#game-details-carousel-container
+	.carousel-item.carousel-video.game-preview-video-container
+	[class*="web-blox-css-tss"][class*="controlsWrapper"],
+.carousel-item.carousel-video.game-preview-video-container
+	[class*="web-blox-css-tss"][class*="controlsWrapper"] {
+	border-radius: 12px;
+}
+
+.roprime-accordion::before,
+.roprime-accordion::after,
+.roprime-info-card::before,
+.roprime-info-card::after {
+	display: none !important;
+}
+
+.roprime-setting-card::before,
+.roprime-info-card::before {
+	top: 8px;
+	left: 8px;
+	border-top: 2px solid rgba(130, 168, 255, 0.9);
+	border-left: 2px solid rgba(130, 168, 255, 0.9);
+}
+
+.roprime-setting-card::after,
+.roprime-info-card::after {
+	right: 8px;
+	bottom: 8px;
+	border-right: 2px solid rgba(130, 168, 255, 0.9);
+	border-bottom: 2px solid rgba(130, 168, 255, 0.9);
+}
+
+.roprime-setting-card-spaced {
+	margin-top: 12px;
+}
+
+.game-thumbnail {
+	z-index: 6 !important;
+	position: relative !important;
+}
+.roprime-setting-copy {
+	min-width: 0;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: flex-start;
+	text-align: left;
+	height: 100%;
+}
+
+.roprime-setting-title,
+.roprime-info-title {
+	color: var(--rp-settings-text);
+	font-weight: 600;
+	line-height: 1.3;
+}
+
+.roprime-setting-desc,
+.roprime-info-text {
+	margin-top: 4px;
+	color: var(--rp-settings-text-2);
+	font-size: 12px;
+	line-height: 1.35;
+}
+
+.roprime-accordion {
+	flex-direction: column;
+	align-items: stretch;
+	padding: 0;
+	overflow: hidden;
+}
+
+.roprime-accordion-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 10px;
+	padding: 12px 13px;
+	min-height: 56px;
+	background: transparent;
+	border: 0;
+	text-align: left;
+	cursor: pointer;
+	color: inherit;
+}
+
+.roprime-accordion.is-renames-disabled .roprime-accordion-body {
+	opacity: 0.55;
+}
+
+.roprime-accordion.is-renames-disabled .roprime-toggle-row {
+	opacity: 0.7;
+}
+
+.roprime-accordion-chevron {
+	width: 10px;
+	height: 10px;
+	border-right: 2px solid
+		color-mix(in srgb, var(--rp-settings-text) 70%, transparent);
+	border-bottom: 2px solid
+		color-mix(in srgb, var(--rp-settings-text) 70%, transparent);
+	transform: rotate(45deg);
+	transition: transform 140ms ease;
+	flex: 0 0 auto;
+	margin-right: 2px;
+}
+
+.roprime-accordion.is-open .roprime-accordion-chevron {
+	transform: rotate(-135deg);
+}
+
+.roprime-accordion-body {
+	padding: 0 13px;
+	max-height: 0;
+	opacity: 0;
+	transform: translateY(-4px);
+	overflow: hidden;
+	transition:
+		max-height 240ms cubic-bezier(0.22, 1, 0.36, 1),
+		opacity 180ms ease,
+		transform 240ms ease;
+}
+
+.roprime-accordion.is-open .roprime-accordion-body {
+	opacity: 1;
+	transform: translateY(0);
+	padding-bottom: 14px;
+}
+
+.roprime-toggle-row {
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 10px;
+	border-radius: 12px;
+	border: 1px solid
+		color-mix(in srgb, var(--rp-settings-border) 75%, transparent);
+	background: var(--rp-settings-surface-2);
+	padding: 10px 10px;
+}
+
+.roprime-toggle-row.is-disabled {
+	opacity: 0.55;
+}
+
+.roprime-toggle-row.is-disabled .roprime-switch {
+	pointer-events: none;
+}
+
+.roprime-toggle-row + .roprime-toggle-row {
+	margin-top: 10px;
+}
+
+.roprime-sidebar-size-row {
+	align-items: stretch;
+	gap: 16px;
+}
+
+.roprime-sidebar-size-footer {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 8px;
+	width: calc(100% - var(--roprime-sidebar-thumb-size, 14px));
+	margin: 0 auto;
+}
+
+.roprime-sidebar-size-footer .roprime-sidebar-size-ticks {
+	width: 100%;
+	margin: 0;
+	justify-content: flex-start;
+}
+
+.roprime-sidebar-configure-btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	align-self: flex-start;
+	max-width: 100%;
+	padding: 5px 10px;
+	border-radius: 8px;
+	border: 1px solid
+		color-mix(in srgb, var(--rp-settings-border) 85%, transparent);
+	background: var(--rp-settings-surface);
+	color: var(--rp-settings-text);
+	font-size: 11px;
+	font-weight: 600;
+	line-height: 1.2;
+	cursor: pointer;
+	white-space: nowrap;
+	text-align: left;
+	transition:
+		border-color 120ms ease,
+		background 120ms ease,
+		color 120ms ease;
+}
+
+.roprime-sidebar-configure-btn:hover {
+	border-color: color-mix(in srgb, var(--rp-settings-accent) 55%, transparent);
+	background: color-mix(in srgb, var(--rp-settings-accent) 14%, transparent);
+	color: var(--rp-settings-text);
+}
+
+.roprime-sidebar-content-back {
+	display: inline-flex;
+	align-items: center;
+	margin-bottom: 12px;
+	padding: 8px 12px;
+	border-radius: 10px;
+	border: 1px solid
+		color-mix(in srgb, var(--rp-settings-border) 80%, transparent);
+	background: var(--rp-settings-surface-2);
+	color: var(--rp-settings-text);
+	font-size: 13px;
+	font-weight: 600;
+	cursor: pointer;
+}
+
+.roprime-sidebar-content-back:hover {
+	border-color: color-mix(in srgb, var(--rp-settings-accent) 50%, transparent);
+}
+
+.roprime-sidebar-content-panel {
+	margin-top: 4px;
+}
+
+.roprime-sidebar-content-list {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	margin-top: 12px;
+}
+
+.roprime-sidebar-content-divider {
+	height: 1px;
+	margin: 4px 0;
+	background: color-mix(in srgb, var(--rp-settings-border) 80%, transparent);
+}
+
+.roprime-sidebar-content-row {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 10px;
+	padding: 10px 12px;
+	border-radius: 10px;
+	border: 1px solid
+		color-mix(in srgb, var(--rp-settings-border) 75%, transparent);
+	background: var(--rp-settings-surface-2);
+}
+
+.roprime-sidebar-content-row.is-removed-item .roprime-sidebar-content-row-label {
+	opacity: 0.72;
+}
+
+.roprime-sidebar-content-row-label {
+	font-size: 13px;
+	font-weight: 600;
+	color: var(--rp-settings-text);
+}
+
+.roprime-sidebar-content-delete {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 32px;
+	height: 32px;
+	padding: 0;
+	border: 0;
+	border-radius: 8px;
+	background: transparent;
+	color: #ef4444;
+	cursor: pointer;
+}
+
+.roprime-sidebar-content-delete:hover {
+	background: color-mix(in srgb, #ef4444 16%, transparent);
+}
+
+.roprime-sidebar-content-add {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 32px;
+	height: 32px;
+	padding: 0;
+	border: 0;
+	border-radius: 8px;
+	background: transparent;
+	color: #22c55e;
+	cursor: pointer;
+}
+
+.roprime-sidebar-content-add:hover {
+	background: color-mix(in srgb, #22c55e 16%, transparent);
+}
+
+.roprime-sidebar-content-add .roprime-sidebar-add-icon,
+.roprime-sidebar-content-add svg {
+	width: 18px;
+	height: 18px;
+}
+
+.roprime-sidebar-content-empty {
+	margin: 12px 0 0;
+	font-size: 12px;
+	line-height: 1.4;
+	color: color-mix(in srgb, var(--rp-settings-text) 70%, transparent);
+}
+
+span.icon-nav-menu.roprime-icon-nav-menu-replaced {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.roprime-sidebar-size-control {
+	flex: 0 0 250px;
+	max-width: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.roprime-sidebar-size-box {
+	width: 100%;
+}
+
+.roprime-sidebar-size-rail {
+	width: 100%;
+	--roprime-sidebar-thumb-size: 14px;
+}
+
+.roprime-sidebar-size-slider {
+	width: calc(100% - var(--roprime-sidebar-thumb-size));
+	display: block;
+	appearance: none;
+	-webkit-appearance: none;
+	height: 6px;
+	border-radius: 999px;
+	background: linear-gradient(
+		90deg,
+		color-mix(in srgb, var(--rp-settings-border) 85%, transparent),
+		color-mix(in srgb, var(--rp-settings-border) 55%, transparent)
+	);
+	outline: none;
+	margin: 4px auto 10px;
+}
+
+.roprime-sidebar-size-slider::-webkit-slider-thumb {
+	-webkit-appearance: none;
+	width: 14px;
+	height: 14px;
+	border-radius: 50%;
+	background: var(--rp-settings-text);
+	border: 2px solid var(--rp-settings-accent);
+	box-shadow: 0 4px 10px rgba(0, 0, 0, 0.22);
+	cursor: pointer;
+	transition: transform 130ms ease;
+}
+
+.roprime-sidebar-size-slider::-moz-range-thumb {
+	width: 14px;
+	height: 14px;
+	border-radius: 50%;
+	background: var(--rp-settings-text);
+	border: 2px solid var(--rp-settings-accent);
+	box-shadow: 0 4px 10px rgba(0, 0, 0, 0.22);
+	cursor: pointer;
+	transition: transform 130ms ease;
+}
+
+.roprime-sidebar-size-slider:active::-webkit-slider-thumb,
+.roprime-sidebar-size-slider:active::-moz-range-thumb {
+	transform: scale(1.08);
+}
+
+.roprime-sidebar-size-ticks {
+	display: flex;
+	justify-content: flex-start;
+	align-items: center;
+	gap: 10px;
+	flex-wrap: wrap;
+}
+
+.roprime-sidebar-size-tick {
+	border: 1px solid
+		color-mix(in srgb, var(--rp-settings-border) 90%, transparent);
+	border-radius: 999px;
+	background: var(--rp-settings-surface);
+	color: color-mix(in srgb, var(--rp-settings-text) 85%, transparent);
+	font-size: 11px;
+	font-weight: 600;
+	line-height: 1;
+	padding: 6px 10px;
+	min-width: 64px;
+	text-align: center;
+	cursor: pointer;
+	transition:
+		border-color 120ms ease,
+		background 120ms ease,
+		color 120ms ease;
+}
+
+.roprime-sidebar-size-tick.is-active {
+	border-color: color-mix(in srgb, var(--rp-settings-accent) 65%, transparent);
+	background: color-mix(in srgb, var(--rp-settings-accent) 22%, transparent);
+	color: var(--rp-settings-text);
+}
+
+.roprime-language-dropdown {
+	position: relative;
+	flex: 0 0 190px;
+	width: 190px;
+	max-width: 190px;
+	min-width: 0;
+	box-sizing: border-box;
+}
+
+.roprime-language-trigger {
+	box-sizing: border-box;
+	width: 100%;
+	min-width: 0 !important;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 10px;
+	border: 1px solid
+		color-mix(in srgb, var(--rp-settings-border) 80%, transparent);
+	border-radius: 10px;
+	background: var(--rp-settings-surface-3);
+	color: var(--rp-settings-text);
+	padding: 9px 11px;
+	cursor: pointer;
+}
+
+/* Avoid flex min-content blow-up from long locale labels (was showing as huge `min-width` on the button). */
+.roprime-language-trigger [data-roprime-lang-current] {
+	min-width: 0;
+	flex: 1 1 auto;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	text-align: left;
+}
+
+.roprime-language-chevron {
+	width: 8px;
+	height: 8px;
+	border-right: 2px solid currentColor;
+	border-bottom: 2px solid currentColor;
+	transform: rotate(45deg);
+	transition: transform 120ms ease;
+}
+
+.roprime-language-dropdown.is-open .roprime-language-chevron {
+	transform: rotate(-135deg);
+}
+
+.roprime-language-menu {
+	position: absolute;
+	top: calc(100% + 6px);
+	left: 0;
+	right: 0;
+	z-index: 5;
+	border: 1px solid
+		color-mix(in srgb, var(--rp-settings-border) 90%, transparent);
+	border-radius: 10px;
+	overflow: hidden;
+	background: var(--rp-settings-surface-3);
+	display: flex;
+	flex-direction: column;
+}
+
+.roprime-language-menu[hidden] {
+	display: none !important;
+}
+
+.roprime-language-option {
+	border: 0;
+	background: transparent;
+	color: var(--rp-settings-text);
+	text-align: left;
+	padding: 9px 11px;
+	cursor: pointer;
+}
+
+.roprime-language-option:hover {
+	background: color-mix(in srgb, var(--rp-settings-accent) 18%, transparent);
+}
+
+/* Keep account content fluid when RoPrime panel is open. */
+#react-user-account-base:has(
+		#roprime-standalone-settings[style*="display: block"]
+	)
+	.content-container,
+#react-user-account-base:has(
+		#roprime-standalone-settings[style*="display: block"]
+	)
+	#content-container,
+#react-user-account-base:has(#roprime-profile-settings-root) .content-container,
+#react-user-account-base:has(#roprime-profile-settings-root)
+	#content-container {
+	width: auto !important;
+	max-width: none !important;
+	flex-shrink: 1 !important;
+	min-width: 0 !important;
+}
+
+.roprime-accordion-master-switch {
+	margin-left: auto;
+	flex: 0 0 auto;
+}
+
+/* Keep every switch aligned to the same x-position as the header switch. */
+.roprime-toggle-row .roprime-switch,
+.roprime-setting-card-spaced .roprime-switch {
+	margin-right: 14px;
+}
+
+.roprime-toggle-copy {
+	min-width: 0;
+	padding-left: 4px;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: flex-start;
+	text-align: left;
+}
+
+.roprime-toggle-title {
+	color: var(--rp-settings-text);
+	font-weight: 600;
+	line-height: 1.3;
+}
+
+.roprime-toggle-desc {
+	margin-top: 6px;
+	color: var(--rp-settings-text-2);
+	font-size: 12px;
+	line-height: 1.4;
+}
+
+.roprime-settings-hero {
+	position: relative;
+	overflow: hidden;
+	border-radius: 16px;
+	border: 1px solid rgba(108, 121, 143, 0.4);
+	background:
+		radial-gradient(
+			130% 120% at 100% 0%,
+			rgba(70, 116, 255, 0.25) 0%,
+			rgba(70, 116, 255, 0) 62%
+		),
+		radial-gradient(
+			120% 120% at 0% 100%,
+			rgba(129, 97, 255, 0.18) 0%,
+			rgba(129, 97, 255, 0) 64%
+		),
+		linear-gradient(165deg, #22272f 0%, #171b22 100%);
+	padding: 16px;
+	margin-bottom: 14px;
+}
+
+.roprime-settings-hero h2 {
+	margin: 0 0 6px;
+	font-size: 24px;
+	color: #f1f5fc;
+}
+
+.roprime-settings-hero p {
+	margin: 0;
+	color: rgba(203, 212, 226, 0.9);
+	font-size: 14px;
+}
+
+.roprime-corner {
+	display: none;
+}
+
+.roprime-corner-top-left {
+	top: 8px;
+	left: 8px;
+	border-right: 0;
+	border-bottom: 0;
+}
+
+.roprime-corner-top-right {
+	top: 8px;
+	right: 8px;
+	border-left: 0;
+	border-bottom: 0;
+}
+
+.roprime-corner-bottom-left {
+	bottom: 8px;
+	left: 8px;
+	border-top: 0;
+	border-right: 0;
+}
+
+.roprime-corner-bottom-right {
+	right: 8px;
+	bottom: 8px;
+	border-top: 0;
+	border-left: 0;
+}
+
+.roprime-groups-setting-row {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	border-radius: 12px;
+	border: 1px solid rgba(122, 129, 179, 0.35);
+	background: rgba(20, 22, 38, 0.9);
+	padding: 14px 16px;
+}
+
+.roprime-experiences-setting-row {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	border-radius: 12px;
+	border: 1px solid rgba(122, 129, 179, 0.35);
+	background: rgba(20, 22, 38, 0.9);
+	padding: 14px 16px;
+	margin-top: 12px;
+}
+
+.roprime-groups-setting-copy {
+	min-width: 0;
+}
+
+.roprime-experiences-setting-copy {
+	min-width: 0;
+}
+
+.roprime-groups-setting-title {
+	color: #f7f8ff;
+	font-weight: 600;
+	line-height: 1.3;
+}
+
+.roprime-experiences-setting-title {
+	color: #f7f8ff;
+	font-weight: 600;
+	line-height: 1.3;
+}
+
+.roprime-groups-setting-desc {
+	margin-top: 4px;
+	color: rgba(211, 217, 255, 0.78);
+	font-size: 12px;
+}
+
+.roprime-experiences-setting-desc {
+	margin-top: 4px;
+	color: rgba(211, 217, 255, 0.78);
+	font-size: 12px;
+}
+
+.roprime-switch {
+	position: relative;
+	width: 44px;
+	height: 24px;
+	flex: 0 0 auto;
+	display: inline-block;
+}
+
+.roprime-switch input {
+	opacity: 0;
+	width: 0;
+	height: 0;
+}
+
+.roprime-switch-slider {
+	position: absolute;
+	inset: 0;
+	border-radius: 999px;
+	border: 1px solid
+		color-mix(in srgb, var(--rp-settings-border) 95%, transparent);
+	background: var(--rp-settings-surface);
+	transition:
+		background-color 120ms ease,
+		border-color 120ms ease;
+}
+
+.roprime-switch-slider::before {
+	content: "";
+	position: absolute;
+	width: 18px;
+	height: 18px;
+	left: 2px;
+	top: 2px;
+	border-radius: 50%;
+	background: var(--rp-settings-text);
+	transition: transform 120ms ease;
+}
+
+.roprime-switch input:checked + .roprime-switch-slider {
+	background: var(--rp-settings-accent);
+	border-color: var(--rp-settings-accent);
+}
+
+.roprime-switch input:checked + .roprime-switch-slider::before {
+	transform: translateX(20px);
+}
+
+body.light-theme .roprime-settings-hero,
+html.light-theme .roprime-settings-hero {
+	background:
+		radial-gradient(
+			120% 120% at 100% 0%,
+			rgba(88, 101, 242, 0.14) 0%,
+			rgba(88, 101, 242, 0) 60%
+		),
+		linear-gradient(
+			160deg,
+			rgba(252, 252, 255, 0.98),
+			rgba(247, 249, 255, 0.98)
+		);
+	border-color: rgba(88, 101, 242, 0.28);
+}
+
+body.light-theme .roprime-settings-hero h2,
+html.light-theme .roprime-settings-hero h2 {
+	color: #1f2442;
+}
+
+body.light-theme .roprime-settings-hero p,
+html.light-theme .roprime-settings-hero p {
+	color: #4e577f;
+}
+
+body.light-theme .roprime-groups-setting-row,
+html.light-theme .roprime-groups-setting-row {
+	background: #ffffff;
+	border-color: rgba(97, 106, 156, 0.25);
+}
+
+body.light-theme .roprime-experiences-setting-row,
+html.light-theme .roprime-experiences-setting-row {
+	background: #ffffff;
+	border-color: rgba(97, 106, 156, 0.25);
+}
+
+body.light-theme .roprime-groups-setting-title,
+html.light-theme .roprime-groups-setting-title {
+	color: #232948;
+}
+
+body.light-theme .roprime-experiences-setting-title,
+html.light-theme .roprime-experiences-setting-title {
+	color: #232948;
+}
+
+body.light-theme .roprime-groups-setting-desc,
+html.light-theme .roprime-groups-setting-desc {
+	color: #60688f;
+}
+
+body.light-theme .roprime-experiences-setting-desc,
+html.light-theme .roprime-experiences-setting-desc {
+	color: #60688f;
+}
+
+body.light-theme .roprime-settings-nav-btn,
+html.light-theme .roprime-settings-nav-btn {
+	background: #fff;
+	color: #2a3157;
+	border-color: rgba(97, 106, 156, 0.25);
+}
+
+body.light-theme .roprime-setting-card,
+html.light-theme .roprime-setting-card,
+body.light-theme .roprime-info-card,
+html.light-theme .roprime-info-card {
+	background: #ffffff;
+	border-color: rgba(97, 106, 156, 0.25);
+}
+
+body.light-theme .roprime-setting-title,
+html.light-theme .roprime-setting-title,
+body.light-theme .roprime-info-title,
+html.light-theme .roprime-info-title {
+	color: #232948;
+}
+
+body.light-theme .roprime-setting-desc,
+html.light-theme .roprime-setting-desc,
+body.light-theme .roprime-info-text,
+html.light-theme .roprime-info-text {
+	color: #60688f;
+}
+
+body.light-theme .roprime-accordion-chevron,
+html.light-theme .roprime-accordion-chevron {
+	border-right-color: rgba(96, 104, 143, 0.95);
+	border-bottom-color: rgba(96, 104, 143, 0.95);
+}
+
+body.light-theme .roprime-toggle-row,
+html.light-theme .roprime-toggle-row {
+	background: #ffffff;
+	border-color: rgba(97, 106, 156, 0.25);
+}
+
+body.light-theme .roprime-toggle-title,
+html.light-theme .roprime-toggle-title {
+	color: #232948;
+}
+
+body.light-theme .roprime-toggle-desc,
+html.light-theme .roprime-toggle-desc {
+	color: #60688f;
+}
+
+#roprime-standalone-settings {
+	display: none;
+	margin-top: 8px;
+}
+
+@media (max-width: 992px) {
+	.roprime-settings-wrapper {
+		overflow-x: hidden !important;
+		max-width: 100% !important;
+		box-sizing: border-box !important;
+	}
+
+	.roprime-settings-nav {
+		justify-content: center !important;
+		row-gap: 10px !important;
+	}
+
+	.roprime-settings-main {
+		max-width: 100% !important;
+		overflow-x: hidden !important;
+	}
+}
+
+@media (min-width: 1200px) {
+	.roprime-settings-layout {
+		display: grid;
+		grid-template-columns: 220px minmax(0, 1fr);
+		gap: 14px;
+		align-items: start;
+	}
+
+	.roprime-settings-sidebar {
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+		margin-bottom: 0;
+	}
+
+	.roprime-settings-search-wrap {
+		margin-bottom: 0;
+	}
+
+	.roprime-settings-nav {
+		margin: 0;
+		flex-direction: column;
+		flex-wrap: nowrap;
+	}
+
+	.roprime-settings-nav-btn {
+		width: 100%;
+		text-align: left;
+	}
+
+	.roprime-settings-nav-alert {
+		width: 100%;
+		margin: 0;
+		box-sizing: border-box;
+	}
+}
+
+@media (max-width: 991px) {
+	html.roprime-classic-left-nav-on .rbx-header .rbx-navbar-header,
+	body.roprime-classic-left-nav-on .rbx-header .rbx-navbar-header {
+		margin: 0 5px;
+	}
+}
+
+@media (max-width: 1199px) {
+	html.roprime-classic-left-nav-on .rbx-header .rbx-navbar-header,
+	body.roprime-classic-left-nav-on .rbx-header .rbx-navbar-header {
+		margin: 0;
+	}
+}
+
+html.roprime-classic-left-nav-on .rbx-header .rbx-navbar-header,
+body.roprime-classic-left-nav-on .rbx-header .rbx-navbar-header {
+	z-index: 100;
+	float: left;
+	max-width: 76px;
+	margin: 0 5px;
+	position: relative;
+}

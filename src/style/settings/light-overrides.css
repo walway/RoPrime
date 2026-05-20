@@ -1,0 +1,80 @@
+/* Hide native account chrome immediately on RoPrime settings URL (before JS mount). */
+html.roprime-account-settings-open #react-user-account-base .content-container,
+html.roprime-account-settings-open #react-user-account-base #content-container,
+html.roprime-account-settings-open #react-user-account-base .menu-vertical,
+html.roprime-account-settings-open
+	#react-user-account-base
+	.menu-vertical-container {
+	visibility: hidden !important;
+	opacity: 0 !important;
+	pointer-events: none !important;
+}
+
+/* —— Account URL settings (/my/account?roprime=…) —— */
+#roprime-profile-settings-root.roprime-profile-settings-root {
+	position: relative;
+	z-index: 3;
+	max-width: 1120px;
+	margin: 0 auto 28px;
+	padding: 8px 12px 0;
+	font-family: system-ui, "Segoe UI", Roboto, sans-serif;
+}
+
+/* In-account settings mount: reuse global .roprime-settings-* layout; only tweak chrome. */
+#roprime-profile-settings-root .roprime-settings-hero {
+	position: relative;
+}
+
+#roprime-profile-settings-root
+	.roprime-accordion.is-open
+	.roprime-accordion-body {
+	max-height: 520px;
+}
+
+.roprime-settings-select {
+	min-width: 140px;
+	border-radius: 10px;
+	border: 1px solid
+		color-mix(in srgb, var(--rp-settings-border) 85%, transparent);
+	background: var(--rp-settings-surface-3);
+	color: var(--rp-settings-text);
+	padding: 8px 10px;
+	font-size: 13px;
+	font-weight: 600;
+}
+
+.roprime-settings-textarea {
+	width: 100%;
+	resize: vertical;
+	min-height: 100px;
+	border-radius: 12px;
+	border: 1px solid
+		color-mix(in srgb, var(--rp-settings-border) 85%, transparent);
+	background: var(--rp-settings-surface-3);
+	color: var(--rp-settings-text);
+	padding: 10px 12px;
+	font-size: 13px;
+	line-height: 1.4;
+	font-family: ui-monospace, "Cascadia Mono", "Segoe UI Mono", monospace;
+}
+
+.roprime-settings-primary-btn {
+	align-self: flex-start;
+	border: 0;
+	border-radius: 12px;
+	padding: 10px 16px;
+	font-size: 14px;
+	font-weight: 700;
+	cursor: pointer;
+	color: #fff;
+	background: var(--rp-settings-accent, #3c63ff);
+}
+
+.roprime-settings-primary-btn:hover:not(:disabled) {
+	filter: brightness(1.08);
+}
+
+.roprime-settings-primary-btn:disabled {
+	opacity: 0.45;
+	cursor: default;
+}

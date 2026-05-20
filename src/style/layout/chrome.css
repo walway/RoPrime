@@ -1,0 +1,33 @@
+/*
+.content {
+    padding-left: 0%;
+}
+
+ @media (min-width: 1141px) {
+    .no-gutter-ads.logged-in.left-nav-new-width {
+        --left-nav-reserved-width: 0px
+    }
+}
+*/
+
+/* Skip-to-content stacking (extension override). */
+#skip-to-main-content.btn-primary-xs.btn-min-width,
+#skip-to-main-content {
+	z-index: 2 !important;
+}
+
+.roprime-settings-wrapper,
+.roprime-settings-wrapper *,
+#roprime-profile-settings-root,
+#roprime-profile-settings-root *,
+#roprime-standalone-settings,
+#roprime-standalone-settings *,
+#roprime-home-welcome-root,
+#roprime-home-welcome-root *,
+#roprime-classic-left-nav-host,
+#roprime-classic-left-nav-host * {
+	box-sizing: border-box;
+	text-rendering: auto;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}

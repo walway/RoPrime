@@ -6,6 +6,9 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 
 /** Chrome content scripts cannot use bare `import` — bundle as one IIFE file. */
 export default defineConfig({
+	define: {
+		"process.env.NODE_ENV": JSON.stringify("production"),
+	},
 	build: {
 		outDir: "dist",
 		emptyOutDir: false,

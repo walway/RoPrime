@@ -1,30 +1,32 @@
-import { syncAccountSettingsMenuButton } from "./accountSettingsLink.js";
+import { syncAccountSettingsMenuButton } from "./account/accountSettingsLink.js";
 import {
-	getExtensionResourceUrl,
 	isExtensionContextInvalidatedError,
 	loadSettings,
 	loadSettingsUiStrings,
-	RP_RUNTIME_STYLE_ID,
 	RP_SETTINGS_KEY,
 	reloadSettingsUiStrings,
 	setSyncIntervalId,
 	shouldRunRoPrimeOnCurrentPage,
 	syncIntervalId,
-} from "./core.js";
-import { normalizeEquippedProfileEffects } from "./other.js";
-import { syncRoEliteView } from "./panel.js";
-import {
-	installProfilePageEffectObserver,
-	syncProfilePageEffect,
-} from "./profileEffectsDisplay.js";
-import { syncProfileSettingsRoute } from "./profileSettings.js";
+} from "./core/core.js";
 import {
 	applyCommunityRename,
 	applyExperiencesRename,
 	applyMarketplaceRename,
 	updateRenameLoop,
-} from "./rename.js";
-import { syncHomeWelcomeModal } from "./welcome.js";
+} from "./features/rename.js";
+import { syncHomeWelcomeModal } from "./features/welcome.js";
+import {
+	installFriendCarouselEffects,
+	syncFriendCarouselEffects,
+} from "./profile/friendCarouselEffects.js";
+import {
+	installProfilePageEffectObserver,
+	syncProfilePageEffect,
+} from "./profile/profileEffectsDisplay.js";
+import { syncRoEliteView } from "./panel/panel.js";
+import { normalizeEquippedProfileEffects } from "./settings/other.js";
+import { syncProfileSettingsRoute } from "./settings/profileSettings.js";
 
 function installStorageSyncListener() {
 	if (typeof chrome === "undefined" || !chrome.storage?.onChanged) return;
@@ -35,7 +37,7 @@ function installStorageSyncListener() {
 				void (async () => {
 					try {
 						if (normalizeEquippedProfileEffects()) {
-							const { saveSettings } = await import("./core.js");
+							const { saveSettings } = await import("./core/core.js");
 							saveSettings();
 						}
 						await reloadSettingsUiStrings();
@@ -44,6 +46,7 @@ function installStorageSyncListener() {
 						syncProfileSettingsRoute();
 						syncAccountSettingsMenuButton();
 						void syncProfilePageEffect();
+						syncFriendCarouselEffects();
 					} catch (e) {
 						if (!isExtensionContextInvalidatedError(e)) throw e;
 					}
@@ -73,11 +76,11 @@ function installHistoryListeners() {
 
 	const handleRouteChange = () => {
 		try {
-			syncRuntimeStylesheet();
 			syncRoEliteView();
 			syncProfileSettingsRoute();
 			syncAccountSettingsMenuButton();
 			void syncProfilePageEffect();
+			syncFriendCarouselEffects();
 		} catch (e) {
 			if (!isExtensionContextInvalidatedError(e)) throw e;
 		}
@@ -87,39 +90,22 @@ function installHistoryListeners() {
 	window.addEventListener("roprime-location-change", handleRouteChange);
 }
 
-function syncRuntimeStylesheet() {
-	const existing = document.getElementById(RP_RUNTIME_STYLE_ID);
-	if (!shouldRunRoPrimeOnCurrentPage()) {
-		if (existing instanceof HTMLLinkElement) existing.remove();
-		return;
-	}
-	if (existing instanceof HTMLLinkElement) return;
-	const styleHref = getExtensionResourceUrl("style.css");
-	if (!styleHref) return;
-	const link = document.createElement("link");
-	link.id = RP_RUNTIME_STYLE_ID;
-	link.rel = "stylesheet";
-	link.href = styleHref;
-	document.documentElement.appendChild(link);
-}
-
 function bootstrap() {
 	installStorageSyncListener();
-	syncRuntimeStylesheet();
 	loadSettings().finally(() => {
 		void (async () => {
 			try {
 				if (normalizeEquippedProfileEffects()) {
-					const { saveSettings } = await import("./core.js");
+					const { saveSettings } = await import("./core/core.js");
 					saveSettings();
 				}
 				await loadSettingsUiStrings();
 				installHistoryListeners();
 				installProfilePageEffectObserver();
+				installFriendCarouselEffects();
 				if (syncIntervalId === null) {
 					setSyncIntervalId(window.setInterval(syncRoEliteView, 1200));
 				}
-				syncRuntimeStylesheet();
 				if (shouldRunRoPrimeOnCurrentPage()) {
 					updateRenameLoop();
 				}
@@ -127,6 +113,7 @@ function bootstrap() {
 				syncProfileSettingsRoute();
 				syncAccountSettingsMenuButton();
 				void syncProfilePageEffect();
+				syncFriendCarouselEffects();
 				if (shouldRunRoPrimeOnCurrentPage()) {
 					applyCommunityRename(document.body);
 					applyExperiencesRename(document.body);

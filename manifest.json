@@ -1,7 +1,7 @@
 {
 	"manifest_version": 3,
 	"name": "RoPrime - Making Roblox feel better",
-	"version": "1.2.1",
+	"version": "1.2.2",
 	"description": "The new era of Roblox website.",
 	"permissions": ["storage"],
 	"optional_permissions": ["management"],
@@ -23,19 +23,11 @@
 			"resources": [
 				"resources/roprime-icon.png",
 				"resources/RblxPlusLogo.webp",
-				"resources/ext-icons/rovalra.png",
-				"resources/ext-icons/roseal.png",
-				"resources/plugins/rovalrapluginimage.png",
-				"resources/plugins/rosealpluginimage.png",
 				"resources/logo.svg",
-				"style.css",
+				"src/style/**/*.css",
 				".locales/*",
 				".locales/lang-config.js",
-				"resources/lottie/*",
-				"resources/data/*",
-				"resources/vendor/dotlottie-player.js",
-				"resources/vendor/dotlottie-player.wasm",
-				"resources/vendor/lottie.min.js"
+				"resources/data/*"
 			],
 			"matches": ["*://*.roblox.com/*"]
 		}
@@ -44,6 +36,18 @@
 		{
 			"matches": ["*://*.roblox.com/*"],
 			"js": ["dist/content.js"],
+			"css": [
+				"src/style/main.css",
+				"src/style/account/menu-tab.css",
+				"src/style/settings/panel.css",
+				"src/style/layout/chrome.css",
+				"src/style/welcome/welcome.css",
+				"src/style/navigation/old-nav.css",
+				"src/style/settings/light-overrides.css",
+				"src/style/profile/cosmetics-shop.css",
+				"src/style/profile/page-effects.css",
+				"src/style/profile/carousel-effects.css"
+			],
 			"run_at": "document_start"
 		}
 	]
