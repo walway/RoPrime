@@ -134,10 +134,46 @@
 
 .roprime-profile-effect-preview {
 	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+	width: 100%;
+	background: transparent;
+}
+
+.roprime-profile-effect-avatar-wrap {
+	display: flex;
 	align-items: center;
 	justify-content: center;
 	width: 100%;
-	background: transparent;
+}
+
+.roprime-profile-effect-avatar-wrap .roprime-effect-shop-avatar {
+	position: relative;
+	width: 72px;
+	height: 72px;
+	margin: 0 auto;
+}
+
+.roprime-profile-effect-avatar-wrap .avatar.avatar-card-fullbody {
+	width: 100%;
+	height: 100%;
+}
+
+.roprime-profile-effect-avatar-wrap .thumbnail-2d-container.avatar-card-image {
+	display: block;
+	width: 100%;
+	height: 100%;
+	overflow: hidden;
+	border-radius: 8px;
+}
+
+.roprime-profile-effect-avatar-wrap .thumbnail-2d-container.avatar-card-image img {
+	display: block;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
 }
 
 .roprime-profile-effect-lottie {

@@ -11,7 +11,7 @@ export default defineConfig({
 	},
 	build: {
 		outDir: "dist",
-		emptyOutDir: false,
+		emptyOutDir: true,
 		sourcemap: true,
 		lib: {
 			entry: resolve(__dirname, "content.entry.js"),

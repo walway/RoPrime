@@ -16,6 +16,7 @@ import {
 	registerProfileEffectPurchase,
 	syncOwnedEffectsFromRegistry,
 } from "../profile/profileEffectsRegistry.js";
+import { hydrateProfilePictureEffectAvatars } from "../profile/profileEffectAvatar.js";
 import { t as accountSettingsPaneT } from "./roprimeAccountSettingsPage.js";
 
 let cachedAuthUserId = null;
@@ -170,11 +171,12 @@ export function buildProfileEffectsMarkup(effects = PROFILE_EFFECTS) {
 	return effects
 		.map(
 			(effect) => `
-		<article class="roprime-profile-effect-card" data-roprime-profile-effect="${effect.id}">
+		<article class="roprime-profile-effect-card" data-roprime-profile-effect="${effect.id}" data-roprime-profile-effect-kind="${effect.kind}">
 			<div class="roprime-profile-effect-preview">
 				<div class="roprime-profile-effect-lottie">
 					<iframe src="${getProfileEffectShopEmbedSrc(effect)}" title="${effect.titleKey}" loading="lazy" ${PROFILE_EFFECT_IFRAME_TRANSPARENT_ATTRS}></iframe>
 				</div>
+				${effect.kind === "picture" ? '<div class="roprime-profile-effect-avatar-wrap" data-roprime-profile-effect-avatar aria-hidden="true"></div>' : ""}
 			</div>
 			<div class="roprime-profile-effect-footer">
 				<div class="roprime-profile-effect-title" data-i18n="${effect.titleKey}"></div>
@@ -396,6 +398,7 @@ export function syncCosmeticsUi(inner) {
 		normalizeEquippedProfileEffects();
 		syncEffectButtons(shop);
 	});
+	void hydrateProfilePictureEffectAvatars(shop);
 }
 
 export function bindCosmeticsControls(inner) {

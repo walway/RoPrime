@@ -24,6 +24,7 @@ export const STYLE_CSS_ORDER = [
 	"src/style/main.css",
 	"src/style/account/menu-tab.css",
 	"src/style/settings/panel.css",
+	"src/style/components/mui-controls.css",
 	"src/style/layout/chrome.css",
 	"src/style/welcome/welcome.css",
 	"src/style/navigation/old-nav.css",
@@ -110,7 +111,7 @@ const localeFiles = globSync(".locales/**/*", {
 });
 const dataFiles = globSync("resources/data/**/*", { nodir: true });
 
-console.log("Building RoPrime with Vite + React...");
+console.log("Building RoPrime with Vite...");
 rmSync(distDir, { recursive: true, force: true });
 
 const viteCli = join(root, "node_modules", "vite", "bin", "vite.js");
@@ -118,7 +119,6 @@ if (!existsSync(viteCli)) {
 	console.error("Missing Vite CLI. Run `npm install` first.");
 	process.exit(1);
 }
-await runNode(viteCli, ["build"]);
 await runNode(viteCli, ["build", "--config", "vite.content.config.js"]);
 
 copyStyleTreeToDist();
