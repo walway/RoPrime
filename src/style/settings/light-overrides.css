@@ -11,6 +11,10 @@ html.roprime-account-settings-open
 }
 
 /* Footer + full-viewport shell: see settings-mui-shell.css */
+#roprime-profile-settings-root .roprime-settings-mui-shell {
+	max-width: none;
+	margin: 0;
+}
 
 #roprime-profile-settings-root
 	.roprime-accordion.is-open

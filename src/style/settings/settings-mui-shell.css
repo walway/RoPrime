@@ -1,4 +1,4 @@
-/* Roblox-style settings shell — offset from left nav, 288px rail + content pane */
+/* Roblox MUI settings shell — 288px secondary rail, full-height divider, page gutter */
 
 html.roprime-account-settings-open,
 html.roprime-account-settings-open body {
@@ -17,42 +17,41 @@ html.roprime-account-settings-open #react-user-account-base .container-footer {
 
 #roprime-profile-settings-root.roprime-profile-settings-root {
 	position: fixed;
-	top: 24px;
-	left: 289px;
-	right: 0;
-	bottom: 0;
+	inset: 0;
 	z-index: 120;
 	max-width: none;
-	width: auto;
-	height: auto;
+	width: 100%;
+	height: 100dvh;
 	margin: 0;
 	padding: 0;
 	overflow: hidden;
 	box-sizing: border-box;
-	background: transparent;
+	background: var(--color-surface-100, var(--color-surface-300));
 }
 
 .roprime-settings-mui-shell {
 	display: flex;
-	flex-direction: row;
 	align-items: stretch;
 	gap: 0;
 	width: 100%;
 	height: 100%;
-	min-height: 0;
+	min-height: 100dvh;
 	max-width: 100%;
 	box-sizing: border-box;
 	font-family: inherit;
 	overflow: hidden;
 }
 
-/* Secondary rail — our own 288px column (do not use Roblox width-[288px] on shell) */
-.roprime-settings-rail {
+/* 288px secondary rail */
+.roprime-settings-rail,
+.roprime-settings-rail.width-\[288px\],
+.roprime-settings-mui-shell .width-\[288px\] {
 	flex: 0 0 288px;
-	width: 288px;
+	width: 288px !important;
 	min-width: 288px;
 	max-width: 288px;
 	height: 100%;
+	min-height: 100dvh;
 	display: flex;
 	flex-direction: row;
 	align-items: stretch;
@@ -70,8 +69,20 @@ html.roprime-account-settings-open #react-user-account-base .container-footer {
 	height: 100%;
 	overflow-x: hidden;
 	overflow-y: auto;
-	padding: 8px 0 24px 8px;
+	padding: 12px 0 24px 12px;
 	box-sizing: border-box;
+	scrollbar-width: thin;
+	scrollbar-color: color-mix(in srgb, var(--color-content-emphasis) 22%, transparent)
+		transparent;
+}
+
+.roprime-settings-rail-scroll::-webkit-scrollbar {
+	width: 8px;
+}
+
+.roprime-settings-rail-scroll::-webkit-scrollbar-thumb {
+	background: color-mix(in srgb, var(--color-content-emphasis) 22%, transparent);
+	border-radius: 999px;
 }
 
 .roprime-settings-scrollbar-gutter {
@@ -79,6 +90,9 @@ html.roprime-account-settings-open #react-user-account-base .container-footer {
 	width: 12px;
 	min-width: 12px;
 	height: 100%;
+	min-height: 100dvh;
+	margin: 0;
+	padding: 0;
 	overflow: hidden;
 	pointer-events: none;
 	user-select: none;
@@ -91,6 +105,7 @@ html.roprime-account-settings-open #react-user-account-base .container-footer {
 	min-width: 1px;
 	align-self: stretch;
 	height: 100%;
+	min-height: 100dvh;
 	margin: 0;
 	padding: 0;
 	border: 0;
@@ -102,9 +117,9 @@ html.roprime-account-settings-open #react-user-account-base .container-footer {
 .roprime-settings-content-pane {
 	flex: 1 1 auto;
 	min-width: 0;
-	width: auto;
 	height: 100%;
-	padding: 8px 24px 32px 20px;
+	min-height: 100dvh;
+	padding: 16px 24px 32px;
 	box-sizing: border-box;
 	overflow-x: hidden;
 	overflow-y: auto;
@@ -114,6 +129,13 @@ html.roprime-account-settings-open #react-user-account-base .container-footer {
 .roprime-settings-content-container {
 	width: 100%;
 	max-width: 920px;
+}
+
+.roprime-settings-rail-header {
+	display: flex;
+	flex-direction: column;
+	gap: 0;
+	margin-bottom: 8px;
 }
 
 .roprime-settings-rail-header .MuiTypography-root-header,
@@ -154,12 +176,13 @@ html.roprime-account-settings-open #react-user-account-base .container-footer {
 .roprime-settings-tree-content {
 	display: flex;
 	align-items: center;
-	gap: 2px;
+	gap: 4px;
 	min-height: 36px;
 	margin: 4px;
-	padding: 2px 4px;
+	padding: 4px 8px 4px 0;
 	border-radius: 8px;
 	cursor: pointer;
+	transition: background-color 120ms ease;
 }
 
 .roprime-settings-tree-content:hover {
@@ -169,6 +192,12 @@ html.roprime-account-settings-open #react-user-account-base .container-footer {
 .roprime-settings-tree-content.Mui-selected,
 .roprime-settings-tree-content[data-selected] {
 	background: color-mix(in srgb, var(--color-content-emphasis) 10%, transparent);
+}
+
+.roprime-settings-tree-item .MuiTreeItem-iconContainer {
+	width: 0;
+	min-width: 0;
+	overflow: hidden;
 }
 
 .roprime-settings-tree-item .MuiTreeItem-label {
@@ -190,6 +219,7 @@ html.roprime-account-settings-open #react-user-account-base .container-footer {
 
 .roprime-settings-nav-btn [class*="Typography-root-label"] {
 	display: block;
+	padding-left: 12px;
 	font-size: 14px;
 	font-weight: 500;
 	line-height: 1.35;
@@ -200,6 +230,65 @@ html.roprime-account-settings-open #react-user-account-base .container-footer {
 	margin: 12px 8px 0;
 }
 
+/* MUI IconButton + MenuOpenIcon */
+.roprime-settings-menu-btn.MuiButtonBase-root.MuiIconButton-root {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	flex: 0 0 auto;
+	width: 40px;
+	height: 40px;
+	min-width: 40px;
+	padding: 8px;
+	margin: 0;
+	border: 0;
+	border-radius: 50%;
+	background-color: transparent;
+	color: var(--color-content-emphasis);
+	cursor: pointer;
+	position: relative;
+	overflow: hidden;
+	vertical-align: middle;
+	-webkit-tap-highlight-color: transparent;
+	transition: background-color 150ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.roprime-settings-menu-btn.MuiIconButton-root:hover {
+	background-color: color-mix(
+		in srgb,
+		var(--color-content-emphasis) 8%,
+		transparent
+	);
+}
+
+.roprime-settings-menu-btn.MuiIconButton-root:active {
+	background-color: color-mix(
+		in srgb,
+		var(--color-content-emphasis) 16%,
+		transparent
+	);
+}
+
+.roprime-settings-menu-btn .MuiSvgIcon-root {
+	width: 24px;
+	height: 24px;
+	fill: currentColor;
+	flex-shrink: 0;
+}
+
+.roprime-settings-menu-btn .MuiTouchRipple-root {
+	position: absolute;
+	inset: 0;
+	border-radius: inherit;
+	pointer-events: none;
+	overflow: hidden;
+}
+
+.roprime-settings-menu-btn.MuiIconButton-root:active .MuiTouchRipple-root {
+	opacity: 1;
+	background: color-mix(in srgb, var(--color-content-emphasis) 20%, transparent);
+}
+
 .roprime-settings-section-header {
 	margin: 0 0 20px;
 }
@@ -208,11 +297,6 @@ html.roprime-account-settings-open #react-user-account-base .container-footer {
 	display: flex;
 	align-items: center;
 	gap: 4px;
-}
-
-/* MUI IconButton — layout only; press/ripple from Roblox MUI stylesheets */
-.roprime-settings-section-menu-btn {
-	flex: 0 0 auto;
 }
 
 .roprime-settings-section-header .text-heading-large {
@@ -233,25 +317,22 @@ html.roprime-account-settings-open #react-user-account-base .container-footer {
 }
 
 .roprime-settings-mui-shell.is-rail-collapsed .roprime-settings-content-pane {
-	padding-left: 20px;
+	padding-left: 16px;
 }
 
 @media (max-width: 991px) {
-	#roprime-profile-settings-root.roprime-profile-settings-root {
-		left: 0;
-		top: 0;
-	}
-
 	.roprime-settings-mui-shell {
 		flex-direction: column;
 	}
 
-	.roprime-settings-rail {
+	.roprime-settings-rail,
+	.roprime-settings-mui-shell .width-\[288px\] {
 		flex: 0 0 auto;
-		width: 100%;
+		width: 100% !important;
 		min-width: 0;
 		max-width: none;
 		height: auto;
+		min-height: 0;
 	}
 
 	.roprime-settings-rail-scroll {
@@ -272,6 +353,7 @@ html.roprime-account-settings-open #react-user-account-base .container-footer {
 	}
 
 	.roprime-settings-content-pane {
+		min-height: 0;
 		height: auto;
 		flex: 1 1 auto;
 	}

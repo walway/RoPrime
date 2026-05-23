@@ -53,16 +53,20 @@ const MENU_OPEN_PATH =
 
 const TREE_VIEW_ID = "roprime-settings-tree";
 
-/** MenuOpenIcon (@mui/icons-material/MenuOpen) as inline SVG inside MUI IconButton. */
+/** MenuOpenIcon (@mui/icons-material/MenuOpen) in a circular MUI IconButton. */
 export function buildMenuOpenIconButton(
 	extraClass = "",
 	{ ariaLabel = "menu" } = {},
 ) {
-	return `
-<button type="button" class="${MUI.menuButton} roprime-settings-menu-btn ${extraClass}" tabindex="0" aria-label="${ariaLabel}">
-	<svg class="${MUI.menuIcon}" focusable="false" aria-hidden="true" viewBox="0 0 24 24" data-testid="MenuOpenIcon">
-		<path d="${MENU_OPEN_PATH}"></path>
-	</svg>
+	const classes = [MUI.menuButton, "roprime-settings-menu-btn", extraClass]
+		.filter(Boolean)
+		.join(" ");
+	return `<button type="button" class="${classes}" tabindex="0" aria-label="${ariaLabel}">
+	<span class="MuiIconButton-label" style="width:100%;display:flex;align-items:center;justify-content:center">
+		<svg class="${MUI.menuIcon}" focusable="false" aria-hidden="true" viewBox="0 0 24 24" data-testid="MenuOpenIcon">
+			<path d="${MENU_OPEN_PATH}"></path>
+		</svg>
+	</span>
 	<span class="${MUI.touchRipple}"></span>
 </button>`;
 }
@@ -134,7 +138,7 @@ export function buildSettingsShell({
 
 	return `
 <div class="roprime-settings-wrapper roprime-settings-mui-shell" id="rp-settings-inner">
-	<aside class="roprime-settings-rail" aria-label="RoPrime settings navigation">
+	<aside class="width-[288px] ${MUI.secondaryRail} roprime-settings-rail" aria-label="RoPrime settings navigation">
 		<div class="roprime-settings-rail-scroll">
 			<div class="${MUI.headerContainer} roprime-settings-rail-header">
 				<span class="${MUI.headerTitle}" data-i18n="Settings hero title"></span>

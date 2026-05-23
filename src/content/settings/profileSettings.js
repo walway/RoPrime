@@ -432,7 +432,7 @@ function bindOnce(root) {
 	});
 
 	inner.addEventListener("click", (event) => {
-		const menuBtn = event.target.closest(".roprime-settings-section-menu-btn");
+		const menuBtn = event.target.closest(".roprime-settings-menu-btn");
 		if (!(menuBtn instanceof HTMLButtonElement)) return;
 		event.preventDefault();
 		event.stopPropagation();
@@ -668,7 +668,7 @@ function bindOnce(root) {
 			if (
 				event.target instanceof Element &&
 				(event.target.closest(".roprime-accordion-master-switch") ||
-					event.target.closest(".roprime-settings-section-menu-btn"))
+					event.target.closest(".roprime-settings-menu-btn"))
 			)
 				return;
 			accordion.classList.toggle("is-open");
