@@ -29,6 +29,7 @@ import {
 	syncCosmeticsUi,
 } from "./other.js";
 import { t as accountSettingsPaneT } from "./roprimeAccountSettingsPage.js";
+import { buildSettingsShell, wrapSettingsSection } from "./settingsShell.js";
 
 const RP_DEBUG_UNLOCK = "debug";
 
@@ -102,10 +103,11 @@ function setNativeAccountChromeHidden(hidden) {
 		"#content-container",
 		".menu-vertical",
 		".menu-vertical-container",
+		".container-footer",
+		"#footer-container"
 	];
-	for (const sel of selectors) {
-		const el = accountBase.querySelector(sel);
-		if (!(el instanceof HTMLElement)) continue;
+	const hideEl = (el) => {
+		if (!(el instanceof HTMLElement)) return;
 		if (hidden) {
 			if (!el.hasAttribute("data-roprime-hidden-native")) {
 				el.setAttribute("data-roprime-hidden-native", "1");
@@ -117,6 +119,14 @@ function setNativeAccountChromeHidden(hidden) {
 			el.removeAttribute("data-roprime-hidden-native");
 			el.removeAttribute("data-roprime-prehide-display");
 		}
+	};
+
+	for (const sel of selectors) {
+		hideEl(accountBase.querySelector(sel));
+	}
+
+	for (const sel of [".container-footer", "#footer-container"]) {
+		hideEl(document.querySelector(sel));
 	}
 }
 
@@ -188,6 +198,34 @@ function isDeveloperPageUnlocked() {
 	return !!settingsState.developerPageUnlocked;
 }
 
+const PROFILE_SETTINGS_NAV = [
+	{ page: "design", labelKey: "Nav tab design", titleKey: "Nav tab design" },
+	{ page: "settings", labelKey: "Nav tab settings", titleKey: "Nav tab settings" },
+	{ page: "other", labelKey: "Nav tab other", titleKey: "Nav tab other" },
+	{ page: "info", labelKey: "Nav tab info", titleKey: "Nav tab info" },
+	{
+		page: "developer",
+		labelKey: "Nav tab developer",
+		titleKey: "Nav tab developer",
+		hidden: true,
+	},
+];
+
+function syncTreeNavSelection(inner, activePage, isSearchMode) {
+	inner.querySelectorAll("[data-roprime-tree-item]").forEach((item) => {
+		if (!(item instanceof HTMLElement)) return;
+		const page = item.getAttribute("data-roprime-tree-item") || "";
+		const content = item.querySelector(".roprime-settings-tree-content");
+		const isActive = !isSearchMode && page === activePage;
+		item.setAttribute("aria-selected", isActive ? "true" : "false");
+		if (content instanceof HTMLElement) {
+			content.classList.toggle("Mui-selected", isActive);
+			if (isActive) content.setAttribute("data-selected", "");
+			else content.removeAttribute("data-selected");
+		}
+	});
+}
+
 function refreshLayoutAndNav(root) {
 	const inner = root.querySelector("#rp-settings-inner");
 	if (!(inner instanceof HTMLElement)) return;
@@ -212,11 +250,15 @@ function refreshLayoutAndNav(root) {
 	if (hint instanceof HTMLElement)
 		hint.style.display = showSearchHint ? "block" : "none";
 
+	syncTreeNavSelection(inner, activePage, isSearchMode);
+
 	inner.querySelectorAll(".roprime-settings-nav-btn").forEach((button) => {
-		if (!(button instanceof HTMLButtonElement)) return;
+		if (!(button instanceof HTMLElement)) return;
 		if (button.dataset.roprimePage === "developer" && !unlocked) return;
-		const isActive = !isSearchMode && button.dataset.roprimePage === activePage;
-		button.classList.toggle("is-active", isActive);
+		button.classList.toggle(
+			"is-active",
+			!isSearchMode && button.dataset.roprimePage === activePage,
+		);
 	});
 
 	const profileEffectsAlert = inner.querySelector(
@@ -230,13 +272,16 @@ function refreshLayoutAndNav(root) {
 		);
 	}
 
-	const devBtn = inner.querySelector(
+	const devTreeItem = inner.querySelector('[data-roprime-tree-item="developer"]');
+	if (devTreeItem instanceof HTMLElement) {
+		devTreeItem.hidden = !unlocked;
+		devTreeItem.style.display = unlocked ? "" : "none";
+	}
+	const devLink = inner.querySelector(
 		'.roprime-settings-nav-btn[data-roprime-page="developer"]',
 	);
-	if (devBtn instanceof HTMLButtonElement) {
-		devBtn.hidden = !unlocked;
-		devBtn.style.display = unlocked ? "" : "none";
-		devBtn.setAttribute("aria-hidden", unlocked ? "false" : "true");
+	if (devLink instanceof HTMLElement) {
+		devLink.setAttribute("aria-hidden", unlocked ? "false" : "true");
 	}
 
 	inner.querySelectorAll(".roprime-settings-section").forEach((section) => {
@@ -260,7 +305,7 @@ function refreshLayoutAndNav(root) {
 				}
 				section
 					.querySelectorAll(
-						".roprime-toggle-row, .roprime-setting-card, .roprime-info-card, .roprime-profile-effect-card",
+						".roprime-toggle-row, .roprime-setting-field, .roprime-accordion, .roprime-info-block, .roprime-profile-effect-card",
 					)
 					.forEach((item) => {
 						if (item instanceof HTMLElement) item.style.display = "";
@@ -276,7 +321,7 @@ function refreshLayoutAndNav(root) {
 			let hasVisibleItems = false;
 			section
 				.querySelectorAll(
-					".roprime-toggle-row, .roprime-setting-card, .roprime-info-card, .roprime-profile-effect-card",
+					".roprime-toggle-row, .roprime-setting-field, .roprime-accordion, .roprime-info-block, .roprime-profile-effect-card",
 				)
 				.forEach((item) => {
 					if (!(item instanceof HTMLElement)) return;
@@ -290,7 +335,7 @@ function refreshLayoutAndNav(root) {
 		}
 		section
 			.querySelectorAll(
-				".roprime-toggle-row, .roprime-setting-card, .roprime-info-card, .roprime-profile-effect-card",
+				".roprime-toggle-row, .roprime-setting-field, .roprime-accordion, .roprime-info-block, .roprime-profile-effect-card",
 			)
 			.forEach((item) => {
 				if (item instanceof HTMLElement) item.style.display = "";
@@ -314,7 +359,7 @@ function refreshLayoutAndNav(root) {
 		searchInput.value = "";
 		inner
 			.querySelectorAll(
-				".roprime-settings-section .roprime-toggle-row, .roprime-settings-section .roprime-setting-card, .roprime-settings-section .roprime-info-card, .roprime-settings-section .roprime-profile-effect-card",
+				".roprime-settings-section .roprime-toggle-row, .roprime-settings-section .roprime-setting-field, .roprime-settings-section .roprime-accordion, .roprime-settings-section .roprime-info-block, .roprime-settings-section .roprime-profile-effect-card",
 			)
 			.forEach((item) => {
 				if (item instanceof HTMLElement) item.style.display = "";
@@ -377,12 +422,21 @@ function bindOnce(root) {
 	};
 
 	inner.querySelectorAll(".roprime-settings-nav-btn").forEach((btn) => {
-		if (!(btn instanceof HTMLButtonElement)) return;
-		btn.addEventListener("click", () => {
+		if (!(btn instanceof HTMLElement)) return;
+		btn.addEventListener("click", (event) => {
+			event.preventDefault();
 			if (btn.dataset.roprimePage === "developer" && !isDeveloperPageUnlocked())
 				return;
 			navigateToPage(btn.dataset.roprimePage || RP_DEFAULT_PAGE);
 		});
+	});
+
+	inner.addEventListener("click", (event) => {
+		const menuBtn = event.target.closest(".roprime-settings-section-menu-btn");
+		if (!(menuBtn instanceof HTMLButtonElement)) return;
+		event.preventDefault();
+		event.stopPropagation();
+		inner.classList.toggle("is-rail-collapsed");
 	});
 
 	const profileEffectsAlert = inner.querySelector(
@@ -613,7 +667,8 @@ function bindOnce(root) {
 		accHeader.addEventListener("click", (event) => {
 			if (
 				event.target instanceof Element &&
-				event.target.closest(".roprime-accordion-master-switch")
+				(event.target.closest(".roprime-accordion-master-switch") ||
+					event.target.closest(".roprime-settings-section-menu-btn"))
 			)
 				return;
 			accordion.classList.toggle("is-open");
@@ -742,40 +797,10 @@ function refreshProfileSettingsUi(root) {
 }
 
 function buildMarkup() {
-	return `
-<div class="roprime-settings-wrapper" id="rp-settings-inner">
-    <div class="roprime-settings-hero">
-        <h2 data-i18n="Settings hero title"></h2>
-        <p data-i18n="Settings hero subtitle"></p>
-    </div>
-    <div class="roprime-settings-layout">
-        <div class="roprime-settings-sidebar">
-            <div class="roprime-settings-search-wrap" data-roprime-shared-search-wrap>
-                <input id="roprime-settings-search" type="search" class="roprime-settings-search" data-i18n-placeholder="Search settings placeholder" autocomplete="off" />
-            </div>
-            <div class="roprime-settings-nav" role="tablist" data-i18n-aria-label="Settings nav sections label">
-                <button class="roprime-settings-nav-btn" data-roprime-page="design" type="button" data-i18n="Nav tab design"></button>
-                <button class="roprime-settings-nav-btn" data-roprime-page="settings" type="button" data-i18n="Nav tab settings"></button>
-                <button class="roprime-settings-nav-btn" data-roprime-page="other" type="button" data-i18n="Nav tab other"></button>
-                <button class="roprime-settings-nav-btn" data-roprime-page="info" type="button" data-i18n="Nav tab info"></button>
-                <button class="roprime-settings-nav-btn" data-roprime-page="developer" type="button" data-i18n="Nav tab developer" hidden></button>
-            </div>
-            <a class="roprime-settings-nav-alert" data-roprime-profile-effects-alert data-roprime-page="other" href="#">
-                <span class="roprime-settings-nav-alert-icon" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" width="22" height="22" focusable="false">
-                        <path fill="currentColor" d="M14 2H4c-1.11 0-2 .9-2 2v10h2V4h10zm4 4H8c-1.11 0-2 .9-2 2v10h2V8h10zm2 4h-8c-1.11 0-2 .9-2 2v8c0 1.1.89 2 2 2h8c1.1 0 2-.9 2-2v-8c0-1.1-.9-2-2-2"/>
-                    </svg>
-                </span>
-                <span class="roprime-settings-nav-alert-text" data-i18n="Try out new profile animations"></span>
-            </a>
-        </div>
-        <div class="roprime-settings-main">
-            <div class="roprime-search-hint" data-roprime-search-hint data-i18n="Search min length hint"></div>
-            <div class="roprime-search-hint" data-roprime-developer-unlock-message data-i18n="Search developer unlocked hint" style="display:none;"></div>
-            <section class="roprime-settings-section" data-roprime-section="design">
-                <div class="roprime-setting-card roprime-accordion" data-roprime-accordion="rename">
+	const designBody = `
+                <div class="roprime-accordion" data-roprime-accordion="rename">
                     <div class="roprime-accordion-header" role="button" tabindex="0" aria-expanded="false">
-                        <div class="roprime-setting-copy"><div class="roprime-setting-title" data-i18n="Rename wording section title"></div></div>
+                        <div class="roprime-toggle-copy"><div class="roprime-toggle-title" data-i18n="Rename wording section title"></div></div>
                         <label class="roprime-switch roprime-accordion-master-switch" for="roprime-toggle-rename-master">
                             <input id="roprime-toggle-rename-master" type="checkbox" /><span class="roprime-switch-slider" aria-hidden="true"></span>
                         </label>
@@ -787,30 +812,32 @@ function buildMarkup() {
                         <div class="roprime-toggle-row"><div class="roprime-toggle-copy"><div class="roprime-toggle-title" data-i18n="Rename marketplace label"></div></div><label class="roprime-switch" for="roprime-toggle-rename-marketplace"><input id="roprime-toggle-rename-marketplace" type="checkbox" /><span class="roprime-switch-slider" aria-hidden="true"></span></label></div>
                     </div>
                 </div>
-                <div class="roprime-toggle-row roprime-setting-card-spaced"><div class="roprime-toggle-copy"><div class="roprime-toggle-title" data-i18n="Old navigation title"></div><div class="roprime-toggle-desc" data-i18n="Old navigation description"></div></div><label class="roprime-switch" for="roprime-toggle-old-navigation-bar"><input id="roprime-toggle-old-navigation-bar" type="checkbox" /><span class="roprime-switch-slider" aria-hidden="true"></span></label></div>
-                <div class="roprime-toggle-row roprime-setting-card-spaced roprime-sidebar-size-row"><div class="roprime-toggle-copy"><div class="roprime-toggle-title" data-i18n="Sidebar size title"></div><div class="roprime-toggle-desc" data-i18n="Sidebar size description"></div></div>${buildSidebarSizeControlHtml()}</div><div class="roprime-toggle-row roprime-setting-card-spaced"><div class="roprime-toggle-copy"><div class="roprime-toggle-title" data-i18n="Sidebar collapse menu title"></div><div class="roprime-toggle-desc" data-i18n="Sidebar collapse menu description"></div></div><label class="roprime-switch" for="roprime-toggle-sidebar-collapse-menu"><input id="roprime-toggle-sidebar-collapse-menu" type="checkbox" /><span class="roprime-switch-slider" aria-hidden="true"></span></label></div><div class="roprime-toggle-row roprime-setting-card-spaced"><div class="roprime-toggle-copy"><div class="roprime-toggle-title" data-i18n="Always show close title"></div><div class="roprime-toggle-desc" data-i18n="Always show close description"></div></div><label class="roprime-switch" for="roprime-toggle-always-show-close"><input id="roprime-toggle-always-show-close" type="checkbox" /><span class="roprime-switch-slider" aria-hidden="true"></span></label></div>
-                <div class="roprime-toggle-row roprime-setting-card-spaced"><div class="roprime-toggle-copy"><div class="roprime-toggle-title" data-i18n="Friend styling title"></div><div class="roprime-toggle-desc" data-i18n="Friend styling description"></div></div><label class="roprime-switch" for="roprime-toggle-friend-styling-reimagned"><input id="roprime-toggle-friend-styling-reimagned" type="checkbox" /><span class="roprime-switch-slider" aria-hidden="true"></span></label></div>
-            </section>
-            <section class="roprime-settings-section" data-roprime-section="sidebar-content">
+                <div class="roprime-toggle-row"><div class="roprime-toggle-copy"><div class="roprime-toggle-title" data-i18n="Old navigation title"></div><div class="roprime-toggle-desc" data-i18n="Old navigation description"></div></div><label class="roprime-switch" for="roprime-toggle-old-navigation-bar"><input id="roprime-toggle-old-navigation-bar" type="checkbox" /><span class="roprime-switch-slider" aria-hidden="true"></span></label></div>
+                <div class="roprime-toggle-row roprime-sidebar-size-row"><div class="roprime-toggle-copy"><div class="roprime-toggle-title" data-i18n="Sidebar size title"></div><div class="roprime-toggle-desc" data-i18n="Sidebar size description"></div></div><div class="roprime-setting-control">${buildSidebarSizeControlHtml()}</div></div>
+                <div class="roprime-toggle-row"><div class="roprime-toggle-copy"><div class="roprime-toggle-title" data-i18n="Sidebar collapse menu title"></div><div class="roprime-toggle-desc" data-i18n="Sidebar collapse menu description"></div></div><label class="roprime-switch" for="roprime-toggle-sidebar-collapse-menu"><input id="roprime-toggle-sidebar-collapse-menu" type="checkbox" /><span class="roprime-switch-slider" aria-hidden="true"></span></label></div>
+                <div class="roprime-toggle-row"><div class="roprime-toggle-copy"><div class="roprime-toggle-title" data-i18n="Always show close title"></div><div class="roprime-toggle-desc" data-i18n="Always show close description"></div></div><label class="roprime-switch" for="roprime-toggle-always-show-close"><input id="roprime-toggle-always-show-close" type="checkbox" /><span class="roprime-switch-slider" aria-hidden="true"></span></label></div>
+                <div class="roprime-toggle-row"><div class="roprime-toggle-copy"><div class="roprime-toggle-title" data-i18n="Friend styling title"></div><div class="roprime-toggle-desc" data-i18n="Friend styling description"></div></div><label class="roprime-switch" for="roprime-toggle-friend-styling-reimagned"><input id="roprime-toggle-friend-styling-reimagned" type="checkbox" /><span class="roprime-switch-slider" aria-hidden="true"></span></label></div>`;
+
+	const sidebarContentBody = `
                 <button type="button" class="roprime-sidebar-content-back" data-roprime-sidebar-content-back data-i18n="Sidebar content back"></button>
-                <div class="roprime-toggle-row roprime-setting-card-spaced roprime-sidebar-size-row">
+                <div class="roprime-toggle-row roprime-sidebar-size-row">
                     <div class="roprime-toggle-copy">
-                        <div class="roprime-setting-title" data-i18n="Sidebar size title"></div>
-                        <div class="roprime-setting-desc" data-i18n="Sidebar size description"></div>
+                        <div class="roprime-toggle-title" data-i18n="Sidebar size title"></div>
+                        <div class="roprime-toggle-desc" data-i18n="Sidebar size description"></div>
                     </div>
-                    ${buildSidebarSizeControlHtml("roprime-sidebar-size-slider-config")}
+                    <div class="roprime-setting-control">${buildSidebarSizeControlHtml("roprime-sidebar-size-slider-config")}</div>
                 </div>
-                <div class="roprime-setting-card roprime-sidebar-content-panel">
-                    <div class="roprime-setting-copy">
+                <div class="roprime-sidebar-content-panel">
+                    <div class="roprime-setting-field-copy">
                         <div class="roprime-setting-title" data-i18n="Sidebar content list title"></div>
                         <div class="roprime-setting-desc" data-i18n="Sidebar content list description"></div>
                     </div>
                     <div class="roprime-sidebar-content-list" data-roprime-sidebar-content-list></div>
-                </div>
-            </section>
-            <section class="roprime-settings-section" data-roprime-section="settings">
-                <div class="roprime-setting-card">
-                    <div class="roprime-setting-copy">
+                </div>`;
+
+	const settingsBody = `
+                <div class="roprime-setting-field">
+                    <div class="roprime-setting-field-copy">
                         <div class="roprime-setting-title" data-i18n="Language section title"></div>
                         <div class="roprime-setting-desc" data-i18n="Language section description"></div>
                     </div>
@@ -820,10 +847,10 @@ function buildMarkup() {
                             ${languageMenuOptionsHtml()}
                         </div>
                     </div>
-                </div>
-            </section>
-            <section class="roprime-settings-section" data-roprime-section="other">
-                <div class="roprime-toggle-row roprime-setting-card-spaced">
+                </div>`;
+
+	const otherBody = `
+                <div class="roprime-toggle-row">
                     <div class="roprime-toggle-copy">
                         <div class="roprime-toggle-title" data-i18n="Enable cosmetics title"></div>
                         <div class="roprime-toggle-desc" data-i18n="Enable cosmetics description"></div>
@@ -835,20 +862,36 @@ function buildMarkup() {
                 </div>
                 <div class="roprime-cosmetics-shop" data-roprime-cosmetics-shop hidden>
                     ${buildCosmeticsShopHtml()}
-                </div>
-            </section>
-            <section class="roprime-settings-section" data-roprime-section="info"><div class="roprime-info-card"><div class="roprime-info-title" data-i18n="Info card title"></div><div class="roprime-info-text" data-i18n="Info card body"></div></div></section>
-            <section class="roprime-settings-section" data-roprime-section="developer" hidden>
-                <div class="roprime-setting-card">
-                    <div class="roprime-setting-copy">
-                        <div class="roprime-setting-title" data-i18n="Developer section title"></div>
-                        <div class="roprime-setting-desc" data-i18n="Developer section description"></div>
-                    </div>
-                </div>
-            </section>
-        </div>
-    </div>
-</div>`;
+                </div>`;
+
+	const infoBody = `
+                <div class="roprime-info-block">
+                    <div class="roprime-info-title" data-i18n="Info card title"></div>
+                    <div class="roprime-info-text" data-i18n="Info card body"></div>
+                </div>`;
+
+	const developerBody = `
+                <div class="roprime-setting-field-copy">
+                    <div class="roprime-setting-title" data-i18n="Developer section title"></div>
+                    <div class="roprime-setting-desc" data-i18n="Developer section description"></div>
+                </div>`;
+
+	const sectionsHtml = [
+		wrapSettingsSection("design", "Nav tab design", designBody),
+		wrapSettingsSection("sidebar-content", "Sidebar content list title", sidebarContentBody),
+		wrapSettingsSection("settings", "Nav tab settings", settingsBody),
+		wrapSettingsSection("other", "Nav tab other", otherBody),
+		wrapSettingsSection("info", "Nav tab info", infoBody),
+		wrapSettingsSection("developer", "Nav tab developer", developerBody, {
+			hidden: true,
+		}),
+	].join("");
+
+	return buildSettingsShell({
+		navItems: PROFILE_SETTINGS_NAV,
+		sectionsHtml,
+		showProfileEffectsAlert: true,
+	});
 }
 
 export function syncProfileSettingsRoute() {

@@ -1,6 +1,6 @@
 /**
  * RoPrime UI theme tokens (settings panel + extension UI on Roblox pages).
- * Mapped into components via --rp-settings-* (.roprime-settings-wrapper).
+ * Settings panel uses Roblox design tokens (--color-surface-300, --color-content-emphasis).
  */
 
 /* —— Default dark (Roblox dark, meta, color-scheme) —— */
@@ -102,15 +102,7 @@ body.dark-theme.age-13-plus-theme {
 	/* --rp-ui-text-primary: ; */
 }
 
-/* Bridge tokens → settings panel (works on any matched theme above) */
 .roprime-settings-wrapper,
 #roprime-profile-settings-root .roprime-settings-wrapper {
-	--rp-settings-surface: var(--rp-ui-panel-bg, var(--background-surface, #1c2128));
-	--rp-settings-surface-2: var(--rp-ui-panel-bg, var(--background-surface, #181d24));
-	--rp-settings-surface-3: var(--rp-ui-page-bg, var(--background-surface, #141923));
-	--rp-settings-text: var(--rp-ui-text-primary, var(--text-primary, #e9edf5));
-	--rp-settings-text-2: var(--rp-ui-text-secondary, var(--text-secondary, rgba(211, 217, 255, 0.78)));
-	--rp-settings-border: var(--rp-ui-border, var(--border-color, rgba(115, 127, 148, 0.35)));
-	--rp-settings-accent: var(--rp-ui-accent, var(--link-color, #3c63ff));
-	color: var(--rp-settings-text);
+	color: var(--color-content-emphasis);
 }

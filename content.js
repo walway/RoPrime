@@ -1824,7 +1824,7 @@ body.dark-theme .left-nav.fixed button.${RP_SIDEBAR_PLUS_BTN_CLASS} {
 	function buildSettingsPaneMarkup() {
 		return `
         <div class="${RP_PANEL_CLASS}">
-            <div class="roprime-settings-hero"><h2 data-i18n="settings.hero.title"></h2><p data-i18n="settings.hero.subtitle"></p></div>
+            <h2 class="roprime-settings-page-title" data-i18n="settings.hero.title"></h2>
             <div class="roprime-settings-layout">
                 <div class="roprime-settings-sidebar">
                     <div class="roprime-settings-search-wrap" data-roprime-shared-search-wrap><input id="roprime-settings-search" type="search" class="roprime-settings-search" data-i18n-placeholder="settings.search.placeholder" /></div>
@@ -1839,9 +1839,9 @@ body.dark-theme .left-nav.fixed button.${RP_SIDEBAR_PLUS_BTN_CLASS} {
                     <div class="roprime-search-hint" data-roprime-search-hint data-i18n="settings.search.minLength"></div>
                     <div class="roprime-search-hint" data-roprime-developer-unlock-message data-i18n="settings.search.developerLocked" style="display:none;"></div>
                     <section class="roprime-settings-section" data-roprime-section="design">
-                        <div class="roprime-setting-card roprime-accordion" data-roprime-accordion="rename">
+                        <div class="roprime-accordion" data-roprime-accordion="rename">
                             <div class="roprime-accordion-header" role="button" tabindex="0" aria-expanded="false">
-                                <div class="roprime-setting-copy"><div class="roprime-setting-title" data-i18n="settings.rename.title"></div></div>
+                                <div class="roprime-toggle-copy"><div class="roprime-toggle-title" data-i18n="settings.rename.title"></div></div>
                                 <label class="roprime-switch roprime-accordion-master-switch" for="roprime-toggle-rename-master"><input id="roprime-toggle-rename-master" type="checkbox" /><span class="roprime-switch-slider" aria-hidden="true"></span></label>
                                 <span class="roprime-accordion-chevron" aria-hidden="true"></span>
                             </div>
@@ -1851,13 +1851,13 @@ body.dark-theme .left-nav.fixed button.${RP_SIDEBAR_PLUS_BTN_CLASS} {
                                 <div class="roprime-toggle-row"><div class="roprime-toggle-copy"><div class="roprime-toggle-title" data-i18n="settings.rename.marketplace"></div></div><label class="roprime-switch" for="roprime-toggle-rename-marketplace"><input id="roprime-toggle-rename-marketplace" type="checkbox" /><span class="roprime-switch-slider" aria-hidden="true"></span></label></div>
                             </div>
                         </div>
-                        <div class="roprime-toggle-row roprime-setting-card-spaced"><div class="roprime-toggle-copy"><div class="roprime-toggle-title" data-i18n="settings.oldNav.title"></div><div class="roprime-toggle-desc" data-i18n="settings.oldNav.desc"></div></div><label class="roprime-switch" for="roprime-toggle-old-navigation-bar"><input id="roprime-toggle-old-navigation-bar" type="checkbox" /><span class="roprime-switch-slider" aria-hidden="true"></span></label></div>
-                        <div class="roprime-toggle-row roprime-setting-card-spaced roprime-sidebar-size-row"><div class="roprime-toggle-copy"><div class="roprime-toggle-title" data-i18n="settings.sidebar.title"></div><div class="roprime-toggle-desc" data-i18n="settings.sidebar.desc"></div></div><div class="roprime-sidebar-size-control"><div class="roprime-sidebar-size-box"><div class="roprime-sidebar-size-rail"><input id="roprime-sidebar-size-slider" class="roprime-sidebar-size-slider" type="range" min="0" max="100" step="0.1" value="0" aria-label="Sidebar size" /></div><div class="roprime-sidebar-size-ticks"><button class="roprime-sidebar-size-tick" type="button" data-size-mode="full"><span data-i18n="settings.sidebar.full"></span></button><button class="roprime-sidebar-size-tick" type="button" data-size-mode="small"><span data-i18n="settings.sidebar.small"></span></button><button class="roprime-sidebar-size-tick" type="button" data-size-mode="icon"><span data-i18n="settings.sidebar.icon"></span></button></div></div></div></div>
-                        <div class="roprime-toggle-row roprime-setting-card-spaced"><div class="roprime-toggle-copy"><div class="roprime-toggle-title" data-i18n="settings.friend.title"></div><div class="roprime-toggle-desc" data-i18n="settings.friend.desc"></div></div><label class="roprime-switch" for="roprime-toggle-friend-styling-reimagned"><input id="roprime-toggle-friend-styling-reimagned" type="checkbox" /><span class="roprime-switch-slider" aria-hidden="true"></span></label></div>
+                        <div class="roprime-toggle-row"><div class="roprime-toggle-copy"><div class="roprime-toggle-title" data-i18n="settings.oldNav.title"></div><div class="roprime-toggle-desc" data-i18n="settings.oldNav.desc"></div></div><label class="roprime-switch" for="roprime-toggle-old-navigation-bar"><input id="roprime-toggle-old-navigation-bar" type="checkbox" /><span class="roprime-switch-slider" aria-hidden="true"></span></label></div>
+                        <div class="roprime-toggle-row roprime-sidebar-size-row"><div class="roprime-toggle-copy"><div class="roprime-toggle-title" data-i18n="settings.sidebar.title"></div><div class="roprime-toggle-desc" data-i18n="settings.sidebar.desc"></div></div><div class="roprime-setting-control"><div class="roprime-sidebar-size-control"><div class="roprime-sidebar-size-box"><div class="roprime-sidebar-size-rail"><input id="roprime-sidebar-size-slider" class="roprime-sidebar-size-slider" type="range" min="0" max="100" step="0.1" value="0" aria-label="Sidebar size" /></div><div class="roprime-sidebar-size-ticks"><button class="roprime-sidebar-size-tick" type="button" data-size-mode="full"><span data-i18n="settings.sidebar.full"></span></button><button class="roprime-sidebar-size-tick" type="button" data-size-mode="small"><span data-i18n="settings.sidebar.small"></span></button><button class="roprime-sidebar-size-tick" type="button" data-size-mode="icon"><span data-i18n="settings.sidebar.icon"></span></button></div></div></div></div></div>
+                        <div class="roprime-toggle-row"><div class="roprime-toggle-copy"><div class="roprime-toggle-title" data-i18n="settings.friend.title"></div><div class="roprime-toggle-desc" data-i18n="settings.friend.desc"></div></div><label class="roprime-switch" for="roprime-toggle-friend-styling-reimagned"><input id="roprime-toggle-friend-styling-reimagned" type="checkbox" /><span class="roprime-switch-slider" aria-hidden="true"></span></label></div>
                     </section>
                     <section class="roprime-settings-section" data-roprime-section="settings">
-                        <div class="roprime-setting-card">
-                            <div class="roprime-setting-copy">
+                        <div class="roprime-setting-field">
+                            <div class="roprime-setting-field-copy">
                                 <div class="roprime-setting-title" data-i18n="settings.language.title"></div>
                                 <div class="roprime-setting-desc" data-i18n="settings.language.desc"></div>
                             </div>
@@ -1870,22 +1870,25 @@ body.dark-theme .left-nav.fixed button.${RP_SIDEBAR_PLUS_BTN_CLASS} {
                             </div>
                         </div>
                     </section>
-                    <section class="roprime-settings-section" data-roprime-section="info"><div class="roprime-info-card"><div class="roprime-info-title" data-i18n="settings.info.title"></div><div class="roprime-info-text" data-i18n="settings.info.text"></div></div></section>
-                    <section class="roprime-settings-section" data-roprime-section="developer" hidden>
-                        <div class="roprime-setting-card">
-                            <div class="roprime-setting-copy">
-                                <div class="roprime-setting-title" data-i18n="settings.developer.title"></div>
-                                <div class="roprime-setting-desc" data-i18n="settings.developer.desc"></div>
-                            </div>
+                    <section class="roprime-settings-section" data-roprime-section="info">
+                        <div class="roprime-info-block">
+                            <div class="roprime-info-title" data-i18n="settings.info.title"></div>
+                            <div class="roprime-info-text" data-i18n="settings.info.text"></div>
                         </div>
-                        <div class="roprime-setting-card roprime-setting-card-spaced">
-                            <div class="roprime-setting-copy">
+                    </section>
+                    <section class="roprime-settings-section" data-roprime-section="developer" hidden>
+                        <div class="roprime-setting-field-copy">
+                            <div class="roprime-setting-title" data-i18n="settings.developer.title"></div>
+                            <div class="roprime-setting-desc" data-i18n="settings.developer.desc"></div>
+                        </div>
+                        <div class="roprime-setting-field">
+                            <div class="roprime-setting-field-copy">
                                 <div class="roprime-setting-title" data-i18n="settings.developer.blocked.title"></div>
                                 <div class="roprime-setting-desc" data-i18n="settings.developer.blocked.desc"></div>
                             </div>
-                            <textarea id="roprime-developer-blocked-pages" class="roprime-settings-search" rows="6" spellcheck="false" data-i18n-placeholder="settings.developer.blocked.placeholder"></textarea>
-                            <div style="margin-top:12px;">
-                                <button type="button" class="btn-secondary-md" id="roprime-save-blocked-pages" data-i18n="settings.developer.blocked.save"></button>
+                            <div class="roprime-setting-control-wrap">
+                                <textarea id="roprime-developer-blocked-pages" class="roprime-settings-textarea" rows="6" spellcheck="false" data-i18n-placeholder="settings.developer.blocked.placeholder"></textarea>
+                                <button type="button" class="roprime-settings-primary-btn" id="roprime-save-blocked-pages" data-i18n="settings.developer.blocked.save"></button>
                             </div>
                         </div>
                     </section>
@@ -2499,7 +2502,7 @@ body.dark-theme .left-nav.fixed button.${RP_SIDEBAR_PLUS_BTN_CLASS} {
 					}
 					section
 						.querySelectorAll(
-							".roprime-toggle-row, .roprime-setting-card, .roprime-info-card",
+							".roprime-toggle-row, .roprime-setting-field, .roprime-accordion, .roprime-info-block",
 						)
 						.forEach((item) => {
 							if (!(item instanceof HTMLElement)) return;
@@ -2518,7 +2521,7 @@ body.dark-theme .left-nav.fixed button.${RP_SIDEBAR_PLUS_BTN_CLASS} {
 				let hasVisibleItems = false;
 				section
 					.querySelectorAll(
-						".roprime-toggle-row, .roprime-setting-card, .roprime-info-card",
+						".roprime-toggle-row, .roprime-setting-field, .roprime-accordion, .roprime-info-block",
 					)
 					.forEach((item) => {
 						if (!(item instanceof HTMLElement)) return;
@@ -2537,13 +2540,13 @@ body.dark-theme .left-nav.fixed button.${RP_SIDEBAR_PLUS_BTN_CLASS} {
 				return;
 			}
 			section
-				.querySelectorAll(".roprime-toggle-row, .roprime-setting-card")
+				.querySelectorAll(".roprime-toggle-row, .roprime-setting-field, .roprime-accordion")
 				.forEach((item) => {
 					if (!(item instanceof HTMLElement)) return;
 					item.style.display = "";
 					clearSearchHighlights(item);
 				});
-			section.querySelectorAll(".roprime-info-card").forEach((item) => {
+			section.querySelectorAll(".roprime-info-block").forEach((item) => {
 				if (!(item instanceof HTMLElement)) return;
 				item.style.display = "";
 				clearSearchHighlights(item);
@@ -2568,7 +2571,7 @@ body.dark-theme .left-nav.fixed button.${RP_SIDEBAR_PLUS_BTN_CLASS} {
 			searchInput.value = "";
 			pane
 				.querySelectorAll(
-					".roprime-settings-section .roprime-toggle-row, .roprime-settings-section .roprime-setting-card, .roprime-settings-section .roprime-info-card",
+					".roprime-settings-section .roprime-toggle-row, .roprime-settings-section .roprime-setting-field, .roprime-settings-section .roprime-accordion, .roprime-settings-section .roprime-info-block",
 				)
 				.forEach((item) => {
 					if (!(item instanceof HTMLElement)) return;

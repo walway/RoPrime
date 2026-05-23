@@ -217,12 +217,8 @@ function buildProfileEffectsLayoutToolbarHtml() {
 function buildProfileEffectsSectionHtml(titleKey, descKey, effects) {
 	return `
 		<div class="roprime-cosmetics-shop-section">
-			<div class="roprime-setting-card roprime-cosmetics-shop-intro">
-				<div class="roprime-setting-copy">
-					<div class="roprime-setting-title" data-i18n="${titleKey}"></div>
-					<div class="roprime-setting-desc" data-i18n="${descKey}"></div>
-				</div>
-			</div>
+			<h3 class="roprime-settings-section-title" data-i18n="${titleKey}"></h3>
+			<p class="roprime-setting-desc" data-i18n="${descKey}"></p>
 			<div class="roprime-profile-effects-grid" data-roprime-profile-effects-grid>
 				${buildProfileEffectsMarkup(effects)}
 			</div>

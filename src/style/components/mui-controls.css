@@ -13,7 +13,7 @@
 .roprime-settings-section[data-roprime-section="sidebar-content"]
 	.roprime-switch-slider {
 	border: none;
-	background: color-mix(in srgb, var(--rp-settings-text) 38%, transparent);
+	background: color-mix(in srgb, var(--color-content-emphasis) 38%, transparent);
 	transition:
 		background-color 150ms cubic-bezier(0.4, 0, 0.2, 1),
 		transform 150ms cubic-bezier(0.4, 0, 0.2, 1);
@@ -31,7 +31,9 @@
 	.roprime-switch
 	input:checked
 	+ .roprime-switch-slider {
-	background: var(--rp-settings-accent);
+	background: var(--color-surface-300);
+	border: 1px solid
+		color-mix(in srgb, var(--color-content-emphasis) 40%, transparent);
 }
 
 .roprime-settings-section[data-roprime-section="design"] .roprime-switch-slider::before,
@@ -42,7 +44,7 @@
 	height: 16px;
 	left: 4px;
 	top: 4px;
-	background: #fff;
+	background: var(--color-content-emphasis);
 	box-shadow:
 		0 2px 1px -1px rgba(0, 0, 0, 0.2),
 		0 1px 1px 0 rgba(0, 0, 0, 0.14),
@@ -71,7 +73,7 @@
 	.roprime-switch
 	input:focus-visible
 	+ .roprime-switch-slider {
-	outline: 2px solid var(--rp-settings-accent);
+	outline: 2px solid var(--color-content-emphasis);
 	outline-offset: 2px;
 }
 
@@ -81,7 +83,7 @@
 	height: 4px;
 	margin: 10px auto 12px;
 	border-radius: 2px;
-	background: color-mix(in srgb, var(--rp-settings-text) 26%, transparent);
+	background: color-mix(in srgb, var(--color-content-emphasis) 26%, transparent);
 }
 
 .roprime-settings-section[data-roprime-section="design"]
@@ -90,8 +92,8 @@
 	.roprime-sidebar-size-slider::-webkit-slider-thumb {
 	width: 20px;
 	height: 20px;
-	background: var(--rp-settings-accent);
-	border: 2px solid #fff;
+	background: var(--color-content-emphasis);
+	border: 2px solid var(--color-surface-300);
 	box-shadow:
 		0 2px 1px -1px rgba(0, 0, 0, 0.2),
 		0 1px 1px 0 rgba(0, 0, 0, 0.14),
@@ -104,8 +106,8 @@
 	.roprime-sidebar-size-slider::-moz-range-thumb {
 	width: 20px;
 	height: 20px;
-	background: var(--rp-settings-accent);
-	border: 2px solid #fff;
+	background: var(--color-content-emphasis);
+	border: 2px solid var(--color-surface-300);
 	box-shadow:
 		0 2px 1px -1px rgba(0, 0, 0, 0.2),
 		0 1px 1px 0 rgba(0, 0, 0, 0.14),
@@ -120,5 +122,5 @@
 	border: 0;
 	background: none;
 	border-bottom: 1px solid
-		color-mix(in srgb, var(--rp-settings-text) 12%, transparent);
+		color-mix(in srgb, var(--color-content-emphasis) 12%, transparent);
 }

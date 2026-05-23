@@ -24,6 +24,7 @@ export const STYLE_CSS_ORDER = [
 	"src/style/main.css",
 	"src/style/account/menu-tab.css",
 	"src/style/settings/panel.css",
+	"src/style/settings/settings-mui-shell.css",
 	"src/style/components/mui-controls.css",
 	"src/style/layout/chrome.css",
 	"src/style/welcome/welcome.css",

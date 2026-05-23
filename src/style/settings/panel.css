@@ -2,52 +2,13 @@
 	margin-top: 8px;
 }
 
+/* Legacy layout hooks (non-MUI shell fallbacks) */
 .roprime-settings-layout {
 	display: block;
 }
 
 .roprime-settings-sidebar {
 	margin-bottom: 12px;
-}
-
-.roprime-settings-nav {
-	display: flex;
-	gap: 10px;
-	margin: 0 0 14px;
-	flex-wrap: wrap;
-}
-
-.roprime-settings-nav-btn {
-	display: inline-flex;
-	align-items: center;
-	flex-wrap: wrap;
-	gap: 8px;
-	border: 1px solid var(--rp-settings-border);
-	background: var(--rp-settings-surface);
-	color: var(--rp-settings-text);
-	border-radius: 12px;
-	padding: 9px 16px;
-	font-size: 14px;
-	font-weight: 600;
-	line-height: 1;
-	cursor: pointer;
-}
-
-.roprime-settings-nav-btn.is-active {
-	border-color: color-mix(in srgb, var(--rp-settings-accent) 65%, transparent);
-	background:
-		radial-gradient(
-			140% 140% at 0% 100%,
-			color-mix(in srgb, var(--rp-settings-accent) 22%, transparent) 0%,
-			transparent 65%
-		),
-		var(--rp-settings-surface);
-	color: var(--rp-settings-text);
-}
-
-/* Author `display` on buttons/menus overrides `[hidden]` in some browsers. */
-.roprime-settings-nav-btn[hidden] {
-	display: none !important;
 }
 
 .roprime-settings-nav-alert {
@@ -58,15 +19,9 @@
 	padding: 12px 14px 12px 44px;
 	border-radius: 12px;
 	border: 1px solid
-		color-mix(in srgb, var(--rp-settings-accent) 45%, transparent);
-	background:
-		radial-gradient(
-			120% 120% at 0% 0%,
-			color-mix(in srgb, var(--rp-settings-accent) 18%, transparent) 0%,
-			transparent 70%
-		),
-		var(--rp-settings-surface);
-	color: var(--rp-settings-text);
+		color-mix(in srgb, var(--color-content-emphasis) 22%, transparent);
+	background: var(--color-surface-300);
+	color: var(--color-content-emphasis);
 	text-decoration: none;
 	font-size: 14px;
 	font-weight: 600;
@@ -77,20 +32,14 @@
 }
 
 .roprime-settings-nav-alert:hover {
-	border-color: color-mix(in srgb, var(--rp-settings-accent) 65%, transparent);
-	color: var(--rp-settings-text);
+	border-color: color-mix(in srgb, var(--color-content-emphasis) 35%, transparent);
+	color: var(--color-content-emphasis);
 	text-decoration: none;
 }
 
 .roprime-settings-nav-alert.is-active {
-	border-color: color-mix(in srgb, var(--rp-settings-accent) 65%, transparent);
-	background:
-		radial-gradient(
-			140% 140% at 0% 100%,
-			color-mix(in srgb, var(--rp-settings-accent) 22%, transparent) 0%,
-			transparent 65%
-		),
-		var(--rp-settings-surface);
+	border-color: color-mix(in srgb, var(--color-content-emphasis) 40%, transparent);
+	background: var(--color-surface-300);
 }
 
 .roprime-settings-nav-alert-icon {
@@ -102,7 +51,7 @@
 	justify-content: center;
 	width: 22px;
 	height: 22px;
-	color: var(--rp-settings-accent);
+	color: var(--color-content-emphasis);
 }
 
 .roprime-settings-nav-alert-icon svg {
@@ -113,7 +62,8 @@
 	display: block;
 }
 
-.roprime-settings-main {
+.roprime-settings-main,
+.roprime-settings-content-pane {
 	min-width: 0;
 }
 
@@ -124,16 +74,16 @@
 .roprime-settings-search {
 	width: 100%;
 	border: 1px solid
-		color-mix(in srgb, var(--rp-settings-border) 80%, transparent);
+		color-mix(in srgb, var(--color-content-emphasis) 22%, transparent);
 	border-radius: 12px;
-	background: var(--rp-settings-surface-3);
-	color: var(--rp-settings-text);
+	background: var(--color-surface-300);
+	color: var(--color-content-emphasis);
 	padding: 10px 12px;
 	outline: none;
 }
 
 .roprime-settings-search:focus {
-	border-color: color-mix(in srgb, var(--rp-settings-accent) 65%, transparent);
+	border-color: color-mix(in srgb, var(--color-content-emphasis) 40%, transparent);
 }
 
 .roprime-settings-section {
@@ -172,17 +122,59 @@
 	padding: 0 1px;
 }
 
-.roprime-setting-card,
-.roprime-info-card {
-	position: relative;
+/* Boxed controls only (dropdowns, text areas, selection groups) — not plain toggle rows. */
+.roprime-setting-control-wrap {
 	display: flex;
+	flex-direction: column;
+	align-items: stretch;
+	gap: 10px;
+	border-radius: 12px;
+	border: 1px solid
+		color-mix(in srgb, var(--color-content-emphasis) 22%, transparent);
+	background: var(--color-surface-300);
+	padding: 12px;
+}
+
+.roprime-setting-field {
+	display: flex;
+	flex-wrap: wrap;
 	align-items: center;
 	justify-content: space-between;
-	gap: 12px;
-	border-radius: 14px;
-	border: 1px solid var(--rp-settings-border);
-	background: var(--rp-settings-surface);
-	padding: 12px 13px;
+	gap: 12px 16px;
+	padding: 14px 0;
+	border-bottom: 1px solid
+		color-mix(in srgb, var(--color-content-emphasis) 14%, transparent);
+}
+
+.roprime-setting-field-copy {
+	flex: 1 1 200px;
+	min-width: 0;
+}
+
+.roprime-settings-section > :last-child {
+	border-bottom: 0;
+}
+
+.roprime-info-block {
+	padding: 14px 0;
+	border-bottom: 1px solid
+		color-mix(in srgb, var(--color-content-emphasis) 14%, transparent);
+}
+
+.roprime-settings-section-title {
+	margin: 20px 0 6px;
+	font-size: 16px;
+	font-weight: 600;
+	line-height: 1.3;
+	color: var(--color-content-emphasis);
+}
+
+.roprime-settings-section-title:first-child {
+	margin-top: 0;
+}
+
+.roprime-cosmetics-shop-section > .roprime-setting-desc {
+	margin: 0 0 12px;
 }
 
 .game-details-carousel-container .carousel-item,
@@ -231,33 +223,6 @@ stupid MUI
 	border-radius: 12px;
 }
 
-.roprime-accordion::before,
-.roprime-accordion::after,
-.roprime-info-card::before,
-.roprime-info-card::after {
-	display: none !important;
-}
-
-.roprime-setting-card::before,
-.roprime-info-card::before {
-	top: 8px;
-	left: 8px;
-	border-top: 2px solid rgba(130, 168, 255, 0.9);
-	border-left: 2px solid rgba(130, 168, 255, 0.9);
-}
-
-.roprime-setting-card::after,
-.roprime-info-card::after {
-	right: 8px;
-	bottom: 8px;
-	border-right: 2px solid rgba(130, 168, 255, 0.9);
-	border-bottom: 2px solid rgba(130, 168, 255, 0.9);
-}
-
-.roprime-setting-card-spaced {
-	margin-top: 12px;
-}
-
 .game-thumbnail {
 	z-index: 6 !important;
 	position: relative !important;
@@ -274,7 +239,7 @@ stupid MUI
 
 .roprime-setting-title,
 .roprime-info-title {
-	color: var(--rp-settings-text);
+	color: var(--color-content-emphasis);
 	font-weight: 600;
 	line-height: 1.3;
 }
@@ -282,16 +247,15 @@ stupid MUI
 .roprime-setting-desc,
 .roprime-info-text {
 	margin-top: 4px;
-	color: var(--rp-settings-text-2);
+	color: var(--color-content-default);
 	font-size: 12px;
 	line-height: 1.35;
 }
 
 .roprime-accordion {
-	flex-direction: column;
-	align-items: stretch;
-	padding: 0;
-	overflow: hidden;
+	display: block;
+	border-bottom: 1px solid
+		color-mix(in srgb, var(--color-content-emphasis) 14%, transparent);
 }
 
 .roprime-accordion-header {
@@ -299,8 +263,8 @@ stupid MUI
 	align-items: center;
 	justify-content: space-between;
 	gap: 10px;
-	padding: 12px 13px;
-	min-height: 56px;
+	padding: 14px 0;
+	min-height: 0;
 	background: transparent;
 	border: 0;
 	text-align: left;
@@ -320,9 +284,9 @@ stupid MUI
 	width: 10px;
 	height: 10px;
 	border-right: 2px solid
-		color-mix(in srgb, var(--rp-settings-text) 70%, transparent);
+		color-mix(in srgb, var(--color-content-emphasis) 70%, transparent);
 	border-bottom: 2px solid
-		color-mix(in srgb, var(--rp-settings-text) 70%, transparent);
+		color-mix(in srgb, var(--color-content-emphasis) 70%, transparent);
 	transform: rotate(45deg);
 	transition: transform 140ms ease;
 	flex: 0 0 auto;
@@ -334,7 +298,7 @@ stupid MUI
 }
 
 .roprime-accordion-body {
-	padding: 0 13px;
+	padding: 0;
 	max-height: 0;
 	opacity: 0;
 	transform: translateY(-4px);
@@ -348,7 +312,7 @@ stupid MUI
 .roprime-accordion.is-open .roprime-accordion-body {
 	opacity: 1;
 	transform: translateY(0);
-	padding-bottom: 14px;
+	padding-bottom: 4px;
 }
 
 .roprime-toggle-row {
@@ -356,12 +320,17 @@ stupid MUI
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
-	gap: 10px;
-	border-radius: 12px;
-	border: 1px solid
-		color-mix(in srgb, var(--rp-settings-border) 75%, transparent);
-	background: var(--rp-settings-surface-2);
-	padding: 10px 10px;
+	gap: 12px 16px;
+	border: 0;
+	border-radius: 0;
+	background: transparent;
+	padding: 12px 0;
+	border-bottom: 1px solid
+		color-mix(in srgb, var(--color-content-emphasis) 14%, transparent);
+}
+
+.roprime-toggle-row.roprime-sidebar-size-row {
+	align-items: flex-start;
 }
 
 .roprime-toggle-row.is-disabled {
@@ -372,13 +341,18 @@ stupid MUI
 	pointer-events: none;
 }
 
-.roprime-toggle-row + .roprime-toggle-row {
-	margin-top: 10px;
+.roprime-accordion .roprime-toggle-row:last-child {
+	border-bottom: 0;
 }
 
 .roprime-sidebar-size-row {
 	align-items: stretch;
-	gap: 16px;
+	flex-wrap: wrap;
+}
+
+.roprime-sidebar-size-row .roprime-setting-control {
+	flex: 0 0 250px;
+	max-width: 100%;
 }
 
 .roprime-sidebar-size-footer {
@@ -405,9 +379,9 @@ stupid MUI
 	padding: 5px 10px;
 	border-radius: 8px;
 	border: 1px solid
-		color-mix(in srgb, var(--rp-settings-border) 85%, transparent);
-	background: var(--rp-settings-surface);
-	color: var(--rp-settings-text);
+		color-mix(in srgb, var(--color-content-emphasis) 22%, transparent);
+	background: var(--color-surface-300);
+	color: var(--color-content-emphasis);
 	font-size: 11px;
 	font-weight: 600;
 	line-height: 1.2;
@@ -421,9 +395,9 @@ stupid MUI
 }
 
 .roprime-sidebar-configure-btn:hover {
-	border-color: color-mix(in srgb, var(--rp-settings-accent) 55%, transparent);
-	background: color-mix(in srgb, var(--rp-settings-accent) 14%, transparent);
-	color: var(--rp-settings-text);
+	border-color: color-mix(in srgb, var(--color-content-emphasis) 35%, transparent);
+	background: var(--color-surface-300);
+	color: var(--color-content-emphasis);
 }
 
 .roprime-sidebar-content-back {
@@ -433,20 +407,23 @@ stupid MUI
 	padding: 8px 12px;
 	border-radius: 10px;
 	border: 1px solid
-		color-mix(in srgb, var(--rp-settings-border) 80%, transparent);
-	background: var(--rp-settings-surface-2);
-	color: var(--rp-settings-text);
+		color-mix(in srgb, var(--color-content-emphasis) 22%, transparent);
+	background: var(--color-surface-300);
+	color: var(--color-content-emphasis);
 	font-size: 13px;
 	font-weight: 600;
 	cursor: pointer;
 }
 
 .roprime-sidebar-content-back:hover {
-	border-color: color-mix(in srgb, var(--rp-settings-accent) 50%, transparent);
+	border-color: color-mix(in srgb, var(--color-content-emphasis) 35%, transparent);
 }
 
 .roprime-sidebar-content-panel {
-	margin-top: 4px;
+	margin-top: 8px;
+	padding-bottom: 8px;
+	border-bottom: 1px solid
+		color-mix(in srgb, var(--color-content-emphasis) 14%, transparent);
 }
 
 .roprime-sidebar-content-list {
@@ -459,7 +436,7 @@ stupid MUI
 .roprime-sidebar-content-divider {
 	height: 1px;
 	margin: 4px 0;
-	background: color-mix(in srgb, var(--rp-settings-border) 80%, transparent);
+	background: color-mix(in srgb, var(--color-content-emphasis) 22%, transparent);
 }
 
 .roprime-sidebar-content-row {
@@ -467,11 +444,16 @@ stupid MUI
 	align-items: center;
 	justify-content: space-between;
 	gap: 10px;
-	padding: 10px 12px;
-	border-radius: 10px;
-	border: 1px solid
-		color-mix(in srgb, var(--rp-settings-border) 75%, transparent);
-	background: var(--rp-settings-surface-2);
+	padding: 10px 0;
+	border: 0;
+	border-radius: 0;
+	background: transparent;
+	border-bottom: 1px solid
+		color-mix(in srgb, var(--color-content-emphasis) 14%, transparent);
+}
+
+.roprime-sidebar-content-list .roprime-sidebar-content-row:last-child {
+	border-bottom: 0;
 }
 
 .roprime-sidebar-content-row.is-removed-item .roprime-sidebar-content-row-label {
@@ -481,7 +463,7 @@ stupid MUI
 .roprime-sidebar-content-row-label {
 	font-size: 13px;
 	font-weight: 600;
-	color: var(--rp-settings-text);
+	color: var(--color-content-emphasis);
 }
 
 .roprime-sidebar-content-delete {
@@ -530,7 +512,7 @@ stupid MUI
 	margin: 12px 0 0;
 	font-size: 12px;
 	line-height: 1.4;
-	color: color-mix(in srgb, var(--rp-settings-text) 70%, transparent);
+	color: var(--color-content-default);
 }
 
 span.icon-nav-menu.roprime-icon-nav-menu-replaced {
@@ -563,11 +545,7 @@ span.icon-nav-menu.roprime-icon-nav-menu-replaced {
 	-webkit-appearance: none;
 	height: 6px;
 	border-radius: 999px;
-	background: linear-gradient(
-		90deg,
-		color-mix(in srgb, var(--rp-settings-border) 85%, transparent),
-		color-mix(in srgb, var(--rp-settings-border) 55%, transparent)
-	);
+	background: color-mix(in srgb, var(--color-content-emphasis) 22%, transparent);
 	outline: none;
 	margin: 4px auto 10px;
 }
@@ -577,8 +555,8 @@ span.icon-nav-menu.roprime-icon-nav-menu-replaced {
 	width: 14px;
 	height: 14px;
 	border-radius: 50%;
-	background: var(--rp-settings-text);
-	border: 2px solid var(--rp-settings-accent);
+	background: var(--color-content-emphasis);
+	border: 2px solid var(--color-surface-300);
 	box-shadow: 0 4px 10px rgba(0, 0, 0, 0.22);
 	cursor: pointer;
 	transition: transform 130ms ease;
@@ -588,8 +566,8 @@ span.icon-nav-menu.roprime-icon-nav-menu-replaced {
 	width: 14px;
 	height: 14px;
 	border-radius: 50%;
-	background: var(--rp-settings-text);
-	border: 2px solid var(--rp-settings-accent);
+	background: var(--color-content-emphasis);
+	border: 2px solid var(--color-surface-300);
 	box-shadow: 0 4px 10px rgba(0, 0, 0, 0.22);
 	cursor: pointer;
 	transition: transform 130ms ease;
@@ -610,10 +588,10 @@ span.icon-nav-menu.roprime-icon-nav-menu-replaced {
 
 .roprime-sidebar-size-tick {
 	border: 1px solid
-		color-mix(in srgb, var(--rp-settings-border) 90%, transparent);
+		color-mix(in srgb, var(--color-content-emphasis) 22%, transparent);
 	border-radius: 999px;
-	background: var(--rp-settings-surface);
-	color: color-mix(in srgb, var(--rp-settings-text) 85%, transparent);
+	background: var(--color-surface-300);
+	color: var(--color-content-emphasis);
 	font-size: 11px;
 	font-weight: 600;
 	line-height: 1;
@@ -628,9 +606,9 @@ span.icon-nav-menu.roprime-icon-nav-menu-replaced {
 }
 
 .roprime-sidebar-size-tick.is-active {
-	border-color: color-mix(in srgb, var(--rp-settings-accent) 65%, transparent);
-	background: color-mix(in srgb, var(--rp-settings-accent) 22%, transparent);
-	color: var(--rp-settings-text);
+	border-color: color-mix(in srgb, var(--color-content-emphasis) 40%, transparent);
+	background: var(--color-surface-300);
+	color: var(--color-content-emphasis);
 }
 
 .roprime-language-dropdown {
@@ -651,10 +629,10 @@ span.icon-nav-menu.roprime-icon-nav-menu-replaced {
 	justify-content: space-between;
 	gap: 10px;
 	border: 1px solid
-		color-mix(in srgb, var(--rp-settings-border) 80%, transparent);
+		color-mix(in srgb, var(--color-content-emphasis) 22%, transparent);
 	border-radius: 10px;
-	background: var(--rp-settings-surface-3);
-	color: var(--rp-settings-text);
+	background: var(--color-surface-300);
+	color: var(--color-content-emphasis);
 	padding: 9px 11px;
 	cursor: pointer;
 }
@@ -689,10 +667,10 @@ span.icon-nav-menu.roprime-icon-nav-menu-replaced {
 	right: 0;
 	z-index: 5;
 	border: 1px solid
-		color-mix(in srgb, var(--rp-settings-border) 90%, transparent);
+		color-mix(in srgb, var(--color-content-emphasis) 22%, transparent);
 	border-radius: 10px;
 	overflow: hidden;
-	background: var(--rp-settings-surface-3);
+	background: var(--color-surface-300);
 	display: flex;
 	flex-direction: column;
 }
@@ -704,14 +682,14 @@ span.icon-nav-menu.roprime-icon-nav-menu-replaced {
 .roprime-language-option {
 	border: 0;
 	background: transparent;
-	color: var(--rp-settings-text);
+	color: var(--color-content-emphasis);
 	text-align: left;
 	padding: 9px 11px;
 	cursor: pointer;
 }
 
 .roprime-language-option:hover {
-	background: color-mix(in srgb, var(--rp-settings-accent) 18%, transparent);
+	background: color-mix(in srgb, var(--color-content-emphasis) 8%, transparent);
 }
 
 /* Keep account content fluid when RoPrime panel is open. */
@@ -739,7 +717,7 @@ span.icon-nav-menu.roprime-icon-nav-menu-replaced {
 
 /* Keep every switch aligned to the same x-position as the header switch. */
 .roprime-toggle-row .roprime-switch,
-.roprime-setting-card-spaced .roprime-switch {
+.roprime-accordion-header .roprime-switch {
 	margin-right: 14px;
 }
 
@@ -754,49 +732,17 @@ span.icon-nav-menu.roprime-icon-nav-menu-replaced {
 }
 
 .roprime-toggle-title {
-	color: var(--rp-settings-text);
-	font-weight: 600;
-	line-height: 1.3;
+	color: var(--color-content-emphasis);
+	font-weight: 400;
+	font-size: 14px;
+	line-height: 1.35;
 }
 
 .roprime-toggle-desc {
 	margin-top: 6px;
-	color: var(--rp-settings-text-2);
+	color: var(--color-content-default);
 	font-size: 12px;
 	line-height: 1.4;
-}
-
-.roprime-settings-hero {
-	position: relative;
-	overflow: hidden;
-	border-radius: 16px;
-	border: 1px solid rgba(108, 121, 143, 0.4);
-	background:
-		radial-gradient(
-			130% 120% at 100% 0%,
-			rgba(70, 116, 255, 0.25) 0%,
-			rgba(70, 116, 255, 0) 62%
-		),
-		radial-gradient(
-			120% 120% at 0% 100%,
-			rgba(129, 97, 255, 0.18) 0%,
-			rgba(129, 97, 255, 0) 64%
-		),
-		linear-gradient(165deg, #22272f 0%, #171b22 100%);
-	padding: 16px;
-	margin-bottom: 14px;
-}
-
-.roprime-settings-hero h2 {
-	margin: 0 0 6px;
-	font-size: 24px;
-	color: #f1f5fc;
-}
-
-.roprime-settings-hero p {
-	margin: 0;
-	color: rgba(203, 212, 226, 0.9);
-	font-size: 14px;
 }
 
 .roprime-corner {
@@ -837,8 +783,9 @@ span.icon-nav-menu.roprime-icon-nav-menu-replaced {
 	justify-content: space-between;
 	gap: 12px;
 	border-radius: 12px;
-	border: 1px solid rgba(122, 129, 179, 0.35);
-	background: rgba(20, 22, 38, 0.9);
+	border: 1px solid
+		color-mix(in srgb, var(--color-content-emphasis) 22%, transparent);
+	background: var(--color-surface-300);
 	padding: 14px 16px;
 }
 
@@ -848,8 +795,9 @@ span.icon-nav-menu.roprime-icon-nav-menu-replaced {
 	justify-content: space-between;
 	gap: 12px;
 	border-radius: 12px;
-	border: 1px solid rgba(122, 129, 179, 0.35);
-	background: rgba(20, 22, 38, 0.9);
+	border: 1px solid
+		color-mix(in srgb, var(--color-content-emphasis) 22%, transparent);
+	background: var(--color-surface-300);
 	padding: 14px 16px;
 	margin-top: 12px;
 }
@@ -863,26 +811,26 @@ span.icon-nav-menu.roprime-icon-nav-menu-replaced {
 }
 
 .roprime-groups-setting-title {
-	color: #f7f8ff;
+	color: var(--color-content-emphasis);
 	font-weight: 600;
 	line-height: 1.3;
 }
 
 .roprime-experiences-setting-title {
-	color: #f7f8ff;
+	color: var(--color-content-emphasis);
 	font-weight: 600;
 	line-height: 1.3;
 }
 
 .roprime-groups-setting-desc {
 	margin-top: 4px;
-	color: rgba(211, 217, 255, 0.78);
+	color: var(--color-content-default);
 	font-size: 12px;
 }
 
 .roprime-experiences-setting-desc {
 	margin-top: 4px;
-	color: rgba(211, 217, 255, 0.78);
+	color: var(--color-content-default);
 	font-size: 12px;
 }
 
@@ -905,8 +853,8 @@ span.icon-nav-menu.roprime-icon-nav-menu-replaced {
 	inset: 0;
 	border-radius: 999px;
 	border: 1px solid
-		color-mix(in srgb, var(--rp-settings-border) 95%, transparent);
-	background: var(--rp-settings-surface);
+		color-mix(in srgb, var(--color-content-emphasis) 22%, transparent);
+	background: var(--color-surface-300);
 	transition:
 		background-color 120ms ease,
 		border-color 120ms ease;
@@ -920,126 +868,17 @@ span.icon-nav-menu.roprime-icon-nav-menu-replaced {
 	left: 2px;
 	top: 2px;
 	border-radius: 50%;
-	background: var(--rp-settings-text);
+	background: var(--color-content-emphasis);
 	transition: transform 120ms ease;
 }
 
 .roprime-switch input:checked + .roprime-switch-slider {
-	background: var(--rp-settings-accent);
-	border-color: var(--rp-settings-accent);
+	background: var(--color-surface-300);
+	border-color: color-mix(in srgb, var(--color-content-emphasis) 40%, transparent);
 }
 
 .roprime-switch input:checked + .roprime-switch-slider::before {
 	transform: translateX(20px);
-}
-
-body.light-theme .roprime-settings-hero,
-html.light-theme .roprime-settings-hero {
-	background:
-		radial-gradient(
-			120% 120% at 100% 0%,
-			rgba(88, 101, 242, 0.14) 0%,
-			rgba(88, 101, 242, 0) 60%
-		),
-		linear-gradient(
-			160deg,
-			rgba(252, 252, 255, 0.98),
-			rgba(247, 249, 255, 0.98)
-		);
-	border-color: rgba(88, 101, 242, 0.28);
-}
-
-body.light-theme .roprime-settings-hero h2,
-html.light-theme .roprime-settings-hero h2 {
-	color: #1f2442;
-}
-
-body.light-theme .roprime-settings-hero p,
-html.light-theme .roprime-settings-hero p {
-	color: #4e577f;
-}
-
-body.light-theme .roprime-groups-setting-row,
-html.light-theme .roprime-groups-setting-row {
-	background: #ffffff;
-	border-color: rgba(97, 106, 156, 0.25);
-}
-
-body.light-theme .roprime-experiences-setting-row,
-html.light-theme .roprime-experiences-setting-row {
-	background: #ffffff;
-	border-color: rgba(97, 106, 156, 0.25);
-}
-
-body.light-theme .roprime-groups-setting-title,
-html.light-theme .roprime-groups-setting-title {
-	color: #232948;
-}
-
-body.light-theme .roprime-experiences-setting-title,
-html.light-theme .roprime-experiences-setting-title {
-	color: #232948;
-}
-
-body.light-theme .roprime-groups-setting-desc,
-html.light-theme .roprime-groups-setting-desc {
-	color: #60688f;
-}
-
-body.light-theme .roprime-experiences-setting-desc,
-html.light-theme .roprime-experiences-setting-desc {
-	color: #60688f;
-}
-
-body.light-theme .roprime-settings-nav-btn,
-html.light-theme .roprime-settings-nav-btn {
-	background: #fff;
-	color: #2a3157;
-	border-color: rgba(97, 106, 156, 0.25);
-}
-
-body.light-theme .roprime-setting-card,
-html.light-theme .roprime-setting-card,
-body.light-theme .roprime-info-card,
-html.light-theme .roprime-info-card {
-	background: #ffffff;
-	border-color: rgba(97, 106, 156, 0.25);
-}
-
-body.light-theme .roprime-setting-title,
-html.light-theme .roprime-setting-title,
-body.light-theme .roprime-info-title,
-html.light-theme .roprime-info-title {
-	color: #232948;
-}
-
-body.light-theme .roprime-setting-desc,
-html.light-theme .roprime-setting-desc,
-body.light-theme .roprime-info-text,
-html.light-theme .roprime-info-text {
-	color: #60688f;
-}
-
-body.light-theme .roprime-accordion-chevron,
-html.light-theme .roprime-accordion-chevron {
-	border-right-color: rgba(96, 104, 143, 0.95);
-	border-bottom-color: rgba(96, 104, 143, 0.95);
-}
-
-body.light-theme .roprime-toggle-row,
-html.light-theme .roprime-toggle-row {
-	background: #ffffff;
-	border-color: rgba(97, 106, 156, 0.25);
-}
-
-body.light-theme .roprime-toggle-title,
-html.light-theme .roprime-toggle-title {
-	color: #232948;
-}
-
-body.light-theme .roprime-toggle-desc,
-html.light-theme .roprime-toggle-desc {
-	color: #60688f;
 }
 
 #roprime-standalone-settings {
@@ -1062,43 +901,6 @@ html.light-theme .roprime-toggle-desc {
 	.roprime-settings-main {
 		max-width: 100% !important;
 		overflow-x: hidden !important;
-	}
-}
-
-@media (min-width: 1200px) {
-	.roprime-settings-layout {
-		display: grid;
-		grid-template-columns: 220px minmax(0, 1fr);
-		gap: 14px;
-		align-items: start;
-	}
-
-	.roprime-settings-sidebar {
-		display: flex;
-		flex-direction: column;
-		gap: 10px;
-		margin-bottom: 0;
-	}
-
-	.roprime-settings-search-wrap {
-		margin-bottom: 0;
-	}
-
-	.roprime-settings-nav {
-		margin: 0;
-		flex-direction: column;
-		flex-wrap: nowrap;
-	}
-
-	.roprime-settings-nav-btn {
-		width: 100%;
-		text-align: left;
-	}
-
-	.roprime-settings-nav-alert {
-		width: 100%;
-		margin: 0;
-		box-sizing: border-box;
 	}
 }
 
