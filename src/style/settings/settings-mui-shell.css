@@ -23,7 +23,7 @@ html.roprime-account-settings-open #react-user-account-base .container-footer {
 	width: 100%;
 	height: 100dvh;
 	margin: 0;
-	padding: 0 0 0 83px;
+	padding: 40px 0 0 83px;
 	overflow: hidden;
 	box-sizing: border-box;
 	background: var(--color-surface-100, var(--color-surface-300));
@@ -47,10 +47,10 @@ html.roprime-account-settings-open #react-user-account-base .container-footer {
 .roprime-settings-rail,
 .roprime-settings-rail.width-\[288px\],
 .roprime-settings-mui-shell .width-\[288px\] {
-	flex: 0 0 288px;
-	width: 288px !important;
-	min-width: 288px;
-	max-width: 288px;
+	flex: 0 0 243px;
+	width: 243px !important;
+	min-width: 243px;
+	max-width: 243px;
 	height: 100%;
 	min-height: 100dvh;
 	display: flex;
