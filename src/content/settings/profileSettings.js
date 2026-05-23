@@ -32,6 +32,56 @@ import { t as accountSettingsPaneT } from "./roprimeAccountSettingsPage.js";
 import { buildSettingsShell, wrapSettingsSection } from "./settingsShell.js";
 
 const RP_DEBUG_UNLOCK = "debug";
+const RP_SETTINGS_SIDE_RAIL_HIDDEN_CLASS = "roprime-settings-side-rail-hidden";
+
+/** Roblox account secondary rail: flex width-[289px] height-full scroll-y */
+function isRobloxAccountSideRail(el) {
+	if (!(el instanceof HTMLElement)) return false;
+	const cls = typeof el.className === "string" ? el.className : "";
+	return (
+		cls.includes("width-[289px]") &&
+		cls.includes("height-full") &&
+		cls.includes("scroll-y")
+	);
+}
+
+function queryRobloxAccountSideRails() {
+	const settingsRoot = document.getElementById(RP_PROFILE_SETTINGS_ROOT_ID);
+	return Array.from(
+		document.querySelectorAll(
+			".width-\\[289px\\], [class~='width-[289px]']",
+		),
+	).filter(
+		(el) =>
+			el instanceof HTMLElement &&
+			isRobloxAccountSideRail(el) &&
+			!(settingsRoot instanceof HTMLElement && settingsRoot.contains(el)),
+	);
+}
+
+function toggleSettingsSideRails(inner) {
+	if (!(inner instanceof HTMLElement)) return;
+	inner.classList.toggle("is-rail-collapsed");
+	const collapsed = inner.classList.contains("is-rail-collapsed");
+	document.documentElement.classList.toggle(
+		RP_SETTINGS_SIDE_RAIL_HIDDEN_CLASS,
+		collapsed,
+	);
+
+	for (const el of queryRobloxAccountSideRails()) {
+		if (collapsed) {
+			if (getComputedStyle(el).display === "none") continue;
+			if (!el.dataset.rpSettingsRailPrevDisplay) {
+				el.dataset.rpSettingsRailPrevDisplay = el.style.display || "";
+			}
+			el.style.display = "none";
+			continue;
+		}
+		if (!el.dataset.rpSettingsRailPrevDisplay) continue;
+		el.style.display = el.dataset.rpSettingsRailPrevDisplay || "";
+		delete el.dataset.rpSettingsRailPrevDisplay;
+	}
+}
 
 function currentUiLanguageCode() {
 	const s = String(settingsState.language || "en").toLowerCase();
@@ -436,7 +486,7 @@ function bindOnce(root) {
 		if (!(menuBtn instanceof HTMLButtonElement)) return;
 		event.preventDefault();
 		event.stopPropagation();
-		inner.classList.toggle("is-rail-collapsed");
+		toggleSettingsSideRails(inner);
 	});
 
 	const profileEffectsAlert = inner.querySelector(

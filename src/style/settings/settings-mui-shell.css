@@ -23,7 +23,7 @@ html.roprime-account-settings-open #react-user-account-base .container-footer {
 	width: 100%;
 	height: 100dvh;
 	margin: 0;
-	padding: 0;
+	padding: 0 0 0 83px;
 	overflow: hidden;
 	box-sizing: border-box;
 	background: var(--color-surface-100, var(--color-surface-300));
@@ -40,6 +40,7 @@ html.roprime-account-settings-open #react-user-account-base .container-footer {
 	box-sizing: border-box;
 	font-family: inherit;
 	overflow: hidden;
+	margin-left: 0;
 }
 
 /* 288px secondary rail */
@@ -312,12 +313,21 @@ html.roprime-account-settings-open #react-user-account-base .container-footer {
 }
 
 .roprime-settings-mui-shell.is-rail-collapsed .roprime-settings-rail,
-.roprime-settings-mui-shell.is-rail-collapsed .roprime-settings-pane-divider {
+.roprime-settings-mui-shell.is-rail-collapsed .roprime-settings-pane-divider,
+.roprime-settings-mui-shell.is-rail-collapsed .roprime-settings-scrollbar-gutter {
 	display: none !important;
 }
 
 .roprime-settings-mui-shell.is-rail-collapsed .roprime-settings-content-pane {
 	padding-left: 16px;
+}
+
+/* Roblox native width-[289px] rails hidden while menu is toggled (JS sets display) */
+html.roprime-settings-side-rail-hidden
+	.width-\[289px\].height-full.scroll-y,
+html.roprime-settings-side-rail-hidden
+	[class~="width-[289px]"][class~="height-full"][class~="scroll-y"] {
+	display: none !important;
 }
 
 @media (max-width: 991px) {
