@@ -14,7 +14,7 @@ export default defineConfig({
 		emptyOutDir: true,
 		sourcemap: true,
 		lib: {
-			entry: resolve(__dirname, "content.entry.js"),
+			entry: resolve(__dirname, "src/content/content.entry.js"),
 			name: "RoPrime",
 			formats: ["iife"],
 			fileName: () => "content.js",
