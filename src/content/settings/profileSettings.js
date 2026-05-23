@@ -14,7 +14,10 @@ import {
 	shouldRunRoPrimeOnCurrentPage,
 } from "../core/core.js";
 import { updateRenameLoop } from "../features/rename.js";
-import { updateAccountHeader, updateDocumentTitle } from "../panel/pageChrome.js";
+import {
+	updateAccountHeader,
+	updateDocumentTitle,
+} from "../panel/pageChrome.js";
 import { syncRoEliteView } from "../panel/panel.js";
 import { syncSidebarContent } from "../sidebar/sidebarContent.js";
 import {
@@ -48,9 +51,7 @@ function isRobloxAccountSideRail(el) {
 function queryRobloxAccountSideRails() {
 	const settingsRoot = document.getElementById(RP_PROFILE_SETTINGS_ROOT_ID);
 	return Array.from(
-		document.querySelectorAll(
-			".width-\\[289px\\], [class~='width-[289px]']",
-		),
+		document.querySelectorAll(".width-\\[289px\\], [class~='width-[289px]']"),
 	).filter(
 		(el) =>
 			el instanceof HTMLElement &&
@@ -154,7 +155,7 @@ function setNativeAccountChromeHidden(hidden) {
 		".menu-vertical",
 		".menu-vertical-container",
 		".container-footer",
-		"#footer-container"
+		"#footer-container",
 	];
 	const hideEl = (el) => {
 		if (!(el instanceof HTMLElement)) return;
@@ -250,7 +251,11 @@ function isDeveloperPageUnlocked() {
 
 const PROFILE_SETTINGS_NAV = [
 	{ page: "design", labelKey: "Nav tab design", titleKey: "Nav tab design" },
-	{ page: "settings", labelKey: "Nav tab settings", titleKey: "Nav tab settings" },
+	{
+		page: "settings",
+		labelKey: "Nav tab settings",
+		titleKey: "Nav tab settings",
+	},
 	{ page: "other", labelKey: "Nav tab other", titleKey: "Nav tab other" },
 	{ page: "info", labelKey: "Nav tab info", titleKey: "Nav tab info" },
 	{
@@ -322,7 +327,9 @@ function refreshLayoutAndNav(root) {
 		);
 	}
 
-	const devTreeItem = inner.querySelector('[data-roprime-tree-item="developer"]');
+	const devTreeItem = inner.querySelector(
+		'[data-roprime-tree-item="developer"]',
+	);
 	if (devTreeItem instanceof HTMLElement) {
 		devTreeItem.hidden = !unlocked;
 		devTreeItem.style.display = unlocked ? "" : "none";
@@ -928,7 +935,11 @@ function buildMarkup() {
 
 	const sectionsHtml = [
 		wrapSettingsSection("design", "Nav tab design", designBody),
-		wrapSettingsSection("sidebar-content", "Sidebar content list title", sidebarContentBody),
+		wrapSettingsSection(
+			"sidebar-content",
+			"Sidebar content list title",
+			sidebarContentBody,
+		),
 		wrapSettingsSection("settings", "Nav tab settings", settingsBody),
 		wrapSettingsSection("other", "Nav tab other", otherBody),
 		wrapSettingsSection("info", "Nav tab info", infoBody),

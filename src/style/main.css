@@ -1,9 +1,4 @@
-/**
- * RoPrime UI theme tokens (settings panel + extension UI on Roblox pages).
- * Settings panel uses Roblox design tokens (--color-surface-300, --color-content-emphasis).
- */
-
-/* —— Default dark (Roblox dark, meta, color-scheme) —— */
+/* Default dark */
 :root:has(.dark-theme),
 :root.dark-theme,
 html.dark-theme,
@@ -20,7 +15,8 @@ body.dark-theme,
 	--rp-ui-border: rgba(255, 255, 255, 0.18);
 	--rp-ui-icon-muted: #b8bbc6;
 	--rp-ui-profile-header: #1a1c22;
-	--rp-ui-profile-gradient: linear-gradient(
+	--rp-ui-profile-gradient:
+		linear-gradient(
 			91deg,
 			rgba(20, 20, 24, 0.22) 6%,
 			rgba(255, 255, 255, 0.14) 48%,
@@ -37,7 +33,7 @@ body.dark-theme,
 	--rp-ui-icon-blocked: #65676b;
 }
 
-/* —— Light —— */
+/* Default white */
 :root:has(.light-theme),
 :root.light-theme,
 html.light-theme,
@@ -54,7 +50,8 @@ body.light-theme,
 	--rp-ui-border: rgba(0, 0, 0, 0.18);
 	--rp-ui-icon-muted: #6c7183;
 	--rp-ui-profile-header: #f5f6f8;
-	--rp-ui-profile-gradient: linear-gradient(
+	--rp-ui-profile-gradient:
+		linear-gradient(
 			91deg,
 			rgba(24, 24, 28, 0.04) 6%,
 			rgba(255, 255, 255, 0.12) 48%,
@@ -71,35 +68,38 @@ body.light-theme,
 	--rp-ui-icon-blocked: #ffffff;
 }
 
-/* —— Roblox Kids (dark) — customize colors below —— */
+/* Roblox Kids (dark) */
 :root:is(.dark-theme.age-kids-theme, .dark-theme.age-kids-variant1-theme),
 html:is(.dark-theme.age-kids-theme, .dark-theme.age-kids-variant1-theme),
 body:is(.dark-theme.age-kids-theme, .dark-theme.age-kids-variant1-theme),
 :root:has(:is(.dark-theme.age-kids-theme, .dark-theme.age-kids-variant1-theme)),
 :root:has(meta[name="theme-color"][content="#00176b"]),
 :root[color-scheme="dark"] {
+	/* empty */
 }
 
-/* —— Roblox Kids (light) — customize colors below —— */
+/* Roblox Kids (light) */
 :root:is(.light-theme.age-kids-theme, .light-theme.age-kids-variant1-theme),
 html:is(.light-theme.age-kids-theme, .light-theme.age-kids-variant1-theme),
 body:is(.light-theme.age-kids-theme, .light-theme.age-kids-variant1-theme),
-:root:has(:is(.light-theme.age-kids-theme, .light-theme.age-kids-variant1-theme)) {
-	/* --rp-ui-text-primary: ; */
+:root:has(
+	:is(.light-theme.age-kids-theme, .light-theme.age-kids-variant1-theme)
+) {
+	/* empty */
 }
 
-/* —— Roblox Select (light) — customize colors below —— */
+/* Roblox Select (light) */
 :root:has(.light-theme):has(.age-13-plus-theme),
 html.light-theme.age-13-plus-theme,
 body.light-theme.age-13-plus-theme {
-	/* --rp-ui-text-primary: ; */
+	/* empty */
 }
 
-/* —— Roblox Select (dark) — customize colors below —— */
+/* Roblox Select (dark) */
 :root:has(.dark-theme):has(.age-13-plus-theme),
 html.dark-theme.age-13-plus-theme,
 body.dark-theme.age-13-plus-theme {
-	/* --rp-ui-text-primary: ; */
+	/* empty */
 }
 
 .roprime-settings-wrapper,

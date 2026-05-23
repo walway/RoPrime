@@ -165,7 +165,12 @@ export function buildSettingsShell({
 </div>`;
 }
 
-export function wrapSettingsSection(page, titleKey, bodyHtml, { hidden = false } = {}) {
+export function wrapSettingsSection(
+	page,
+	titleKey,
+	bodyHtml,
+	{ hidden = false } = {},
+) {
 	const hiddenAttr = hidden ? " hidden" : "";
 	return `
 <section class="roprime-settings-section" data-roprime-section="${page}"${hiddenAttr}>

@@ -1,11 +1,11 @@
 import { shouldRunRoPrimeOnCurrentPage } from "../core/core.js";
-import { getProfileEffectById } from "./profileEffectsCatalog.js";
 import {
 	layerIsCurrent,
 	mountProfileEffectLayer,
 	profileUserMayShowEffect,
 	resolveEquippedEffectId,
 } from "./effectMount.js";
+import { getProfileEffectById } from "./profileEffectsCatalog.js";
 
 const PICTURE_LAYER_ATTR = "data-roprime-profile-picture-effect-layer";
 const PICTURE_LAYER_ID = "roprime-profile-page-effect-layer";

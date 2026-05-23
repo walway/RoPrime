@@ -32,13 +32,21 @@
 }
 
 .roprime-settings-nav-alert:hover {
-	border-color: color-mix(in srgb, var(--color-content-emphasis) 35%, transparent);
+	border-color: color-mix(
+		in srgb,
+		var(--color-content-emphasis) 35%,
+		transparent
+	);
 	color: var(--color-content-emphasis);
 	text-decoration: none;
 }
 
 .roprime-settings-nav-alert.is-active {
-	border-color: color-mix(in srgb, var(--color-content-emphasis) 40%, transparent);
+	border-color: color-mix(
+		in srgb,
+		var(--color-content-emphasis) 40%,
+		transparent
+	);
 	background: var(--color-surface-300);
 }
 
@@ -83,7 +91,11 @@
 }
 
 .roprime-settings-search:focus {
-	border-color: color-mix(in srgb, var(--color-content-emphasis) 40%, transparent);
+	border-color: color-mix(
+		in srgb,
+		var(--color-content-emphasis) 40%,
+		transparent
+	);
 }
 
 .roprime-settings-section {
@@ -395,7 +407,11 @@ stupid MUI
 }
 
 .roprime-sidebar-configure-btn:hover {
-	border-color: color-mix(in srgb, var(--color-content-emphasis) 35%, transparent);
+	border-color: color-mix(
+		in srgb,
+		var(--color-content-emphasis) 35%,
+		transparent
+	);
 	background: var(--color-surface-300);
 	color: var(--color-content-emphasis);
 }
@@ -416,7 +432,11 @@ stupid MUI
 }
 
 .roprime-sidebar-content-back:hover {
-	border-color: color-mix(in srgb, var(--color-content-emphasis) 35%, transparent);
+	border-color: color-mix(
+		in srgb,
+		var(--color-content-emphasis) 35%,
+		transparent
+	);
 }
 
 .roprime-sidebar-content-panel {
@@ -436,7 +456,11 @@ stupid MUI
 .roprime-sidebar-content-divider {
 	height: 1px;
 	margin: 4px 0;
-	background: color-mix(in srgb, var(--color-content-emphasis) 22%, transparent);
+	background: color-mix(
+		in srgb,
+		var(--color-content-emphasis) 22%,
+		transparent
+	);
 }
 
 .roprime-sidebar-content-row {
@@ -456,7 +480,8 @@ stupid MUI
 	border-bottom: 0;
 }
 
-.roprime-sidebar-content-row.is-removed-item .roprime-sidebar-content-row-label {
+.roprime-sidebar-content-row.is-removed-item
+	.roprime-sidebar-content-row-label {
 	opacity: 0.72;
 }
 
@@ -545,7 +570,11 @@ span.icon-nav-menu.roprime-icon-nav-menu-replaced {
 	-webkit-appearance: none;
 	height: 6px;
 	border-radius: 999px;
-	background: color-mix(in srgb, var(--color-content-emphasis) 22%, transparent);
+	background: color-mix(
+		in srgb,
+		var(--color-content-emphasis) 22%,
+		transparent
+	);
 	outline: none;
 	margin: 4px auto 10px;
 }
@@ -606,7 +635,11 @@ span.icon-nav-menu.roprime-icon-nav-menu-replaced {
 }
 
 .roprime-sidebar-size-tick.is-active {
-	border-color: color-mix(in srgb, var(--color-content-emphasis) 40%, transparent);
+	border-color: color-mix(
+		in srgb,
+		var(--color-content-emphasis) 40%,
+		transparent
+	);
 	background: var(--color-surface-300);
 	color: var(--color-content-emphasis);
 }
@@ -874,7 +907,11 @@ span.icon-nav-menu.roprime-icon-nav-menu-replaced {
 
 .roprime-switch input:checked + .roprime-switch-slider {
 	background: var(--color-surface-300);
-	border-color: color-mix(in srgb, var(--color-content-emphasis) 40%, transparent);
+	border-color: color-mix(
+		in srgb,
+		var(--color-content-emphasis) 40%,
+		transparent
+	);
 }
 
 .roprime-switch input:checked + .roprime-switch-slider::before {

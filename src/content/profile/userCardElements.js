@@ -19,9 +19,7 @@ function handleElement(element) {
 
 	for (const sub of subscriptions) {
 		try {
-			if (
-				sub.options?.exclude?.some((selector) => element.matches(selector))
-			) {
+			if (sub.options?.exclude?.some((selector) => element.matches(selector))) {
 				continue;
 			}
 			sub.callback(element);
@@ -75,9 +73,7 @@ export function onUserCardElement(callback, options = {}) {
 
 	for (const element of observedElements) {
 		try {
-			if (
-				options.exclude?.some((selector) => element.matches(selector))
-			) {
+			if (options.exclude?.some((selector) => element.matches(selector))) {
 				continue;
 			}
 			callback(element);

@@ -1,4 +1,7 @@
-import { RP_FRIEND_STYLING_REIMAGNED_STYLE_ID, settingsState } from "../core/core.js";
+import {
+	RP_FRIEND_STYLING_REIMAGNED_STYLE_ID,
+	settingsState,
+} from "../core/core.js";
 
 const FRIEND_STYLING_REIMAGNED_CSS = `
 .friend-carousel-container {

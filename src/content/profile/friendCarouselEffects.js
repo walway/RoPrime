@@ -1,12 +1,15 @@
 import { shouldRunRoPrimeOnCurrentPage } from "../core/core.js";
-import { getProfileEffectById } from "./profileEffectsCatalog.js";
 import {
 	layerIsCurrent,
 	mountProfileEffectLayer,
 	profileUserMayShowEffect,
 	resolveEquippedEffectId,
 } from "./effectMount.js";
-import { observeUserCardElements, onUserCardElement } from "./userCardElements.js";
+import { getProfileEffectById } from "./profileEffectsCatalog.js";
+import {
+	observeUserCardElements,
+	onUserCardElement,
+} from "./userCardElements.js";
 
 const PICTURE_LAYER_ATTR = "data-roprime-friends-picture-effect";
 const PROFILE_LAYER_ATTR = "data-roprime-friends-profile-effect";
@@ -50,9 +53,11 @@ function layerIdFor(userId, kind) {
 }
 
 function removeLayersInCard(card) {
-	card.querySelectorAll(
-		`[${PICTURE_LAYER_ATTR}], [${PROFILE_LAYER_ATTR}]`,
-	).forEach((node) => node.remove());
+	card
+		.querySelectorAll(`[${PICTURE_LAYER_ATTR}], [${PROFILE_LAYER_ATTR}]`)
+		.forEach((node) => {
+			node.remove();
+		});
 }
 
 async function syncCardKind(card, userId, kind) {
@@ -103,9 +108,7 @@ async function syncCardEffects(card) {
 }
 
 function queueSyncCard(card) {
-	syncQueue = syncQueue
-		.then(() => syncCardEffects(card))
-		.catch(() => {});
+	syncQueue = syncQueue.then(() => syncCardEffects(card)).catch(() => {});
 }
 
 export function installFriendCarouselEffects() {

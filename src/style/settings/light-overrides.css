@@ -63,7 +63,11 @@ html.roprime-account-settings-open
 }
 
 .roprime-settings-primary-btn:hover:not(:disabled) {
-	border-color: color-mix(in srgb, var(--color-content-emphasis) 35%, transparent);
+	border-color: color-mix(
+		in srgb,
+		var(--color-content-emphasis) 35%,
+		transparent
+	);
 }
 
 .roprime-settings-primary-btn:disabled {

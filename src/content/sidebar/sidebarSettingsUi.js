@@ -44,12 +44,16 @@ export function buildSidebarContentListHtml() {
 	}
 	const visible = items.filter((item) => !isSidebarItemHidden(item.id));
 	const hidden = items.filter((item) => isSidebarItemHidden(item.id));
-	const parts = visible.map((item) => buildSidebarContentRowHtml(item, "remove"));
+	const parts = visible.map((item) =>
+		buildSidebarContentRowHtml(item, "remove"),
+	);
 	if (hidden.length) {
 		parts.push(
 			'<div class="roprime-sidebar-content-divider" role="separator"></div>',
 		);
-		parts.push(...hidden.map((item) => buildSidebarContentRowHtml(item, "add")));
+		parts.push(
+			...hidden.map((item) => buildSidebarContentRowHtml(item, "add")),
+		);
 	}
 	return parts.join("");
 }

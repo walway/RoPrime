@@ -3,7 +3,8 @@
 
 .roprime-settings-section[data-roprime-section="design"] .roprime-switch,
 .roprime-settings-section[data-roprime-section="other"] .roprime-switch,
-.roprime-settings-section[data-roprime-section="sidebar-content"] .roprime-switch {
+.roprime-settings-section[data-roprime-section="sidebar-content"]
+	.roprime-switch {
 	width: 40px;
 	height: 24px;
 }
@@ -13,7 +14,11 @@
 .roprime-settings-section[data-roprime-section="sidebar-content"]
 	.roprime-switch-slider {
 	border: none;
-	background: color-mix(in srgb, var(--color-content-emphasis) 38%, transparent);
+	background: color-mix(
+		in srgb,
+		var(--color-content-emphasis) 38%,
+		transparent
+	);
 	transition:
 		background-color 150ms cubic-bezier(0.4, 0, 0.2, 1),
 		transform 150ms cubic-bezier(0.4, 0, 0.2, 1);
@@ -36,8 +41,10 @@
 		color-mix(in srgb, var(--color-content-emphasis) 40%, transparent);
 }
 
-.roprime-settings-section[data-roprime-section="design"] .roprime-switch-slider::before,
-.roprime-settings-section[data-roprime-section="other"] .roprime-switch-slider::before,
+.roprime-settings-section[data-roprime-section="design"]
+	.roprime-switch-slider::before,
+.roprime-settings-section[data-roprime-section="other"]
+	.roprime-switch-slider::before,
 .roprime-settings-section[data-roprime-section="sidebar-content"]
 	.roprime-switch-slider::before {
 	width: 16px;
@@ -67,8 +74,14 @@
 	transform: translateX(16px);
 }
 
-.roprime-settings-section[data-roprime-section="design"] .roprime-switch input:focus-visible + .roprime-switch-slider,
-.roprime-settings-section[data-roprime-section="other"] .roprime-switch input:focus-visible + .roprime-switch-slider,
+.roprime-settings-section[data-roprime-section="design"]
+	.roprime-switch
+	input:focus-visible
+	+ .roprime-switch-slider,
+.roprime-settings-section[data-roprime-section="other"]
+	.roprime-switch
+	input:focus-visible
+	+ .roprime-switch-slider,
 .roprime-settings-section[data-roprime-section="sidebar-content"]
 	.roprime-switch
 	input:focus-visible
@@ -77,13 +90,19 @@
 	outline-offset: 2px;
 }
 
-.roprime-settings-section[data-roprime-section="design"] .roprime-sidebar-size-slider,
-.roprime-settings-section[data-roprime-section="sidebar-content"] .roprime-sidebar-size-slider {
+.roprime-settings-section[data-roprime-section="design"]
+	.roprime-sidebar-size-slider,
+.roprime-settings-section[data-roprime-section="sidebar-content"]
+	.roprime-sidebar-size-slider {
 	--roprime-sidebar-thumb-size: 20px;
 	height: 4px;
 	margin: 10px auto 12px;
 	border-radius: 2px;
-	background: color-mix(in srgb, var(--color-content-emphasis) 26%, transparent);
+	background: color-mix(
+		in srgb,
+		var(--color-content-emphasis) 26%,
+		transparent
+	);
 }
 
 .roprime-settings-section[data-roprime-section="design"]

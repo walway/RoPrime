@@ -1,8 +1,7 @@
 import { getProfileEffectById } from "./profileEffectsCatalog.js";
 import { getRobloxUserId } from "./profileEffectsRegistry.js";
 
-const HEADSHOT_API =
-	"https://thumbnails.roblox.com/v1/users/avatar-headshot";
+const HEADSHOT_API = "https://thumbnails.roblox.com/v1/users/avatar-headshot";
 
 /**
  * @param {number} userId
@@ -16,10 +15,9 @@ export async function fetchAuthUserHeadshot(userId) {
 	let username = "";
 
 	try {
-		const userRes = await fetch(
-			`https://users.roblox.com/v1/users/${id}`,
-			{ credentials: "include" },
-		);
+		const userRes = await fetch(`https://users.roblox.com/v1/users/${id}`, {
+			credentials: "include",
+		});
 		if (userRes.ok) {
 			const user = await userRes.json();
 			displayName = String(user?.displayName || user?.name || "").trim();
@@ -49,7 +47,7 @@ export async function fetchAuthUserHeadshot(userId) {
 }
 
 /**
- * Roblox profile header avatar markup (matches live site structure).
+ * Live
  * @param {{ imageUrl: string, displayName: string }} profile
  */
 export function buildRobloxAvatarHeadshotHtml(profile) {

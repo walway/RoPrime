@@ -16,6 +16,7 @@ import {
 	updateRenameLoop,
 } from "./features/rename.js";
 import { syncHomeWelcomeModal } from "./features/welcome.js";
+import { syncRoEliteView } from "./panel/panel.js";
 import {
 	installFriendCarouselEffects,
 	syncFriendCarouselEffects,
@@ -24,7 +25,6 @@ import {
 	installProfilePageEffectObserver,
 	syncProfilePageEffect,
 } from "./profile/profileEffectsDisplay.js";
-import { syncRoEliteView } from "./panel/panel.js";
 import { normalizeEquippedProfileEffects } from "./settings/other.js";
 import { syncProfileSettingsRoute } from "./settings/profileSettings.js";
 

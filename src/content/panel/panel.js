@@ -23,11 +23,11 @@ import {
 } from "../navigation/dropdownButton.js";
 import { updateFriendStylingReimagnedVisibility } from "../navigation/friendStylingReimagned.js";
 import { syncOldNavigationBar } from "../navigation/oldNavigationBar.js";
+import { syncFriendCarouselEffects } from "../profile/friendCarouselEffects.js";
 import {
 	syncSidebarCompactDecorations,
 	updateSidebarCompactVisibility,
 } from "../sidebar/sidebarCompact.js";
-import { syncFriendCarouselEffects } from "../profile/friendCarouselEffects.js";
 import { syncSidebarContent } from "../sidebar/sidebarContent.js";
 import { updateSmallNewNavVisibility } from "../sidebar/smallNewNav.js";
 

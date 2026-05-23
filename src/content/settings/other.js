@@ -1,4 +1,5 @@
 import { saveSettings, settingsState } from "../core/core.js";
+import { hydrateProfilePictureEffectAvatars } from "../profile/profileEffectAvatar.js";
 import {
 	getAllProfileEffectIds,
 	getProfileEffectById,
@@ -16,7 +17,6 @@ import {
 	registerProfileEffectPurchase,
 	syncOwnedEffectsFromRegistry,
 } from "../profile/profileEffectsRegistry.js";
-import { hydrateProfilePictureEffectAvatars } from "../profile/profileEffectAvatar.js";
 import { t as accountSettingsPaneT } from "./roprimeAccountSettingsPage.js";
 
 let cachedAuthUserId = null;

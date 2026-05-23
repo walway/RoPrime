@@ -2540,7 +2540,9 @@ body.dark-theme .left-nav.fixed button.${RP_SIDEBAR_PLUS_BTN_CLASS} {
 				return;
 			}
 			section
-				.querySelectorAll(".roprime-toggle-row, .roprime-setting-field, .roprime-accordion")
+				.querySelectorAll(
+					".roprime-toggle-row, .roprime-setting-field, .roprime-accordion",
+				)
 				.forEach((item) => {
 					if (!(item instanceof HTMLElement)) return;
 					item.style.display = "";

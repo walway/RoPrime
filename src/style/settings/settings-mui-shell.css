@@ -73,7 +73,11 @@ html.roprime-account-settings-open #react-user-account-base .container-footer {
 	padding: 12px 0 24px 12px;
 	box-sizing: border-box;
 	scrollbar-width: thin;
-	scrollbar-color: color-mix(in srgb, var(--color-content-emphasis) 22%, transparent)
+	scrollbar-color: color-mix(
+			in srgb,
+			var(--color-content-emphasis) 22%,
+			transparent
+		)
 		transparent;
 }
 
@@ -82,7 +86,11 @@ html.roprime-account-settings-open #react-user-account-base .container-footer {
 }
 
 .roprime-settings-rail-scroll::-webkit-scrollbar-thumb {
-	background: color-mix(in srgb, var(--color-content-emphasis) 22%, transparent);
+	background: color-mix(
+		in srgb,
+		var(--color-content-emphasis) 22%,
+		transparent
+	);
 	border-radius: 999px;
 }
 
@@ -192,7 +200,11 @@ html.roprime-account-settings-open #react-user-account-base .container-footer {
 
 .roprime-settings-tree-content.Mui-selected,
 .roprime-settings-tree-content[data-selected] {
-	background: color-mix(in srgb, var(--color-content-emphasis) 10%, transparent);
+	background: color-mix(
+		in srgb,
+		var(--color-content-emphasis) 10%,
+		transparent
+	);
 }
 
 .roprime-settings-tree-item .MuiTreeItem-iconContainer {
@@ -287,7 +299,11 @@ html.roprime-account-settings-open #react-user-account-base .container-footer {
 
 .roprime-settings-menu-btn.MuiIconButton-root:active .MuiTouchRipple-root {
 	opacity: 1;
-	background: color-mix(in srgb, var(--color-content-emphasis) 20%, transparent);
+	background: color-mix(
+		in srgb,
+		var(--color-content-emphasis) 20%,
+		transparent
+	);
 }
 
 .roprime-settings-section-header {
@@ -314,7 +330,8 @@ html.roprime-account-settings-open #react-user-account-base .container-footer {
 
 .roprime-settings-mui-shell.is-rail-collapsed .roprime-settings-rail,
 .roprime-settings-mui-shell.is-rail-collapsed .roprime-settings-pane-divider,
-.roprime-settings-mui-shell.is-rail-collapsed .roprime-settings-scrollbar-gutter {
+.roprime-settings-mui-shell.is-rail-collapsed
+	.roprime-settings-scrollbar-gutter {
 	display: none !important;
 }
 
@@ -323,8 +340,7 @@ html.roprime-account-settings-open #react-user-account-base .container-footer {
 }
 
 /* Roblox native width-[289px] rails hidden while menu is toggled (JS sets display) */
-html.roprime-settings-side-rail-hidden
-	.width-\[289px\].height-full.scroll-y,
+html.roprime-settings-side-rail-hidden .width-\[289px\].height-full.scroll-y,
 html.roprime-settings-side-rail-hidden
 	[class~="width-[289px]"][class~="height-full"][class~="scroll-y"] {
 	display: none !important;
