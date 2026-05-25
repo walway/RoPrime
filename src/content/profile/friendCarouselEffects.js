@@ -73,7 +73,9 @@ function getCardContext(card) {
 	if (
 		card.matches("li.list-item.avatar-card") ||
 		card.closest("li.list-item.avatar-card") ||
-		card.matches(".avatar-card-container")
+		card.matches(".avatar-card-container") ||
+		card.matches(".user-item-clickable") ||
+		card.closest(".user-item-clickable")
 	) {
 		return "friends-list";
 	}
@@ -101,18 +103,42 @@ function layerIdFor(userId, context) {
 }
 
 /**
+ * @param {HTMLElement} root
+ * @returns {HTMLElement | null}
+ */
+function findAvatarContainerInRoot(root) {
+	const avatar = root.querySelector(AVATAR_CONTAINER_SELECTOR);
+	return avatar instanceof HTMLElement ? avatar : null;
+}
+
+/**
+ * Profile link and avatar are often siblings on the friends list (link not nested
+ * inside div.avatar.avatar-card-fullbody). Mount on the avatar in the same card.
+ *
  * @param {HTMLAnchorElement} link
  * @returns {HTMLElement | null}
  */
 function findPictureEffectHostFromLink(link) {
 	if (!isAvatarProfileLink(link)) return null;
 
-	const avatar = link.closest(AVATAR_CONTAINER_SELECTOR);
-	if (!(avatar instanceof HTMLElement)) return null;
+	const avatarInLink = link.closest(AVATAR_CONTAINER_SELECTOR);
+	if (avatarInLink instanceof HTMLElement) return avatarInLink;
 
-	if (!avatar.querySelector(AVATAR_PROFILE_LINK_SELECTOR)) return null;
+	const parent = link.parentElement;
+	if (parent instanceof HTMLElement) {
+		const siblingAvatar = findAvatarContainerInRoot(parent);
+		if (siblingAvatar) return siblingAvatar;
+	}
 
-	return avatar;
+	const card = link.closest(
+		"li.list-item.avatar-card, .avatar-card-container, .user-item-clickable, .friends-carousel-tile",
+	);
+	if (card instanceof HTMLElement) {
+		const cardAvatar = findAvatarContainerInRoot(card);
+		if (cardAvatar) return cardAvatar;
+	}
+
+	return null;
 }
 
 /**
@@ -163,8 +189,12 @@ function findAvatarProfileLink(root, userId) {
  */
 function findPictureEffectHost(card, userId) {
 	const link = findAvatarProfileLink(card, userId);
-	if (!(link instanceof HTMLAnchorElement)) return null;
-	return findPictureEffectHostFromLink(link);
+	if (link instanceof HTMLAnchorElement) {
+		const fromLink = findPictureEffectHostFromLink(link);
+		if (fromLink) return fromLink;
+	}
+
+	return findAvatarContainerInRoot(card);
 }
 
 function parseUserIdFromCard(card) {
@@ -327,6 +357,12 @@ function scanFriendsListAvatars() {
 		if (container.closest(CAROUSEL_CONTAINER_SELECTOR)) continue;
 		queueSyncCard(container, "friends-list");
 	}
+
+	for (const item of document.querySelectorAll(".user-item-clickable")) {
+		if (!(item instanceof HTMLElement)) continue;
+		if (item.closest(CAROUSEL_CONTAINER_SELECTOR)) continue;
+		queueSyncCard(item, "friends-list");
+	}
 }
 
 function installCarouselLinkObserver() {
@@ -364,6 +400,12 @@ export function syncFriendCarouselEffects() {
 	}
 
 	for (const item of document.querySelectorAll("li.list-item.avatar-card")) {
+		if (!(item instanceof HTMLElement)) continue;
+		if (item.closest(CAROUSEL_CONTAINER_SELECTOR)) continue;
+		queueSyncCard(item, "friends-list");
+	}
+
+	for (const item of document.querySelectorAll(".user-item-clickable")) {
 		if (!(item instanceof HTMLElement)) continue;
 		if (item.closest(CAROUSEL_CONTAINER_SELECTOR)) continue;
 		queueSyncCard(item, "friends-list");
