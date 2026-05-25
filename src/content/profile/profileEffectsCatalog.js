@@ -32,6 +32,11 @@ export function configureProfileEffectIframe(iframe) {
 	iframe.style.backgroundColor = "transparent";
 }
 
+/** Same transparent iframe setup as settings shop previews. */
+export function applyProfileEffectIframeTransparentAttrs(iframe) {
+	configureProfileEffectIframe(iframe);
+}
+
 /** @type {ProfileEffect[]} */
 export const PROFILE_PICTURE_EFFECTS = [
 	{

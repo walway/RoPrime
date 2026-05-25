@@ -1,14 +1,19 @@
-/* Friends carousel — profile picture effects on avatar-card-container (above profile link) */
+/* Friends carousel — same transparent Lottie stack as settings shop previews */
 
 .react-friends-carousel-container
+	div.avatar.avatar-card-fullbody[data-testid="avatar-card-container"],
+.react-friends-carousel-container
+	button.options-dropdown[type="button"]#friend-tile-button,
+.react-friends-carousel-container
+	button.options-dropdown[type="button"][id="friend-tile-button"],
+.friend-carousel-container
 	div.avatar.avatar-card-fullbody[data-testid="avatar-card-container"] {
 	position: relative !important;
 	overflow: visible !important;
 }
 
-.react-friends-carousel-container
-	div.avatar.avatar-card-fullbody[data-testid="avatar-card-container"]
-	.roprime-friends-carousel-picture-effect {
+.react-friends-carousel-container .roprime-friends-carousel-picture-effect,
+.friend-carousel-container .roprime-friends-carousel-picture-effect {
 	position: absolute;
 	left: 50%;
 	top: 50%;
@@ -19,21 +24,53 @@
 	max-height: 100%;
 	transform: translate(-50%, -50%);
 	pointer-events: none;
-	overflow: hidden;
-	border-radius: inherit;
+	overflow: visible;
 	background: transparent !important;
+	background-color: transparent !important;
 }
 
 .react-friends-carousel-container
-	div.avatar.avatar-card-fullbody[data-testid="avatar-card-container"]
 	.roprime-friends-carousel-picture-effect
+	.roprime-profile-effect-lottie,
+.friend-carousel-container
+	.roprime-friends-carousel-picture-effect
+	.roprime-profile-effect-lottie {
+	position: relative;
+	z-index: 2;
+	width: 100%;
+	height: 100%;
+	max-width: 100%;
+	aspect-ratio: 1;
+	overflow: hidden;
+	background: transparent !important;
+	background-color: transparent !important;
+	border-radius: 10px;
+	pointer-events: none;
+}
+
+.react-friends-carousel-container
+	.roprime-friends-carousel-picture-effect
+	.roprime-profile-effect-lottie
+	iframe,
+.friend-carousel-container
+	.roprime-friends-carousel-picture-effect
+	.roprime-profile-effect-lottie
 	iframe {
+	position: absolute;
+	top: 50%;
+	left: 50%;
 	display: block;
 	width: 100%;
 	height: 100%;
 	border: 0;
 	background: transparent !important;
 	background-color: transparent !important;
+	color-scheme: normal;
+	transform: translate(-50%, -50%) scale(0.68);
+	transform-origin: center center;
+	-webkit-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
 	pointer-events: none;
 }
 

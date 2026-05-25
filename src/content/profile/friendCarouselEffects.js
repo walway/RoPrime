@@ -1,11 +1,14 @@
 import { shouldRunRoPrimeOnCurrentPage } from "../core/core.js";
 import {
 	layerIsCurrent,
-	mountProfileEffectLayer,
 	profileUserMayShowEffect,
 	resolveEquippedEffectId,
 } from "./effectMount.js";
-import { getProfileEffectById } from "./profileEffectsCatalog.js";
+import {
+	applyProfileEffectIframeTransparentAttrs,
+	getProfileEffectById,
+	getProfileEffectShopEmbedSrc,
+} from "./profileEffectsCatalog.js";
 import {
 	observeUserCardElements,
 	onUserCardElement,
@@ -18,6 +21,9 @@ const AVATAR_PROFILE_LINK_SELECTOR =
 	'a.avatar-card-link[data-testid="avatar-card-link"]';
 const AVATAR_CONTAINER_SELECTOR =
 	'div.avatar.avatar-card-fullbody[data-testid="avatar-card-container"]';
+const FRIEND_TILE_BUTTON_SELECTOR =
+	'button.options-dropdown[type="button"]#friend-tile-button, button.options-dropdown[type="button"][id="friend-tile-button"]';
+const LOTTIE_WRAP_CLASS = "roprime-profile-effect-lottie";
 
 let installed = false;
 let syncQueue = Promise.resolve();
@@ -47,8 +53,47 @@ export function parseUserIdFromProfileLink(link) {
  * @returns {HTMLElement | null}
  */
 function findPictureEffectHostFromLink(link) {
-	const host = link.closest(AVATAR_CONTAINER_SELECTOR);
-	return host instanceof HTMLElement ? host : null;
+	const tile =
+		link.closest(".friends-carousel-tile") ||
+		link.closest(CAROUSEL_CONTAINER_SELECTOR);
+	if (tile instanceof HTMLElement) {
+		const btn = tile.querySelector(FRIEND_TILE_BUTTON_SELECTOR);
+		if (btn instanceof HTMLButtonElement) return btn;
+	}
+
+	const avatar = link.closest(AVATAR_CONTAINER_SELECTOR);
+	return avatar instanceof HTMLElement ? avatar : null;
+}
+
+/**
+ * @param {import("./profileEffectsCatalog.js").ProfileEffect} effect
+ * @param {{ layerId: string, layerAttr: string }} options
+ * @param {HTMLElement} host
+ */
+function mountFriendCarouselPictureEffect(host, effect, { layerId, layerAttr }) {
+	const layer = document.createElement("div");
+	layer.id = layerId;
+	layer.setAttribute(layerAttr, effect.id);
+	layer.className = PICTURE_LAYER_CLASS;
+
+	const lottie = document.createElement("div");
+	lottie.className = LOTTIE_WRAP_CLASS;
+
+	const iframe = document.createElement("iframe");
+	iframe.src = getProfileEffectShopEmbedSrc(effect);
+	iframe.title = effect.titleKey;
+	iframe.loading = "lazy";
+	iframe.setAttribute("tabindex", "-1");
+	applyProfileEffectIframeTransparentAttrs(iframe);
+
+	lottie.appendChild(iframe);
+	layer.appendChild(lottie);
+
+	if (getComputedStyle(host).position === "static") {
+		host.style.position = "relative";
+	}
+
+	host.appendChild(layer);
 }
 
 /**
@@ -80,8 +125,18 @@ function findAvatarProfileLink(card, userId) {
  */
 function findPictureEffectHost(card, userId) {
 	const link = findAvatarProfileLink(card, userId);
-	if (!(link instanceof HTMLAnchorElement)) return null;
-	return findPictureEffectHostFromLink(link);
+	if (link instanceof HTMLAnchorElement) {
+		const fromLink = findPictureEffectHostFromLink(link);
+		if (fromLink) return fromLink;
+	}
+
+	const tile = card.closest(".friends-carousel-tile") || card;
+	if (tile instanceof HTMLElement) {
+		const btn = tile.querySelector(FRIEND_TILE_BUTTON_SELECTOR);
+		if (btn instanceof HTMLButtonElement) return btn;
+	}
+
+	return null;
 }
 
 function parseUserIdFromCard(card) {
@@ -135,9 +190,8 @@ async function syncPictureEffectOnHost(host, userId) {
 	if (layerIsCurrent(host, layerId, PICTURE_LAYER_ATTR, effect.id)) return;
 
 	removeLayerById(layerId);
-	mountProfileEffectLayer(host, effect, {
+	mountFriendCarouselPictureEffect(host, effect, {
 		layerId,
-		layerClass: PICTURE_LAYER_CLASS,
 		layerAttr: PICTURE_LAYER_ATTR,
 	});
 }
