@@ -53,16 +53,16 @@ export function parseUserIdFromProfileLink(link) {
  * @returns {HTMLElement | null}
  */
 function findPictureEffectHostFromLink(link) {
+	const avatar = link.closest(AVATAR_CONTAINER_SELECTOR);
+	if (avatar instanceof HTMLElement) return avatar;
+
 	const tile =
 		link.closest(".friends-carousel-tile") ||
 		link.closest(CAROUSEL_CONTAINER_SELECTOR);
-	if (tile instanceof HTMLElement) {
-		const btn = tile.querySelector(FRIEND_TILE_BUTTON_SELECTOR);
-		if (btn instanceof HTMLButtonElement) return btn;
-	}
+	if (!(tile instanceof HTMLElement)) return null;
 
-	const avatar = link.closest(AVATAR_CONTAINER_SELECTOR);
-	return avatar instanceof HTMLElement ? avatar : null;
+	const btn = tile.querySelector(FRIEND_TILE_BUTTON_SELECTOR);
+	return btn instanceof HTMLButtonElement ? btn : null;
 }
 
 /**
@@ -88,11 +88,6 @@ function mountFriendCarouselPictureEffect(host, effect, { layerId, layerAttr }) 
 
 	lottie.appendChild(iframe);
 	layer.appendChild(lottie);
-
-	if (getComputedStyle(host).position === "static") {
-		host.style.position = "relative";
-	}
-
 	host.appendChild(layer);
 }
 
@@ -129,6 +124,9 @@ function findPictureEffectHost(card, userId) {
 		const fromLink = findPictureEffectHostFromLink(link);
 		if (fromLink) return fromLink;
 	}
+
+	const avatar = card.querySelector(AVATAR_CONTAINER_SELECTOR);
+	if (avatar instanceof HTMLElement) return avatar;
 
 	const tile = card.closest(".friends-carousel-tile") || card;
 	if (tile instanceof HTMLElement) {

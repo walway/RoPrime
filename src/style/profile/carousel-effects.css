@@ -1,64 +1,74 @@
-/* Friends carousel — same transparent Lottie stack as settings shop previews */
+/* Friends carousel — Lottie sized/centered on profile headshot (CSS only) */
+
+.react-friends-carousel-container
+	.thumbnail-2d-container.avatar-card-image,
+.friend-carousel-container .thumbnail-2d-container.avatar-card-image {
+	position: relative;
+	display: block;
+}
 
 .react-friends-carousel-container
 	div.avatar.avatar-card-fullbody[data-testid="avatar-card-container"],
-.react-friends-carousel-container
-	button.options-dropdown[type="button"]#friend-tile-button,
-.react-friends-carousel-container
-	button.options-dropdown[type="button"][id="friend-tile-button"],
 .friend-carousel-container
 	div.avatar.avatar-card-fullbody[data-testid="avatar-card-container"] {
 	position: relative !important;
 	overflow: visible !important;
 }
 
-.react-friends-carousel-container .roprime-friends-carousel-picture-effect,
-.friend-carousel-container .roprime-friends-carousel-picture-effect {
+/* Match profile image box (~150×150); centered via inset on avatar host */
+.react-friends-carousel-container
+	div.avatar.avatar-card-fullbody[data-testid="avatar-card-container"]
+	> .roprime-friends-carousel-picture-effect,
+.friend-carousel-container
+	div.avatar.avatar-card-fullbody[data-testid="avatar-card-container"]
+	> .roprime-friends-carousel-picture-effect {
 	position: absolute;
-	left: 50%;
-	top: 50%;
+	inset: 0;
 	z-index: 5;
 	width: 100%;
 	height: 100%;
-	max-width: 100%;
-	max-height: 100%;
-	transform: translate(-50%, -50%);
+	margin: 0;
+	transform: none;
 	pointer-events: none;
-	overflow: visible;
+	overflow: hidden;
 	background: transparent !important;
 	background-color: transparent !important;
 }
 
 .react-friends-carousel-container
+	div.avatar.avatar-card-fullbody[data-testid="avatar-card-container"]
 	.roprime-friends-carousel-picture-effect
 	.roprime-profile-effect-lottie,
 .friend-carousel-container
+	div.avatar.avatar-card-fullbody[data-testid="avatar-card-container"]
 	.roprime-friends-carousel-picture-effect
 	.roprime-profile-effect-lottie {
 	position: relative;
 	z-index: 2;
 	width: 100%;
 	height: 100%;
-	max-width: 100%;
+	min-width: 0;
+	min-height: 0;
 	aspect-ratio: 1;
 	overflow: hidden;
 	background: transparent !important;
 	background-color: transparent !important;
-	border-radius: 10px;
+	border-radius: inherit;
 	pointer-events: none;
 }
 
 .react-friends-carousel-container
+	div.avatar.avatar-card-fullbody[data-testid="avatar-card-container"]
 	.roprime-friends-carousel-picture-effect
 	.roprime-profile-effect-lottie
 	iframe,
 .friend-carousel-container
+	div.avatar.avatar-card-fullbody[data-testid="avatar-card-container"]
 	.roprime-friends-carousel-picture-effect
 	.roprime-profile-effect-lottie
 	iframe {
 	position: absolute;
-	top: 50%;
-	left: 50%;
+	inset: 0;
 	display: block;
 	width: 100%;
 	height: 100%;
@@ -66,7 +76,7 @@
 	background: transparent !important;
 	background-color: transparent !important;
 	color-scheme: normal;
-	transform: translate(-50%, -50%) scale(0.68);
+	transform: none;
 	transform-origin: center center;
 	-webkit-user-select: none;
 	-ms-user-select: none;
@@ -74,10 +84,83 @@
 	pointer-events: none;
 }
 
+/* Fallback when host is friend-tile-button */
+.react-friends-carousel-container
+	button.options-dropdown[type="button"]#friend-tile-button,
+.react-friends-carousel-container
+	button.options-dropdown[type="button"][id="friend-tile-button"] {
+	position: relative !important;
+	overflow: visible !important;
+}
+
+.react-friends-carousel-container
+	button.options-dropdown[type="button"]#friend-tile-button
+	> .roprime-friends-carousel-picture-effect,
+.react-friends-carousel-container
+	button.options-dropdown[type="button"][id="friend-tile-button"]
+	> .roprime-friends-carousel-picture-effect {
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	z-index: 5;
+	width: 150px;
+	height: 150px;
+	margin: 0;
+	transform: translate(-50%, -50%);
+	pointer-events: none;
+	overflow: hidden;
+	background: transparent !important;
+	background-color: transparent !important;
+}
+
+.react-friends-carousel-container
+	button.options-dropdown[type="button"]#friend-tile-button
+	.roprime-friends-carousel-picture-effect
+	.roprime-profile-effect-lottie,
+.react-friends-carousel-container
+	button.options-dropdown[type="button"][id="friend-tile-button"]
+	.roprime-friends-carousel-picture-effect
+	.roprime-profile-effect-lottie {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	aspect-ratio: 1;
+	overflow: hidden;
+	background: transparent !important;
+	background-color: transparent !important;
+	pointer-events: none;
+}
+
+.react-friends-carousel-container
+	button.options-dropdown[type="button"]#friend-tile-button
+	.roprime-friends-carousel-picture-effect
+	.roprime-profile-effect-lottie
+	iframe,
+.react-friends-carousel-container
+	button.options-dropdown[type="button"][id="friend-tile-button"]
+	.roprime-friends-carousel-picture-effect
+	.roprime-profile-effect-lottie
+	iframe {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	border: 0;
+	background: transparent !important;
+	background-color: transparent !important;
+	pointer-events: none;
+}
+
 .friend-carousel-container .avatar-card-image,
 .friend-carousel-container .avatar.avatar-card-fullbody {
 	position: relative;
 	overflow: visible;
+}
+
+.friend-carousel-container .avatar-card-image img {
+	position: relative;
+	z-index: 2;
 }
 
 .friend-carousel-container .user-card,
