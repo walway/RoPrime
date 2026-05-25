@@ -26,6 +26,8 @@ export const PROFILE_EFFECT_IFRAME_TRANSPARENT_ATTRS =
 /** @param {HTMLIFrameElement} iframe */
 export function configureProfileEffectIframe(iframe) {
 	iframe.setAttribute("allowtransparency", "true");
+	iframe.setAttribute("frameborder", "0");
+	iframe.setAttribute("scrolling", "no");
 	iframe.style.background = "transparent";
 	iframe.style.backgroundColor = "transparent";
 }

@@ -70,11 +70,6 @@
 	display: block;
 }
 
-.roprime-settings-wrapper.is-search-mode .roprime-settings-nav-alert,
-.roprime-settings-mui-shell.is-search-mode .roprime-settings-nav-alert {
-	display: none !important;
-}
-
 .roprime-settings-main,
 .roprime-settings-content-pane {
 	min-width: 0;

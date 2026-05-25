@@ -39,12 +39,18 @@ export async function resolveEquippedEffectId(profileUserId, kind) {
 			? settingsState.profileEffectsEquippedByUser
 			: {};
 
-	return getEquippedEffectForProfileUser(
+	const effectId = await getEquippedEffectForProfileUser(
 		profileUserId,
 		kind,
 		localEquipped,
 		equippedByUser,
 	);
+	if (!effectId) return "";
+
+	const effect = getProfileEffectById(effectId);
+	if (!effect || effect.kind !== kind) return "";
+
+	return effectId;
 }
 
 export async function profileUserMayShowEffect(profileUserId, effectId) {

@@ -32,6 +32,11 @@ import {
 	syncCustomCssUi,
 } from "./customCss.js";
 import {
+	bindSettingsSyncControls,
+	buildSettingsSyncHtml,
+	refreshSettingsSyncPreview,
+} from "./settingsSync.js";
+import {
 	bindCosmeticsControls,
 	buildCosmeticsShopHtml,
 	resizeCosmeticsPreviews,
@@ -292,6 +297,28 @@ function syncTreeNavSelection(inner, activePage, isSearchMode) {
 	});
 }
 
+function setProfileEffectsAlertSuppressed(root, suppressed) {
+	const inner = root.querySelector("#rp-settings-inner");
+	if (inner instanceof HTMLElement) {
+		inner.setAttribute(
+			"data-roprime-search-active",
+			suppressed ? "1" : "0",
+		);
+	}
+	root
+		.querySelectorAll("[data-roprime-profile-effects-alert]")
+		.forEach((node) => {
+			if (!(node instanceof HTMLElement)) return;
+			node.classList.toggle(
+				"roprime-settings-nav-alert--suppressed",
+				suppressed,
+			);
+			node.hidden = suppressed;
+			node.style.display = suppressed ? "none" : "";
+			node.setAttribute("aria-hidden", suppressed ? "true" : "false");
+		});
+}
+
 function refreshLayoutAndNav(root) {
 	const inner = root.querySelector("#rp-settings-inner");
 	if (!(inner instanceof HTMLElement)) return;
@@ -327,13 +354,12 @@ function refreshLayoutAndNav(root) {
 		);
 	});
 
+	setProfileEffectsAlertSuppressed(root, isSearchMode);
+
 	const profileEffectsAlert = inner.querySelector(
 		"[data-roprime-profile-effects-alert]",
 	);
 	if (profileEffectsAlert instanceof HTMLElement) {
-		profileEffectsAlert.hidden = isSearchMode;
-		profileEffectsAlert.style.display = isSearchMode ? "none" : "";
-		profileEffectsAlert.setAttribute("aria-hidden", isSearchMode ? "true" : "false");
 		profileEffectsAlert.classList.toggle(
 			"is-active",
 			!isSearchMode && activePage === "other",
@@ -457,6 +483,7 @@ function bindOnce(root) {
 			if (si instanceof HTMLInputElement) si.value = "";
 		}
 		inner.setAttribute("data-roprime-search-mode", "1");
+		setProfileEffectsAlertSuppressed(root, true);
 		refreshLayoutAndNav(root);
 	};
 
@@ -468,10 +495,14 @@ function bindOnce(root) {
 		refreshLayoutAndNav(root);
 	};
 
+	const searchWrap = inner.querySelector("[data-roprime-shared-search-wrap]");
 	const search = inner.querySelector("#roprime-settings-search");
 	if (search instanceof HTMLInputElement) {
 		search.addEventListener("focus", enterSearchMode);
 		search.addEventListener("click", enterSearchMode);
+		search.addEventListener("pointerdown", () => {
+			setProfileEffectsAlertSuppressed(root, true);
+		});
 		search.addEventListener("input", () => {
 			if (inner.getAttribute("data-roprime-search-mode") !== "1") return;
 			if (search.value.trim().toLowerCase() === RP_DEBUG_UNLOCK)
@@ -479,10 +510,21 @@ function bindOnce(root) {
 			refreshLayoutAndNav(root);
 		});
 	}
+	if (searchWrap instanceof HTMLElement) {
+		searchWrap.addEventListener(
+			"pointerdown",
+			() => {
+				setProfileEffectsAlertSuppressed(root, true);
+				enterSearchMode();
+			},
+			true,
+		);
+	}
 
 	const navigateToPage = (nextPage) => {
 		inner.removeAttribute("data-roprime-search-mode");
 		inner.removeAttribute("data-roprime-search-source-page");
+		setProfileEffectsAlertSuppressed(root, false);
 		const searchBox = inner.querySelector("#roprime-settings-search");
 		if (searchBox instanceof HTMLInputElement) searchBox.value = "";
 		const nextUrl = buildPluginUrl(nextPage);
@@ -763,6 +805,7 @@ function bindOnce(root) {
 
 	bindCustomCssControls(inner);
 	bindCosmeticsControls(inner);
+	bindSettingsSyncControls(inner);
 }
 
 function clearLanguageControlSizing(inner) {
@@ -864,6 +907,7 @@ function refreshProfileSettingsUi(root) {
 
 	syncCustomCssUi(inner);
 	syncCosmeticsUi(inner);
+	refreshSettingsSyncPreview(inner);
 
 	refreshLayoutAndNav(root);
 
@@ -925,7 +969,8 @@ function buildMarkup() {
                             ${languageMenuOptionsHtml()}
                         </div>
                     </div>
-                </div>`;
+                </div>
+                ${buildSettingsSyncHtml()}`;
 
 	const otherBody = `
                 ${buildCustomCssHtml()}

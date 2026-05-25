@@ -277,6 +277,126 @@ export function getStorageApi() {
 	}
 }
 
+/** @param {unknown} stored */
+export function mergeStoredSettings(stored) {
+	if (!stored || typeof stored !== "object") return;
+
+	Object.assign(settingsState, RP_DEFAULT_SETTINGS, stored);
+	settingsState.blockedExecutionPages = normalizeBlockedExecutionPages(
+		stored.blockedExecutionPages,
+	);
+	settingsState.developerPageUnlocked = !!stored.developerPageUnlocked;
+	if (stored.enablePluginControlPanel != null) {
+		settingsState.enablePluginControlPanel = !!stored.enablePluginControlPanel;
+	}
+	if (stored.oldNavigationBarEnabled === undefined) {
+		if (stored.classicLeftNavEnabled != null) {
+			settingsState.oldNavigationBarEnabled = !!stored.classicLeftNavEnabled;
+		} else if (stored.leftGrayFrameEnabled != null) {
+			settingsState.oldNavigationBarEnabled = !!stored.leftGrayFrameEnabled;
+		}
+	}
+	delete settingsState.classicLeftNavEnabled;
+	delete settingsState.leftGrayFrameEnabled;
+	if (stored.sidebarSize === undefined) {
+		settingsState.sidebarSize = stored.sidebarIconsOnlyEnabled
+			? "icon"
+			: stored.smallNewNavigationBarEnabled
+				? "small"
+				: "full";
+	} else {
+		settingsState.sidebarSize = String(stored.sidebarSize || "full").toLowerCase();
+		if (!["full", "small", "icon"].includes(settingsState.sidebarSize)) {
+			settingsState.sidebarSize = "full";
+		}
+	}
+	settingsState.hiddenSidebarItemsBySize =
+		normalizeHiddenSidebarItemsBySize(stored);
+	delete settingsState.hiddenSidebarItems;
+	if (
+		stored.renameDropdownRestore &&
+		typeof stored.renameDropdownRestore === "object"
+	) {
+		if (stored.renameCommunitiesToGroups === undefined) {
+			settingsState.renameCommunitiesToGroups =
+				!!stored.renameDropdownRestore.renameCommunitiesToGroups;
+		}
+		if (stored.renameExperiencesToGames === undefined) {
+			settingsState.renameExperiencesToGames =
+				!!stored.renameDropdownRestore.renameExperiencesToGames;
+		}
+		if (stored.renameMarketplaceToAvatarShop === undefined) {
+			settingsState.renameMarketplaceToAvatarShop =
+				!!stored.renameDropdownRestore.renameMarketplaceToAvatarShop;
+		}
+	}
+}
+
+export function serializeSettingsPayload() {
+	return {
+		renameDropdownEnabled: settingsState.renameDropdownEnabled,
+		renameDropdownRestore: settingsState.renameDropdownRestore,
+		language: settingsState.language,
+		renameCommunitiesToGroups: settingsState.renameCommunitiesToGroups,
+		renameExperiencesToGames: settingsState.renameExperiencesToGames,
+		renameMarketplaceToAvatarShop: settingsState.renameMarketplaceToAvatarShop,
+		oldNavigationBarEnabled: settingsState.oldNavigationBarEnabled,
+		smallNewNavigationBarEnabled: settingsState.smallNewNavigationBarEnabled,
+		sidebarIconsOnlyEnabled: settingsState.sidebarIconsOnlyEnabled,
+		alwaysShowCloseButtonEnabled: settingsState.alwaysShowCloseButtonEnabled,
+		friendStylingReimagnedEnabled: settingsState.friendStylingReimagnedEnabled,
+		developerPageUnlocked: !!settingsState.developerPageUnlocked,
+		enablePluginControlPanel: !!settingsState.enablePluginControlPanel,
+		sidebarSize: settingsState.sidebarSize || "full",
+		sidebarCollapseMenuEnabled: !!settingsState.sidebarCollapseMenuEnabled,
+		hiddenSidebarItemsBySize: normalizeHiddenSidebarItemsBySize({
+			hiddenSidebarItemsBySize: settingsState.hiddenSidebarItemsBySize,
+		}),
+		blockedExecutionPages: normalizeBlockedExecutionPages(
+			settingsState.blockedExecutionPages,
+		),
+		customCss:
+			typeof settingsState.customCss === "string" ? settingsState.customCss : "",
+		cosmeticsEnabled: !!settingsState.cosmeticsEnabled,
+		profileEffectsLayoutView: ["grid", "list", "wide"].includes(
+			settingsState.profileEffectsLayoutView,
+		)
+			? settingsState.profileEffectsLayoutView
+			: "grid",
+		ownedProfileEffects: Array.isArray(settingsState.ownedProfileEffects)
+			? settingsState.ownedProfileEffects.filter(
+					(id) => typeof id === "string" && id.trim(),
+				)
+			: [],
+		equippedProfilePictureEffect:
+			typeof settingsState.equippedProfilePictureEffect === "string"
+				? settingsState.equippedProfilePictureEffect.trim()
+				: "",
+		equippedProfilePageEffect:
+			typeof settingsState.equippedProfilePageEffect === "string"
+				? settingsState.equippedProfilePageEffect.trim()
+				: "",
+		profileEffectsEquippedByUser:
+			settingsState.profileEffectsEquippedByUser &&
+			typeof settingsState.profileEffectsEquippedByUser === "object"
+				? settingsState.profileEffectsEquippedByUser
+				: {},
+	};
+}
+
+export function persistSettingsPayload(payload = serializeSettingsPayload()) {
+	const storage = getStorageApi();
+	if (!storage) return Promise.resolve();
+
+	return new Promise((resolve) => {
+		try {
+			storage.set({ [RP_SETTINGS_KEY]: payload }, () => resolve());
+		} catch {
+			resolve();
+		}
+	});
+}
+
 export function loadSettings() {
 	const storage = getStorageApi();
 	if (!storage) return Promise.resolve();
@@ -287,62 +407,7 @@ export function loadSettings() {
 				try {
 					const stored = result?.[RP_SETTINGS_KEY];
 					if (stored && typeof stored === "object") {
-						Object.assign(settingsState, RP_DEFAULT_SETTINGS, stored);
-						settingsState.blockedExecutionPages =
-							normalizeBlockedExecutionPages(stored.blockedExecutionPages);
-						settingsState.developerPageUnlocked =
-							!!stored.developerPageUnlocked;
-						if (stored.enablePluginControlPanel != null) {
-							settingsState.enablePluginControlPanel =
-								!!stored.enablePluginControlPanel;
-						}
-						if (stored.oldNavigationBarEnabled === undefined) {
-							if (stored.classicLeftNavEnabled != null) {
-								settingsState.oldNavigationBarEnabled =
-									!!stored.classicLeftNavEnabled;
-							} else if (stored.leftGrayFrameEnabled != null) {
-								settingsState.oldNavigationBarEnabled =
-									!!stored.leftGrayFrameEnabled;
-							}
-						}
-						delete settingsState.classicLeftNavEnabled;
-						delete settingsState.leftGrayFrameEnabled;
-						if (stored.sidebarSize === undefined) {
-							settingsState.sidebarSize = stored.sidebarIconsOnlyEnabled
-								? "icon"
-								: stored.smallNewNavigationBarEnabled
-									? "small"
-									: "full";
-						} else {
-							settingsState.sidebarSize = String(
-								stored.sidebarSize || "full",
-							).toLowerCase();
-							if (
-								!["full", "small", "icon"].includes(settingsState.sidebarSize)
-							) {
-								settingsState.sidebarSize = "full";
-							}
-						}
-						settingsState.hiddenSidebarItemsBySize =
-							normalizeHiddenSidebarItemsBySize(stored);
-						delete settingsState.hiddenSidebarItems;
-						if (
-							stored.renameDropdownRestore &&
-							typeof stored.renameDropdownRestore === "object"
-						) {
-							if (stored.renameCommunitiesToGroups === undefined) {
-								settingsState.renameCommunitiesToGroups =
-									!!stored.renameDropdownRestore.renameCommunitiesToGroups;
-							}
-							if (stored.renameExperiencesToGames === undefined) {
-								settingsState.renameExperiencesToGames =
-									!!stored.renameDropdownRestore.renameExperiencesToGames;
-							}
-							if (stored.renameMarketplaceToAvatarShop === undefined) {
-								settingsState.renameMarketplaceToAvatarShop =
-									!!stored.renameDropdownRestore.renameMarketplaceToAvatarShop;
-							}
-						}
+						mergeStoredSettings(stored);
 					}
 				} catch {
 					/* ignore */
@@ -361,61 +426,7 @@ export function saveSettings() {
 		if (!storage) return;
 
 		storage.set({
-			[RP_SETTINGS_KEY]: {
-				renameDropdownEnabled: settingsState.renameDropdownEnabled,
-				renameDropdownRestore: settingsState.renameDropdownRestore,
-				language: settingsState.language,
-				renameCommunitiesToGroups: settingsState.renameCommunitiesToGroups,
-				renameExperiencesToGames: settingsState.renameExperiencesToGames,
-				renameMarketplaceToAvatarShop:
-					settingsState.renameMarketplaceToAvatarShop,
-				oldNavigationBarEnabled: settingsState.oldNavigationBarEnabled,
-				smallNewNavigationBarEnabled:
-					settingsState.smallNewNavigationBarEnabled,
-				sidebarIconsOnlyEnabled: settingsState.sidebarIconsOnlyEnabled,
-				alwaysShowCloseButtonEnabled:
-					settingsState.alwaysShowCloseButtonEnabled,
-				friendStylingReimagnedEnabled:
-					settingsState.friendStylingReimagnedEnabled,
-				developerPageUnlocked: !!settingsState.developerPageUnlocked,
-				enablePluginControlPanel: !!settingsState.enablePluginControlPanel,
-				sidebarSize: settingsState.sidebarSize || "full",
-				sidebarCollapseMenuEnabled: !!settingsState.sidebarCollapseMenuEnabled,
-				hiddenSidebarItemsBySize: normalizeHiddenSidebarItemsBySize({
-					hiddenSidebarItemsBySize: settingsState.hiddenSidebarItemsBySize,
-				}),
-				blockedExecutionPages: normalizeBlockedExecutionPages(
-					settingsState.blockedExecutionPages,
-				),
-				customCss:
-					typeof settingsState.customCss === "string"
-						? settingsState.customCss
-						: "",
-				cosmeticsEnabled: !!settingsState.cosmeticsEnabled,
-				profileEffectsLayoutView: ["grid", "list", "wide"].includes(
-					settingsState.profileEffectsLayoutView,
-				)
-					? settingsState.profileEffectsLayoutView
-					: "grid",
-				ownedProfileEffects: Array.isArray(settingsState.ownedProfileEffects)
-					? settingsState.ownedProfileEffects.filter(
-							(id) => typeof id === "string" && id.trim(),
-						)
-					: [],
-				equippedProfilePictureEffect:
-					typeof settingsState.equippedProfilePictureEffect === "string"
-						? settingsState.equippedProfilePictureEffect.trim()
-						: "",
-				equippedProfilePageEffect:
-					typeof settingsState.equippedProfilePageEffect === "string"
-						? settingsState.equippedProfilePageEffect.trim()
-						: "",
-				profileEffectsEquippedByUser:
-					settingsState.profileEffectsEquippedByUser &&
-					typeof settingsState.profileEffectsEquippedByUser === "object"
-						? settingsState.profileEffectsEquippedByUser
-						: {},
-			},
+			[RP_SETTINGS_KEY]: serializeSettingsPayload(),
 		});
 	} catch {
 		/* ignore */

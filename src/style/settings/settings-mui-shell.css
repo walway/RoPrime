@@ -44,13 +44,11 @@ html.roprime-account-settings-open #react-user-account-base .container-footer {
 }
 
 /* 288px secondary rail */
-.roprime-settings-rail,
-.roprime-settings-rail.width-\[288px\],
-.roprime-settings-mui-shell .width-\[288px\] {
+.roprime-settings-rail {
 	flex: 0 0 243px;
 	width: 243px !important;
-	min-width: 243px;
-	max-width: 243px;
+	min-width: 243px !important;
+	max-width: 243px !important;
 	height: 100%;
 	min-height: 100dvh;
 	display: flex;
@@ -230,11 +228,7 @@ html.roprime-account-settings-open #react-user-account-base .container-footer {
 }
 
 .roprime-settings-rail .roprime-settings-nav-alert {
-	margin: 12px 8px 0;
-}
-
-.roprime-settings-mui-shell.is-search-mode .roprime-settings-nav-alert {
-	display: none !important;
+	margin: 16px 8px 0;
 }
 
 /* MUI IconButton + MenuOpenIcon */
@@ -343,8 +337,7 @@ html.roprime-settings-side-rail-hidden
 		flex-direction: column;
 	}
 
-	.roprime-settings-rail,
-	.roprime-settings-mui-shell .width-\[288px\] {
+	.roprime-settings-rail {
 		flex: 0 0 auto;
 		width: 100% !important;
 		min-width: 0;

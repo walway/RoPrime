@@ -101,6 +101,16 @@ function migrateLegacyEquippedByUserMap() {
 			}
 			changed = true;
 		}
+		for (const slot of /** @type {const} */ (["picture", "profile"])) {
+			const id = normalized[slot];
+			if (!id) continue;
+			const effect = getProfileEffectById(id);
+			if (!effect || effect.kind === slot) continue;
+			const other = slot === "picture" ? "profile" : "picture";
+			if (!normalized[other]) normalized[other] = id;
+			normalized[slot] = "";
+			changed = true;
+		}
 		if (normalized.picture || normalized.profile) {
 			next[userKey] = normalized;
 		}
@@ -173,10 +183,10 @@ export function buildProfileEffectsMarkup(effects = PROFILE_EFFECTS) {
 			(effect) => `
 		<article class="roprime-profile-effect-card" data-roprime-profile-effect="${effect.id}" data-roprime-profile-effect-kind="${effect.kind}">
 			<div class="roprime-profile-effect-preview">
+				${effect.kind === "picture" ? '<div class="roprime-profile-effect-avatar-wrap" data-roprime-profile-effect-avatar aria-hidden="true"></div>' : ""}
 				<div class="roprime-profile-effect-lottie">
 					<iframe src="${getProfileEffectShopEmbedSrc(effect)}" title="${effect.titleKey}" loading="lazy" ${PROFILE_EFFECT_IFRAME_TRANSPARENT_ATTRS}></iframe>
 				</div>
-				${effect.kind === "picture" ? '<div class="roprime-profile-effect-avatar-wrap" data-roprime-profile-effect-avatar aria-hidden="true"></div>' : ""}
 			</div>
 			<div class="roprime-profile-effect-footer">
 				<div class="roprime-profile-effect-title" data-i18n="${effect.titleKey}"></div>

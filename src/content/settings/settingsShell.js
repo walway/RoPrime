@@ -138,7 +138,7 @@ export function buildSettingsShell({
 
 	return `
 <div class="roprime-settings-wrapper roprime-settings-mui-shell" id="rp-settings-inner">
-	<aside class="width-[288px] ${MUI.secondaryRail} roprime-settings-rail" aria-label="RoPrime settings navigation">
+	<aside class="${MUI.secondaryRail} roprime-settings-rail" aria-label="RoPrime settings navigation">
 		<div class="roprime-settings-rail-scroll">
 			<div class="${MUI.headerContainer} roprime-settings-rail-header">
 				<span class="${MUI.headerTitle}" data-i18n="Settings hero title"></span>

@@ -31,6 +31,7 @@ export const STYLE_CSS_ORDER = [
 	"src/style/navigation/old-nav.css",
 	"src/style/settings/light-overrides.css",
 	"src/style/settings/custom-css.css",
+	"src/style/settings/settings-sync.css",
 	"src/style/profile/cosmetics-shop.css",
 	"src/style/profile/page-effects.css",
 	"src/style/profile/carousel-effects.css",

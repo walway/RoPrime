@@ -1,60 +1,49 @@
-/* Friends carousel — equipped picture / profile effects */
+/* Friends carousel — profile picture effects on avatar-card-container (above profile link) */
 
-.friend-carousel-container .avatar-card-image,
-.friend-carousel-container .avatar.avatar-card-fullbody {
+.react-friends-carousel-container
+	div.avatar.avatar-card-fullbody[data-testid="avatar-card-container"] {
 	position: relative !important;
 	overflow: visible !important;
 }
 
-.friend-carousel-container .roprime-friends-carousel-picture-effect {
+.react-friends-carousel-container
+	div.avatar.avatar-card-fullbody[data-testid="avatar-card-container"]
+	.roprime-friends-carousel-picture-effect {
 	position: absolute;
-	inset: 0;
-	z-index: 2;
+	left: 50%;
+	top: 50%;
+	z-index: 5;
+	width: 100%;
+	height: 100%;
+	max-width: 100%;
+	max-height: 100%;
+	transform: translate(-50%, -50%);
 	pointer-events: none;
 	overflow: hidden;
 	border-radius: inherit;
-	background: transparent;
+	background: transparent !important;
 }
 
-.friend-carousel-container .roprime-friends-carousel-picture-effect iframe {
+.react-friends-carousel-container
+	div.avatar.avatar-card-fullbody[data-testid="avatar-card-container"]
+	.roprime-friends-carousel-picture-effect
+	iframe {
 	display: block;
 	width: 100%;
 	height: 100%;
 	border: 0;
 	background: transparent !important;
+	background-color: transparent !important;
 	pointer-events: none;
+}
+
+.friend-carousel-container .avatar-card-image,
+.friend-carousel-container .avatar.avatar-card-fullbody {
+	position: relative;
+	overflow: visible;
 }
 
 .friend-carousel-container .user-card,
 .friend-carousel-container .friends-carousel-tile {
 	position: relative;
-}
-
-.friend-carousel-container .roprime-friends-carousel-profile-effect {
-	position: absolute;
-	left: 50%;
-	top: 0;
-	z-index: 0;
-	width: 120px;
-	height: 120px;
-	transform: translateX(-50%);
-	pointer-events: none;
-	overflow: hidden;
-	background: transparent;
-}
-
-.friend-carousel-container .roprime-friends-carousel-profile-effect iframe {
-	display: block;
-	width: 100%;
-	height: 100%;
-	border: 0;
-	background: transparent !important;
-	pointer-events: none;
-}
-
-.friend-carousel-container .avatar-card-image img,
-.friend-carousel-container .avatar-status,
-.friend-carousel-container [data-testid="presence-icon"] {
-	position: relative;
-	z-index: 3;
 }

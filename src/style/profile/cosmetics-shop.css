@@ -150,20 +150,28 @@
 }
 
 .roprime-profile-effect-preview {
+	position: relative;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
 	justify-content: center;
-	gap: 8px;
 	width: 100%;
+	min-height: 104px;
 	background: transparent;
 }
 
 .roprime-profile-effect-avatar-wrap {
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	z-index: 1;
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	width: 100%;
+	width: 72px;
+	height: 72px;
+	transform: translate(-50%, -50%);
+	pointer-events: none;
 }
 
 .roprime-profile-effect-avatar-wrap .roprime-effect-shop-avatar {
@@ -197,6 +205,7 @@
 
 .roprime-profile-effect-lottie {
 	position: relative;
+	z-index: 2;
 	width: 104px;
 	height: 104px;
 	max-width: 100%;
@@ -204,6 +213,7 @@
 	overflow: hidden;
 	background: transparent;
 	border-radius: 10px;
+	pointer-events: none;
 }
 
 .roprime-profile-effect-lottie iframe {
@@ -307,7 +317,20 @@
 
 .roprime-profile-effects-grid--list .roprime-profile-effect-preview {
 	width: auto;
+	min-height: 52px;
 	flex: 0 0 auto;
+}
+
+.roprime-profile-effects-grid--list .roprime-profile-effect-avatar-wrap {
+	width: 40px;
+	height: 40px;
+}
+
+.roprime-profile-effects-grid--list
+	.roprime-profile-effect-avatar-wrap
+	.roprime-effect-shop-avatar {
+	width: 40px;
+	height: 40px;
 }
 
 .roprime-profile-effects-grid--list .roprime-profile-effect-lottie {
