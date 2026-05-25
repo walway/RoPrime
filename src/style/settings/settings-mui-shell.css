@@ -233,6 +233,10 @@ html.roprime-account-settings-open #react-user-account-base .container-footer {
 	margin: 12px 8px 0;
 }
 
+.roprime-settings-mui-shell.is-search-mode .roprime-settings-nav-alert {
+	display: none !important;
+}
+
 /* MUI IconButton + MenuOpenIcon */
 .roprime-settings-menu-btn.MuiButtonBase-root.MuiIconButton-root {
 	display: inline-flex;

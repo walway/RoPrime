@@ -241,6 +241,9 @@ function applySidebarMode(inner, mode) {
 	syncAccountSettingsLayoutInset();
 	syncRoEliteView();
 	syncSidebarContent({ force: true });
+	if (getCurrentrp() === "sidebar-content") {
+		refreshSidebarContentList(inner);
+	}
 }
 
 function syncSidebarSliderFromState(inner) {
@@ -328,7 +331,9 @@ function refreshLayoutAndNav(root) {
 		"[data-roprime-profile-effects-alert]",
 	);
 	if (profileEffectsAlert instanceof HTMLElement) {
+		profileEffectsAlert.hidden = isSearchMode;
 		profileEffectsAlert.style.display = isSearchMode ? "none" : "";
+		profileEffectsAlert.setAttribute("aria-hidden", isSearchMode ? "true" : "false");
 		profileEffectsAlert.classList.toggle(
 			"is-active",
 			!isSearchMode && activePage === "other",

@@ -40,6 +40,10 @@ function destroyCssEditor() {
 	cssEditorHost = null;
 }
 
+function getEditorWrap() {
+	return cssEditorHost?.closest("[data-roprime-custom-css-editor-wrap]");
+}
+
 function configureEditorShadow(host) {
 	const shadow = host.shadowRoot;
 	const container = shadow?.querySelector(".prism-code-editor");
@@ -54,14 +58,18 @@ function configureEditorShadow(host) {
 	override.textContent = `
 		:host {
 			display: block;
-			color-scheme: dark;
 		}
 		.prism-code-editor {
 			margin: 0;
 			border-radius: 10px;
-			overflow-y: auto;
-			overflow-x: hidden;
+			overflow: visible !important;
+			--pce-bg: var(--roprime-editor-bg, var(--color-surface-300));
+			background: var(--roprime-editor-bg, var(--color-surface-300));
 			--pce-cursor: #f97316;
+		}
+		.prism-code-editor,
+		.prism-code-editor * {
+			scrollbar-width: auto;
 		}
 		.active-line:after {
 			display: none !important;
@@ -77,6 +85,7 @@ function configureEditorShadow(host) {
 
 function applyEditorHeight(editor) {
 	const host = cssEditorHost;
+	const wrap = getEditorWrap();
 	const shadow = host?.shadowRoot;
 	const container = shadow?.querySelector(".prism-code-editor");
 	if (!(container instanceof HTMLElement)) return;
@@ -85,10 +94,30 @@ function applyEditorHeight(editor) {
 	const minH = MIN_LINES * LINE_HEIGHT_PX + EDITOR_PADDING_PX;
 	const maxH = MAX_LINES * LINE_HEIGHT_PX + EDITOR_PADDING_PX;
 	const contentH = lineCount * LINE_HEIGHT_PX + EDITOR_PADDING_PX;
-	const height = Math.min(maxH, Math.max(minH, contentH));
+	const editorH = Math.max(minH, contentH);
 
-	container.style.height = `${height}px`;
-	container.style.overflowY = lineCount > MAX_LINES ? "auto" : "hidden";
+	const wrapScrollTop =
+		wrap instanceof HTMLElement ? wrap.scrollTop : 0;
+	const selStart = editor.textarea.selectionStart;
+	const selEnd = editor.textarea.selectionEnd;
+
+	container.style.height = `${editorH}px`;
+	container.style.minHeight = `${minH}px`;
+	container.style.overflow = "visible";
+	container.style.overflowY = "visible";
+
+	if (wrap instanceof HTMLElement) {
+		wrap.style.maxHeight = `${maxH}px`;
+		wrap.style.overflowY = contentH > maxH ? "auto" : "hidden";
+		requestAnimationFrame(() => {
+			wrap.scrollTop = wrapScrollTop;
+			try {
+				editor.textarea.setSelectionRange(selStart, selEnd);
+			} catch {
+				/* ignore */
+			}
+		});
+	}
 }
 
 function syncPlaceholder(inner) {
@@ -135,7 +164,6 @@ function ensureCssEditor(inner) {
 			applyEditorHeight(cssEditor);
 			syncPlaceholder(inner);
 
-			cssEditor.on("update", () => applyEditorHeight(cssEditor));
 			cssEditor.textarea.addEventListener("focus", () => syncPlaceholder(inner));
 			cssEditor.textarea.addEventListener("blur", () => syncPlaceholder(inner));
 		},

@@ -1,4 +1,7 @@
-import { normalizeSidebarSizeMode } from "../core/core.js";
+import {
+	getActiveSidebarSize,
+	normalizeSidebarSizeMode,
+} from "../core/core.js";
 import { t as accountSettingsPaneT } from "../settings/roprimeAccountSettingsPage.js";
 import {
 	discoverSidebarNavItems,
@@ -7,8 +10,6 @@ import {
 	restoreSidebarItem,
 } from "./sidebarContent.js";
 import { ADD_ICON_SVG, DELETE_ICON_SVG } from "./sidebarIcons.js";
-
-const SIDEBAR_SIZE_MODES = ["full", "small", "icon"];
 
 const SIDEBAR_SIZE_TITLE_KEYS = {
 	full: "Sidebar size full",
@@ -74,14 +75,14 @@ function buildSidebarContentSectionHtml(sizeMode) {
 		</div>`;
 }
 
-export function buildSidebarContentListHtml() {
-	const sections = SIDEBAR_SIZE_MODES.map((mode) =>
-		buildSidebarContentSectionHtml(mode),
-	).filter(Boolean);
-	if (!sections.length) {
+export function buildSidebarContentListHtml(
+	sizeMode = getActiveSidebarSize(),
+) {
+	const section = buildSidebarContentSectionHtml(sizeMode);
+	if (!section) {
 		return `<p class="roprime-sidebar-content-empty" data-i18n="Sidebar content empty hint"></p>`;
 	}
-	return sections.join("");
+	return section;
 }
 
 export function refreshSidebarContentList(inner) {
