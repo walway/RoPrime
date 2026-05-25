@@ -21,6 +21,29 @@ import {
 import { t as accountSettingsPaneT } from "./roprimeAccountSettingsPage.js";
 
 let cachedAuthUserId = null;
+let profileEffectNoticeTimer = 0;
+
+function showProfileEffectPurchaseNotice() {
+	const message = accountSettingsPaneT("Profile effect purchase wait notice");
+	let notice = document.getElementById("roprime-profile-effect-notice");
+	if (!(notice instanceof HTMLElement)) {
+		notice = document.createElement("div");
+		notice.id = "roprime-profile-effect-notice";
+		notice.className = "roprime-profile-effect-notice";
+		notice.setAttribute("role", "status");
+		notice.setAttribute("aria-live", "polite");
+		document.body.appendChild(notice);
+	}
+	notice.textContent = message;
+	notice.classList.add("is-visible");
+	if (profileEffectNoticeTimer) {
+		window.clearTimeout(profileEffectNoticeTimer);
+	}
+	profileEffectNoticeTimer = window.setTimeout(() => {
+		notice.classList.remove("is-visible");
+		profileEffectNoticeTimer = 0;
+	}, 10000);
+}
 
 function equippedFieldForKind(kind) {
 	return kind === "picture"
@@ -490,6 +513,7 @@ export function bindCosmeticsControls(inner) {
 					}
 					saveSettings();
 					syncCosmeticsUi(inner);
+					showProfileEffectPurchaseNotice();
 				})();
 				return;
 			}

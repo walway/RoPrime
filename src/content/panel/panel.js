@@ -77,7 +77,6 @@ export function syncRoEliteView() {
 		syncAlwaysShowCloseButton();
 		updateFriendStylingReimagnedVisibility();
 		syncSidebarCompactDecorations();
-		syncFriendCarouselEffects();
 		syncCustomCss();
 
 		if (settingsState.renameCommunitiesToGroups)

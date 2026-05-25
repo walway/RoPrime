@@ -9,6 +9,7 @@ import {
 	getProfileEffectById,
 	getProfileEffectShopEmbedSrc,
 } from "./profileEffectsCatalog.js";
+import { getRobloxUserId, peekRobloxUserId } from "./robloxUserId.js";
 import {
 	observeUserCardElements,
 	onUserCardElement,
@@ -26,6 +27,17 @@ const LOTTIE_WRAP_CLASS = "roprime-profile-effect-lottie";
 
 let installed = false;
 let syncQueue = Promise.resolve();
+
+const SCAN_DEBOUNCE_MS = 300;
+
+/** @type {Map<HTMLElement, AvatarEffectContext>} */
+const pendingCardSyncs = new Map();
+let pendingFlushTimer = 0;
+let scanDebounceTimer = 0;
+let lastExternalSyncAt = 0;
+
+/** Minimum gap when route/settings call syncFriendCarouselEffects (not DOM observer). */
+const EXTERNAL_SYNC_MIN_MS = 8000;
 
 /**
  * @param {HTMLAnchorElement} link
@@ -309,10 +321,35 @@ async function syncCardEffects(card, context) {
 	await syncPictureEffectOnHost(host, userId, context);
 }
 
+function schedulePendingCardFlush() {
+	if (pendingFlushTimer) return;
+	pendingFlushTimer = window.setTimeout(() => {
+		pendingFlushTimer = 0;
+		void flushPendingCardSyncs();
+	}, SCAN_DEBOUNCE_MS);
+}
+
+async function flushPendingCardSyncs() {
+	if (pendingCardSyncs.size === 0) return;
+
+	const batch = [...pendingCardSyncs.entries()];
+	pendingCardSyncs.clear();
+
+	if (peekRobloxUserId() == null) {
+		await getRobloxUserId();
+	}
+
+	for (const [card, context] of batch) {
+		syncQueue = syncQueue
+			.then(() => syncCardEffects(card, context))
+			.catch(() => {});
+	}
+}
+
+/** Collect card + context; sync runs after debounce with one auth lookup. */
 function queueSyncCard(card, context) {
-	syncQueue = syncQueue
-		.then(() => syncCardEffects(card, context))
-		.catch(() => {});
+	pendingCardSyncs.set(card, context);
+	schedulePendingCardFlush();
 }
 
 function queueSyncAvatarLink(link, context) {
@@ -365,12 +402,20 @@ function scanFriendsListAvatars() {
 	}
 }
 
+function scheduleAvatarScan() {
+	if (scanDebounceTimer) window.clearTimeout(scanDebounceTimer);
+	scanDebounceTimer = window.setTimeout(() => {
+		scanDebounceTimer = 0;
+		scanCarouselAvatars();
+		scanFriendsListAvatars();
+	}, SCAN_DEBOUNCE_MS);
+}
+
 function installCarouselLinkObserver() {
 	if (!document.body) return;
 
 	const observer = new MutationObserver(() => {
-		scanCarouselAvatars();
-		scanFriendsListAvatars();
+		scheduleAvatarScan();
 	});
 	observer.observe(document.body, { childList: true, subtree: true });
 }
@@ -386,28 +431,16 @@ export function installFriendCarouselEffects() {
 	});
 
 	installCarouselLinkObserver();
-	scanCarouselAvatars();
-	scanFriendsListAvatars();
+	scheduleAvatarScan();
 }
 
+/** Re-scan avatars after navigation/settings — throttled; DOM changes use the observer. */
 export function syncFriendCarouselEffects() {
 	if (!installed) return;
-	scanCarouselAvatars();
-	scanFriendsListAvatars();
 
-	for (const card of document.querySelectorAll(".friends-carousel-tile")) {
-		if (card instanceof HTMLElement) queueSyncCard(card, "carousel");
-	}
+	const now = Date.now();
+	if (now - lastExternalSyncAt < EXTERNAL_SYNC_MIN_MS) return;
+	lastExternalSyncAt = now;
 
-	for (const item of document.querySelectorAll("li.list-item.avatar-card")) {
-		if (!(item instanceof HTMLElement)) continue;
-		if (item.closest(CAROUSEL_CONTAINER_SELECTOR)) continue;
-		queueSyncCard(item, "friends-list");
-	}
-
-	for (const item of document.querySelectorAll(".user-item-clickable")) {
-		if (!(item instanceof HTMLElement)) continue;
-		if (item.closest(CAROUSEL_CONTAINER_SELECTOR)) continue;
-		queueSyncCard(item, "friends-list");
-	}
+	scheduleAvatarScan();
 }

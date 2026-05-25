@@ -1,7 +1,13 @@
 import { getProfileEffectById } from "./profileEffectsCatalog.js";
-import { getRobloxUserId } from "./profileEffectsRegistry.js";
+import { getRobloxUserId } from "./robloxUserId.js";
 
 const HEADSHOT_API = "https://thumbnails.roblox.com/v1/users/avatar-headshot";
+const HEADSHOT_CACHE_TTL_MS = 15 * 60 * 1000;
+
+/** @type {Map<number, { profile: { imageUrl: string, displayName: string, username: string } | null, at: number }>} */
+const headshotCache = new Map();
+/** @type {Map<number, Promise<{ imageUrl: string, displayName: string, username: string } | null>>} */
+const headshotFetchInFlight = new Map();
 
 /**
  * @param {number} userId
@@ -11,38 +17,69 @@ export async function fetchAuthUserHeadshot(userId) {
 	const id = Number(userId);
 	if (!Number.isFinite(id) || id <= 0) return null;
 
-	let displayName = "";
-	let username = "";
-
-	try {
-		const userRes = await fetch(`https://users.roblox.com/v1/users/${id}`, {
-			credentials: "include",
-		});
-		if (userRes.ok) {
-			const user = await userRes.json();
-			displayName = String(user?.displayName || user?.name || "").trim();
-			username = String(user?.name || "").trim();
-		}
-	} catch {
-		/* optional */
+	const cached = headshotCache.get(id);
+	if (cached && Date.now() - cached.at < HEADSHOT_CACHE_TTL_MS) {
+		return cached.profile;
 	}
 
+	const inFlight = headshotFetchInFlight.get(id);
+	if (inFlight) return inFlight;
+
+	const promise = (async () => {
+		let displayName = "";
+		let username = "";
+
+		try {
+			const userRes = await fetch(`https://users.roblox.com/v1/users/${id}`, {
+				credentials: "include",
+			});
+			if (userRes.status === 429) {
+				return cached?.profile ?? null;
+			}
+			if (userRes.ok) {
+				const user = await userRes.json();
+				displayName = String(user?.displayName || user?.name || "").trim();
+				username = String(user?.name || "").trim();
+			}
+		} catch {
+			/* optional */
+		}
+
+		try {
+			const thumbRes = await fetch(
+				`${HEADSHOT_API}?userIds=${id}&size=150x150&format=Png&isCircular=false`,
+				{ credentials: "include" },
+			);
+			if (thumbRes.status === 429) {
+				return cached?.profile ?? null;
+			}
+			if (!thumbRes.ok) {
+				headshotCache.set(id, { profile: null, at: Date.now() });
+				return null;
+			}
+			const thumbJson = await thumbRes.json();
+			const imageUrl = String(thumbJson?.data?.[0]?.imageUrl || "").trim();
+			if (!imageUrl) {
+				headshotCache.set(id, { profile: null, at: Date.now() });
+				return null;
+			}
+			const profile = {
+				imageUrl,
+				displayName: displayName || username || "User",
+				username,
+			};
+			headshotCache.set(id, { profile, at: Date.now() });
+			return profile;
+		} catch {
+			return cached?.profile ?? null;
+		}
+	})();
+
+	headshotFetchInFlight.set(id, promise);
 	try {
-		const thumbRes = await fetch(
-			`${HEADSHOT_API}?userIds=${id}&size=150x150&format=Png&isCircular=false`,
-			{ credentials: "include" },
-		);
-		if (!thumbRes.ok) return null;
-		const thumbJson = await thumbRes.json();
-		const imageUrl = String(thumbJson?.data?.[0]?.imageUrl || "").trim();
-		if (!imageUrl) return null;
-		return {
-			imageUrl,
-			displayName: displayName || username || "User",
-			username,
-		};
-	} catch {
-		return null;
+		return await promise;
+	} finally {
+		headshotFetchInFlight.delete(id);
 	}
 }
 

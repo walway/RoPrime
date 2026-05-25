@@ -366,3 +366,31 @@
 .roprime-profile-effect-card--hidden {
 	display: none !important;
 }
+
+.roprime-profile-effect-notice {
+	position: fixed;
+	right: 16px;
+	bottom: 16px;
+	z-index: 2147483646;
+	max-width: min(360px, calc(100vw - 32px));
+	padding: 12px 14px;
+	border-radius: 10px;
+	border: 1px solid color-mix(in srgb, var(--color-content-emphasis) 18%, transparent);
+	background: var(--color-surface-100, #2a2a2a);
+	color: var(--color-content-emphasis, #fff);
+	font-size: 13px;
+	line-height: 1.45;
+	box-shadow: 0 8px 24px rgb(0 0 0 / 35%);
+	opacity: 0;
+	transform: translateY(8px);
+	pointer-events: none;
+	transition:
+		opacity 0.2s ease,
+		transform 0.2s ease;
+}
+
+.roprime-profile-effect-notice.is-visible {
+	opacity: 1;
+	transform: translateY(0);
+	pointer-events: auto;
+}

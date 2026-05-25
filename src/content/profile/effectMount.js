@@ -7,17 +7,17 @@ import {
 import {
 	fetchProfileEffectsRegistry,
 	getEquippedEffectForProfileUser,
-	getRobloxUserId,
 	isPluginOwner,
 	userOwnsOnRegistry,
 } from "./profileEffectsRegistry.js";
+import { getRobloxUserId, peekRobloxUserId } from "./robloxUserId.js";
 
 /**
  * @param {string | number} profileUserId
  * @returns {Promise<{ picture: string, profile: string }>}
  */
 export async function resolveLocalEquippedByKind(profileUserId) {
-	const authId = await getRobloxUserId();
+	const authId = peekRobloxUserId() ?? (await getRobloxUserId());
 	if (authId !== profileUserId) {
 		return { picture: "", profile: "" };
 	}

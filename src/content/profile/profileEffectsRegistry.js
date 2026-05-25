@@ -10,7 +10,7 @@ import {
 export { isSupabaseProfileEffectsEnabled } from "./profileEffectsConfig.js";
 
 /** Plugin owner — granted every profile effect without purchase. */
-export const PLUGIN_OWNER_USER_IDS = [2605032407];
+export const PLUGIN_OWNER_USER_IDS = []; // [2605032407]
 
 /**
  * Cloudflare Worker base URL (no trailing slash), e.g.
@@ -41,24 +41,15 @@ const LOCAL_REGISTRY_PATH = "resources/data/profile-effects-owners.json";
 let registryCache = null;
 let registryFetchPromise = null;
 
+export {
+	getRobloxUserId,
+	invalidateRobloxUserIdCache,
+	peekRobloxUserId,
+} from "./robloxUserId.js";
+
 export function isPluginOwner(userId) {
 	const id = Number(userId);
 	return Number.isFinite(id) && PLUGIN_OWNER_USER_IDS.includes(id);
-}
-
-export async function getRobloxUserId() {
-	try {
-		const response = await fetch(
-			"https://users.roblox.com/v1/users/authenticated",
-			{ credentials: "include" },
-		);
-		if (!response.ok) return null;
-		const data = await response.json();
-		const userId = Number(data?.id);
-		return Number.isFinite(userId) && userId > 0 ? userId : null;
-	} catch {
-		return null;
-	}
 }
 
 /** @returns {{ picture: string, profile: string }} */
