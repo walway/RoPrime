@@ -1,0 +1,79 @@
+/* Friends list only (not home carousel) — 96×96 effect centered on avatar */
+
+li.list-item.avatar-card div.avatar.avatar-card-fullbody,
+.avatar-card-container div.avatar.avatar-card-fullbody {
+	position: relative !important;
+	overflow: visible !important;
+}
+
+li.list-item.avatar-card
+	div.avatar.avatar-card-fullbody
+	> .roprime-friends-list-picture-effect,
+.avatar-card-container
+	div.avatar.avatar-card-fullbody
+	> .roprime-friends-list-picture-effect {
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	z-index: 5;
+	width: 96px;
+	height: 96px;
+	margin: 0;
+	transform: translate(-50%, -50%);
+	pointer-events: none;
+	overflow: hidden;
+	background: transparent !important;
+	background-color: transparent !important;
+}
+
+li.list-item.avatar-card
+	.roprime-friends-list-picture-effect
+	.roprime-profile-effect-lottie,
+.avatar-card-container
+	.roprime-friends-list-picture-effect
+	.roprime-profile-effect-lottie {
+	position: relative;
+	z-index: 2;
+	width: 96px;
+	height: 96px;
+	overflow: hidden;
+	background: transparent !important;
+	background-color: transparent !important;
+	border-radius: inherit;
+	pointer-events: none;
+}
+
+li.list-item.avatar-card
+	.roprime-friends-list-picture-effect
+	.roprime-profile-effect-lottie
+	iframe,
+.avatar-card-container
+	.roprime-friends-list-picture-effect
+	.roprime-profile-effect-lottie
+	iframe {
+	position: absolute;
+	inset: 0;
+	display: block;
+	width: 100%;
+	height: 100%;
+	border: 0;
+	background: transparent !important;
+	background-color: transparent !important;
+	color-scheme: normal;
+	transform: none;
+	transform-origin: center center;
+	pointer-events: none;
+	-webkit-user-select: none;
+	user-select: none;
+}
+
+li.list-item.avatar-card a.avatar-card-link {
+	position: relative;
+	z-index: 1;
+}
+
+li.list-item.avatar-card .thumbnail-2d-container.avatar-card-image img,
+.avatar-card-container .thumbnail-2d-container.avatar-card-image img {
+	position: relative;
+	z-index: 2;
+}

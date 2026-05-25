@@ -35,6 +35,7 @@ export const STYLE_CSS_ORDER = [
 	"src/style/profile/cosmetics-shop.css",
 	"src/style/profile/page-effects.css",
 	"src/style/profile/carousel-effects.css",
+	"src/style/profile/friend-list-effects.css",
 ];
 
 function prepareLottieVendorAssets() {

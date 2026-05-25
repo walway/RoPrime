@@ -15,11 +15,14 @@ import {
 } from "./userCardElements.js";
 
 const PICTURE_LAYER_ATTR = "data-roprime-friends-picture-effect";
-const PICTURE_LAYER_CLASS = "roprime-friends-carousel-picture-effect";
+const CAROUSEL_LAYER_CLASS = "roprime-friends-carousel-picture-effect";
+const FRIENDS_LIST_LAYER_CLASS = "roprime-friends-list-picture-effect";
 const CAROUSEL_CONTAINER_SELECTOR = ".react-friends-carousel-container";
 const AVATAR_PROFILE_LINK_SELECTOR = "a.avatar-card-link";
 const AVATAR_CONTAINER_SELECTOR = "div.avatar.avatar-card-fullbody";
 const LOTTIE_WRAP_CLASS = "roprime-profile-effect-lottie";
+
+/** @typedef {"carousel" | "friends-list"} AvatarEffectContext */
 
 let installed = false;
 let syncQueue = Promise.resolve();
@@ -56,8 +59,48 @@ function isAvatarProfileLink(link) {
 }
 
 /**
- * Profile link below → parent avatar host above (div.avatar.avatar-card-fullbody).
- *
+ * @param {HTMLElement} card
+ * @returns {AvatarEffectContext | null}
+ */
+function getCardContext(card) {
+	if (
+		card.matches(".friends-carousel-tile") ||
+		card.closest(CAROUSEL_CONTAINER_SELECTOR)
+	) {
+		return "carousel";
+	}
+
+	if (
+		card.matches("li.list-item.avatar-card") ||
+		card.closest("li.list-item.avatar-card") ||
+		card.matches(".avatar-card-container")
+	) {
+		return "friends-list";
+	}
+
+	return null;
+}
+
+/**
+ * @param {AvatarEffectContext} context
+ */
+function layerClassForContext(context) {
+	return context === "friends-list"
+		? FRIENDS_LIST_LAYER_CLASS
+		: CAROUSEL_LAYER_CLASS;
+}
+
+/**
+ * @param {number} userId
+ * @param {AvatarEffectContext} context
+ */
+function layerIdFor(userId, context) {
+	return context === "friends-list"
+		? `roprime-friends-list-picture-${userId}`
+		: `roprime-friends-carousel-picture-${userId}`;
+}
+
+/**
  * @param {HTMLAnchorElement} link
  * @returns {HTMLElement | null}
  */
@@ -73,27 +116,15 @@ function findPictureEffectHostFromLink(link) {
 }
 
 /**
- * @param {HTMLElement} avatarHost
- * @param {HTMLAnchorElement} link
- * @returns {{ avatar: HTMLElement, link: HTMLAnchorElement } | null}
- */
-function resolveAvatarHostAndLink(avatarHost, link) {
-	if (!isAvatarProfileLink(link)) return null;
-	const avatar = link.closest(AVATAR_CONTAINER_SELECTOR);
-	if (!(avatar instanceof HTMLElement) || avatar !== avatarHost) return null;
-	return { avatar, link };
-}
-
-/**
  * @param {import("./profileEffectsCatalog.js").ProfileEffect} effect
- * @param {{ layerId: string, layerAttr: string }} options
+ * @param {{ layerId: string, layerAttr: string, layerClass: string }} options
  * @param {HTMLElement} host
  */
-function mountFriendCarouselPictureEffect(host, effect, { layerId, layerAttr }) {
+function mountFriendPictureEffect(host, effect, { layerId, layerAttr, layerClass }) {
 	const layer = document.createElement("div");
 	layer.id = layerId;
 	layer.setAttribute(layerAttr, effect.id);
-	layer.className = PICTURE_LAYER_CLASS;
+	layer.className = layerClass;
 
 	const lottie = document.createElement("div");
 	lottie.className = LOTTIE_WRAP_CLASS;
@@ -116,12 +147,7 @@ function mountFriendCarouselPictureEffect(host, effect, { layerId, layerAttr }) 
  * @returns {HTMLAnchorElement | null}
  */
 function findAvatarProfileLink(root, userId) {
-	const scope =
-		root.closest(CAROUSEL_CONTAINER_SELECTOR) ||
-		root.querySelector(CAROUSEL_CONTAINER_SELECTOR) ||
-		root;
-
-	for (const link of scope.querySelectorAll(AVATAR_PROFILE_LINK_SELECTOR)) {
+	for (const link of root.querySelectorAll(AVATAR_PROFILE_LINK_SELECTOR)) {
 		if (!(link instanceof HTMLAnchorElement)) continue;
 		if (!isAvatarProfileLink(link)) continue;
 		if (parseUserIdFromProfileLink(link) === userId) return link;
@@ -151,10 +177,6 @@ function parseUserIdFromCard(card) {
 	return null;
 }
 
-function layerIdFor(userId) {
-	return `roprime-friends-effect-picture-${userId}`;
-}
-
 function removeLayerById(layerId) {
 	document.getElementById(layerId)?.remove();
 }
@@ -168,9 +190,10 @@ function removeLayersInCard(card) {
 /**
  * @param {HTMLElement} host
  * @param {number} userId
+ * @param {AvatarEffectContext} context
  */
-async function syncPictureEffectOnHost(host, userId) {
-	const layerId = layerIdFor(userId);
+async function syncPictureEffectOnHost(host, userId, context) {
+	const layerId = layerIdFor(userId, context);
 	const kind = "picture";
 
 	const effectId = await resolveEquippedEffectId(userId, kind);
@@ -188,13 +211,14 @@ async function syncPictureEffectOnHost(host, userId) {
 	if (layerIsCurrent(host, layerId, PICTURE_LAYER_ATTR, effect.id)) return;
 
 	removeLayerById(layerId);
-	mountFriendCarouselPictureEffect(host, effect, {
+	mountFriendPictureEffect(host, effect, {
 		layerId,
 		layerAttr: PICTURE_LAYER_ATTR,
+		layerClass: layerClassForContext(context),
 	});
 }
 
-async function syncAvatarProfileLink(link) {
+async function syncAvatarProfileLink(link, context) {
 	if (!shouldRunRoPrimeOnCurrentPage()) {
 		removeLayersInCard(link);
 		return;
@@ -207,14 +231,14 @@ async function syncAvatarProfileLink(link) {
 
 	const host = findPictureEffectHostFromLink(link);
 	if (!(host instanceof HTMLElement)) {
-		removeLayerById(layerIdFor(userId));
+		removeLayerById(layerIdFor(userId, context));
 		return;
 	}
 
-	await syncPictureEffectOnHost(host, userId);
+	await syncPictureEffectOnHost(host, userId, context);
 }
 
-async function syncAvatarHost(avatarHost) {
+async function syncAvatarHost(avatarHost, context) {
 	if (!shouldRunRoPrimeOnCurrentPage()) {
 		removeLayersInCard(avatarHost);
 		return;
@@ -228,13 +252,13 @@ async function syncAvatarHost(avatarHost) {
 	const userId = parseUserIdFromProfileLink(link);
 	if (!userId) return;
 
-	const resolved = resolveAvatarHostAndLink(avatarHost, link);
-	if (!resolved) return;
+	const avatar = link.closest(AVATAR_CONTAINER_SELECTOR);
+	if (!(avatar instanceof HTMLElement) || avatar !== avatarHost) return;
 
-	await syncPictureEffectOnHost(resolved.avatar, userId);
+	await syncPictureEffectOnHost(avatar, userId, context);
 }
 
-async function syncCardEffects(card) {
+async function syncCardEffects(card, context) {
 	if (!shouldRunRoPrimeOnCurrentPage()) {
 		removeLayersInCard(card);
 		return;
@@ -248,25 +272,29 @@ async function syncCardEffects(card) {
 
 	const host = findPictureEffectHost(card, userId);
 	if (!(host instanceof HTMLElement)) {
-		removeLayerById(layerIdFor(userId));
+		removeLayerById(layerIdFor(userId, context));
 		return;
 	}
 
-	await syncPictureEffectOnHost(host, userId);
+	await syncPictureEffectOnHost(host, userId, context);
 }
 
-function queueSyncCard(card) {
-	syncQueue = syncQueue.then(() => syncCardEffects(card)).catch(() => {});
-}
-
-function queueSyncAvatarLink(link) {
+function queueSyncCard(card, context) {
 	syncQueue = syncQueue
-		.then(() => syncAvatarProfileLink(link))
+		.then(() => syncCardEffects(card, context))
 		.catch(() => {});
 }
 
-function queueSyncAvatarHost(avatarHost) {
-	syncQueue = syncQueue.then(() => syncAvatarHost(avatarHost)).catch(() => {});
+function queueSyncAvatarLink(link, context) {
+	syncQueue = syncQueue
+		.then(() => syncAvatarProfileLink(link, context))
+		.catch(() => {});
+}
+
+function queueSyncAvatarHost(avatarHost, context) {
+	syncQueue = syncQueue
+		.then(() => syncAvatarHost(avatarHost, context))
+		.catch(() => {});
 }
 
 function scanCarouselAvatars() {
@@ -276,12 +304,28 @@ function scanCarouselAvatars() {
 		if (!(container instanceof HTMLElement)) continue;
 
 		for (const link of container.querySelectorAll(AVATAR_PROFILE_LINK_SELECTOR)) {
-			if (link instanceof HTMLAnchorElement) queueSyncAvatarLink(link);
+			if (link instanceof HTMLAnchorElement) {
+				queueSyncAvatarLink(link, "carousel");
+			}
 		}
 
 		for (const avatar of container.querySelectorAll(AVATAR_CONTAINER_SELECTOR)) {
-			if (avatar instanceof HTMLElement) queueSyncAvatarHost(avatar);
+			if (avatar instanceof HTMLElement) queueSyncAvatarHost(avatar, "carousel");
 		}
+	}
+}
+
+function scanFriendsListAvatars() {
+	for (const item of document.querySelectorAll("li.list-item.avatar-card")) {
+		if (!(item instanceof HTMLElement)) continue;
+		if (item.closest(CAROUSEL_CONTAINER_SELECTOR)) continue;
+		queueSyncCard(item, "friends-list");
+	}
+
+	for (const container of document.querySelectorAll(".avatar-card-container")) {
+		if (!(container instanceof HTMLElement)) continue;
+		if (container.closest(CAROUSEL_CONTAINER_SELECTOR)) continue;
+		queueSyncCard(container, "friends-list");
 	}
 }
 
@@ -290,6 +334,7 @@ function installCarouselLinkObserver() {
 
 	const observer = new MutationObserver(() => {
 		scanCarouselAvatars();
+		scanFriendsListAvatars();
 	});
 	observer.observe(document.body, { childList: true, subtree: true });
 }
@@ -300,17 +345,27 @@ export function installFriendCarouselEffects() {
 
 	observeUserCardElements();
 	onUserCardElement((card) => {
-		queueSyncCard(card);
+		const context = getCardContext(card);
+		if (context) queueSyncCard(card, context);
 	});
 
 	installCarouselLinkObserver();
 	scanCarouselAvatars();
+	scanFriendsListAvatars();
 }
 
 export function syncFriendCarouselEffects() {
 	if (!installed) return;
 	scanCarouselAvatars();
+	scanFriendsListAvatars();
+
 	for (const card of document.querySelectorAll(".friends-carousel-tile")) {
-		if (card instanceof HTMLElement) queueSyncCard(card);
+		if (card instanceof HTMLElement) queueSyncCard(card, "carousel");
+	}
+
+	for (const item of document.querySelectorAll("li.list-item.avatar-card")) {
+		if (!(item instanceof HTMLElement)) continue;
+		if (item.closest(CAROUSEL_CONTAINER_SELECTOR)) continue;
+		queueSyncCard(item, "friends-list");
 	}
 }
