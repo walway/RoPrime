@@ -8,6 +8,7 @@ import { updateSmallNewNavVisibility } from "./smallNewNav.js";
 
 const RP_SIDEBAR_CONTENT_STYLE_ID = "roprime-sidebar-content-hide-style";
 const RP_MENU_ICON_BOUND_ATTR = "data-roprime-menu-icon-bound";
+const ORIGINAL_MENU_ICON_CONTENT = new WeakMap();
 
 /** @typedef {{ id: string, label: string, find: (nav: HTMLElement) => Element | null, conditional?: boolean }} SidebarNavItemDef */
 
@@ -253,9 +254,10 @@ function updateSidebarHideStyle() {
 function restoreMenuIcons() {
 	document.querySelectorAll("span.icon-nav-menu").forEach((span) => {
 		if (!(span instanceof HTMLElement)) return;
-		if (span.hasAttribute("data-roprime-menu-icon-html")) {
-			span.innerHTML = span.getAttribute("data-roprime-menu-icon-html") || "";
-			span.removeAttribute("data-roprime-menu-icon-html");
+		const original = ORIGINAL_MENU_ICON_CONTENT.get(span);
+		if (original instanceof DocumentFragment) {
+			span.replaceChildren(original.cloneNode(true));
+			ORIGINAL_MENU_ICON_CONTENT.delete(span);
 		}
 		span.classList.remove("roprime-icon-nav-menu-replaced");
 	});
@@ -264,8 +266,10 @@ function restoreMenuIcons() {
 function applyMenuOpenIcon() {
 	document.querySelectorAll("span.icon-nav-menu").forEach((span) => {
 		if (!(span instanceof HTMLElement)) return;
-		if (!span.hasAttribute("data-roprime-menu-icon-html")) {
-			span.setAttribute("data-roprime-menu-icon-html", span.innerHTML);
+		if (!ORIGINAL_MENU_ICON_CONTENT.has(span)) {
+			const original = document.createDocumentFragment();
+			original.append(...Array.from(span.childNodes).map((node) => node.cloneNode(true)));
+			ORIGINAL_MENU_ICON_CONTENT.set(span, original);
 		}
 		span.innerHTML = MENU_OPEN_ICON_SVG;
 		span.classList.add("roprime-icon-nav-menu-replaced");
