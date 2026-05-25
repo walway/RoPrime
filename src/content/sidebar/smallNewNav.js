@@ -12,13 +12,31 @@ const SMALL_NEW_NAV_BASE_CSS = [
 	"{ width: 200px !important; min-width: 0 !important; max-width: 200px !important; }",
 ].join("\n");
 
+/** Short labels for the 200px sidebar rail. */
+const SMALL_NAV_LABEL_REPLACEMENTS = [
+	{ pattern: /official store/gi, replacement: "Store" },
+	{ pattern: /buy gift cards/gi, replacement: "Gift Cards" },
+];
+
 function buildSmallNewNavStylesheet() {
 	return [SMALL_NEW_NAV_BASE_CSS, SMALL_NEW_NAV_CUSTOM_CSS]
 		.filter((chunk) => typeof chunk === "string" && chunk.trim())
 		.join("\n");
 }
 
-function restoreOfficialStoreSidebarLabels() {
+function textNeedsSmallNavRename(text) {
+	return SMALL_NAV_LABEL_REPLACEMENTS.some(({ pattern }) => pattern.test(text));
+}
+
+function applySmallNavLabelRenames(text) {
+	let next = text;
+	for (const { pattern, replacement } of SMALL_NAV_LABEL_REPLACEMENTS) {
+		next = next.replace(pattern, replacement);
+	}
+	return next;
+}
+
+function restoreSmallNavSidebarLabels() {
 	const nav = document.querySelector(".left-nav");
 	if (!nav) return;
 
@@ -48,10 +66,10 @@ function restoreOfficialStoreSidebarLabels() {
 	}
 }
 
-export function syncOfficialStoreSidebarRename() {
+export function syncSmallNavSidebarRenames() {
 	const nav = document.querySelector(".left-nav");
 	if (!nav || !settingsState.smallNewNavigationBarEnabled) {
-		restoreOfficialStoreSidebarLabels();
+		restoreSmallNavSidebarLabels();
 		return;
 	}
 
@@ -59,19 +77,25 @@ export function syncOfficialStoreSidebarRename() {
 		if (!(el instanceof HTMLElement)) return;
 
 		const aria = el.getAttribute("aria-label");
-		if (aria && /official store/i.test(aria)) {
+		if (aria && textNeedsSmallNavRename(aria)) {
 			if (!el.hasAttribute("data-rp-orig-aria-label")) {
 				el.setAttribute("data-rp-orig-aria-label", aria);
 			}
-			el.setAttribute("aria-label", aria.replace(/official store/gi, "Store"));
+			el.setAttribute(
+				"aria-label",
+				applySmallNavLabelRenames(el.getAttribute("data-rp-orig-aria-label") || aria),
+			);
 		}
 
 		const title = el.getAttribute("title");
-		if (title && /official store/i.test(title)) {
+		if (title && textNeedsSmallNavRename(title)) {
 			if (!el.hasAttribute("data-rp-orig-title")) {
 				el.setAttribute("data-rp-orig-title", title);
 			}
-			el.setAttribute("title", title.replace(/official store/gi, "Store"));
+			el.setAttribute(
+				"title",
+				applySmallNavLabelRenames(el.getAttribute("data-rp-orig-title") || title),
+			);
 		}
 	});
 
@@ -83,33 +107,37 @@ export function syncOfficialStoreSidebarRename() {
 			parent instanceof HTMLElement &&
 			!["SCRIPT", "STYLE", "NOSCRIPT"].includes(parent.tagName) &&
 			typeof node.nodeValue === "string" &&
-			/official store/i.test(node.nodeValue)
+			textNeedsSmallNavRename(node.nodeValue)
 		) {
 			if (!parent.hasAttribute("data-rp-orig-text")) {
 				parent.setAttribute("data-rp-orig-text", node.nodeValue);
 			}
-			node.nodeValue = node.nodeValue.replace(/official store/gi, "Store");
+			const orig = parent.getAttribute("data-rp-orig-text") || node.nodeValue;
+			node.nodeValue = applySmallNavLabelRenames(orig);
 		}
 		node = walker.nextNode();
 	}
 }
 
+/** @deprecated Use syncSmallNavSidebarRenames */
+export const syncOfficialStoreSidebarRename = syncSmallNavSidebarRenames;
+
 export function updateSmallNewNavVisibility() {
 	const existingStyle = document.getElementById(RP_SMALL_NEW_NAV_STYLE_ID);
 	if (!settingsState.smallNewNavigationBarEnabled) {
 		if (existingStyle instanceof HTMLStyleElement) existingStyle.remove();
-		restoreOfficialStoreSidebarLabels();
+		restoreSmallNavSidebarLabels();
 		return;
 	}
 
 	const css = buildSmallNewNavStylesheet();
 	if (existingStyle instanceof HTMLStyleElement) {
 		if (existingStyle.textContent !== css) existingStyle.textContent = css;
-		syncOfficialStoreSidebarRename();
+		syncSmallNavSidebarRenames();
 		return;
 	}
 
-	syncOfficialStoreSidebarRename();
+	syncSmallNavSidebarRenames();
 
 	const style = document.createElement("style");
 	style.id = RP_SMALL_NEW_NAV_STYLE_ID;
