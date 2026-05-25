@@ -8,7 +8,7 @@ const FRIEND_STYLING_REIMAGNED_CSS = `
     margin-bottom: 18px !important;
     overflow: visible !important;
     border-radius: 16px !important;
-    background: linear-gradient(to bottom, #393b41 0%, #2f3136 100%) !important;
+    background: var(--color-surface-300) !important;
     border: 1px solid rgba(255, 255, 255, 0.08) !important;
     box-shadow: 0 10px 24px rgba(0, 0, 0, 0.26) !important;
 }
@@ -43,10 +43,8 @@ const FRIEND_STYLING_REIMAGNED_CSS = `
     position: absolute;
     inset: -2px;
     border-radius: 9999px;
-    background: linear-gradient(to bottom, #edf0f4 0%, #c9ced6 58%, #8c929d 100%);
-    box-shadow:
-        0 0 0 1px rgba(255, 255, 255, 0.1),
-        0 0 8px rgba(219, 227, 240, 0.18);
+    background: var(--color-surface-300);
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.1);
     z-index: 0;
 }
 
@@ -82,35 +80,12 @@ const FRIEND_STYLING_REIMAGNED_CSS = `
     z-index: 4 !important;
 }
 
-.friend-carousel-container .rologic-presence-offline .avatar-card-image::before {
-    background: linear-gradient(to bottom, #edf0f4 0%, #c9ced6 58%, #8c929d 100%) !important;
-    box-shadow:
-        0 0 0 1px rgba(255, 255, 255, 0.1),
-        0 0 8px rgba(219, 227, 240, 0.18) !important;
-}
-
-.friend-carousel-container .rologic-presence-online .avatar-card-image::before {
-    background: linear-gradient(to bottom, #90dcff 0%, #4ab3ff 55%, #245dff 100%) !important;
-    box-shadow:
-        0 0 0 1px rgba(102, 189, 255, 0.52),
-        0 0 10px rgba(74, 179, 255, 0.5),
-        0 0 22px rgba(36, 93, 255, 0.42) !important;
-}
-
-.friend-carousel-container .rologic-presence-game .avatar-card-image::before {
-    background: linear-gradient(to bottom, #a2ffbf 0%, #49ee7d 55%, #179a3f 100%) !important;
-    box-shadow:
-        0 0 0 1px rgba(73, 238, 125, 0.52),
-        0 0 10px rgba(73, 238, 125, 0.46),
-        0 0 22px rgba(23, 154, 63, 0.36) !important;
-}
-
+.friend-carousel-container .rologic-presence-offline .avatar-card-image::before,
+.friend-carousel-container .rologic-presence-online .avatar-card-image::before,
+.friend-carousel-container .rologic-presence-game .avatar-card-image::before,
 .friend-carousel-container .rologic-presence-studio .avatar-card-image::before {
-    background: linear-gradient(to bottom, #ffd89d 0%, #ffaf4f 55%, #df7419 100%) !important;
-    box-shadow:
-        0 0 0 1px rgba(255, 175, 79, 0.5),
-        0 0 10px rgba(255, 175, 79, 0.45),
-        0 0 22px rgba(223, 116, 25, 0.36) !important;
+    background: var(--color-surface-300) !important;
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.1) !important;
 }
 `.trim();
 
