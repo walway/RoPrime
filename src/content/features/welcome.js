@@ -2,7 +2,6 @@ import {
 	getExtensionResourceUrl,
 	getStorageApi,
 	isExtensionContextInvalidatedError,
-	settingsT,
 } from "../core/core.js";
 
 export const RP_HOME_WELCOME_DISMISSED_KEY = "rpHomeWelcomeDismissed";
@@ -45,7 +44,7 @@ function removeWelcomeIfPresent() {
 }
 
 function getExtensionIconUrl() {
-	return getExtensionResourceUrl("resources/roprime-icon.png");
+	return getExtensionResourceUrl("src/resources/roprime-icon.svg");
 }
 
 async function getRobloxViewer() {
@@ -135,40 +134,52 @@ async function showWelcomeModal() {
 
 	const iconSrc = getExtensionIconUrl();
 	const viewer = await getRobloxViewer();
-	const viewerName = viewer?.name
+	const _viewerName = viewer?.name
 		? String(viewer.name).replace(/[<>&"]/g, "")
 		: "there";
-	const avatarSrc = viewer?.avatarUrl || iconSrc;
+	const _avatarSrc = viewer?.avatarUrl || iconSrc;
 	root.innerHTML = `
-        <div class="roprime-welcome-backdrop" data-roprime-welcome-dismiss="backdrop"></div>
-        <div class="roprime-welcome-frame">
-            <div class="roprime-welcome-card">
-                <button type="button" class="roprime-welcome-close" aria-label="Close welcome modal">&times;</button>
-                <div class="roprime-welcome-header">
-                    <img class="roprime-welcome-logo" src="${avatarSrc}" alt="" width="28" height="28" />
-                    <h2 id="roprime-welcome-title" class="roprime-welcome-title">Welcome to RoPrime, ${viewerName}!</h2>
-                </div>
-                <p class="roprime-welcome-text">Welcome to RoPrime!</p>
-                <p class="roprime-welcome-text">To change the settings</p>
-                <p class="roprime-welcome-step">${settingsT("Welcome step before")}<strong>${settingsT("Settings hero title")}</strong>${settingsT("Welcome step after")}</p>
-                <div class="roprime-welcome-mock">
-                    <div class="roprime-welcome-mock-header">
-                        <span class="roprime-welcome-mock-bell">&#128276;</span>
-                        <span class="roprime-welcome-mock-gear">&#9881;</span>
-                    </div>
-                    <div class="roprime-welcome-mock-menu">
-                        <div class="roprime-welcome-mock-item is-active"><img src="${iconSrc}" alt="" width="16" height="16" />${settingsT("Settings hero title")}</div>
-                        <div class="roprime-welcome-mock-item">${settingsT("Nav tab settings")}</div>
-                        <div class="roprime-welcome-mock-item">Quick Sign In</div>
-                        <div class="roprime-welcome-mock-item">Help &amp; Safety</div>
-                        <div class="roprime-welcome-mock-item">Switch Accounts</div>
-                        <div class="roprime-welcome-mock-item">Logout</div>
-                    </div>
-                </div>
-                <p class="roprime-welcome-footnote">RoPrime is a free Roblox extension focused on quality-of-life improvements.</p>
-                <div class="roprime-welcome-actions"><button type="button" class="roprime-welcome-ok">Got It!</button></div>
-            </div>
-        </div>
+	<div data-state="open" class="foundation-web-dialog-overlay padding-medium foundation-web-portal-zindex bg-common-backdrop" style="pointer-events: auto;">
+  <div role="dialog" id="radix-0" aria-labelledby="radix-1" data-state="open" class="relative radius-large bg-surface-100 stroke-muted stroke-standard foundation-web-dialog-content shadow-transient-high" data-size="Medium" tabindex="-1" style="pointer-events: auto;">
+    
+    <!-- Close Button Container -->
+    <div class="absolute foundation-web-dialog-close-container">
+      <button type="button" class="foundation-web-close-affordance flex stroke-none bg-none cursor-pointer relative clip group/interactable focus-visible:outline-focus disabled:outline-none bg-over-media-100 padding-small radius-circle" aria-label="Close">
+        <div role="presentation" class="absolute inset-[0] transition-colors group-hover/interactable:bg-[var(--color-state-hover)] group-active/interactable:bg-[var(--color-state-press)] group-disabled/interactable:bg-none"></div>
+        <span role="presentation" class="grow-0 shrink-0 basis-auto icon icon-regular-x size-[var(--icon-size-medium)]"></span>
+      </button>
+    </div>
+
+    <!-- Modal Content Body -->
+    <div class="padding-x-xlarge padding-top-xlarge padding-bottom-xlarge">
+      <h2 id="radix-1">Welcome to RoPrime!</h2>
+      <p>Quick reminder - you can open RoPrime Settings by clicking the Gear icon at the right-top side of the Roblox website.</p>
+      <p>We hope you will enjoy our extension and will rate us 5 ⭐ on store ^_^</p>
+    </div>
+
+    <!-- Modal Footer Actions -->
+    <div class="padding-x-xlarge padding-bottom-xlarge flex gap-medium justify-end">
+      
+      <!-- Cancel Button -->
+      <a href="https://www.roblox.com/my/account?roprime=design#!/info" type="button" class="foundation-web-button relative clip group/interactable focus-visible:outline-focus disabled:outline-none cursor-pointer relative flex items-center justify-center stroke-none padding-y-none select-none radius-medium text-label-large height-1200 padding-x-medium bg-action-standard content-action-standard" style="text-decoration: none;">
+        <div role="presentation" class="absolute inset-[0] transition-colors group-hover/interactable:bg-[var(--color-state-hover)] group-active/interactable:bg-[var(--color-state-press)] group-disabled/interactable:bg-none"></div>
+        <span class="flex items-center min-width-0 gap-small">
+          <span class="padding-y-xsmall text-truncate-end text-no-wrap">Settings</span>
+        </span>
+      </button>
+
+      <!-- Continue Link -->
+      <button type="button" class="foundation-web-button relative clip group/interactable focus-visible:outline-focus disabled:outline-none cursor-pointer relative flex items-center justify-center stroke-none padding-y-none select-none radius-medium text-label-large height-1200 padding-x-medium bg-action-emphasis content-action-emphasis" style="text-decoration: none;">
+        <div role="presentation" class="absolute inset-[0] transition-colors group-hover/interactable:bg-[var(--color-state-hover)] group-active/interactable:bg-[var(--color-state-press)] group-disabled/interactable:bg-none"></div>
+        <span class="flex items-center min-width-0 gap-small">
+          <span class="padding-y-xsmall text-truncate-end text-no-wrap">Let's go!</span>
+        </span>
+      </a>
+
+    </div>
+  </div>
+</div>
+
     `;
 
 	const dismiss = () => {

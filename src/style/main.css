@@ -106,3 +106,7 @@ body.dark-theme.age-13-plus-theme {
 #roprime-profile-settings-root .roprime-settings-wrapper {
 	color: var(--color-content-emphasis);
 }
+
+.roprime-custom-css-editor-host {
+	color: #adbac7;
+}

@@ -6,6 +6,7 @@ export const RP_SIDEBAR_COMPACT_STYLE_ID = "roprime-sidebar-compact-style";
 export const RP_FRIEND_STYLING_REIMAGNED_STYLE_ID =
 	"roprime-friend-styling-reimagned-style";
 export const RP_ALWAYS_SHOW_CLOSE_STYLE_ID = "roprime-always-show-close-style";
+export const RP_CUSTOM_CSS_STYLE_ID = "roprime-custom-css-style";
 export const RP_PARAM_KEY = "roprime";
 export const RP_DEFAULT_PAGE = "design";
 export const RP_SUPPORTED_PAGES = new Set([
@@ -161,6 +162,7 @@ export const RP_DEFAULT_SETTINGS = {
 	sidebarCollapseMenuEnabled: false,
 	hiddenSidebarItems: [],
 	blockedExecutionPages: [],
+	customCss: "",
 	cosmeticsEnabled: false,
 	profileEffectsLayoutView: "grid",
 	ownedProfileEffects: [],
@@ -307,6 +309,10 @@ export function saveSettings() {
 				blockedExecutionPages: normalizeBlockedExecutionPages(
 					settingsState.blockedExecutionPages,
 				),
+				customCss:
+					typeof settingsState.customCss === "string"
+						? settingsState.customCss
+						: "",
 				cosmeticsEnabled: !!settingsState.cosmeticsEnabled,
 				profileEffectsLayoutView: ["grid", "list", "wide"].includes(
 					settingsState.profileEffectsLayoutView,

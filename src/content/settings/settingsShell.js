@@ -152,7 +152,6 @@ export function buildSettingsShell({
 			</ul>
 			${profileEffectsAlert}
 		</div>
-		<div class="roprime-settings-scrollbar-gutter" aria-hidden="true"></div>
 	</aside>
 	<div class="${MUI.verticalDivider} roprime-settings-pane-divider" role="separator" aria-orientation="vertical"></div>
 	<div class="${MUI.contentPane} roprime-settings-content-pane">

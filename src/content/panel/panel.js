@@ -2,6 +2,7 @@ import { syncAccountSettingsMenuButton } from "../account/accountSettingsLink.js
 import {
 	isExtensionContextInvalidatedError,
 	RP_ALWAYS_SHOW_CLOSE_STYLE_ID,
+	RP_CUSTOM_CSS_STYLE_ID,
 	RP_FRIEND_STYLING_REIMAGNED_STYLE_ID,
 	RP_PROFILE_SETTINGS_ROOT_ID,
 	RP_SIDEBAR_COMPACT_STYLE_ID,
@@ -15,6 +16,7 @@ import {
 	applyMarketplaceRename,
 	stopRenameLoop,
 } from "../features/rename.js";
+import { syncCustomCss } from "../features/customCss.js";
 import { syncHomeWelcomeModal } from "../features/welcome.js";
 import { syncAlwaysShowCloseButton } from "../navigation/alwaysShowCloseButton.js";
 import {
@@ -42,6 +44,7 @@ function cleanupBlockedRouteUi() {
 	document.getElementById(RP_SMALL_NEW_NAV_STYLE_ID)?.remove();
 	document.getElementById(RP_SIDEBAR_COMPACT_STYLE_ID)?.remove();
 	document.getElementById(RP_ALWAYS_SHOW_CLOSE_STYLE_ID)?.remove();
+	document.getElementById(RP_CUSTOM_CSS_STYLE_ID)?.remove();
 	document.getElementById(RP_FRIEND_STYLING_REIMAGNED_STYLE_ID)?.remove();
 	document.getElementById("roprime-sidebar-content-hide-style")?.remove();
 	document.getElementById("roprime-classic-left-nav-host")?.remove();
@@ -76,6 +79,7 @@ export function syncRoEliteView() {
 		syncSidebarCompactDecorations();
 		syncSidebarContent();
 		syncFriendCarouselEffects();
+		syncCustomCss();
 
 		if (settingsState.renameCommunitiesToGroups)
 			applyCommunityRename(document.body);

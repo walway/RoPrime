@@ -67,11 +67,13 @@ html.roprime-account-settings-open #react-user-account-base .container-footer {
 .roprime-settings-rail-scroll {
 	flex: 1 1 auto;
 	min-width: 0;
+	width: 100%;
 	height: 100%;
 	overflow-x: hidden;
 	overflow-y: auto;
-	padding: 12px 0 24px 12px;
+	padding: 12px 8px 24px 12px;
 	box-sizing: border-box;
+	scrollbar-gutter: auto;
 	scrollbar-width: thin;
 	scrollbar-color: color-mix(
 			in srgb,
@@ -94,20 +96,6 @@ html.roprime-account-settings-open #react-user-account-base .container-footer {
 	border-radius: 999px;
 }
 
-.roprime-settings-scrollbar-gutter {
-	flex: 0 0 12px;
-	width: 12px;
-	min-width: 12px;
-	height: 100%;
-	min-height: 100dvh;
-	margin: 0;
-	padding: 0;
-	overflow: hidden;
-	pointer-events: none;
-	user-select: none;
-	background: var(--color-surface-100, var(--color-surface-300));
-}
-
 .roprime-settings-pane-divider {
 	flex: 0 0 1px;
 	width: 1px;
@@ -126,12 +114,14 @@ html.roprime-account-settings-open #react-user-account-base .container-footer {
 .roprime-settings-content-pane {
 	flex: 1 1 auto;
 	min-width: 0;
+	width: 100%;
 	height: 100%;
 	min-height: 100dvh;
 	padding: 16px 24px 32px;
 	box-sizing: border-box;
 	overflow-x: hidden;
 	overflow-y: auto;
+	scrollbar-gutter: auto;
 	background: var(--color-surface-100, var(--color-surface-300));
 }
 
@@ -329,9 +319,7 @@ html.roprime-account-settings-open #react-user-account-base .container-footer {
 }
 
 .roprime-settings-mui-shell.is-rail-collapsed .roprime-settings-rail,
-.roprime-settings-mui-shell.is-rail-collapsed .roprime-settings-pane-divider,
-.roprime-settings-mui-shell.is-rail-collapsed
-	.roprime-settings-scrollbar-gutter {
+.roprime-settings-mui-shell.is-rail-collapsed .roprime-settings-pane-divider {
 	display: none !important;
 }
 
@@ -363,10 +351,6 @@ html.roprime-settings-side-rail-hidden
 
 	.roprime-settings-rail-scroll {
 		max-height: 40vh;
-	}
-
-	.roprime-settings-scrollbar-gutter {
-		display: none;
 	}
 
 	.roprime-settings-pane-divider {

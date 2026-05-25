@@ -26,6 +26,11 @@ import {
 	refreshSidebarContentList,
 } from "../sidebar/sidebarSettingsUi.js";
 import {
+	bindCustomCssControls,
+	buildCustomCssHtml,
+	syncCustomCssUi,
+} from "./customCss.js";
+import {
 	bindCosmeticsControls,
 	buildCosmeticsShopHtml,
 	resizeCosmeticsPreviews,
@@ -748,6 +753,7 @@ function bindOnce(root) {
 		syncA11y();
 	}
 
+	bindCustomCssControls(inner);
 	bindCosmeticsControls(inner);
 }
 
@@ -842,6 +848,7 @@ function refreshProfileSettingsUi(root) {
 		developerUnlockMessage.style.display = showUnlockMessage ? "block" : "none";
 	}
 
+	syncCustomCssUi(inner);
 	syncCosmeticsUi(inner);
 
 	refreshLayoutAndNav(root);
@@ -907,6 +914,7 @@ function buildMarkup() {
                 </div>`;
 
 	const otherBody = `
+                ${buildCustomCssHtml()}
                 <div class="roprime-toggle-row">
                     <div class="roprime-toggle-copy">
                         <div class="roprime-toggle-title" data-i18n="Enable cosmetics title"></div>

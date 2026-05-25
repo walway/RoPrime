@@ -1,0 +1,50 @@
+/* —— Other / Custom CSS —— */
+.roprime-custom-css-block {
+	margin-bottom: 14px;
+}
+
+.roprime-custom-css-heading {
+	margin-bottom: 12px;
+}
+
+.roprime-custom-css-heading .roprime-toggle-title {
+	margin: 0 0 4px;
+}
+
+.roprime-custom-css-heading .roprime-toggle-desc {
+	margin: 0;
+}
+
+.roprime-custom-css-editor-wrap {
+	position: relative;
+}
+
+.roprime-custom-css-editor-host {
+	display: block;
+	color: #adbac7;
+	isolation: isolate;
+	border-radius: 10px;
+	border: 1px solid
+		color-mix(in srgb, var(--color-content-emphasis) 22%, transparent);
+	overflow: hidden;
+}
+
+.roprime-custom-css-editor-host:not(.roprime-custom-css-editor-host--ready) {
+	min-height: 112px;
+	background: #22272e;
+}
+
+.roprime-custom-css-placeholder {
+	position: absolute;
+	inset: 12px 14px auto;
+	z-index: 1;
+	pointer-events: none;
+	font-family: Consolas, Monaco, "Andale Mono", "Ubuntu Mono", monospace;
+	font-size: 14px;
+	line-height: 1.4;
+	color: color-mix(in srgb, var(--color-content-default) 72%, transparent);
+}
+
+.roprime-custom-css-placeholder[hidden] {
+	display: none;
+}

@@ -2,7 +2,13 @@
 	"manifest_version": 3,
 	"name": "RoPrime - Making Roblox feel better",
 	"version": "1.3.0",
-	"description": "The new era of Roblox website.",
+	"description": "New era of Roblox website.",
+	"browser_specific_settings": {
+		"gecko": {
+			"id": "roprime.contact@proton.me",
+			"strict_min_version": "109.0"
+		}
+	},
 	"permissions": ["storage"],
 	"optional_permissions": ["management"],
 	"background": {
@@ -24,7 +30,6 @@
 				"resources/roprime-icon.png",
 				"resources/RblxPlusLogo.webp",
 				"resources/logo.svg",
-				"src/style/**/*.css",
 				".locales/*",
 				".locales/lang-config.js",
 				"resources/data/*"
