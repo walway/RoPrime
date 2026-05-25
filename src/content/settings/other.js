@@ -12,6 +12,7 @@ import {
 	equipSlotForKind,
 	getRobloxUserId,
 	isPluginOwner,
+	isSupabaseProfileEffectsEnabled,
 	normalizeEquippedEntry,
 	registerProfileEffectEquip,
 	registerProfileEffectPurchase,
@@ -462,8 +463,18 @@ export function bindCosmeticsControls(inner) {
 				if (isEffectOwned(effectId)) return;
 				void (async () => {
 					const userId = await refreshAuthUserId();
+					let purchaseSaved = false;
 					if (userId) {
-						await registerProfileEffectPurchase(userId, effectId);
+						purchaseSaved = await registerProfileEffectPurchase(
+							userId,
+							effectId,
+						);
+					}
+					if (isSupabaseProfileEffectsEnabled() && !purchaseSaved) {
+						console.warn(
+							"RoPrime: purchase not saved to Supabase — check schema and .env",
+						);
+						return;
 					}
 					if (!Array.isArray(settingsState.ownedProfileEffects)) {
 						settingsState.ownedProfileEffects = [];
@@ -487,10 +498,23 @@ export function bindCosmeticsControls(inner) {
 				if (!isEffectOwned(effectId)) return;
 				void (async () => {
 					const userId = await refreshAuthUserId();
+					let equipSaved = true;
+					if (userId) {
+						equipSaved = await registerProfileEffectEquip(
+							userId,
+							effectId,
+							effect.kind,
+						);
+					}
+					if (isSupabaseProfileEffectsEnabled() && !equipSaved) {
+						console.warn(
+							"RoPrime: equip not saved to Supabase — check schema and .env",
+						);
+						return;
+					}
 					setEquippedEffectIdForKind(effect.kind, effectId);
 					if (userId) {
 						setEquippedForUser(userId, effectId, effect.kind);
-						await registerProfileEffectEquip(userId, effectId, effect.kind);
 					}
 					saveSettings();
 					syncCosmeticsUi(inner);
@@ -501,12 +525,25 @@ export function bindCosmeticsControls(inner) {
 			if (action === "unequip") {
 				void (async () => {
 					const userId = await refreshAuthUserId();
+					let equipSaved = true;
+					if (userId) {
+						equipSaved = await registerProfileEffectEquip(
+							userId,
+							"",
+							effect.kind,
+						);
+					}
+					if (isSupabaseProfileEffectsEnabled() && !equipSaved) {
+						console.warn(
+							"RoPrime: unequip not saved to Supabase — check schema and .env",
+						);
+						return;
+					}
 					if (getEquippedEffectIdForKind(effect.kind) === effectId) {
 						setEquippedEffectIdForKind(effect.kind, "");
 					}
 					if (userId) {
 						setEquippedForUser(userId, "", effect.kind);
-						await registerProfileEffectEquip(userId, "", effect.kind);
 					}
 					saveSettings();
 					syncCosmeticsUi(inner);

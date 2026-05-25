@@ -1,20 +1,5 @@
 {
 	"version": 1,
 	"equipped": {},
-	"effects": {
-		"dizzy": {
-			"owners": {
-				"2605032407": {
-					"purchasedAt": 0
-				}
-			}
-		},
-		"clockwork": {
-			"owners": {
-				"2605032407": {
-					"purchasedAt": 0
-				}
-			}
-		}
-	}
+	"effects": {}
 }

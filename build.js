@@ -10,11 +10,13 @@ import {
 } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import dotenv from "dotenv";
 import AdmZip from "adm-zip";
 import chalk from "chalk";
 import { globSync } from "glob";
 
 const root = dirname(fileURLToPath(import.meta.url));
+dotenv.config({ path: join(root, ".env") });
 const distDir = join(root, "dist");
 const error = chalk.bold.red;
 const warning = chalk.hex("#FFA500");
@@ -116,6 +118,15 @@ const localeFiles = globSync(".locales/**/*", {
 const dataFiles = globSync("resources/data/**/*", { nodir: true });
 
 console.log("Building RoPrime with Vite...");
+if (process.env.SUPABASE_URL?.trim()) {
+	console.log("Supabase profile effects: enabled for this build.");
+} else {
+	console.log(
+		warning(
+			"No SUPABASE_URL in .env — purchases will not sync to Supabase. See supabase/README.md.",
+		),
+	);
+}
 rmSync(distDir, { recursive: true, force: true });
 
 const viteCli = join(root, "node_modules", "vite", "bin", "vite.js");

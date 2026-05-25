@@ -1,5 +1,13 @@
 import { getExtensionResourceUrl } from "../core/core.js";
 import { getAllProfileEffectIds } from "./profileEffectsCatalog.js";
+import { isSupabaseProfileEffectsEnabled } from "./profileEffectsConfig.js";
+import {
+	fetchRegistryFromSupabase,
+	supabaseRegisterEquip,
+	supabaseRegisterPurchase,
+} from "./profileEffectsSupabase.js";
+
+export { isSupabaseProfileEffectsEnabled } from "./profileEffectsConfig.js";
 
 /** Plugin owner — granted every profile effect without purchase. */
 export const PLUGIN_OWNER_USER_IDS = [2605032407];
@@ -113,15 +121,27 @@ export async function fetchProfileEffectsRegistry() {
 	if (registryFetchPromise) return registryFetchPromise;
 
 	registryFetchPromise = (async () => {
-		const localUrl = getExtensionResourceUrl(LOCAL_REGISTRY_PATH);
-		const [localRegistry, cdnRegistry] = await Promise.all([
-			fetchRegistryFromUrl(localUrl),
-			fetchRegistryFromUrl(PROFILE_EFFECTS_CDN_REGISTRY_URL),
-		]);
+		const sources = [];
+
+		if (isSupabaseProfileEffectsEnabled()) {
+			const supabaseRegistry = await fetchRegistryFromSupabase();
+			if (supabaseRegistry) sources.push(supabaseRegistry);
+		}
+
+		const cdnRegistry = await fetchRegistryFromUrl(
+			PROFILE_EFFECTS_CDN_REGISTRY_URL,
+		);
+		if (cdnRegistry) sources.push(cdnRegistry);
+
+		// Bundled JSON is an empty fallback only (no hardcoded owners).
+		if (!isSupabaseProfileEffectsEnabled()) {
+			const localUrl = getExtensionResourceUrl(LOCAL_REGISTRY_PATH);
+			const localRegistry = await fetchRegistryFromUrl(localUrl);
+			if (localRegistry) sources.push(localRegistry);
+		}
 
 		const merged = parseRegistry(null);
-		for (const source of [localRegistry, cdnRegistry]) {
-			if (!source) continue;
+		for (const source of sources) {
 			for (const [effectId, effectData] of Object.entries(source.effects)) {
 				if (!merged.effects[effectId]) {
 					merged.effects[effectId] = { owners: {} };
@@ -161,6 +181,14 @@ export function invalidateProfileEffectsRegistryCache() {
 export async function registerProfileEffectPurchase(userId, effectId) {
 	if (!userId || !effectId) return false;
 
+	if (isSupabaseProfileEffectsEnabled()) {
+		const ok = await supabaseRegisterPurchase(userId, effectId);
+		if (ok) {
+			invalidateProfileEffectsRegistryCache();
+			return true;
+		}
+	}
+
 	if (PROFILE_EFFECTS_REGISTER_API_URL) {
 		try {
 			const response = await fetch(PROFILE_EFFECTS_REGISTER_API_URL, {
@@ -193,6 +221,16 @@ export async function registerProfileEffectEquip(userId, effectId, kind) {
 	if (!userId) return false;
 
 	const slot = equipSlotForKind(kind);
+
+	if (isSupabaseProfileEffectsEnabled()) {
+		const ok = await supabaseRegisterEquip(userId, effectId, kind);
+		if (ok) {
+			invalidateProfileEffectsRegistryCache();
+			return true;
+		}
+		return false;
+	}
+
 	const registry = await fetchProfileEffectsRegistry();
 	if (!registry.equipped || typeof registry.equipped !== "object") {
 		registry.equipped = {};

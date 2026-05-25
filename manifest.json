@@ -10,6 +10,12 @@
 		}
 	},
 	"permissions": ["storage"],
+	"host_permissions": [
+		"*://*.supabase.co/*",
+		"https://users.roblox.com/*",
+		"https://thumbnails.roblox.com/*",
+		"https://walway.github.io/*"
+	],
 	"optional_permissions": ["management"],
 	"background": {
 		"service_worker": "background.js"
