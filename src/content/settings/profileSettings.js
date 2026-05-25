@@ -10,6 +10,7 @@ import {
 	reloadSettingsUiStrings,
 	saveSettings,
 	setAccountSettingsShellClass,
+	syncAccountSettingsLayoutInset,
 	settingsState,
 	shouldRunRoPrimeOnCurrentPage,
 } from "../core/core.js";
@@ -237,7 +238,9 @@ function applySidebarMode(inner, mode) {
 	settingsState.sidebarIconsOnlyEnabled = mode === "icon";
 	saveSettings();
 	setSidebarModeVisual(inner, mode);
+	syncAccountSettingsLayoutInset();
 	syncRoEliteView();
+	syncSidebarContent({ force: true });
 }
 
 function syncSidebarSliderFromState(inner) {
@@ -830,7 +833,13 @@ function refreshProfileSettingsUi(root) {
 		sidebarCollapse.checked = !!settingsState.sidebarCollapseMenuEnabled;
 
 	const activePage = getCurrentrp() || RP_DEFAULT_PAGE;
-	if (activePage === "sidebar-content") refreshSidebarContentList(inner);
+	const onSidebarContentPage = activePage === "sidebar-content";
+	inner.querySelectorAll("[data-roprime-open-sidebar-content]").forEach((btn) => {
+		if (!(btn instanceof HTMLElement)) return;
+		btn.hidden = onSidebarContentPage;
+		btn.style.display = onSidebarContentPage ? "none" : "";
+	});
+	if (onSidebarContentPage) refreshSidebarContentList(inner);
 
 	inner.querySelectorAll(".roprime-sidebar-size-tick span").forEach((span) => {
 		if (!(span instanceof HTMLElement)) return;
@@ -966,6 +975,7 @@ function buildMarkup() {
 export function syncProfileSettingsRoute() {
 	if (!isMyAccountPath()) {
 		setAccountSettingsShellClass(false);
+		syncAccountSettingsLayoutInset();
 		setNativeAccountChromeHidden(false);
 		document.getElementById(RP_PROFILE_SETTINGS_ROOT_ID)?.remove();
 		updateDocumentTitle(false);
@@ -993,6 +1003,7 @@ export function syncProfileSettingsRoute() {
 	}
 
 	setAccountSettingsShellClass(true);
+	syncAccountSettingsLayoutInset();
 	setNativeAccountChromeHidden(true);
 	updateDocumentTitle(true);
 	updateAccountHeader(true);

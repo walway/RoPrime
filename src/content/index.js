@@ -7,6 +7,7 @@ import {
 	reloadSettingsUiStrings,
 	setSyncIntervalId,
 	shouldRunRoPrimeOnCurrentPage,
+	syncAccountSettingsLayoutInset,
 	syncIntervalId,
 } from "./core/core.js";
 import {
@@ -28,6 +29,7 @@ import {
 } from "./profile/profileEffectsDisplay.js";
 import { normalizeEquippedProfileEffects } from "./settings/other.js";
 import { syncProfileSettingsRoute } from "./settings/profileSettings.js";
+import { syncSidebarContent } from "./sidebar/sidebarContent.js";
 
 function installStorageSyncListener() {
 	if (typeof chrome === "undefined" || !chrome.storage?.onChanged) return;
@@ -49,6 +51,8 @@ function installStorageSyncListener() {
 						void syncProfilePageEffect();
 						syncFriendCarouselEffects();
 						syncCustomCss();
+						syncAccountSettingsLayoutInset();
+						syncSidebarContent({ force: true });
 					} catch (e) {
 						if (!isExtensionContextInvalidatedError(e)) throw e;
 					}
@@ -84,6 +88,7 @@ function installHistoryListeners() {
 			void syncProfilePageEffect();
 			syncFriendCarouselEffects();
 			syncCustomCss();
+			syncAccountSettingsLayoutInset();
 		} catch (e) {
 			if (!isExtensionContextInvalidatedError(e)) throw e;
 		}
@@ -118,6 +123,8 @@ function bootstrap() {
 				void syncProfilePageEffect();
 				syncFriendCarouselEffects();
 				syncCustomCss();
+				syncAccountSettingsLayoutInset();
+				syncSidebarContent({ force: true });
 				if (shouldRunRoPrimeOnCurrentPage()) {
 					applyCommunityRename(document.body);
 					applyExperiencesRename(document.body);

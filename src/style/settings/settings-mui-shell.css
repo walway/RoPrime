@@ -23,7 +23,7 @@ html.roprime-account-settings-open #react-user-account-base .container-footer {
 	width: 100%;
 	height: 100dvh;
 	margin: 0;
-	padding: 40px 0 0 83px;
+	padding: 40px 0 0 var(--roprime-settings-left-inset, 289px);
 	overflow: hidden;
 	box-sizing: border-box;
 	background: var(--color-surface-100, var(--color-surface-300));

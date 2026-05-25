@@ -77,7 +77,6 @@ export function syncRoEliteView() {
 		syncAlwaysShowCloseButton();
 		updateFriendStylingReimagnedVisibility();
 		syncSidebarCompactDecorations();
-		syncSidebarContent();
 		syncFriendCarouselEffects();
 		syncCustomCss();
 
@@ -88,7 +87,6 @@ export function syncRoEliteView() {
 		if (settingsState.renameMarketplaceToAvatarShop)
 			applyMarketplaceRename(document.body);
 		syncHomeWelcomeModal();
-		syncAccountSettingsMenuButton();
 		syncRobloxNavDropdownButton();
 	} catch (e) {
 		if (isExtensionContextInvalidatedError(e)) return;

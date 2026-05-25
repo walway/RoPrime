@@ -1,3 +1,4 @@
+import { normalizeSidebarSizeMode } from "../core/core.js";
 import { t as accountSettingsPaneT } from "../settings/roprimeAccountSettingsPage.js";
 import {
 	discoverSidebarNavItems,
@@ -6,6 +7,14 @@ import {
 	restoreSidebarItem,
 } from "./sidebarContent.js";
 import { ADD_ICON_SVG, DELETE_ICON_SVG } from "./sidebarIcons.js";
+
+const SIDEBAR_SIZE_MODES = ["full", "small", "icon"];
+
+const SIDEBAR_SIZE_TITLE_KEYS = {
+	full: "Sidebar size full",
+	small: "Sidebar size small",
+	icon: "Sidebar size icon only",
+};
 
 const SIDEBAR_SIZE_CONTROL_INNER =
 	'<div class="roprime-sidebar-size-box"><div class="roprime-sidebar-size-rail"><input id="{{id}}" class="roprime-sidebar-size-slider" type="range" min="0" max="100" step="0.1" value="0" data-i18n-aria-label="Sidebar size title" /></div><div class="roprime-sidebar-size-footer"><div class="roprime-sidebar-size-ticks"><button class="roprime-sidebar-size-tick" type="button" data-size-mode="full"><span data-i18n="Sidebar size full"></span></button><button class="roprime-sidebar-size-tick" type="button" data-size-mode="small"><span data-i18n="Sidebar size small"></span></button><button class="roprime-sidebar-size-tick" type="button" data-size-mode="icon"><span data-i18n="Sidebar size icon only"></span></button></div><button type="button" class="roprime-sidebar-configure-btn" data-roprime-open-sidebar-content data-i18n="Configure sidebar content"></button></div></div>';
@@ -29,33 +38,50 @@ function sidebarItemLabel(item) {
 	return translated && translated !== key ? translated : item.label;
 }
 
-function buildSidebarContentRowHtml(item, mode) {
+function buildSidebarContentRowHtml(item, mode, sizeMode) {
 	const label = sidebarItemLabel(item);
+	const sizeAttr = ` data-roprime-sidebar-size="${sizeMode}"`;
 	if (mode === "add") {
-		return `<div class="roprime-sidebar-content-row is-removed-item" data-roprime-sidebar-content-row="${item.id}"><span class="roprime-sidebar-content-row-label">${label}</span><button type="button" class="roprime-sidebar-content-add" data-roprime-sidebar-add="${item.id}" data-i18n-aria-label="Sidebar content restore item">${ADD_ICON_SVG}</button></div>`;
+		return `<div class="roprime-sidebar-content-row is-removed-item" data-roprime-sidebar-content-row="${item.id}"><span class="roprime-sidebar-content-row-label">${label}</span><button type="button" class="roprime-sidebar-content-add" data-roprime-sidebar-add="${item.id}"${sizeAttr} data-i18n-aria-label="Sidebar content restore item">${ADD_ICON_SVG}</button></div>`;
 	}
-	return `<div class="roprime-sidebar-content-row" data-roprime-sidebar-content-row="${item.id}"><span class="roprime-sidebar-content-row-label">${label}</span><button type="button" class="roprime-sidebar-content-delete" data-roprime-sidebar-delete="${item.id}" data-i18n-aria-label="Sidebar content remove item">${DELETE_ICON_SVG}</button></div>`;
+	return `<div class="roprime-sidebar-content-row" data-roprime-sidebar-content-row="${item.id}"><span class="roprime-sidebar-content-row-label">${label}</span><button type="button" class="roprime-sidebar-content-delete" data-roprime-sidebar-delete="${item.id}"${sizeAttr} data-i18n-aria-label="Sidebar content remove item">${DELETE_ICON_SVG}</button></div>`;
 }
 
-export function buildSidebarContentListHtml() {
-	const items = discoverSidebarNavItems();
+function buildSidebarContentSectionHtml(sizeMode) {
+	const mode = normalizeSidebarSizeMode(sizeMode);
+	const titleKey = SIDEBAR_SIZE_TITLE_KEYS[mode] || SIDEBAR_SIZE_TITLE_KEYS.full;
+	const items = discoverSidebarNavItems(mode);
 	if (!items.length) {
-		return `<p class="roprime-sidebar-content-empty" data-i18n="Sidebar content empty hint"></p>`;
+		return "";
 	}
-	const visible = items.filter((item) => !isSidebarItemHidden(item.id));
-	const hidden = items.filter((item) => isSidebarItemHidden(item.id));
+	const visible = items.filter((item) => !isSidebarItemHidden(item.id, mode));
+	const hidden = items.filter((item) => isSidebarItemHidden(item.id, mode));
 	const parts = visible.map((item) =>
-		buildSidebarContentRowHtml(item, "remove"),
+		buildSidebarContentRowHtml(item, "remove", mode),
 	);
 	if (hidden.length) {
 		parts.push(
 			'<div class="roprime-sidebar-content-divider" role="separator"></div>',
 		);
 		parts.push(
-			...hidden.map((item) => buildSidebarContentRowHtml(item, "add")),
+			...hidden.map((item) => buildSidebarContentRowHtml(item, "add", mode)),
 		);
 	}
-	return parts.join("");
+	return `
+		<div class="roprime-sidebar-content-size-section" data-roprime-sidebar-size-section="${mode}">
+			<h4 class="roprime-sidebar-content-size-title" data-i18n="${titleKey}"></h4>
+			<div class="roprime-sidebar-content-size-rows">${parts.join("")}</div>
+		</div>`;
+}
+
+export function buildSidebarContentListHtml() {
+	const sections = SIDEBAR_SIZE_MODES.map((mode) =>
+		buildSidebarContentSectionHtml(mode),
+	).filter(Boolean);
+	if (!sections.length) {
+		return `<p class="roprime-sidebar-content-empty" data-i18n="Sidebar content empty hint"></p>`;
+	}
+	return sections.join("");
 }
 
 export function refreshSidebarContentList(inner) {
@@ -74,8 +100,9 @@ export function bindSidebarContentList(inner) {
 		btn.setAttribute("data-roprime-sidebar-delete-bound", "1");
 		btn.addEventListener("click", () => {
 			const itemId = btn.getAttribute("data-roprime-sidebar-delete") || "";
-			if (!itemId || isSidebarItemHidden(itemId)) return;
-			hideSidebarItem(itemId);
+			const sizeMode = btn.getAttribute("data-roprime-sidebar-size") || "full";
+			if (!itemId || isSidebarItemHidden(itemId, sizeMode)) return;
+			hideSidebarItem(itemId, sizeMode);
 			refreshSidebarContentList(inner);
 		});
 	});
@@ -85,8 +112,9 @@ export function bindSidebarContentList(inner) {
 		btn.setAttribute("data-roprime-sidebar-add-bound", "1");
 		btn.addEventListener("click", () => {
 			const itemId = btn.getAttribute("data-roprime-sidebar-add") || "";
-			if (!itemId || !isSidebarItemHidden(itemId)) return;
-			restoreSidebarItem(itemId);
+			const sizeMode = btn.getAttribute("data-roprime-sidebar-size") || "full";
+			if (!itemId || !isSidebarItemHidden(itemId, sizeMode)) return;
+			restoreSidebarItem(itemId, sizeMode);
 			refreshSidebarContentList(inner);
 		});
 	});

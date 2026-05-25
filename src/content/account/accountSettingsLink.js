@@ -17,6 +17,21 @@ const DIVIDER_ATTR = "data-roprime-account-divider";
 
 /** Sparse retries when Roblox mounts the account menu after paint. */
 let accountMenuRetries = 0;
+/** @type {MutationObserver | null} */
+let accountMenuListObserver = null;
+
+function ensureAccountMenuListObserver(menuList) {
+	if (accountMenuListObserver || !(menuList instanceof HTMLElement)) return;
+	try {
+		accountMenuListObserver = new MutationObserver(() => {
+			if (!shouldInjectVerticalAccountTab()) return;
+			ensureVerticalTabEntry();
+		});
+		accountMenuListObserver.observe(menuList, { childList: true });
+	} catch {
+		accountMenuListObserver = null;
+	}
+}
 
 /** RoValra-style: re-sync when `#settings-popover-menu` is (re)mounted or siblings change — other extensions often append after us. */
 /** @type {MutationObserver | null} */
@@ -189,6 +204,14 @@ function injectSettingsPopoverRow() {
 }
 
 function removeVerticalAccountInjections() {
+	if (accountMenuListObserver) {
+		try {
+			accountMenuListObserver.disconnect();
+		} catch {
+			/* ignore */
+		}
+		accountMenuListObserver = null;
+	}
 	document.querySelectorAll(`[${TAB_ENTRY_ATTR}]`).forEach((n) => {
 		n.remove();
 	});
@@ -350,11 +373,17 @@ function ensureVerticalTabEntry() {
 		li = buildVerticalTabLi();
 	} else {
 		const label = li.querySelector(".font-caption-header");
-		if (label instanceof HTMLElement)
+		if (
+			label instanceof HTMLElement &&
+			label.textContent !== ROPRIME_ACCOUNT_MENU_LABEL
+		) {
 			label.textContent = ROPRIME_ACCOUNT_MENU_LABEL;
+		}
 		const link = li.querySelector("a");
-		if (link instanceof HTMLAnchorElement)
-			link.href = buildRoPrimeSettingsFullUrl();
+		if (link instanceof HTMLAnchorElement) {
+			const nextHref = buildRoPrimeSettingsFullUrl();
+			if (link.href !== nextHref) link.href = nextHref;
+		}
 	}
 
 	const divider = getOrCreatePluginDivider(menuList);
@@ -364,6 +393,7 @@ function ensureVerticalTabEntry() {
 	}
 	placeTabAfterDividerBlock(menuList, li, divider);
 	collapseAdjacentRbxDividers(menuList);
+	ensureAccountMenuListObserver(menuList);
 	return true;
 }
 

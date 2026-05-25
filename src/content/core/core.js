@@ -24,6 +24,82 @@ export const RP_ACCOUNT_URL_HASH_DEFAULT = "#!/info";
 /** Set on `<html>` while RoPrime account settings URL is active — hides native chrome before mount. */
 export const RP_ACCOUNT_SETTINGS_SHELL_CLASS = "roprime-account-settings-open";
 
+/** Left inset for RoPrime account settings shell (Roblox nav width + 1px divider). */
+export const ACCOUNT_SETTINGS_LEFT_INSET_BY_SIZE = {
+	icon: 83,
+	small: 200,
+	full: 289,
+};
+
+const SIDEBAR_SIZE_MODES = ["full", "small", "icon"];
+
+export function normalizeSidebarSizeMode(size) {
+	const mode = String(size || "full").toLowerCase();
+	return SIDEBAR_SIZE_MODES.includes(mode) ? mode : "full";
+}
+
+export function getActiveSidebarSize() {
+	return normalizeSidebarSizeMode(settingsState.sidebarSize);
+}
+
+export function getAccountSettingsLeftInsetPx(
+	size = getActiveSidebarSize(),
+) {
+	const mode = normalizeSidebarSizeMode(size);
+	return (
+		ACCOUNT_SETTINGS_LEFT_INSET_BY_SIZE[mode] ??
+		ACCOUNT_SETTINGS_LEFT_INSET_BY_SIZE.full
+	);
+}
+
+function emptyHiddenSidebarMap() {
+	return { full: [], small: [], icon: [] };
+}
+
+export function normalizeHiddenSidebarItemsBySize(stored) {
+	if (
+		stored?.hiddenSidebarItemsBySize &&
+		typeof stored.hiddenSidebarItemsBySize === "object"
+	) {
+		const next = emptyHiddenSidebarMap();
+		for (const mode of SIDEBAR_SIZE_MODES) {
+			const list = stored.hiddenSidebarItemsBySize[mode];
+			next[mode] = Array.isArray(list)
+				? list.filter((id) => typeof id === "string" && id.trim())
+				: [];
+		}
+		return next;
+	}
+	const legacy = Array.isArray(stored?.hiddenSidebarItems)
+		? stored.hiddenSidebarItems.filter(
+				(id) => typeof id === "string" && id.trim(),
+			)
+		: [];
+	return {
+		full: [...legacy],
+		small: [...legacy],
+		icon: [...legacy],
+	};
+}
+
+export function syncAccountSettingsLayoutInset() {
+	if (typeof document === "undefined" || !document.documentElement) return;
+	if (
+		!document.documentElement.classList.contains(
+			RP_ACCOUNT_SETTINGS_SHELL_CLASS,
+		)
+	) {
+		document.documentElement.style.removeProperty(
+			"--roprime-settings-left-inset",
+		);
+		return;
+	}
+	document.documentElement.style.setProperty(
+		"--roprime-settings-left-inset",
+		`${getAccountSettingsLeftInsetPx()}px`,
+	);
+}
+
 /**
  * After reload/disable, `chrome.runtime.getURL` can throw even when `getURL` is a function.
  * Probe with a real call so stale content scripts stop touching extension APIs.
@@ -114,6 +190,7 @@ export function setAccountSettingsShellClass(active) {
 		RP_ACCOUNT_SETTINGS_SHELL_CLASS,
 		active,
 	);
+	syncAccountSettingsLayoutInset();
 }
 
 /** If URL is already a RoPrime account tab, apply shell class before first paint (content script). */
@@ -160,7 +237,7 @@ export const RP_DEFAULT_SETTINGS = {
 	enablePluginControlPanel: false,
 	sidebarSize: "full",
 	sidebarCollapseMenuEnabled: false,
-	hiddenSidebarItems: [],
+	hiddenSidebarItemsBySize: { full: [], small: [], icon: [] },
 	blockedExecutionPages: [],
 	customCss: "",
 	cosmeticsEnabled: false,
@@ -246,6 +323,9 @@ export function loadSettings() {
 								settingsState.sidebarSize = "full";
 							}
 						}
+						settingsState.hiddenSidebarItemsBySize =
+							normalizeHiddenSidebarItemsBySize(stored);
+						delete settingsState.hiddenSidebarItems;
 						if (
 							stored.renameDropdownRestore &&
 							typeof stored.renameDropdownRestore === "object"
@@ -301,11 +381,9 @@ export function saveSettings() {
 				enablePluginControlPanel: !!settingsState.enablePluginControlPanel,
 				sidebarSize: settingsState.sidebarSize || "full",
 				sidebarCollapseMenuEnabled: !!settingsState.sidebarCollapseMenuEnabled,
-				hiddenSidebarItems: Array.isArray(settingsState.hiddenSidebarItems)
-					? settingsState.hiddenSidebarItems.filter(
-							(id) => typeof id === "string" && id.trim(),
-						)
-					: [],
+				hiddenSidebarItemsBySize: normalizeHiddenSidebarItemsBySize({
+					hiddenSidebarItemsBySize: settingsState.hiddenSidebarItemsBySize,
+				}),
 				blockedExecutionPages: normalizeBlockedExecutionPages(
 					settingsState.blockedExecutionPages,
 				),

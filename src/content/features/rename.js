@@ -59,7 +59,11 @@ function shouldSkipNode(node) {
 		tag === "TEXTAREA"
 	)
 		return true;
-	if (node.parentElement.closest(`#${RP_PROFILE_SETTINGS_ROOT_ID}`))
+	if (
+		node.parentElement.closest(
+			`#${RP_PROFILE_SETTINGS_ROOT_ID}, #react-user-account-base`,
+		)
+	)
 		return true;
 	return false;
 }

@@ -345,34 +345,44 @@ body .no-gutter-ads.logged-in.left-nav-new-width {
 }
 `.trim();
 
+/** @type {HTMLButtonElement | null} */
+let lastOfficialStoreBtn = null;
+let lastOfficialStoreIconOnly = null;
+
 function tagOfficialStoreLeftNavButton() {
+	const iconOnly = settingsState.sidebarIconsOnlyEnabled;
 	const nav = document.querySelector(".left-nav.fixed");
 	if (!(nav instanceof HTMLElement)) return;
 	const icon = nav.querySelector("button .icon-regular-building-store");
 	const btn = icon instanceof Element ? icon.closest("button") : null;
 	if (!(btn instanceof HTMLButtonElement)) return;
-	if (settingsState.sidebarIconsOnlyEnabled)
-		btn.classList.add(RP_LEFTNAV_OFFICIAL_STORE_BTN_CLASS);
+	if (btn === lastOfficialStoreBtn && iconOnly === lastOfficialStoreIconOnly)
+		return;
+	lastOfficialStoreBtn = btn;
+	lastOfficialStoreIconOnly = iconOnly;
+	if (iconOnly) btn.classList.add(RP_LEFTNAV_OFFICIAL_STORE_BTN_CLASS);
 	else btn.classList.remove(RP_LEFTNAV_OFFICIAL_STORE_BTN_CLASS);
 }
 
+/** @type {HTMLElement | null} */
+let lastProfileNavLi = null;
+let lastProfileTagIconOnly = null;
+
 function tagProfileLeftNavItem() {
-	const clearProfileClass = () => {
+	const iconOnly = settingsState.sidebarIconsOnlyEnabled;
+	if (!iconOnly) {
+		if (lastProfileTagIconOnly === false && !lastProfileNavLi) return;
 		document
 			.querySelectorAll(`.left-nav.fixed li.${RP_LEFTNAV_PROFILE_LI_CLASS}`)
 			.forEach((el) => {
 				el.classList.remove(RP_LEFTNAV_PROFILE_LI_CLASS);
 			});
-	};
-	if (!settingsState.sidebarIconsOnlyEnabled) {
-		clearProfileClass();
+		lastProfileNavLi = null;
+		lastProfileTagIconOnly = false;
 		return;
 	}
 	const nav = document.querySelector(".left-nav.fixed");
-	if (!(nav instanceof HTMLElement)) {
-		clearProfileClass();
-		return;
-	}
+	if (!(nav instanceof HTMLElement)) return;
 
 	let matched = null;
 	for (const li of nav.querySelectorAll("li")) {
@@ -389,6 +399,10 @@ function tagProfileLeftNavItem() {
 		matched = li;
 		break;
 	}
+
+	if (matched === lastProfileNavLi && lastProfileTagIconOnly === true) return;
+	lastProfileNavLi = matched;
+	lastProfileTagIconOnly = true;
 
 	for (const li of nav.querySelectorAll("li")) {
 		if (li === matched) li.classList.add(RP_LEFTNAV_PROFILE_LI_CLASS);

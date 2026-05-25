@@ -61,6 +61,16 @@ function configureEditorShadow(host) {
 			border-radius: 10px;
 			overflow-y: auto;
 			overflow-x: hidden;
+			--pce-cursor: #f97316;
+		}
+		.active-line:after {
+			display: none !important;
+			border: none !important;
+			background: transparent !important;
+		}
+		.active-line {
+			--pce-bg-highlight: transparent;
+			--pce-border-highlight: none;
 		}
 	`;
 }

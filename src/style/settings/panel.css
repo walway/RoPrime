@@ -449,8 +449,34 @@ stupid MUI
 .roprime-sidebar-content-list {
 	display: flex;
 	flex-direction: column;
-	gap: 8px;
+	gap: 16px;
 	margin-top: 12px;
+}
+
+.roprime-sidebar-content-size-section {
+	display: flex;
+	flex-direction: column;
+	gap: 0;
+}
+
+.roprime-sidebar-content-size-title {
+	margin: 0 0 8px;
+	font-size: 14px;
+	font-weight: 700;
+	color: var(--color-content-emphasis);
+}
+
+.roprime-sidebar-content-size-rows {
+	display: flex;
+	flex-direction: column;
+	gap: 0;
+	padding-bottom: 4px;
+	border-bottom: 1px solid
+		color-mix(in srgb, var(--color-content-emphasis) 14%, transparent);
+}
+
+.roprime-sidebar-content-size-section:last-child .roprime-sidebar-content-size-rows {
+	border-bottom: 0;
 }
 
 .roprime-sidebar-content-divider {
