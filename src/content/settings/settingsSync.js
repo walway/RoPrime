@@ -54,17 +54,273 @@ function stripUtf8Bom(text) {
 	return raw.charCodeAt(0) === 0xfeff ? raw.slice(1) : raw;
 }
 
+function parseFirstJsonObjectFromText(text) {
+	const raw = stripUtf8Bom(text).trim();
+	if (!raw) throw new Error("invalid");
+
+	// Fast path for valid JSON documents.
+	try {
+		return JSON.parse(raw);
+	} catch {
+		/* scan for first valid object below */
+	}
+
+	// Fallback: parse the first balanced {...} object, respecting strings/escapes.
+	const firstBrace = raw.indexOf("{");
+	if (firstBrace < 0) throw new Error("invalid");
+
+	let depth = 0;
+	let inString = false;
+	let escaped = false;
+	let start = -1;
+	for (let i = firstBrace; i < raw.length; i++) {
+		const ch = raw[i];
+		if (inString) {
+			if (escaped) {
+				escaped = false;
+				continue;
+			}
+			if (ch === "\\") {
+				escaped = true;
+				continue;
+			}
+			if (ch === '"') inString = false;
+			continue;
+		}
+		if (ch === '"') {
+			inString = true;
+			continue;
+		}
+		if (ch === "{") {
+			if (depth === 0) start = i;
+			depth++;
+			continue;
+		}
+		if (ch === "}") {
+			if (depth === 0) continue;
+			depth--;
+			if (depth === 0 && start >= 0) {
+				const candidate = raw.slice(start, i + 1);
+				try {
+					return JSON.parse(candidate);
+				} catch {
+					// keep scanning for the next complete object
+					start = -1;
+				}
+			}
+		}
+	}
+
+	throw new Error("invalid");
+}
+
+function parseJsObjectLiteral(candidate) {
+	try {
+		// Parse relaxed JS object-literal payloads (single quotes, trailing commas, etc.).
+		// This is intentionally local-only parsing for user-provided sync files.
+		return Function(`"use strict"; return (${candidate});`)();
+	} catch {
+		return null;
+	}
+}
+
+function parseFirstObjectLikeFromText(text) {
+	const raw = stripUtf8Bom(text).trim();
+	if (!raw) throw new Error("invalid");
+
+	try {
+		return parseFirstJsonObjectFromText(raw);
+	} catch {
+		/* try JS object-literal parsing below */
+	}
+
+	const firstBrace = raw.indexOf("{");
+	if (firstBrace < 0) throw new Error("invalid");
+
+	let depth = 0;
+	let inString = false;
+	let escaped = false;
+	let stringQuote = '"';
+	let inLineComment = false;
+	let inBlockComment = false;
+	let start = -1;
+
+	for (let i = firstBrace; i < raw.length; i++) {
+		const ch = raw[i];
+		const next = raw[i + 1] || "";
+
+		if (inLineComment) {
+			if (ch === "\n") inLineComment = false;
+			continue;
+		}
+		if (inBlockComment) {
+			if (ch === "*" && next === "/") {
+				inBlockComment = false;
+				i++;
+			}
+			continue;
+		}
+
+		if (inString) {
+			if (escaped) {
+				escaped = false;
+				continue;
+			}
+			if (ch === "\\") {
+				escaped = true;
+				continue;
+			}
+			if (ch === stringQuote) inString = false;
+			continue;
+		}
+
+		if (ch === "/" && next === "/") {
+			inLineComment = true;
+			i++;
+			continue;
+		}
+		if (ch === "/" && next === "*") {
+			inBlockComment = true;
+			i++;
+			continue;
+		}
+		if (ch === "'" || ch === '"' || ch === "`") {
+			inString = true;
+			stringQuote = ch;
+			continue;
+		}
+
+		if (ch === "{") {
+			if (depth === 0) start = i;
+			depth++;
+			continue;
+		}
+		if (ch === "}") {
+			if (depth === 0) continue;
+			depth--;
+			if (depth === 0 && start >= 0) {
+				const candidate = raw.slice(start, i + 1);
+				try {
+					return JSON.parse(candidate);
+				} catch {
+					const parsedJs = parseJsObjectLiteral(candidate);
+					if (parsedJs && typeof parsedJs === "object") return parsedJs;
+					start = -1;
+				}
+			}
+		}
+	}
+
+	throw new Error("invalid");
+}
+
+function resolveImportSettingsPayload(parsed) {
+	if (!parsed || typeof parsed !== "object") return null;
+
+	// Common wrapper shapes
+	const candidates = [];
+	if (!Array.isArray(parsed)) {
+		candidates.push(parsed);
+		if (parsed.roprime && typeof parsed.roprime === "object") {
+			candidates.push(parsed.roprime);
+		}
+		if (parsed.settings && typeof parsed.settings === "object") {
+			candidates.push(parsed.settings);
+		}
+		if (parsed[RP_SETTINGS_KEY] && typeof parsed[RP_SETTINGS_KEY] === "object") {
+			candidates.push(parsed[RP_SETTINGS_KEY]);
+		}
+		if (
+			parsed.data &&
+			typeof parsed.data === "object" &&
+			parsed.data.roprime &&
+			typeof parsed.data.roprime === "object"
+		) {
+			candidates.push(parsed.data.roprime);
+		}
+	}
+
+	// Array payloads: accept first object-like entry.
+	if (Array.isArray(parsed)) {
+		for (const item of parsed) {
+			if (item && typeof item === "object" && !Array.isArray(item)) {
+				candidates.push(item);
+				break;
+			}
+		}
+	}
+
+	const hasKnownKey = (obj) =>
+		obj &&
+		typeof obj === "object" &&
+		("language" in obj ||
+			"renameDropdownEnabled" in obj ||
+			"sidebarSize" in obj ||
+			"sidebarCollapseMenuEnabled" in obj ||
+			"oldNavigationBarEnabled" in obj ||
+			"smallNewNavigationBarEnabled" in obj ||
+			"alwaysShowCloseButtonEnabled" in obj ||
+			"friendStylingReimagnedEnabled" in obj ||
+			"blockedExecutionPages" in obj);
+
+	for (const candidate of candidates) {
+		if (hasKnownKey(candidate)) return candidate;
+	}
+
+	// Fallback: first plain object candidate.
+	for (const candidate of candidates) {
+		if (candidate && typeof candidate === "object" && !Array.isArray(candidate)) {
+			return candidate;
+		}
+	}
+
+	return null;
+}
+
+function getReadableErrorMessage(error) {
+	if (error instanceof Error && error.message) return error.message;
+	return String(error || "Unknown error");
+}
+
+async function storageSetCompat(storage, data) {
+	// Promise-first path (Firefox browser.* and modern Chromium).
+	try {
+		const maybePromise = storage.set(data);
+		if (maybePromise && typeof maybePromise.then === "function") {
+			await maybePromise;
+			return;
+		}
+	} catch {
+		// Fall through to callback path.
+	}
+
+	// Callback fallback (older Chrome-style APIs).
+	await new Promise((resolve, reject) => {
+		try {
+			storage.set(data, () => {
+				const runtimeError = extensionApi?.runtime?.lastError || null;
+				if (runtimeError) {
+					reject(new Error(runtimeError.message));
+					return;
+				}
+				resolve();
+			});
+		} catch (e) {
+			reject(e);
+		}
+	});
+}
+
 export function buildSettingsExportDocument() {
-	const roprime = stripSettingsSyncPayload({
+	const payload = stripSettingsSyncPayload({
 		...serializeSettingsPayload(),
 	});
 	return {
 		about: {
 			browser: detectBrowserName(),
 			version: getExtensionVersion(),
-			exportedAt: new Date().toISOString(),
 		},
-		roprime,
+		...payload,
 	};
 }
 
@@ -80,49 +336,6 @@ function formatExportFilename() {
 	const m = String(d.getMinutes()).padStart(2, "0");
 	const s = String(d.getSeconds()).padStart(2, "0");
 	return `roprime-${version}-${date}_${h}_${m}_${s}.json`;
-}
-
-/** @param {unknown} parsed */
-function extractSettingsFromImport(parsed) {
-	if (!parsed || typeof parsed !== "object") return null;
-	if (parsed.roprime && typeof parsed.roprime === "object")
-		return parsed.roprime;
-	if (parsed.settings && typeof parsed.settings === "object")
-		return parsed.settings;
-	if (
-		parsed.data &&
-		typeof parsed.data === "object" &&
-		parsed.data.roprime &&
-		typeof parsed.data.roprime === "object"
-	) {
-		return parsed.data.roprime;
-	}
-	if (parsed[RP_SETTINGS_KEY] && typeof parsed[RP_SETTINGS_KEY] === "object") {
-		return parsed[RP_SETTINGS_KEY];
-	}
-	const keys = Object.keys(parsed);
-	const looksLikeSettings =
-		"language" in parsed ||
-		"renameDropdownEnabled" in parsed ||
-		"sidebarSize" in parsed ||
-		"customCss" in parsed;
-	if (looksLikeSettings) return parsed;
-
-	// Fallback for alternate wrappers from older/manual exports:
-	// if document has `about` plus any object payload, treat that payload as settings.
-	if ("about" in parsed) {
-		for (const key of keys) {
-			if (key === "about") continue;
-			const value = parsed[key];
-			if (value && typeof value === "object" && !Array.isArray(value)) {
-				return value;
-			}
-		}
-	}
-
-	// Last-resort: non-empty plain object; mergeStoredSettings safely applies known keys only.
-	if (keys.length && !Array.isArray(parsed)) return parsed;
-	return null;
 }
 
 export function buildSettingsSyncHtml() {
@@ -224,42 +437,29 @@ export async function importSettingsFile(file) {
 }
 
 export async function importSettingsText(text) {
-	const parsed = JSON.parse(stripUtf8Bom(text).trim());
-	const settings = extractSettingsFromImport(parsed);
-	if (!settings) {
-		throw new Error("invalid");
+	const parsed = parseFirstObjectLikeFromText(text);
+	const settings = resolveImportSettingsPayload(parsed);
+	if (!settings || typeof settings !== "object" || Array.isArray(settings)) {
+		throw new Error("No importable settings object found.");
 	}
 
 	stripSettingsSyncPayload(settings);
 
 	const storage = getStorageApi();
-	if (!storage) throw new Error("storage");
+	if (!storage) throw new Error("Storage API unavailable.");
 
 	const preservedCustomCss = String(settingsState.customCss || "");
 	mergeStoredSettings(settings);
 	settingsState.customCss = preservedCustomCss;
 	const payload = serializeSettingsPayload();
-
-	await new Promise((resolve, reject) => {
-		try {
-			const maybePromise = storage.set({ [RP_SETTINGS_KEY]: payload }, () => {
-				const runtimeError = extensionApi?.runtime?.lastError || null;
-				if (runtimeError) {
-					reject(new Error(runtimeError.message));
-					return;
-				}
-				resolve();
-			});
-			if (maybePromise && typeof maybePromise.then === "function") {
-				maybePromise.then(resolve).catch(reject);
-			}
-		} catch (e) {
-			reject(e);
-		}
-	});
+	await storageSetCompat(storage, { [RP_SETTINGS_KEY]: payload });
 }
 
-export function bindSettingsSyncControls(inner) {
+/**
+ * Bind sync listeners to the settings sync panel.
+ * @param {HTMLElement} inner
+ */
+export function initializeSyncPanelListeners(inner) {
 	if (inner.getAttribute("data-roprime-settings-sync-bound") === "1") return;
 	inner.setAttribute("data-roprime-settings-sync-bound", "1");
 
@@ -299,10 +499,10 @@ export function bindSettingsSyncControls(inner) {
 				previewLastSaved = normalized;
 				setSyncStatus(inner, "Settings saved.");
 				window.setTimeout(() => setSyncStatus(inner, ""), 1600);
-			} catch {
+			} catch (error) {
 				setSyncStatus(
 					inner,
-					accountSettingsPaneT("Settings sync import failed"),
+					`Save failed: ${getReadableErrorMessage(error)}`,
 					true,
 				);
 			}
@@ -341,10 +541,10 @@ export function bindSettingsSyncControls(inner) {
 					}
 					setSyncStatus(inner, "Settings imported.");
 					window.setTimeout(() => setSyncStatus(inner, ""), 2200);
-				} catch {
+				} catch (error) {
 					setSyncStatus(
 						inner,
-						accountSettingsPaneT("Settings sync import failed"),
+						`Import failed: ${getReadableErrorMessage(error)}`,
 						true,
 					);
 				}
@@ -352,3 +552,6 @@ export function bindSettingsSyncControls(inner) {
 		});
 	}
 }
+
+// Backward-compatible alias used by existing settings page wiring.
+export const bindSettingsSyncControls = initializeSyncPanelListeners;
