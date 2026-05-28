@@ -17,7 +17,7 @@ html.roprime-account-settings-open #react-user-account-base .container-footer {
 
 #roprime-profile-settings-root.roprime-profile-settings-root {
 	position: fixed;
-	top: 24px;
+	top: 40px;
 	right: 0;
 	bottom: 0;
 	left: var(--roprime-settings-left-inset, 289px);
