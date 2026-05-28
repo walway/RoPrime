@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 import { spawn } from "node:child_process";
 import {
 	cpSync,
@@ -15,30 +14,21 @@ import chalk from "chalk";
 import dotenv from "dotenv";
 import { globSync } from "glob";
 
-const root = dirname(fileURLToPath(import.meta.url));
+const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 dotenv.config({ path: join(root, ".env") });
 const distDir = join(root, "dist");
 const error = chalk.bold.red;
 const warning = chalk.hex("#FFA500");
 
-/** Load order for extension CSS (manifest content_scripts). */
-export const STYLE_CSS_ORDER = [
-	"src/style/main.css",
-	"src/style/account/menu-tab.css",
-	"src/style/settings/panel.css",
-	"src/style/settings/settings-mui-shell.css",
-	"src/style/components/mui-controls.css",
-	"src/style/layout/chrome.css",
-	"src/style/welcome/welcome.css",
-	"src/style/navigation/old-nav.css",
-	"src/style/settings/light-overrides.css",
-	"src/style/settings/custom-css.css",
-	"src/style/settings/settings-sync.css",
-	"src/style/profile/cosmetics-shop.css",
-	"src/style/profile/page-effects.css",
-	"src/style/profile/carousel-effects.css",
-	"src/style/profile/friend-list-effects.css",
-];
+function copyPathsToDist(relativePaths) {
+	for (const file of relativePaths) {
+		const src = join(root, file);
+		if (!existsSync(src)) continue;
+		const dst = join(distDir, file);
+		mkdirSync(dirname(dst), { recursive: true });
+		cpSync(src, dst);
+	}
+}
 
 function prepareLottieVendorAssets() {
 	const lottieMinSrc = join(
@@ -84,27 +74,42 @@ function runNode(scriptPath, args, opts) {
 }
 
 function copyStyleTreeToDist() {
-	for (const rel of STYLE_CSS_ORDER) {
-		const src = join(root, rel);
-		if (!existsSync(src)) {
+	const styleFiles = globSync("src/style/**/*.css", { nodir: true });
+	if (styleFiles.length === 0) {
+		throw new Error("No stylesheets under src/style/");
+	}
+	copyPathsToDist(styleFiles);
+}
+
+function getStyleCssOrderFromIndex() {
+	const indexPath = join(root, "src/style/index.css");
+	const text = readFileSync(indexPath, "utf8").replace(/\/\*[\s\S]*?\*\//g, "");
+	const order = [];
+	for (const match of text.matchAll(/@import\s+["']\.\/([^"']+)["']/g)) {
+		order.push(`src/style/${match[1]}`);
+	}
+	if (order.length === 0) {
+		throw new Error("src/style/index.css has no @import rules");
+	}
+	for (const rel of order) {
+		if (!existsSync(join(root, rel))) {
 			throw new Error(`Missing stylesheet: ${rel}`);
 		}
-		const dst = join(distDir, rel);
-		mkdirSync(dirname(dst), { recursive: true });
-		cpSync(src, dst);
 	}
+	return order;
 }
 
 function writeDistManifest(distPath) {
 	const raw = readFileSync(join(root, "manifest.json"), "utf8");
 	const manifest = JSON.parse(raw);
+	const styleCssOrder = getStyleCssOrderFromIndex();
 	for (const entry of manifest.content_scripts || []) {
 		if (Array.isArray(entry.js)) {
 			entry.js = entry.js.map((p) =>
 				typeof p === "string" ? p.replace(/^\/?dist\//, "") : p,
 			);
 		}
-		entry.css = [...STYLE_CSS_ORDER];
+		entry.css = [...styleCssOrder];
 	}
 	writeFileSync(distPath, `${JSON.stringify(manifest, null, 2)}\n`, "utf8");
 }
@@ -115,7 +120,7 @@ const localeFiles = globSync(".locales/**/*", {
 	nodir: true,
 	ignore: [".locales/example.md"],
 });
-const dataFiles = globSync("resources/data/**/*", { nodir: true });
+const resourceFiles = globSync("resources/**/*", { nodir: true });
 
 console.log("Building RoPrime with Vite...");
 if (process.env.SUPABASE_URL?.trim()) {
@@ -138,28 +143,11 @@ await runNode(viteCli, ["build", "--config", "configs/vite.content.config.js"]);
 
 copyStyleTreeToDist();
 
-const copyFiles = [
-	"background.js",
-	"resources/roprime-icon.png",
-	"resources/icons/icon16.png",
-	"resources/icons/icon32.png",
-	"resources/icons/icon48.png",
-	"resources/icons/icon64.png",
-	"resources/icons/icon128.png",
-	"resources/RblxPlusLogo.webp",
-	"resources/plugins/rosealpluginimage.png",
-	"resources/plugins/rovalrapluginimage.png",
-	...dataFiles,
+copyPathsToDist([
+	"src/content/background.js",
+	...resourceFiles,
 	...localeFiles,
-	".locales/lang-config.js",
-];
-for (const file of copyFiles) {
-	const src = join(root, file);
-	if (!existsSync(src)) continue;
-	const dst = join(distDir, file);
-	mkdirSync(dirname(dst), { recursive: true });
-	cpSync(src, dst);
-}
+]);
 
 writeDistManifest(join(distDir, "manifest.json"));
 

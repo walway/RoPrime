@@ -7,9 +7,9 @@
 @import "./welcome/welcome.css";
 @import "./navigation/old-nav.css";
 @import "./settings/light-overrides.css";
+@import "./settings/custom-css.css";
+@import "./settings/settings-sync.css";
 @import "./profile/cosmetics-shop.css";
 @import "./profile/page-effects.css";
 @import "./profile/carousel-effects.css";
 @import "./profile/friend-list-effects.css";
-
-/* @import "./welcome/welcome.css";"; */

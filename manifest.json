@@ -47,7 +47,7 @@
 		{
 			"matches": ["*://*.roblox.com/*"],
 			"js": ["dist/content.js"],
-			"css": ["src/style/index.css"],
+			"css": ["src/style/*.css"],
 			"run_at": "document_start"
 		}
 	]

@@ -3,8 +3,9 @@ import { fileURLToPath } from "node:url";
 import dotenv from "dotenv";
 import { defineConfig } from "vite";
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
-dotenv.config({ path: resolve(__dirname, ".env") });
+const configDir = dirname(fileURLToPath(import.meta.url));
+const root = resolve(configDir, "..");
+dotenv.config({ path: resolve(root, ".env") });
 
 const supabaseUrl = String(process.env.SUPABASE_URL || "").trim();
 const supabaseAnonKey = String(
@@ -23,7 +24,7 @@ export default defineConfig({
 		emptyOutDir: true,
 		sourcemap: true,
 		lib: {
-			entry: resolve(__dirname, "src/content/content.entry.js"),
+			entry: resolve(root, "src/content/content.entry.js"),
 			name: "RoPrime",
 			formats: ["iife"],
 			fileName: () => "content.js",
