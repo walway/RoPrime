@@ -567,10 +567,92 @@ stupid MUI
 	color: var(--color-content-default);
 }
 
-span.icon-nav-menu.roprime-icon-nav-menu-replaced {
+/* RoPrime header nav menu — MUI MenuOpen IconButton (replaces Roblox span.icon-nav-menu) */
+#header-menu-icon .roprime-nav-menu-button.menu-button,
+.container-fluid .rbx-navbar-header #header-menu-icon .roprime-nav-menu-button.menu-button {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
+	flex: 0 0 auto;
+	width: 40px;
+	height: 40px;
+	min-width: 40px;
+	padding: 8px;
+	margin: 0;
+	border: 0;
+	border-radius: 50%;
+	background-color: transparent;
+	color: var(--color-content-emphasis, currentColor);
+	cursor: pointer;
+	position: relative;
+	overflow: hidden;
+	vertical-align: middle;
+	-webkit-tap-highlight-color: transparent;
+	transition: background-color 150ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#header-menu-icon .roprime-nav-menu-button.menu-button:hover,
+.container-fluid .rbx-navbar-header #header-menu-icon .roprime-nav-menu-button.menu-button:hover {
+	background-color: color-mix(
+		in srgb,
+		var(--color-content-emphasis, currentColor) 8%,
+		transparent
+	);
+}
+
+#header-menu-icon .roprime-nav-menu-button.menu-button:active,
+.container-fluid .rbx-navbar-header #header-menu-icon .roprime-nav-menu-button.menu-button:active {
+	background-color: color-mix(
+		in srgb,
+		var(--color-content-emphasis, currentColor) 16%,
+		transparent
+	);
+}
+
+#header-menu-icon .roprime-nav-menu-button .roprime-nav-menu-button-icon,
+#header-menu-icon .roprime-nav-menu-button .MuiSvgIcon-root,
+.container-fluid .rbx-navbar-header #header-menu-icon .roprime-nav-menu-button .MuiSvgIcon-root {
+	width: 24px;
+	height: 24px;
+	fill: currentColor;
+	flex-shrink: 0;
+}
+
+#header-menu-icon .roprime-nav-menu-button .roprime-nav-menu-button-label,
+.container-fluid .rbx-navbar-header #header-menu-icon .roprime-nav-menu-button .roprime-nav-menu-button-label {
+	width: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+#header-menu-icon .roprime-nav-menu-button .roprime-nav-menu-button-ripple,
+#header-menu-icon .roprime-nav-menu-button .MuiTouchRipple-root,
+.container-fluid .rbx-navbar-header #header-menu-icon .roprime-nav-menu-button .MuiTouchRipple-root {
+	position: absolute;
+	inset: 0;
+	border-radius: inherit;
+	pointer-events: none;
+	overflow: hidden;
+}
+
+#header-menu-icon .roprime-nav-menu-button.menu-button:active .MuiTouchRipple-root,
+.container-fluid
+	.rbx-navbar-header
+	#header-menu-icon
+	.roprime-nav-menu-button.menu-button:active
+	.MuiTouchRipple-root {
+	opacity: 1;
+	background: color-mix(
+		in srgb,
+		var(--color-content-emphasis, currentColor) 20%,
+		transparent
+	);
+}
+
+#header-menu-icon .roprime-nav-menu-button .icon-nav-menu,
+.container-fluid .rbx-navbar-header #header-menu-icon .roprime-nav-menu-button .icon-nav-menu {
+	display: none;
 }
 
 .roprime-sidebar-size-control {

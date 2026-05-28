@@ -8,12 +8,19 @@ import {
 	syncSidebarCompactDecorations,
 	updateSidebarCompactVisibility,
 } from "./sidebarCompact.js";
-import { MENU_OPEN_ICON_SVG } from "./sidebarIcons.js";
+import { createRoPrimeNavMenuButton } from "./sidebarIcons.js";
 import { updateSmallNewNavVisibility } from "./smallNewNav.js";
 
 const RP_SIDEBAR_CONTENT_STYLE_ID = "roprime-sidebar-content-hide-style";
 const RP_MENU_ICON_BOUND_ATTR = "data-roprime-menu-icon-bound";
-const originalMenuIconContent = new WeakMap();
+const NATIVE_HEADER_MENU_BUTTON_SELECTOR =
+	"#header-menu-icon.rbx-nav-collapse button.menu-button:not([data-roprime-nav-menu-button]), .container-fluid .rbx-navbar-header #header-menu-icon.rbx-nav-collapse button.menu-button:not([data-roprime-nav-menu-button])";
+const ROPRIME_HEADER_MENU_BUTTON_SELECTOR =
+	"#header-menu-icon.rbx-nav-collapse button[data-roprime-nav-menu-button], .container-fluid .rbx-navbar-header #header-menu-icon.rbx-nav-collapse button[data-roprime-nav-menu-button]";
+/** @type {WeakMap<HTMLButtonElement, HTMLButtonElement>} */
+const originalNavMenuButtons = new WeakMap();
+/** @type {MutationObserver | null} */
+let headerMenuIconObserver = null;
 
 /** @typedef {'full' | 'small' | 'icon'} SidebarSizeMode */
 
@@ -337,33 +344,55 @@ function updateSidebarHideStyle() {
 	style.textContent = css;
 }
 
-function restoreMenuIcons() {
-	document.querySelectorAll("span.icon-nav-menu").forEach((span) => {
-		if (!(span instanceof HTMLElement)) return;
-		if (!span.classList.contains("roprime-icon-nav-menu-replaced")) return;
-		const original = originalMenuIconContent.get(span);
-		if (original instanceof DocumentFragment) {
-			span.replaceChildren();
-			span.appendChild(original.cloneNode(true));
-			originalMenuIconContent.delete(span);
+function queryNativeHeaderMenuButtons() {
+	return document.querySelectorAll(NATIVE_HEADER_MENU_BUTTON_SELECTOR);
+}
+
+function queryRoPrimeHeaderMenuButtons() {
+	return document.querySelectorAll(ROPRIME_HEADER_MENU_BUTTON_SELECTOR);
+}
+
+function stopHeaderMenuIconObserver() {
+	headerMenuIconObserver?.disconnect();
+	headerMenuIconObserver = null;
+}
+
+function ensureHeaderMenuIconObserver() {
+	if (!settingsState.sidebarCollapseMenuEnabled) {
+		stopHeaderMenuIconObserver();
+		return;
+	}
+	if (headerMenuIconObserver) return;
+	try {
+		headerMenuIconObserver = new MutationObserver(() => {
+			applyNavbarMenuButton();
+		});
+		headerMenuIconObserver.observe(document.documentElement, {
+			childList: true,
+			subtree: true,
+		});
+	} catch {
+		stopHeaderMenuIconObserver();
+	}
+}
+
+function restoreNavbarMenuButtons() {
+	queryRoPrimeHeaderMenuButtons().forEach((replacement) => {
+		if (!(replacement instanceof HTMLButtonElement)) return;
+		const original = originalNavMenuButtons.get(replacement);
+		if (original instanceof HTMLButtonElement) {
+			replacement.replaceWith(original);
+			originalNavMenuButtons.delete(replacement);
 		}
-		span.classList.remove("roprime-icon-nav-menu-replaced");
 	});
 }
 
-function applyMenuOpenIcon() {
-	document.querySelectorAll("span.icon-nav-menu").forEach((span) => {
-		if (!(span instanceof HTMLElement)) return;
-		if (span.classList.contains("roprime-icon-nav-menu-replaced")) return;
-		if (!originalMenuIconContent.has(span)) {
-			const fragment = document.createDocumentFragment();
-			span.childNodes.forEach((node) => {
-				fragment.appendChild(node.cloneNode(true));
-			});
-			originalMenuIconContent.set(span, fragment);
-		}
-		span.innerHTML = MENU_OPEN_ICON_SVG;
-		span.classList.add("roprime-icon-nav-menu-replaced");
+function applyNavbarMenuButton() {
+	queryNativeHeaderMenuButtons().forEach((original) => {
+		if (!(original instanceof HTMLButtonElement)) return;
+		const replacement = createRoPrimeNavMenuButton(original);
+		originalNavMenuButtons.set(replacement, original);
+		original.replaceWith(replacement);
 	});
 }
 
@@ -390,9 +419,8 @@ function bindCollapseMenuHandler() {
 			if (!settingsState.sidebarCollapseMenuEnabled) return;
 			const target = event.target;
 			if (!(target instanceof Element)) return;
-			const span = target.closest("span.icon-nav-menu");
-			if (!(span instanceof HTMLElement)) return;
-			if (!span.classList.contains("roprime-icon-nav-menu-replaced")) return;
+			const menuBtn = target.closest(ROPRIME_HEADER_MENU_BUTTON_SELECTOR);
+			if (!(menuBtn instanceof HTMLButtonElement)) return;
 			event.preventDefault();
 			event.stopImmediatePropagation();
 			toggleFullToIconSidebar();
@@ -404,10 +432,12 @@ function bindCollapseMenuHandler() {
 export function syncSidebarCollapseMenuIcon() {
 	bindCollapseMenuHandler();
 	if (!settingsState.sidebarCollapseMenuEnabled) {
-		restoreMenuIcons();
+		stopHeaderMenuIconObserver();
+		restoreNavbarMenuButtons();
 		return;
 	}
-	applyMenuOpenIcon();
+	ensureHeaderMenuIconObserver();
+	applyNavbarMenuButton();
 }
 
 function queueSidebarNavResync() {

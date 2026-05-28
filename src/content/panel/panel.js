@@ -28,6 +28,7 @@ import {
 	syncSidebarCompactDecorations,
 	updateSidebarCompactVisibility,
 } from "../sidebar/sidebarCompact.js";
+import { syncSidebarCollapseMenuIcon } from "../sidebar/sidebarContent.js";
 import { updateSmallNewNavVisibility } from "../sidebar/smallNewNav.js";
 
 export function updateOldNavigationBarVisibility() {
@@ -74,6 +75,7 @@ export function syncRoEliteView() {
 		syncAlwaysShowCloseButton();
 		updateFriendStylingReimagnedVisibility();
 		syncSidebarCompactDecorations();
+		syncSidebarCollapseMenuIcon();
 		syncCustomCss();
 
 		if (settingsState.renameCommunitiesToGroups)

@@ -16,9 +16,15 @@ const PROFILE_EFFECTS_SYNC_STRIP_KEYS = [
 	"profileEffectsEquippedByUser",
 ];
 
+/** Custom CSS is edited in-app only — never included in sync export/import. */
+const SETTINGS_SYNC_STRIP_KEYS = [
+	...PROFILE_EFFECTS_SYNC_STRIP_KEYS,
+	"customCss",
+];
+
 /** @param {Record<string, unknown>} payload */
-function stripProfileEffectsFromSyncPayload(payload) {
-	for (const key of PROFILE_EFFECTS_SYNC_STRIP_KEYS) {
+function stripSettingsSyncPayload(payload) {
+	for (const key of SETTINGS_SYNC_STRIP_KEYS) {
 		delete payload[key];
 	}
 	return payload;
@@ -42,7 +48,7 @@ function detectBrowserName() {
 }
 
 export function buildSettingsExportDocument() {
-	const roprime = stripProfileEffectsFromSyncPayload({
+	const roprime = stripSettingsSyncPayload({
 		...serializeSettingsPayload(),
 	});
 	return {
@@ -167,12 +173,14 @@ export async function importSettingsFile(file) {
 		throw new Error("invalid");
 	}
 
-	stripProfileEffectsFromSyncPayload(settings);
+	stripSettingsSyncPayload(settings);
 
 	const storage = getStorageApi();
 	if (!storage) throw new Error("storage");
 
+	const preservedCustomCss = String(settingsState.customCss || "");
 	mergeStoredSettings(settings);
+	settingsState.customCss = preservedCustomCss;
 	const payload = serializeSettingsPayload();
 
 	await new Promise((resolve, reject) => {
