@@ -622,6 +622,12 @@ stupid MUI
 	display: none;
 }
 
+html.roprime-sidebar-collapse-menu-enabled div.rbx-navbar-header,
+body.roprime-sidebar-collapse-menu-enabled div.rbx-navbar-header {
+	justify-content: center !important;
+	display: flex !important;
+}
+
 .roprime-sidebar-size-control {
 	flex: 0 0 250px;
 	max-width: 100%;

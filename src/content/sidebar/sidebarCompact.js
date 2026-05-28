@@ -344,70 +344,10 @@ body .no-gutter-ads.logged-in.left-nav-new-width {
   pointer-events: none !important;
 }
 
-/* Full <-> icon collapse button: same proven logo/header fix */
-html.roprime-sidebar-collapse-menu-enabled .navbar-header,
-body.roprime-sidebar-collapse-menu-enabled .navbar-header,
-html.roprime-sidebar-collapse-menu-enabled .rbx-header .rbx-navbar-header,
-body.roprime-sidebar-collapse-menu-enabled .rbx-header .rbx-navbar-header {
-  display: flex !important;
-  align-items: center !important;
-}
-
-html.roprime-sidebar-collapse-menu-enabled button.menu-button.btn-navigation-nav-menu-md,
-body.roprime-sidebar-collapse-menu-enabled button.menu-button.btn-navigation-nav-menu-md,
-html.roprime-sidebar-collapse-menu-enabled #header-menu-icon .roprime-nav-menu-button.menu-button,
-body.roprime-sidebar-collapse-menu-enabled #header-menu-icon .roprime-nav-menu-button.menu-button,
-html.roprime-sidebar-collapse-menu-enabled .container-fluid .rbx-navbar-header #header-menu-icon .roprime-nav-menu-button.menu-button,
-body.roprime-sidebar-collapse-menu-enabled .container-fluid .rbx-navbar-header #header-menu-icon .roprime-nav-menu-button.menu-button {
-  order: 1 !important;
-  flex: 0 0 auto !important;
-}
-
-html.roprime-sidebar-collapse-menu-enabled a.nav-logo-link.navbar-brand,
-body.roprime-sidebar-collapse-menu-enabled a.nav-logo-link.navbar-brand,
-html.roprime-sidebar-collapse-menu-enabled a.navbar-brand,
-body.roprime-sidebar-collapse-menu-enabled a.navbar-brand,
-html.roprime-sidebar-collapse-menu-enabled .navbar-brand,
-body.roprime-sidebar-collapse-menu-enabled .navbar-brand {
-  order: 2 !important;
-  display: inline-flex !important;
-  align-items: center !important;
+html.roprime-sidebar-collapse-menu-enabled div.rbx-navbar-header,
+body.roprime-sidebar-collapse-menu-enabled div.rbx-navbar-header {
   justify-content: center !important;
-  position: static !important;
-  top: auto !important;
-  left: auto !important;
-  transform: none !important;
-  margin: 0 8px !important;
-  flex: 0 0 auto !important;
-}
-
-html.roprime-sidebar-collapse-menu-enabled .font-header-2.nav-menu-title.text-header,
-body.roprime-sidebar-collapse-menu-enabled .font-header-2.nav-menu-title.text-header,
-html.roprime-sidebar-collapse-menu-enabled .nav-menu-title.font-header-2.text-header,
-body.roprime-sidebar-collapse-menu-enabled .nav-menu-title.font-header-2.text-header {
-  order: 3 !important;
-  margin-left: 0 !important;
-}
-
-html.roprime-sidebar-collapse-menu-enabled a.nav-logo-link.navbar-brand span.icon-logo,
-body.roprime-sidebar-collapse-menu-enabled a.nav-logo-link.navbar-brand span.icon-logo,
-html.roprime-sidebar-collapse-menu-enabled a.navbar-brand span.icon-logo,
-body.roprime-sidebar-collapse-menu-enabled a.navbar-brand span.icon-logo,
-html.roprime-sidebar-collapse-menu-enabled .navbar-brand span.icon-logo {
-  display: inline-block !important;
-  position: static !important;
-  top: auto !important;
-  left: auto !important;
-  transform: none !important;
-  vertical-align: middle !important;
-}
-
-html.roprime-sidebar-collapse-menu-enabled a.nav-logo-link.navbar-brand span.icon-logo-r,
-body.roprime-sidebar-collapse-menu-enabled a.nav-logo-link.navbar-brand span.icon-logo-r,
-html.roprime-sidebar-collapse-menu-enabled a.navbar-brand span.icon-logo-r,
-body.roprime-sidebar-collapse-menu-enabled a.navbar-brand span.icon-logo-r,
-html.roprime-sidebar-collapse-menu-enabled .navbar-brand span.icon-logo-r {
-  display: none !important;
+  display: flex !important;
 }
 
 `.trim();
