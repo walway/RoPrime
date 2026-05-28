@@ -35,9 +35,18 @@ let headerMenuIconObserver = null;
 const SIDEBAR_ITEM_AVAILABLE_SIZES = {
 	"profile-with-avatar": ["full", "small", "icon"],
 	home: ["full", "small", "icon"],
+	messages: ["full", "small", "icon"],
+	friends: ["full", "small", "icon"],
+	avatar: ["full", "small", "icon"],
+	inventory: ["full", "small", "icon"],
+	trades: ["full", "small", "icon"],
+	communities: ["full", "small", "icon"],
+	blog: ["full", "small", "icon"],
+	"buy-gift-cards": ["full", "small", "icon"],
+	"official-store-button": ["full", "small", "icon"],
 	"profile-no-avatar": ["full", "small", "icon"],
 	"roblox-plus": ["full", "small", "icon"],
-	favorites: ["full", "small"],
+	favorites: ["full", "small", "icon"],
 	"roblox-plus-ad": ["full", "small"],
 	"game-events": ["full", "small"],
 };
@@ -53,6 +62,52 @@ export const SIDEBAR_NAV_ITEM_DEFS = [
 		id: "home",
 		label: "Home",
 		find: findHomeLink,
+	},
+	{
+		id: "messages",
+		label: "Messages",
+		find: findMessagesLink,
+	},
+	{
+		id: "friends",
+		label: "Friends",
+		find: findFriendsLink,
+	},
+	{
+		id: "avatar",
+		label: "Avatar",
+		find: findAvatarLink,
+	},
+	{
+		id: "inventory",
+		label: "Inventory",
+		find: findInventoryLink,
+	},
+	{
+		id: "trades",
+		label: "Trades",
+		find: findTradesLink,
+	},
+	{
+		id: "communities",
+		label: "Communities",
+		find: findCommunitiesLink,
+	},
+	{
+		id: "blog",
+		label: "Blog",
+		find: findBlogLink,
+	},
+	{
+		id: "buy-gift-cards",
+		label: "Buy Gift Cards",
+		find: findBuyGiftCardsLink,
+	},
+	{
+		id: "official-store-button",
+		label: "Official Store",
+		find: findOfficialStoreButton,
+		conditional: true,
 	},
 	{
 		id: "profile-no-avatar",
@@ -112,20 +167,9 @@ function hideTarget(el) {
 }
 
 function findProfileWithAvatar(nav) {
-	for (const a of nav.querySelectorAll("a[href]")) {
-		if (!(a instanceof HTMLAnchorElement)) continue;
-		const path = normalizePath(a.getAttribute("href") || "");
-		if (
-			!pathMatches(path, /\/users\/\d+/i) &&
-			!pathMatches(path, /\/users\/profile/i) &&
-			!pathMatches(path, /\/my\/account/i) &&
-			!pathMatches(path, /\/my\/profile/i)
-		)
-			continue;
-		if (!a.querySelector("img")) continue;
-		return hideTarget(a);
-	}
-	return null;
+	const a = nav.querySelector('a[href*="/users/profile" i]');
+	if (!(a instanceof HTMLAnchorElement)) return null;
+	return hideTarget(a);
 }
 
 function findHomeLink(nav) {
@@ -134,6 +178,87 @@ function findHomeLink(nav) {
 		const path = normalizePath(a.getAttribute("href") || a.href);
 		if (path === "/home" || path.endsWith("/home")) return hideTarget(a);
 	}
+	return null;
+}
+
+function findLinkByPatterns(nav, patterns) {
+	for (const a of nav.querySelectorAll("a[href]")) {
+		if (!(a instanceof HTMLAnchorElement)) continue;
+		const hrefAttr = String(a.getAttribute("href") || "");
+		const hrefFull = String(a.href || "");
+		const path = normalizePath(hrefAttr || hrefFull);
+		const matched = patterns.some((pattern) => {
+			if (pattern instanceof RegExp) {
+				return (
+					pattern.test(hrefAttr) ||
+					pattern.test(hrefFull) ||
+					pattern.test(path)
+				);
+			}
+			const token = String(pattern).toLowerCase();
+			return (
+				hrefAttr.toLowerCase().includes(token) ||
+				hrefFull.toLowerCase().includes(token) ||
+				path.toLowerCase().includes(token)
+			);
+		});
+		if (matched) return hideTarget(a);
+	}
+	return null;
+}
+
+function findMessagesLink(nav) {
+	return findLinkByPatterns(nav, [
+		"https://www.roblox.com/my/messages/#!/inbox",
+		"/my/messages",
+	]);
+}
+
+function findFriendsLink(nav) {
+	return findLinkByPatterns(nav, [
+		"https://www.roblox.com/users/friends#!/friend-requests",
+		"/users/friends",
+	]);
+}
+
+function findAvatarLink(nav) {
+	return findLinkByPatterns(nav, ["https://www.roblox.com/my/avatar", "/my/avatar"]);
+}
+
+function findInventoryLink(nav) {
+	return findLinkByPatterns(nav, [
+		"https://www.roblox.com/users/inventory",
+		"/users/inventory",
+	]);
+}
+
+function findTradesLink(nav) {
+	return findLinkByPatterns(nav, ["https://www.roblox.com/trades", "/trades"]);
+}
+
+function findCommunitiesLink(nav) {
+	return findLinkByPatterns(nav, [
+		"https://www.roblox.com/communities",
+		"/communities",
+	]);
+}
+
+function findBlogLink(nav) {
+	return findLinkByPatterns(nav, ["https://blog.roblox.com/", "blog.roblox.com"]);
+}
+
+function findBuyGiftCardsLink(nav) {
+	return findLinkByPatterns(nav, [
+		"https://www.roblox.com/giftcards-us",
+		"/giftcards-us",
+	]);
+}
+
+function findOfficialStoreButton(nav) {
+	const btn = nav.querySelector(
+		'button.bg-none.width-full.stroke-none.content-emphasis.text-title-large.flex.items-center.gap-small.padding-left-xsmall.padding-right-xxsmall.radius-medium.relative.clip.group\\/interactable.focus-visible\\:outline-focus.disabled\\:outline-none',
+	);
+	if (btn instanceof HTMLElement) return hideTarget(btn);
 	return null;
 }
 
@@ -155,10 +280,18 @@ function findRobloxPlusLink(nav) {
 }
 
 function findFavoritesItem(nav) {
-	const ul = nav.querySelector("ul.flex.flex-col.gap-small");
-	if (!(ul instanceof HTMLElement)) return null;
-	const li = ul.querySelector("li.roseal-left-nav-item");
-	return li instanceof HTMLElement ? li : null;
+	const fromHref = findLinkByPatterns(nav, [
+		"/favorites",
+		"/users/favorites",
+		"/my/favorites",
+	]);
+	if (fromHref instanceof HTMLElement) return fromHref;
+	const favoritesLabel = Array.from(nav.querySelectorAll("a[href]")).find((a) => {
+		if (!(a instanceof HTMLAnchorElement)) return false;
+		return /favorites/i.test(a.textContent || "");
+	});
+	if (favoritesLabel instanceof HTMLAnchorElement) return hideTarget(favoritesLabel);
+	return null;
 }
 
 function findRobloxPlusAdItem(nav) {
@@ -167,15 +300,9 @@ function findRobloxPlusAdItem(nav) {
 }
 
 function findGameEventsItem(nav) {
-	const container = nav.querySelector(
-		"div.padding-x-large.padding-y-medium.flex.flex-col.gap-large",
-	);
-	if (!(container instanceof HTMLElement)) return null;
-	const item = container.querySelector(
-		"div.roseal-left-nav-item, [class*='roseal-left-nav-item']",
-	);
-	if (!(item instanceof HTMLElement)) return null;
-	return hideTarget(item);
+	const eventsNav = nav.querySelector("div.roseal-events-nav");
+	if (!(eventsNav instanceof HTMLElement)) return null;
+	return eventsNav;
 }
 
 function defsForSidebarSize(sizeMode) {
@@ -234,6 +361,13 @@ export function restoreSidebarItem(itemId, sizeMode = getActiveSidebarSize()) {
 		getHiddenSidebarItemIds(mode).filter((id) => id !== itemId),
 		mode,
 	);
+	saveSettings();
+	syncSidebarContent({ force: true });
+}
+
+export function resetSidebarItemsForMode(sizeMode = getActiveSidebarSize()) {
+	const mode = normalizeSidebarSizeMode(sizeMode);
+	setHiddenSidebarItemIds([], mode);
 	saveSettings();
 	syncSidebarContent({ force: true });
 }
@@ -300,16 +434,42 @@ function tagSidebarNavItems(nav) {
 const SIDEBAR_ITEM_HIDE_CSS =
 	"display:none!important;visibility:hidden!important;height:0!important;min-height:0!important;max-height:0!important;margin:0!important;padding:0!important;overflow:hidden!important;opacity:0!important;pointer-events:none!important;transition:none!important;animation:none!important;";
 
+function isAllSidebarItemsHiddenForMode(mode) {
+	const defs = defsForSidebarSize(mode);
+	if (!defs.length) return false;
+	const hidden = new Set(getHiddenSidebarItemIds(mode));
+	return defs.every((def) => hidden.has(def.id));
+}
+
 function buildHideStyle() {
 	const mode = getActiveSidebarSize();
 	const hidden = getHiddenSidebarItemIds(mode);
-	if (!hidden.length) return "";
-	return hidden
+	const noSidebarButtons = isAllSidebarItemsHiddenForMode(mode);
+	if (!hidden.length && !noSidebarButtons) return "";
+	const css = hidden
 		.map(
 			(id) =>
 				`.left-nav.fixed [data-roprime-sidebar-item="${id}"],.left-nav.fixed [data-roprime-sidebar-item="${id}"] *{${SIDEBAR_ITEM_HIDE_CSS}}`,
 		)
 		.join("\n");
+	const extraBlocks = [];
+	if (hidden.includes("game-events")) {
+		const gameEventsSelectors = [".left-nav.fixed div.roseal-events-nav"]
+		.map((selector) => `${selector}{${SIDEBAR_ITEM_HIDE_CSS}}`)
+		.join("\n");
+		extraBlocks.push(gameEventsSelectors);
+	}
+	if (noSidebarButtons) {
+		extraBlocks.push(
+			[
+				'.width-\\[288px\\], [class~="width-[288px]"] { display: none !important; }',
+				'.flex.width-\\[289px\\].height-full.scroll-y, .flex[class~="width-[289px]"][class~="height-full"][class~="scroll-y"] { display: none !important; }',
+				"@media (min-width: 1141px) { .no-gutter-ads.logged-in.left-nav-new-width { --left-nav-reserved-width: 0px !important; } }",
+				"@media (max-width: 747px) { #roprime-profile-settings-root.roprime-profile-settings-root { left: 0 !important; } }",
+			].join("\n"),
+		);
+	}
+	return [css, ...extraBlocks].filter(Boolean).join("\n");
 }
 
 function applySidebarItemHideState(

@@ -382,6 +382,37 @@ stupid MUI
 	justify-content: flex-start;
 }
 
+.roprime-sidebar-size-warning {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	margin-top: 10px;
+	color: var(--color-content-default);
+	font-size: 12px;
+	line-height: 1.3;
+}
+
+.roprime-sidebar-size-warning-text {
+	flex: 1 1 auto;
+	min-width: 0;
+}
+
+.roprime-sidebar-reset-btn {
+	flex: 0 0 auto;
+}
+
+.roprime-sidebar-content-reset-wrap {
+	display: flex;
+	justify-content: flex-end;
+	margin: 8px 0 4px;
+}
+
+.roprime-sidebar-reset-btn--big {
+	width: 36px;
+	height: 36px;
+	border-radius: 10px;
+}
+
 .roprime-sidebar-configure-btn {
 	display: inline-flex;
 	align-items: center;

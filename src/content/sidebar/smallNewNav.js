@@ -11,7 +11,6 @@ const SMALL_NEW_NAV_BASE_CSS = [
 	"{ width: 200px !important; min-width: 0 !important; max-width: 200px !important; }",
 ].join("\n");
 
-/** Short labels for the 200px sidebar rail. */
 const SMALL_NAV_LABEL_REPLACEMENTS = [
 	{ pattern: /official store/gi, replacement: "Store" },
 	{ pattern: /buy gift cards/gi, replacement: "Gift Cards" },
