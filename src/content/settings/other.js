@@ -2,6 +2,7 @@ import { saveSettings, settingsState } from "../core/core.js";
 import { promptProfileEffectsSupportNotice } from "../features/alert.js";
 import { hydrateProfilePictureEffectAvatars } from "../profile/profileEffectAvatar.js";
 import {
+	getAllProfileEffectIds,
 	getProfileEffectById,
 	getProfileEffectShopEmbedSrc,
 	PROFILE_EFFECT_IFRAME_TRANSPARENT_ATTRS,
@@ -13,12 +14,28 @@ import {
 	getRobloxUserId,
 	isSupabaseProfileEffectsEnabled,
 	normalizeEquippedEntry,
+	registerProfileEffectPurchase,
 	registerProfileEffectEquip,
 	syncOwnedEffectsFromRegistry,
 } from "../profile/profileEffectsRegistry.js";
 import { t as accountSettingsPaneT } from "./roprimeAccountSettingsPage.js";
 
 let cachedAuthUserId = null;
+
+async function grantAllProfileEffectsToCurrentUser() {
+	const allEffectIds = getAllProfileEffectIds();
+	if (!allEffectIds.length) return;
+
+	settingsState.ownedProfileEffects = [...allEffectIds];
+
+	if (!isSupabaseProfileEffectsEnabled()) return;
+	const userId = await refreshAuthUserId();
+	if (!userId) return;
+
+	await Promise.allSettled(
+		allEffectIds.map((effectId) => registerProfileEffectPurchase(userId, effectId)),
+	);
+}
 
 function equippedFieldForKind(kind) {
 	return kind === "picture"
@@ -399,9 +416,14 @@ export function bindCosmeticsControls(inner) {
 	const toggle = inner.querySelector("#roprime-toggle-cosmetics-enabled");
 	if (toggle instanceof HTMLInputElement) {
 		toggle.addEventListener("change", () => {
-			settingsState.cosmeticsEnabled = toggle.checked;
-			saveSettings();
-			syncCosmeticsUi(inner);
+			void (async () => {
+				settingsState.cosmeticsEnabled = toggle.checked;
+				if (toggle.checked) {
+					await grantAllProfileEffectsToCurrentUser();
+				}
+				saveSettings();
+				syncCosmeticsUi(inner);
+			})();
 		});
 	}
 

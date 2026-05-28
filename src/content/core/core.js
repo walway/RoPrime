@@ -1,5 +1,7 @@
 import { langList } from "../../../.locales/lang-config.js";
 
+const extensionApi = globalThis.browser || globalThis.chrome;
+
 // (Settings UI removed) - keep runtime/style constants only.
 export const RP_SMALL_NEW_NAV_STYLE_ID = "roprime-small-new-nav-style";
 export const RP_SIDEBAR_COMPACT_STYLE_ID = "roprime-sidebar-compact-style";
@@ -92,24 +94,24 @@ export function syncAccountSettingsLayoutInset() {
 		);
 		return;
 	}
+	const effectiveSize =
+		settingsState.sidebarCollapseMenuEnabled && settingsState.sidebarIconsOnlyEnabled
+			? "icon"
+			: getActiveSidebarSize();
 	document.documentElement.style.setProperty(
 		"--roprime-settings-left-inset",
-		`${getAccountSettingsLeftInsetPx()}px`,
+		`${getAccountSettingsLeftInsetPx(effectiveSize)}px`,
 	);
 }
 
 /**
- * After reload/disable, `chrome.runtime.getURL` can throw even when `getURL` is a function.
+ * After reload/disable, extension `runtime.getURL` can throw even when `getURL` is a function.
  * Probe with a real call so stale content scripts stop touching extension APIs.
  */
 export function isExtensionContextAlive() {
 	try {
-		if (
-			typeof chrome === "undefined" ||
-			typeof chrome.runtime?.getURL !== "function"
-		)
-			return false;
-		chrome.runtime.getURL(".");
+		if (typeof extensionApi?.runtime?.getURL !== "function") return false;
+		extensionApi.runtime.getURL(".");
 		return true;
 	} catch {
 		return false;
@@ -124,7 +126,7 @@ export function isExtensionContextInvalidatedError(err) {
 export function getExtensionResourceUrl(relativePath) {
 	try {
 		if (!isExtensionContextAlive()) return "";
-		return chrome.runtime.getURL(relativePath);
+		return extensionApi.runtime.getURL(relativePath);
 	} catch {
 		return "";
 	}
@@ -145,7 +147,7 @@ function fetchExtensionJson(path) {
 		if (!isExtensionContextAlive()) {
 			return Promise.reject(new Error("no extension runtime"));
 		}
-		return fetch(chrome.runtime.getURL(path), { cache: "no-store" });
+		return fetch(extensionApi.runtime.getURL(path), { cache: "no-store" });
 	} catch (e) {
 		return Promise.reject(e);
 	}
@@ -268,9 +270,14 @@ export function setRenameIntervalId(value) {
 
 export function getStorageApi() {
 	try {
-		return typeof chrome !== "undefined" && chrome.storage?.local
-			? chrome.storage.local
-			: null;
+		if (typeof browser !== "undefined" && browser.storage?.local) {
+			return browser.storage.local;
+		}
+		const chromeApi = globalThis["chrome"];
+		if (chromeApi?.storage?.local) {
+			return chromeApi.storage.local;
+		}
+		return null;
 	} catch {
 		return null;
 	}

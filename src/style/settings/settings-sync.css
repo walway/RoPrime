@@ -15,13 +15,11 @@
 
 .roprime-settings-sync-preview-wrap {
 	margin-top: 14px;
-	max-height: min(52vh, 420px);
-	overflow: auto;
 	border-radius: 10px;
 	border: 1px solid
 		color-mix(in srgb, var(--color-content-emphasis) 22%, transparent);
 	background: var(--color-surface-300);
-	scrollbar-width: auto;
+	overflow: hidden;
 }
 
 .roprime-settings-sync-preview {
@@ -30,8 +28,10 @@
 	border: 0;
 	outline: none;
 	width: 100%;
-	min-height: min(52vh, 420px);
+	height: min(52vh, 420px);
+	min-height: 260px;
 	resize: vertical;
+	overflow: auto;
 	background: transparent;
 	font-size: 12px;
 	line-height: 1.45;

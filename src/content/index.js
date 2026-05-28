@@ -31,9 +31,11 @@ import { normalizeEquippedProfileEffects } from "./settings/other.js";
 import { syncProfileSettingsRoute } from "./settings/profileSettings.js";
 import { syncSidebarContent } from "./sidebar/sidebarContent.js";
 
+const extensionApi = globalThis.browser || globalThis.chrome;
+
 function installStorageSyncListener() {
-	if (typeof chrome === "undefined" || !chrome.storage?.onChanged) return;
-	chrome.storage.onChanged.addListener((changes, area) => {
+	if (!extensionApi?.storage?.onChanged) return;
+	extensionApi.storage.onChanged.addListener((changes, area) => {
 		try {
 			if (area !== "local" || !changes[RP_SETTINGS_KEY]) return;
 			loadSettings().finally(() => {

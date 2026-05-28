@@ -982,15 +982,17 @@ function buildMarkup() {
                     </div>
                     <div class="roprime-setting-control">${buildSidebarSizeControlHtml("roprime-sidebar-size-slider-config")}</div>
                 </div>
-                <div class="roprime-sidebar-content-reset-wrap">
-                    <button type="button" class="roprime-profile-effects-layout-btn roprime-sidebar-reset-btn roprime-sidebar-reset-btn--big" data-roprime-sidebar-reset data-i18n-aria-label="Reset sidebar content" aria-label="Reset sidebar content">
-                        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M12 6V3L8 7l4 4V8c2.21 0 4 1.79 4 4 0 .73-.2 1.41-.55 2h2.1c.29-.63.45-1.31.45-2 0-3.31-2.69-6-6-6zm-4 4c0-.73.2-1.41.55-2H6.45C6.16 8.63 6 9.31 6 10c0 3.31 2.69 6 6 6v3l4-4-4-4v3c-2.21 0-4-1.79-4-4z"/></svg>
-                    </button>
-                </div>
                 <div class="roprime-sidebar-content-panel">
-                    <div class="roprime-setting-field-copy">
-                        <div class="roprime-setting-title" data-i18n="Sidebar content list title"></div>
-                        <div class="roprime-setting-desc" data-i18n="Sidebar content list description"></div>
+                    <div class="roprime-sidebar-content-panel-header">
+                        <div class="roprime-setting-field-copy roprime-sidebar-content-panel-copy">
+                            <div class="roprime-setting-title" data-i18n="Sidebar content list title"></div>
+                            <div class="roprime-setting-desc" data-i18n="Sidebar content list description"></div>
+                        </div>
+                        <div class="roprime-sidebar-content-panel-actions">
+                            <button type="button" class="roprime-profile-effects-layout-btn roprime-sidebar-reset-btn roprime-sidebar-reset-btn--big" data-roprime-sidebar-reset data-i18n-aria-label="Reset sidebar content" aria-label="Reset sidebar content">
+                                <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path fill="currentColor" d="M12 6V3L8 7l4 4V8c2.21 0 4 1.79 4 4 0 .73-.2 1.41-.55 2h2.1c.29-.63.45-1.31.45-2 0-3.31-2.69-6-6-6zm-4 4c0-.73.2-1.41.55-2H6.45C6.16 8.63 6 9.31 6 10c0 3.31 2.69 6 6 6v3l4-4-4-4v3c-2.21 0-4-1.79-4-4z"/></svg>
+                            </button>
+                        </div>
                     </div>
                     <div class="roprime-sidebar-content-list" data-roprime-sidebar-content-list></div>
                 </div>`;

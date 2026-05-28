@@ -401,15 +401,9 @@ stupid MUI
 	flex: 0 0 auto;
 }
 
-.roprime-sidebar-content-reset-wrap {
-	display: flex;
-	justify-content: flex-end;
-	margin: 8px 0 4px;
-}
-
 .roprime-sidebar-reset-btn--big {
-	width: 36px;
-	height: 36px;
+	width: 48px;
+	height: 48px;
 	border-radius: 10px;
 }
 
@@ -475,6 +469,31 @@ stupid MUI
 	padding-bottom: 8px;
 	border-bottom: 1px solid
 		color-mix(in srgb, var(--color-content-emphasis) 14%, transparent);
+}
+
+.roprime-sidebar-content-panel-header {
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
+	gap: 12px;
+}
+
+.roprime-sidebar-content-panel-copy .roprime-setting-desc,
+.roprime-sidebar-size-warning-text {
+	color: var(--color-content-default);
+}
+
+.roprime-sidebar-content-panel-actions {
+	display: flex;
+	align-items: flex-start;
+	justify-content: flex-end;
+	flex: 0 0 auto;
+	padding-top: 2px;
+}
+
+.roprime-sidebar-content-panel-actions .roprime-sidebar-reset-btn--big svg {
+	width: 24px;
+	height: 24px;
 }
 
 .roprime-sidebar-content-list {
@@ -546,7 +565,7 @@ stupid MUI
 .roprime-sidebar-content-row-label {
 	font-size: 13px;
 	font-weight: 600;
-	color: var(--color-content-emphasis);
+	color: var(--color-content-default);
 }
 
 .roprime-sidebar-content-delete {

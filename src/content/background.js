@@ -1,6 +1,8 @@
+const extensionApi = globalThis.browser || globalThis.chrome;
+
 function asLastErrorMessage() {
 	try {
-		const msg = chrome.runtime?.lastError?.message;
+		const msg = extensionApi?.runtime?.lastError?.message;
 		return msg ? String(msg) : "";
 	} catch {
 		return "";
@@ -8,7 +10,7 @@ function asLastErrorMessage() {
 }
 
 async function containsManagementPermission() {
-	const has = await chrome.permissions.contains({
+	const has = await extensionApi.permissions.contains({
 		permissions: ["management"],
 	});
 	return Boolean(has);
@@ -45,7 +47,30 @@ function findByName(items, needle) {
 	);
 }
 
-chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
+function isRobloxHost(hostname) {
+	const host = String(hostname || "").toLowerCase();
+	return host === "roblox.com" || host.endsWith(".roblox.com");
+}
+
+function isRobloxSender(sender) {
+	try {
+		const rawUrl =
+			sender?.tab?.url || sender?.url || sender?.documentUrl || sender?.origin || "";
+		if (!rawUrl) return false;
+		const parsed = new URL(rawUrl);
+		if (!/^https?:$/i.test(parsed.protocol)) return false;
+		return isRobloxHost(parsed.hostname);
+	} catch {
+		return false;
+	}
+}
+
+extensionApi.runtime.onMessage.addListener((message, sender, sendResponse) => {
+	if (!isRobloxSender(sender)) {
+		sendResponse({ ok: false, error: "forbidden_origin" });
+		return false;
+	}
+
 	const type = message?.type;
 
 	if (type === "ROPRIME_MANAGEMENT_STATUS") {
@@ -58,7 +83,7 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
 	}
 
 	if (type === "ROPRIME_REQUEST_MANAGEMENT") {
-		chrome.permissions
+		extensionApi.permissions
 			.request({ permissions: ["management"] })
 			.then((granted) => sendResponse({ ok: true, granted }))
 			.catch((err) =>
@@ -78,7 +103,7 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
 						ok: false,
 						error: "missing_management_permission",
 					});
-				chrome.management.getAll((items) => {
+				extensionApi.management.getAll((items) => {
 					const lastErr = asLastErrorMessage();
 					if (lastErr) return sendResponse({ ok: false, error: lastErr });
 					sendResponse({ ok: true, items: items || [] });
@@ -98,7 +123,7 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
 						ok: false,
 						error: "missing_management_permission",
 					});
-				chrome.management.getAll((items) => {
+				extensionApi.management.getAll((items) => {
 					const lastErr = asLastErrorMessage();
 					if (lastErr) return sendResponse({ ok: false, error: lastErr });
 					const rovalra = findByName(items || [], "rovalra");
@@ -141,7 +166,7 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
 					});
 				if (!id)
 					return sendResponse({ ok: false, error: "missing_extension_id" });
-				chrome.management.setEnabled(id, enabled, () => {
+				extensionApi.management.setEnabled(id, enabled, () => {
 					const lastErr = asLastErrorMessage();
 					if (lastErr) return sendResponse({ ok: false, error: lastErr });
 					sendResponse({ ok: true });

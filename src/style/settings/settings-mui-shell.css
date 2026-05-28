@@ -29,7 +29,6 @@ html.roprime-account-settings-open #react-user-account-base .container-footer {
 	padding: 0;
 	overflow-x: hidden;
 	overflow-y: auto;
-	scrollbar-gutter: stable;
 	box-sizing: border-box;
 	background: var(--color-surface-0);
 }
@@ -125,6 +124,13 @@ html.roprime-account-settings-open #react-user-account-base .container-footer {
 	overflow-x: hidden;
 	overflow-y: visible;
 	background: var(--color-surface-0);
+}
+
+html.roprime-sidebar-collapse-menu-enabled.roprime-sidebar-icon-only-active
+	#roprime-profile-settings-root.roprime-profile-settings-root,
+body.roprime-sidebar-collapse-menu-enabled.roprime-sidebar-icon-only-active
+	#roprime-profile-settings-root.roprime-profile-settings-root {
+	left: 83px !important;
 }
 
 .roprime-settings-content-container {

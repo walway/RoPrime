@@ -3,15 +3,16 @@ import { getStorageApi, isExtensionContextInvalidatedError } from "../core/core.
 export const RP_HOME_WELCOME_DISMISSED_KEY = "rpHomeWelcomeDismissed";
 
 const WELCOME_ROOT_ID = "roprime-home-welcome-root";
+const extensionApi = globalThis.browser || globalThis.chrome;
 
 let welcomeKeydownHandler = null;
 let storageDismissListenerAttached = false;
 
 function attachDismissStorageListener() {
 	if (storageDismissListenerAttached) return;
-	if (typeof chrome === "undefined" || !chrome.storage?.onChanged) return;
+	if (!extensionApi?.storage?.onChanged) return;
 	storageDismissListenerAttached = true;
-	chrome.storage.onChanged.addListener((changes, area) => {
+	extensionApi.storage.onChanged.addListener((changes, area) => {
 		try {
 			if (area !== "local") return;
 			if (changes[RP_HOME_WELCOME_DISMISSED_KEY]?.newValue === true) {
@@ -143,7 +144,7 @@ export function syncHomeWelcomeModal() {
 	try {
 		storage.get([RP_HOME_WELCOME_DISMISSED_KEY], (result) => {
 			try {
-				if (chrome.runtime?.lastError) {
+				if (extensionApi?.runtime?.lastError) {
 					if (isRobloxHomePage()) showWelcomeModal();
 					return;
 				}

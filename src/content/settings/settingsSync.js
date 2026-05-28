@@ -7,6 +7,8 @@ import {
 } from "../core/core.js";
 import { t as accountSettingsPaneT } from "./roprimeAccountSettingsPage.js";
 
+const extensionApi = globalThis.browser || globalThis.chrome;
+
 /** Not exported — ownership/equip comes from the profile-effects registry JSON. */
 const PROFILE_EFFECTS_SYNC_STRIP_KEYS = [
 	"ownedProfileEffects",
@@ -33,7 +35,7 @@ function stripSettingsSyncPayload(payload) {
 function getExtensionVersion() {
 	try {
 		if (!isExtensionContextAlive()) return "0.0.0";
-		return chrome.runtime.getManifest()?.version || "0.0.0";
+		return extensionApi?.runtime?.getManifest?.()?.version || "0.0.0";
 	} catch {
 		return "0.0.0";
 	}
@@ -45,6 +47,11 @@ function detectBrowserName() {
 	if (/edg/i.test(ua)) return "edge";
 	if (/chrome/i.test(ua)) return "chrome";
 	return "unknown";
+}
+
+function stripUtf8Bom(text) {
+	const raw = String(text || "");
+	return raw.charCodeAt(0) === 0xfeff ? raw.slice(1) : raw;
 }
 
 export function buildSettingsExportDocument() {
@@ -80,16 +87,42 @@ function extractSettingsFromImport(parsed) {
 	if (!parsed || typeof parsed !== "object") return null;
 	if (parsed.roprime && typeof parsed.roprime === "object")
 		return parsed.roprime;
+	if (parsed.settings && typeof parsed.settings === "object")
+		return parsed.settings;
+	if (
+		parsed.data &&
+		typeof parsed.data === "object" &&
+		parsed.data.roprime &&
+		typeof parsed.data.roprime === "object"
+	) {
+		return parsed.data.roprime;
+	}
 	if (parsed[RP_SETTINGS_KEY] && typeof parsed[RP_SETTINGS_KEY] === "object") {
 		return parsed[RP_SETTINGS_KEY];
 	}
-	const _keys = Object.keys(parsed);
+	const keys = Object.keys(parsed);
 	const looksLikeSettings =
 		"language" in parsed ||
 		"renameDropdownEnabled" in parsed ||
 		"sidebarSize" in parsed ||
 		"customCss" in parsed;
-	return looksLikeSettings ? parsed : null;
+	if (looksLikeSettings) return parsed;
+
+	// Fallback for alternate wrappers from older/manual exports:
+	// if document has `about` plus any object payload, treat that payload as settings.
+	if ("about" in parsed) {
+		for (const key of keys) {
+			if (key === "about") continue;
+			const value = parsed[key];
+			if (value && typeof value === "object" && !Array.isArray(value)) {
+				return value;
+			}
+		}
+	}
+
+	// Last-resort: non-empty plain object; mergeStoredSettings safely applies known keys only.
+	if (keys.length && !Array.isArray(parsed)) return parsed;
+	return null;
 }
 
 export function buildSettingsSyncHtml() {
@@ -103,7 +136,6 @@ export function buildSettingsSyncHtml() {
 				<button type="button" class="roprime-settings-primary-btn" data-roprime-settings-copy data-i18n="Settings sync copy"></button>
 				<button type="button" class="roprime-settings-primary-btn" data-roprime-settings-export data-i18n="Settings sync export"></button>
 				<button type="button" class="roprime-settings-primary-btn" data-roprime-settings-import data-i18n="Settings sync import"></button>
-				<button type="button" class="roprime-settings-primary-btn" data-roprime-settings-apply data-i18n="Settings sync apply">Apply</button>
 				<input type="file" accept=".json,application/json" hidden data-roprime-settings-import-input />
 			</div>
 			<div class="roprime-settings-sync-preview-wrap" data-roprime-settings-preview-wrap>
@@ -144,11 +176,23 @@ export async function copySettingsExport(inner) {
 		setSyncStatus(inner, accountSettingsPaneT("Settings sync copied"));
 		window.setTimeout(() => setSyncStatus(inner, ""), 2200);
 	} catch {
+		const fallback = document.createElement("textarea");
+		fallback.value = text;
+		fallback.setAttribute("readonly", "");
+		fallback.style.position = "fixed";
+		fallback.style.left = "-9999px";
+		document.body.appendChild(fallback);
+		fallback.select();
+		const copied = document.execCommand("copy");
+		fallback.remove();
 		setSyncStatus(
 			inner,
-			accountSettingsPaneT("Settings sync copy failed"),
-			true,
+			copied
+				? accountSettingsPaneT("Settings sync copied")
+				: accountSettingsPaneT("Settings sync copy failed"),
+			!copied,
 		);
+		window.setTimeout(() => setSyncStatus(inner, ""), 2200);
 	}
 }
 
@@ -164,6 +208,10 @@ export function exportSettingsFile() {
 	document.body.appendChild(a);
 	a.click();
 	a.remove();
+	if (detectBrowserName() === "firefox") {
+		window.setTimeout(() => URL.revokeObjectURL(url), 1500);
+		return;
+	}
 	URL.revokeObjectURL(url);
 }
 
@@ -176,7 +224,7 @@ export async function importSettingsFile(file) {
 }
 
 export async function importSettingsText(text) {
-	const parsed = JSON.parse(text);
+	const parsed = JSON.parse(stripUtf8Bom(text).trim());
 	const settings = extractSettingsFromImport(parsed);
 	if (!settings) {
 		throw new Error("invalid");
@@ -194,13 +242,17 @@ export async function importSettingsText(text) {
 
 	await new Promise((resolve, reject) => {
 		try {
-			storage.set({ [RP_SETTINGS_KEY]: payload }, () => {
-				if (chrome.runtime?.lastError) {
-					reject(new Error(chrome.runtime.lastError.message));
+			const maybePromise = storage.set({ [RP_SETTINGS_KEY]: payload }, () => {
+				const runtimeError = extensionApi?.runtime?.lastError || null;
+				if (runtimeError) {
+					reject(new Error(runtimeError.message));
 					return;
 				}
 				resolve();
 			});
+			if (maybePromise && typeof maybePromise.then === "function") {
+				maybePromise.then(resolve).catch(reject);
+			}
 		} catch (e) {
 			reject(e);
 		}
@@ -231,10 +283,41 @@ export function bindSettingsSyncControls(inner) {
 	}
 
 	const importBtn = inner.querySelector("[data-roprime-settings-import]");
-	const applyBtn = inner.querySelector("[data-roprime-settings-apply]");
 	const importInput = inner.querySelector(
 		"[data-roprime-settings-import-input]",
 	);
+	const preview = inner.querySelector("[data-roprime-settings-preview]");
+	let previewSaveTimer = 0;
+	let previewLastSaved = "";
+
+	const savePreviewText = (text) => {
+		const normalized = String(text || "");
+		if (!normalized.trim() || normalized === previewLastSaved) return;
+		void (async () => {
+			try {
+				await importSettingsText(normalized);
+				previewLastSaved = normalized;
+				setSyncStatus(inner, "Settings saved.");
+				window.setTimeout(() => setSyncStatus(inner, ""), 1600);
+			} catch {
+				setSyncStatus(
+					inner,
+					accountSettingsPaneT("Settings sync import failed"),
+					true,
+				);
+			}
+		})();
+	};
+
+	if (preview instanceof HTMLTextAreaElement) {
+		previewLastSaved = preview.value;
+		preview.addEventListener("input", () => {
+			window.clearTimeout(previewSaveTimer);
+			previewSaveTimer = window.setTimeout(() => {
+				savePreviewText(preview.value);
+			}, 500);
+		});
+	}
 	if (
 		importBtn instanceof HTMLButtonElement &&
 		importInput instanceof HTMLInputElement
@@ -249,26 +332,13 @@ export function bindSettingsSyncControls(inner) {
 			void (async () => {
 				try {
 					await importSettingsFile(file);
-					window.location.reload();
-				} catch {
-					setSyncStatus(
-						inner,
-						accountSettingsPaneT("Settings sync import failed"),
-						true,
-					);
-				}
-			})();
-		});
-	}
-
-	if (applyBtn instanceof HTMLButtonElement) {
-		applyBtn.addEventListener("click", () => {
-			const preview = inner.querySelector("[data-roprime-settings-preview]");
-			if (!(preview instanceof HTMLTextAreaElement)) return;
-			void (async () => {
-				try {
-					await importSettingsText(preview.value);
-					window.location.reload();
+					refreshSettingsSyncPreview(inner);
+					const nextPreview = inner.querySelector("[data-roprime-settings-preview]");
+					if (nextPreview instanceof HTMLTextAreaElement) {
+						previewLastSaved = nextPreview.value;
+					}
+					setSyncStatus(inner, "Settings imported.");
+					window.setTimeout(() => setSyncStatus(inner, ""), 2200);
 				} catch {
 					setSyncStatus(
 						inner,

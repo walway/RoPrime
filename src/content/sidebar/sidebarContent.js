@@ -2,6 +2,7 @@ import {
 	getActiveSidebarSize,
 	normalizeSidebarSizeMode,
 	saveSettings,
+	syncAccountSettingsLayoutInset,
 	settingsState,
 } from "../core/core.js";
 import {
@@ -18,6 +19,7 @@ import { updateSmallNewNavVisibility } from "./smallNewNav.js";
 const RP_SIDEBAR_CONTENT_STYLE_ID = "roprime-sidebar-content-hide-style";
 const RP_MENU_ICON_BOUND_ATTR = "data-roprime-menu-icon-bound";
 const RP_SIDEBAR_COLLAPSE_ENABLED_CLASS = "roprime-sidebar-collapse-menu-enabled";
+const RP_SIDEBAR_ICON_ONLY_ACTIVE_CLASS = "roprime-sidebar-icon-only-active";
 const NATIVE_HEADER_MENU_BUTTON_SELECTOR =
 	"#header-menu-icon.rbx-nav-collapse button.menu-button:not([data-roprime-nav-menu-button]), .container-fluid .rbx-navbar-header #header-menu-icon.rbx-nav-collapse button.menu-button:not([data-roprime-nav-menu-button])";
 const ROPRIME_HEADER_MENU_BUTTON_SELECTOR =
@@ -572,6 +574,7 @@ function toggleFullToIconSidebar() {
 	updateSmallNewNavVisibility();
 	updateSidebarCompactVisibility();
 	syncSidebarCompactDecorations();
+	syncAccountSettingsLayoutInset();
 	syncSidebarContent({ force: true });
 	queryRoPrimeHeaderMenuButtons().forEach((btn) => {
 		if (btn instanceof HTMLButtonElement) setCollapseButtonIcon(btn, next);
@@ -605,9 +608,23 @@ export function syncSidebarCollapseMenuIcon() {
 		RP_SIDEBAR_COLLAPSE_ENABLED_CLASS,
 		!!settingsState.sidebarCollapseMenuEnabled,
 	);
+	document.documentElement.classList.toggle(
+		RP_SIDEBAR_ICON_ONLY_ACTIVE_CLASS,
+		!!(
+			settingsState.sidebarCollapseMenuEnabled &&
+			settingsState.sidebarIconsOnlyEnabled
+		),
+	);
 	document.body?.classList.toggle(
 		RP_SIDEBAR_COLLAPSE_ENABLED_CLASS,
 		!!settingsState.sidebarCollapseMenuEnabled,
+	);
+	document.body?.classList.toggle(
+		RP_SIDEBAR_ICON_ONLY_ACTIVE_CLASS,
+		!!(
+			settingsState.sidebarCollapseMenuEnabled &&
+			settingsState.sidebarIconsOnlyEnabled
+		),
 	);
 	if (!settingsState.sidebarCollapseMenuEnabled) {
 		stopHeaderMenuIconObserver();

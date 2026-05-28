@@ -62,6 +62,7 @@ function showSupportAlertModal() {
     <div class="padding-x-xlarge padding-top-xlarge padding-bottom-xlarge">
       <h2 id="roprime-support-alert-title">Please support RoPrime</h2>
       <p>Profile animations are free, but we will need to keep them up. So, if you like our extension please support it by donating</p>
+	  <p>Donation link will be added in the settings soon</p>
     </div>
     <div class="padding-x-xlarge padding-bottom-xlarge flex gap-medium justify-end">
       <button type="button" class="foundation-web-button relative clip group/interactable focus-visible:outline-focus disabled:outline-none cursor-pointer relative flex items-center justify-center stroke-none padding-y-none select-none radius-medium text-label-large height-1200 padding-x-medium bg-action-emphasis content-action-emphasis roprime-support-alert-ok">
