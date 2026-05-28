@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="../resources/logo.svg" alt="RoPrime Logo" width="350" />
+  <img src="/resources/logo.svg" alt="RoPrime Logo" width="350" />
 </p>
 
 <br>
@@ -17,14 +17,14 @@
 ![GitHub Release](https://img.shields.io/github/v/release/walway/RoPrime)
 ![GitHub Release Date](https://img.shields.io/github/release-date/walway/RoPrime)
 
-<a href="#contribution"><img src="../resources/link-contributions.svg" alt="Contributions welcome" width="200"></a>
-<a href="https://github.com/walway/RoPrime/releases"><img src="../resources/link-github-releases.svg" alt="Github releases" width="200"></a>
+<a href="#contribution"><img src="/resources/link-contributions.svg" alt="Contributions welcome" width="200"></a>
+<a href="https://github.com/walway/RoPrime/releases"><img src="/resources/link-github-releases.svg" alt="Github releases" width="200"></a>
 
 </div>
 
 <hr />
 
-<h2 id="features">Some features</h2>
+<h2 id="features">💫 Some features</h2>
 
 <ul>
   <li>UI customization - sidebar styles, sidebar content, reimagned friend styling and more</li>
