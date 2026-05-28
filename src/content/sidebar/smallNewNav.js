@@ -1,10 +1,9 @@
 import { RP_SMALL_NEW_NAV_STYLE_ID, settingsState } from "../core/core.js";
 
-/**
- * Add your small-sidebar overrides here (injected with the built-in width rules).
- * Leave empty to ship no custom rules.
- */
-export const SMALL_NEW_NAV_CUSTOM_CSS = "";
+export const SMALL_NEW_NAV_CUSTOM_CSS = `
+.gap-large .roseal-events-nav .event-list .event-item .thumbnail-2d-container {
+    height: unset !important;
+}`;
 
 const SMALL_NEW_NAV_BASE_CSS = [
 	".width-\\[288px\\]:not(.roprime-settings-rail), .width-\\[289px\\]:not(.roprime-settings-rail),",
@@ -16,6 +15,7 @@ const SMALL_NEW_NAV_BASE_CSS = [
 const SMALL_NAV_LABEL_REPLACEMENTS = [
 	{ pattern: /official store/gi, replacement: "Store" },
 	{ pattern: /buy gift cards/gi, replacement: "Gift Cards" },
+	{ pattern: /More fun for less Robux\. Subscribe to Roblox Plus\./gi, replacement: "Subscribe to Roblox Plus." },
 ];
 
 function buildSmallNewNavStylesheet() {

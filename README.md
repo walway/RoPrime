@@ -23,9 +23,7 @@ It layers onto the official website offering a dedicated settings page with opti
 
 ## 🚀 Install RoPrime
 
-**From source (recommended for contributors)**
-
-1. Clone this repository
+1. Install the latest version
 2. Install [Node.js](https://nodejs.org/) (v26+)
 3. Run `npm install`, then `npm run build`
 4. Load the extension in your browser (see below)
