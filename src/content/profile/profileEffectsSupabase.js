@@ -16,8 +16,6 @@ function parseRegistry(raw) {
 	return { version: raw.version ?? 1, effects, equipped };
 }
 
-/** @typedef {import("./profileEffectsRegistry.js").ProfileEffectEquipKind} ProfileEffectEquipKind */
-
 let client = null;
 
 function getClient() {
@@ -30,9 +28,6 @@ function getClient() {
 	return client;
 }
 
-/**
- * @returns {Promise<ReturnType<typeof parseRegistry> | null>}
- */
 export async function fetchRegistryFromSupabase() {
 	const supabase = getClient();
 	if (!supabase) return null;
@@ -82,10 +77,6 @@ export async function fetchRegistryFromSupabase() {
 	return registry;
 }
 
-/**
- * @param {string | number} userId
- * @param {string} effectId
- */
 export async function supabaseRegisterPurchase(userId, effectId) {
 	const supabase = getClient();
 	if (!supabase || !userId || !effectId) return false;
@@ -109,11 +100,6 @@ export async function supabaseRegisterPurchase(userId, effectId) {
 	return true;
 }
 
-/**
- * @param {string | number} userId
- * @param {string} effectId Empty clears the slot for `kind`.
- * @param {ProfileEffectEquipKind} kind
- */
 export async function supabaseRegisterEquip(userId, effectId, kind) {
 	const supabase = getClient();
 	if (!supabase || !userId) return false;

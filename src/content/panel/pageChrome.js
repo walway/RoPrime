@@ -1,4 +1,3 @@
-/** Browser tab title while RoPrime account UI is shown — not localized. */
 const ROPRIME_ACCOUNT_PANEL_DOCUMENT_TITLE = "RoPrime Settings";
 
 export function updateTabState(showPanel, pluginTabId) {

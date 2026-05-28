@@ -9,34 +9,23 @@ import {
 
 export { isSupabaseProfileEffectsEnabled } from "./profileEffectsConfig.js";
 
-/** Plugin owner — granted every profile effect without purchase. */
-export const PLUGIN_OWNER_USER_IDS = []; // [2605032407]
+export const PLUGIN_OWNER_USER_IDS = [];
 
-/**
- * Cloudflare Worker base URL (no trailing slash), e.g.
- * https://roprime-profile-effects.your-name.workers.dev
- * See workers/profile-effects/README.md
- */
 export const PROFILE_EFFECTS_API_BASE = "";
 
-/** Override registry URL; defaults to `${PROFILE_EFFECTS_API_BASE}/registry` */
 export const PROFILE_EFFECTS_CDN_REGISTRY_URL = PROFILE_EFFECTS_API_BASE
 	? `${PROFILE_EFFECTS_API_BASE.replace(/\/$/, "")}/registry`
 	: "";
 
-/** Override purchase URL; defaults to `${PROFILE_EFFECTS_API_BASE}/purchase` */
 export const PROFILE_EFFECTS_REGISTER_API_URL = PROFILE_EFFECTS_API_BASE
 	? `${PROFILE_EFFECTS_API_BASE.replace(/\/$/, "")}/purchase`
 	: "";
 
-/** Override equip URL; defaults to `${PROFILE_EFFECTS_API_BASE}/equip` */
 export const PROFILE_EFFECTS_EQUIP_API_URL = PROFILE_EFFECTS_API_BASE
 	? `${PROFILE_EFFECTS_API_BASE.replace(/\/$/, "")}/equip`
 	: "";
 
 const LOCAL_REGISTRY_PATH = "resources/data/profile-effects-owners.json";
-
-/** @typedef {"picture" | "profile"} ProfileEffectEquipKind */
 
 let registryCache = null;
 let registryFetchPromise = null;
@@ -52,7 +41,6 @@ export function isPluginOwner(userId) {
 	return Number.isFinite(id) && PLUGIN_OWNER_USER_IDS.includes(id);
 }
 
-/** @returns {{ picture: string, profile: string }} */
 export function normalizeEquippedEntry(entry) {
 	if (!entry) return { picture: "", profile: "" };
 	if (typeof entry === "string") {
@@ -68,7 +56,6 @@ export function normalizeEquippedEntry(entry) {
 	return { picture: "", profile: "" };
 }
 
-/** @param {ProfileEffectEquipKind} kind */
 export function equipSlotForKind(kind) {
 	return kind === "picture" ? "picture" : "profile";
 }
@@ -124,7 +111,6 @@ export async function fetchProfileEffectsRegistry() {
 		);
 		if (cdnRegistry) sources.push(cdnRegistry);
 
-		// Bundled JSON is an empty fallback only (no hardcoded owners).
 		if (!isSupabaseProfileEffectsEnabled()) {
 			const localUrl = getExtensionResourceUrl(LOCAL_REGISTRY_PATH);
 			const localRegistry = await fetchRegistryFromUrl(localUrl);
@@ -195,19 +181,12 @@ export async function registerProfileEffectPurchase(userId, effectId) {
 				invalidateProfileEffectsRegistryCache();
 				return true;
 			}
-		} catch {
-			/* fall through — still allow local ownership */
-		}
+		} catch {}
 	}
 
 	return false;
 }
 
-/**
- * @param {string | number} userId
- * @param {string} effectId Empty string clears the slot for `kind`.
- * @param {ProfileEffectEquipKind} kind
- */
 export async function registerProfileEffectEquip(userId, effectId, kind) {
 	if (!userId) return false;
 
@@ -250,20 +229,12 @@ export async function registerProfileEffectEquip(userId, effectId, kind) {
 				invalidateProfileEffectsRegistryCache();
 				return true;
 			}
-		} catch {
-			/* local equip still applies */
-		}
+		} catch {}
 	}
 
 	return false;
 }
 
-/**
- * @param {string | number} profileUserId
- * @param {ProfileEffectEquipKind} kind
- * @param {{ picture?: string, profile?: string }} localEquipped
- * @param {Record<string, unknown>} equippedByUser
- */
 export async function getEquippedEffectForProfileUser(
 	profileUserId,
 	kind,

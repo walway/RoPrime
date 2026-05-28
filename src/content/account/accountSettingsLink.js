@@ -8,16 +8,14 @@ import {
 	shouldRunRoPrimeOnCurrentPage,
 } from "../core/core.js";
 
-/** Account menu / sidebar entry label — fixed English; not passed through locale helpers. */
 const ROPRIME_ACCOUNT_MENU_LABEL = "RoPrime Settings";
 
 const TAB_ENTRY_ATTR = "data-roprime-account-menu-entry";
 const POP_ENTRY_ATTR = "data-roprime-account-popover-entry";
 const DIVIDER_ATTR = "data-roprime-account-divider";
 
-/** Sparse retries when Roblox mounts the account menu after paint. */
 let accountMenuRetries = 0;
-/** @type {MutationObserver | null} */
+
 let accountMenuListObserver = null;
 
 function ensureAccountMenuListObserver(menuList) {
@@ -33,8 +31,6 @@ function ensureAccountMenuListObserver(menuList) {
 	}
 }
 
-/** RoValra-style: re-sync when `#settings-popover-menu` is (re)mounted or siblings change — other extensions often append after us. */
-/** @type {MutationObserver | null} */
 let gearMenuObserver = null;
 let gearMenuDebounceTimer = 0;
 
@@ -84,17 +80,14 @@ function extensionIconUrl() {
 	return getExtensionResourceUrl("resources/roprime-icon.png");
 }
 
-/** Sidebar tab + divider on `/my/account` (including `?roprime=…` in-account settings). */
 function shouldInjectVerticalAccountTab() {
 	return isMyAccountPath() && shouldRunRoPrimeOnCurrentPage();
 }
 
-/** Header `#settings-popover-menu` — only when not on `/my/account`. */
 function shouldInjectSettingsPopoverEntry() {
 	return shouldRunRoPrimeOnCurrentPage() && !isMyAccountPath();
 }
 
-/** Account settings sidebar tab list only (inside `#react-user-account-base`). */
 function getAccountPageMenuList() {
 	const accountBase = document.getElementById("react-user-account-base");
 	if (!(accountBase instanceof HTMLElement)) return null;
@@ -120,11 +113,6 @@ function findNativeAccountSettingsLink(ul) {
 	);
 }
 
-/**
- * Keep RoPrime directly **before** Roblox “Settings” (`/my/account`), same anchor as RoValra’s
- * `addPopoverButton` — so other extensions that `appendChild` still sit **below** us.
- * If that row is missing, pin to **first** `<li>` so we are not pushed to the bottom.
- */
 function ensureRoPrimePopoverRowOrder(ul, li) {
 	if (
 		!(ul instanceof HTMLUListElement) ||
@@ -149,7 +137,6 @@ function ensureRoPrimePopoverRowOrder(ul, li) {
 	}
 }
 
-/** Plain `<li>` (no class) + `<a class="rbx-menu-item">` in `ul#settings-popover-menu`. */
 function injectSettingsPopoverRow() {
 	if (!isExtensionContextAlive()) return;
 	if (!shouldInjectSettingsPopoverEntry()) {
@@ -267,7 +254,6 @@ function buildVerticalTabLi() {
 	return li;
 }
 
-/** `<li class="rbx-divider thick-height" style="width: 100%;"></li>` (plus `data-roprime-account-divider` for cleanup). */
 function createAccountMenuDividerLi() {
 	const li = document.createElement("li");
 	li.className = "rbx-divider thick-height";
@@ -284,7 +270,6 @@ function isThickRbxDividerLi(el) {
 	);
 }
 
-/** Native “Browser preferences” row — divider belongs directly under it (before extension tabs). */
 function getBrowserPreferencesMenuTab(menuList) {
 	const link =
 		menuList.querySelector('.menu-option a[href*="browser-preferences"]') ||
@@ -293,7 +278,6 @@ function getBrowserPreferencesMenuTab(menuList) {
 	return li instanceof HTMLElement ? li : null;
 }
 
-/** Reuse an existing `li.rbx-divider` after the anchor when another extension already added one. */
 function getOrCreatePluginDivider(menuList) {
 	menuList.querySelector(`li[${DIVIDER_ATTR}="1"]`)?.remove();
 
@@ -319,7 +303,6 @@ function getOrCreatePluginDivider(menuList) {
 	return divider;
 }
 
-/** Back-to-back `li.rbx-divider.thick-height` (e.g. RoPrime + another extension) reads as a double rule. */
 function collapseAdjacentRbxDividers(menuList) {
 	let changed = true;
 	while (changed) {
@@ -341,9 +324,8 @@ function collapseAdjacentRbxDividers(menuList) {
 	}
 }
 
-/** After divider: last `li` wins so other extensions can load before RoPrime. */
 function placeTabAfterDividerBlock(_menuList, li, divider) {
-	let insertAfter = /** @type {Element} */ (divider);
+	let insertAfter = divider;
 	let cur = divider.nextElementSibling;
 	while (cur) {
 		if (cur === li) {
@@ -397,7 +379,6 @@ function ensureVerticalTabEntry() {
 	return true;
 }
 
-/** Vertical tab on `/my/account` + optional row in `#settings-popover-menu` off account. */
 export function syncAccountSettingsMenuButton() {
 	try {
 		if (!isExtensionContextAlive()) {

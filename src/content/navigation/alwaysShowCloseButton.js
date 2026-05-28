@@ -5,7 +5,7 @@ const boundCloseButtons = new WeakSet();
 
 function getAlwaysShowCloseCss() {
 	const base = `
-/* Always show Roblox sidebar close/menu control */
+
 button.menu-button.btn-navigation-nav-menu-md {
   display: inline-flex !important;
   visibility: visible !important;
@@ -13,7 +13,7 @@ button.menu-button.btn-navigation-nav-menu-md {
   pointer-events: auto !important;
 }
 
-/* Keep top header items on one row: menu button -> Roblox logo -> page title */
+
 .navbar-header,
 .rbx-header .rbx-navbar-header {
   display: flex !important;
@@ -46,7 +46,7 @@ a.navbar-brand,
   margin-left: 0 !important;
 }
 
-/* Animate the visible 288px old-nav host when menu button toggles collapse class */
+
 #roprime-classic-left-nav-host.roprime-classic-left-nav-host {
   top: 0 !important;
   margin-top: 0 !important;
@@ -79,7 +79,7 @@ body.roprime-old-navigation-bar-collapsed #roprime-classic-left-nav-host {
   }
 }
 
-/* Keep Roblox brand in full logo mode */
+
 a.nav-logo-link.navbar-brand span.icon-logo,
 a.navbar-brand span.icon-logo,
 .navbar-brand span.icon-logo {
@@ -91,7 +91,7 @@ a.navbar-brand span.icon-logo,
   vertical-align: middle !important;
 }
 
-/* Hide the compact "R" logo variant to prevent overlap */
+
 a.nav-logo-link.navbar-brand span.icon-logo-r,
 a.navbar-brand span.icon-logo-r,
 .navbar-brand span.icon-logo-r {
@@ -103,13 +103,11 @@ a.navbar-brand span.icon-logo-r,
 }
 
 function forceCloseButtonInline() {
-	// Some Roblox pages hide the button via inline styles / utility classes.
-	// Setting these inline avoids fighting specificity, while keeping layout stable.
 	const btn = document.querySelector(
 		"button.menu-button.btn-navigation-nav-menu-md",
 	);
 	if (!(btn instanceof HTMLButtonElement)) return;
-	// If Roblox sets `display:none` inline, undo it.
+
 	if (btn.style.display === "none") btn.style.display = "inline-flex";
 	btn.style.visibility = "visible";
 	btn.style.opacity = "1";

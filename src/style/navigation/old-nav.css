@@ -1,11 +1,10 @@
-/* —— Old Navigation bar (light “old Roblox” sidebar, 288px, fixed left) —— */
 #roprime-classic-left-nav-host.roprime-classic-left-nav-host {
 	position: fixed;
 	left: 0;
 	top: 0;
 	width: 288px;
 	height: 100vh;
-	/* Keep it behind the main page container (container-fluid). */
+
 	z-index: 55;
 	box-sizing: border-box;
 	overflow: hidden;
@@ -14,20 +13,17 @@
 	-webkit-font-smoothing: antialiased;
 }
 
-/* Menu button closes the Old Navigation bar (session-only). */
 html.roprime-old-navigation-bar-collapsed #roprime-classic-left-nav-host,
 body.roprime-old-navigation-bar-collapsed #roprime-classic-left-nav-host {
 	display: none !important;
 }
 
-/* Keep Roblox content above the Old Navigation bar (without shifting anything). */
 html.roprime-classic-left-nav-on .container-fluid,
 body.roprime-classic-left-nav-on .container-fluid {
 	position: relative !important;
 	z-index: 60 !important;
 }
 
-/* Hide Roblox’s own navigation when Old Navigation bar is on. */
 html.roprime-classic-left-nav-on .width-\[288px\],
 body.roprime-classic-left-nav-on .width-\[288px\],
 html.roprime-classic-left-nav-on [class~="width-[288px]"],
@@ -47,7 +43,6 @@ body.roprime-classic-left-nav-on
 	display: none !important;
 }
 
-/* Force Roblox top-left header controls visible while Old Navigation bar is enabled. */
 html.roprime-classic-left-nav-on button.menu-button.btn-navigation-nav-menu-md,
 body.roprime-classic-left-nav-on button.menu-button.btn-navigation-nav-menu-md,
 html.roprime-classic-left-nav-on .rbx-header .rbx-navbar-header,
@@ -69,7 +64,6 @@ body.roprime-classic-left-nav-on .rbx-header .rbx-navbar-header {
 	align-items: center;
 }
 
-/* Menu button: don't keep a "clicked gray" state; only show on hover / while holding. */
 html.roprime-classic-left-nav-on button.menu-button.btn-navigation-nav-menu-md,
 body.roprime-classic-left-nav-on button.menu-button.btn-navigation-nav-menu-md {
 	background: transparent !important;
@@ -99,9 +93,8 @@ body.roprime-classic-left-nav-on
 	background: transparent !important;
 }
 
-/* Put :active AFTER :focus so the pressed gray still shows while holding click. */
 html.roprime-classic-left-nav-on
-button.menu-button.btn-navigation-nav-menu-md:active,
+	button.menu-button.btn-navigation-nav-menu-md:active,
 body.roprime-classic-left-nav-on
 	button.menu-button.btn-navigation-nav-menu-md:active,
 html.roprime-classic-left-nav-on
@@ -115,9 +108,8 @@ body.roprime-classic-left-nav-on
 	background: rgba(255, 255, 255, 0.18) !important;
 }
 
-/* If Roblox applies "selected" styling, kill it except when actively pressing. */
 html.roprime-classic-left-nav-on
-button.menu-button.btn-navigation-nav-menu-md:not(:hover):not(:active),
+	button.menu-button.btn-navigation-nav-menu-md:not(:hover):not(:active),
 body.roprime-classic-left-nav-on
 	button.menu-button.btn-navigation-nav-menu-md:not(:hover):not(:active) {
 	background: transparent !important;
@@ -129,7 +121,7 @@ body.roprime-classic-left-nav-on
 	height: 100%;
 	width: 100%;
 	margin: 0;
-	/* Push contents down so it doesn't sit under Roblox top bar. */
+
 	padding: 56px 0 0;
 	box-sizing: border-box;
 	background: #f2f4f5;
@@ -309,7 +301,6 @@ body.roprime-classic-left-nav-on
 	color: #fff;
 }
 
-/* Roblox dark theme: keep readable contrast */
 html.dark-theme #roprime-classic-left-nav-host .roprime-classic-left-nav,
 body.dark-theme #roprime-classic-left-nav-host .roprime-classic-left-nav {
 	background: #2b2d31;

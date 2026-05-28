@@ -5,9 +5,8 @@ import { saveSettings, settingsState } from "../core/core.js";
 import { syncCustomCss } from "../features/customCss.js";
 import { t as accountSettingsPaneT } from "./roprimeAccountSettingsPage.js";
 
-/** @type {import("prism-code-editor").PrismEditor | null} */
 let cssEditor = null;
-/** @type {HTMLElement | null} */
+
 let cssEditorHost = null;
 
 const LINE_HEIGHT_PX = 22;
@@ -195,6 +194,4 @@ export function syncCustomCssUi(inner) {
 	syncPlaceholder(inner);
 }
 
-export function bindCustomCssControls(_inner) {
-	/* Editor handles input; placeholder sync runs from ensureCssEditor listeners. */
-}
+export function bindCustomCssControls(_inner) {}

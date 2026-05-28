@@ -97,7 +97,7 @@ body .no-gutter-ads.logged-in.left-nav-new-width {
 }
 .left-nav.fixed .width-\\[288px\\] {
   width: 100% !important;
-  max-width: 250px !important; /* Limits size but allows it to shrink */
+  max-width: 250px !important;
 }
 .left-nav.fixed .width-\\[288px\\] {
   overflow-x: hidden !important;
@@ -299,39 +299,39 @@ body .no-gutter-ads.logged-in.left-nav-new-width {
   pointer-events: none !important;
 
 }
-.left-nav.fixed li:has(a[href*="https://www.roblox.com/users/friends#!/friend-requests" i]) {
+.left-nav.fixed li:has(a[href*="https:
   overflow: visible !important;
   position: relative !important;
   z-index: 80 !important;
 }
-.left-nav.fixed a[href*="https://www.roblox.com/users/friends#!/friend-requests" i],
-.left-nav.fixed a[href*="https://www.roblox.com/users/friends#!/friend-requests" i]:hover,
-.left-nav.fixed a[href*="https://www.roblox.com/users/friends#!/friend-requests" i]:focus-visible,
-.left-nav.fixed a[href*="https://www.roblox.com/users/friends#!/friend-requests" i]:active {
+.left-nav.fixed a[href*="https:
+.left-nav.fixed a[href*="https:
+.left-nav.fixed a[href*="https:
+.left-nav.fixed a[href*="https:
   position: relative !important;
   overflow: visible !important;
   z-index: 1 !important;
   border-radius: var(--radius-medium, 10px) !important;
 }
-.left-nav.fixed a[href*="https://www.roblox.com/users/friends#!/friend-requests" i] > div,
-.left-nav.fixed a[href*="https://www.roblox.com/users/friends#!/friend-requests" i] > div.absolute,
-.left-nav.fixed a[href*="https://www.roblox.com/users/friends#!/friend-requests" i] > div[class*="inset-"],
-.left-nav.fixed a[href*="https://www.roblox.com/users/friends#!/friend-requests" i] > span[class*="absolute"],
-.left-nav.fixed a[href*="https://www.roblox.com/users/friends#!/friend-requests" i] > span[class*="inset-"],
-.left-nav.fixed a[href*="https://www.roblox.com/users/friends#!/friend-requests" i] [class*="inset-"][class*="absolute"],
-.left-nav.fixed a[href*="https://www.roblox.com/users/friends#!/friend-requests" i]::before,
-.left-nav.fixed a[href*="https://www.roblox.com/users/friends#!/friend-requests" i]::after {
+.left-nav.fixed a[href*="https:
+.left-nav.fixed a[href*="https:
+.left-nav.fixed a[href*="https:
+.left-nav.fixed a[href*="https:
+.left-nav.fixed a[href*="https:
+.left-nav.fixed a[href*="https:
+.left-nav.fixed a[href*="https:
+.left-nav.fixed a[href*="https:
   border-radius: var(--radius-medium, 10px) !important;
 }
-.left-nav.fixed a[href*="https://www.roblox.com/users/friends#!/friend-requests" i] > span.grow-0.shrink-0.basis-auto.icon.icon-regular-speech-bubble-align-center,
-.left-nav.fixed a[href*="https://www.roblox.com/users/friends#!/friend-requests" i] span.icon-regular-speech-bubble-align-center {
+.left-nav.fixed a[href*="https:
+.left-nav.fixed a[href*="https:
   position: relative !important;
   z-index: 1 !important;
 }
-.left-nav.fixed a[href*="https://www.roblox.com/users/friends#!/friend-requests" i] span.fill.basis-auto.padding-x-small.flex.justify-end.items-center,
-.left-nav.fixed a[href*="https://www.roblox.com/users/friends#!/friend-requests" i] span.fill[class*="basis-auto"][class*="padding-x-small"][class*="justify-end"][class*="items-center"],
-.left-nav.fixed a[href*="https://www.roblox.com/users/friends#!/friend-requests" i] .foundation-web-badge,
-.left-nav.fixed a[href*="https://www.roblox.com/users/friends#!/friend-requests" i] [class*="foundation-web-badge"] {
+.left-nav.fixed a[href*="https:
+.left-nav.fixed a[href*="https:
+.left-nav.fixed a[href*="https:
+.left-nav.fixed a[href*="https:
   position: absolute !important;
   top: 4px !important;
   right: 1px !important;
@@ -352,7 +352,6 @@ body.roprime-sidebar-collapse-menu-enabled div.rbx-navbar-header {
 
 `.trim();
 
-/** @type {HTMLButtonElement | null} */
 let lastOfficialStoreBtn = null;
 let lastOfficialStoreIconOnly = null;
 
@@ -371,7 +370,6 @@ function tagOfficialStoreLeftNavButton() {
 	else btn.classList.remove(RP_LEFTNAV_OFFICIAL_STORE_BTN_CLASS);
 }
 
-/** @type {HTMLElement | null} */
 let lastProfileNavLi = null;
 let lastProfileTagIconOnly = null;
 

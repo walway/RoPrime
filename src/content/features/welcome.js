@@ -27,7 +27,6 @@ function attachDismissStorageListener() {
 	});
 }
 
-/** True for /home, /en-us/home, /de/home, etc. */
 export function isRobloxHomePage() {
 	const raw = window.location.pathname || "/";
 	const normalized = raw.replace(/\/+$/, "") || "/";
@@ -44,7 +43,6 @@ function removeWelcomeIfPresent() {
 	document.getElementById(WELCOME_ROOT_ID)?.remove();
 }
 
-/** Prefer `document.body` once it exists (avoids missing modal before body mount). */
 function appendWelcomeWhenBodyReady(root) {
 	const mount = () => {
 		if (!document.body) return false;

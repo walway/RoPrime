@@ -12,10 +12,6 @@ import {
 } from "./profileEffectsRegistry.js";
 import { getRobloxUserId, peekRobloxUserId } from "./robloxUserId.js";
 
-/**
- * @param {string | number} profileUserId
- * @returns {Promise<{ picture: string, profile: string }>}
- */
 export async function resolveLocalEquippedByKind(profileUserId) {
 	const authId = peekRobloxUserId() ?? (await getRobloxUserId());
 	if (authId !== profileUserId) {
@@ -27,10 +23,6 @@ export async function resolveLocalEquippedByKind(profileUserId) {
 	};
 }
 
-/**
- * @param {string | number} profileUserId
- * @param {"picture" | "profile"} kind
- */
 export async function resolveEquippedEffectId(profileUserId, kind) {
 	const localEquipped = await resolveLocalEquippedByKind(profileUserId);
 	const equippedByUser =
@@ -61,11 +53,6 @@ export async function profileUserMayShowEffect(profileUserId, effectId) {
 	return userOwnsOnRegistry(registry, profileUserId, effectId);
 }
 
-/**
- * @param {HTMLElement} host
- * @param {import("./profileEffectsCatalog.js").ProfileEffect} effect
- * @param {{ layerId: string, layerClass: string, layerAttr: string }} options
- */
 export function mountProfileEffectLayer(host, effect, options) {
 	const { layerId, layerClass, layerAttr } = options;
 

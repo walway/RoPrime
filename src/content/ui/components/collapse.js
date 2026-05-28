@@ -3,11 +3,9 @@ const MUI_ICON_BUTTON =
 const MUI_SVG_ICON = "MuiSvgIcon-root MuiSvgIcon-fontSizeMedium";
 const MUI_TOUCH_RIPPLE = "MuiTouchRipple-root";
 
-/** Same glyph as @mui/icons-material/MenuOpen */
 const MENU_OPEN_PATH =
 	"M3 18h13v-2H3zm0-5h10v-2H3zm0-7v2h13V6zm18 9.59L17.42 12 21 8.41 19.59 7l-5 5 5 5z";
 
-/** Same glyph as @mui/icons-material/Menu */
 const MENU_PATH = "M3 18h18v-2H3zm0-5h18v-2H3zm0-7v2h18V6z";
 
 function ensureSvgPath(svg, collapsed) {
@@ -18,13 +16,6 @@ function ensureSvgPath(svg, collapsed) {
 	svg.setAttribute("data-testid", collapsed ? "MenuIcon" : "MenuOpenIcon");
 }
 
-/**
- * Replaces Roblox's `button.menu-button > span.icon-nav-menu` with a MUI-like icon button.
- * Keeps Roblox nav classes and adds `data-roprime-nav-menu-button`.
- *
- * @param {HTMLButtonElement} original
- * @param {{ collapsed?: boolean }} [options]
- */
 export function createRoPrimeNavMenuButton(original, options = {}) {
 	const button = document.createElement("button");
 	button.type = "button";
@@ -58,12 +49,6 @@ export function createRoPrimeNavMenuButton(original, options = {}) {
 	return button;
 }
 
-/**
- * Updates a RoPrime-created header/menu icon button to reflect collapsed state.
- *
- * @param {HTMLButtonElement} button
- * @param {boolean} collapsed
- */
 export function setCollapseButtonIcon(button, collapsed) {
 	if (!(button instanceof HTMLButtonElement)) return;
 	const svg = button.querySelector("svg");

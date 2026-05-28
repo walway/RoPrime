@@ -1,4 +1,3 @@
-/* Hide native account chrome immediately on RoPrime settings URL (before JS mount). */
 html.roprime-account-settings-open #react-user-account-base .content-container,
 html.roprime-account-settings-open #react-user-account-base #content-container,
 html.roprime-account-settings-open #react-user-account-base .menu-vertical,
@@ -10,7 +9,6 @@ html.roprime-account-settings-open
 	pointer-events: none !important;
 }
 
-/* Footer + full-viewport shell: see settings-mui-shell.css */
 #roprime-profile-settings-root .roprime-settings-mui-shell {
 	max-width: none;
 	margin: 0;

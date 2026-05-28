@@ -1,5 +1,3 @@
-/* Roblox MUI settings shell — 288px secondary rail, full-height divider, page gutter */
-
 html.roprime-account-settings-open,
 html.roprime-account-settings-open body {
 	height: 100%;
@@ -47,7 +45,6 @@ html.roprime-account-settings-open #react-user-account-base .container-footer {
 	margin-left: 0;
 }
 
-/* 288px secondary rail */
 .roprime-settings-rail {
 	flex: 0 0 243px;
 	width: 243px !important;
@@ -241,7 +238,6 @@ body.roprime-sidebar-collapse-menu-enabled.roprime-sidebar-icon-only-active
 	margin: 16px 8px 0;
 }
 
-/* MUI IconButton + MenuOpenIcon */
 .roprime-settings-menu-btn.MuiButtonBase-root.MuiIconButton-root {
 	display: inline-flex;
 	align-items: center;
@@ -310,7 +306,6 @@ body.roprime-sidebar-collapse-menu-enabled.roprime-sidebar-icon-only-active
 	padding-left: 16px;
 }
 
-/* Roblox native width-[289px] rails hidden while menu is toggled (JS sets display) */
 html.roprime-settings-side-rail-hidden .width-\[289px\].height-full.scroll-y,
 html.roprime-settings-side-rail-hidden
 	[class~="width-[289px]"][class~="height-full"][class~="scroll-y"] {

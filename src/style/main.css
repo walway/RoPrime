@@ -1,4 +1,3 @@
-/* Default dark */
 :root:has(.dark-theme),
 :root.dark-theme,
 html.dark-theme,
@@ -33,7 +32,6 @@ body.dark-theme,
 	--rp-ui-icon-blocked: #65676b;
 }
 
-/* Default white */
 :root:has(.light-theme),
 :root.light-theme,
 html.light-theme,
@@ -68,7 +66,6 @@ body.light-theme,
 	--rp-ui-icon-blocked: #ffffff;
 }
 
-/* Roblox Kids (dark) */
 :root:is(.dark-theme.age-kids-theme, .dark-theme.age-kids-variant1-theme),
 html:is(.dark-theme.age-kids-theme, .dark-theme.age-kids-variant1-theme),
 body:is(.dark-theme.age-kids-theme, .dark-theme.age-kids-variant1-theme),
@@ -78,7 +75,6 @@ body:is(.dark-theme.age-kids-theme, .dark-theme.age-kids-variant1-theme),
 	/* empty */
 }
 
-/* Roblox Kids (light) */
 :root:is(.light-theme.age-kids-theme, .light-theme.age-kids-variant1-theme),
 html:is(.light-theme.age-kids-theme, .light-theme.age-kids-variant1-theme),
 body:is(.light-theme.age-kids-theme, .light-theme.age-kids-variant1-theme),
@@ -88,14 +84,12 @@ body:is(.light-theme.age-kids-theme, .light-theme.age-kids-variant1-theme),
 	/* empty */
 }
 
-/* Roblox Select (light) */
 :root:has(.light-theme):has(.age-13-plus-theme),
 html.light-theme.age-13-plus-theme,
 body.light-theme.age-13-plus-theme {
 	/* empty */
 }
 
-/* Roblox Select (dark) */
 :root:has(.dark-theme):has(.age-13-plus-theme),
 html.dark-theme.age-13-plus-theme,
 body.dark-theme.age-13-plus-theme {

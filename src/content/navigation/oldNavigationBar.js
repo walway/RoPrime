@@ -1,6 +1,5 @@
 import { settingsState } from "../core/core.js";
 
-/** Matches selectors in src/style/navigation/old-nav.css */
 const HOST_ID = "roprime-classic-left-nav-host";
 const COLLAPSED_CLASS = "roprime-old-navigation-bar-collapsed";
 
@@ -135,11 +134,9 @@ function bindNativeMenuButtonToggle() {
 		if (!(target instanceof Element)) return;
 		const btn = target.closest("button.menu-button.btn-navigation-nav-menu-md");
 		if (!btn) return;
-		// Toggle closed/open without touching saved settings.
 		root.classList.toggle(COLLAPSED_CLASS);
 	};
 
-	// Capture phase to run even if Roblox stops propagation.
 	document.addEventListener("click", handler, true);
 }
 

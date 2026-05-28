@@ -23,26 +23,18 @@ const AVATAR_PROFILE_LINK_SELECTOR = "a.avatar-card-link";
 const AVATAR_CONTAINER_SELECTOR = "div.avatar.avatar-card-fullbody";
 const LOTTIE_WRAP_CLASS = "roprime-profile-effect-lottie";
 
-/** @typedef {"carousel" | "friends-list"} AvatarEffectContext */
-
 let installed = false;
 let syncQueue = Promise.resolve();
 
 const SCAN_DEBOUNCE_MS = 300;
 
-/** @type {Map<HTMLElement, AvatarEffectContext>} */
 const pendingCardSyncs = new Map();
 let pendingFlushTimer = 0;
 let scanDebounceTimer = 0;
 let lastExternalSyncAt = 0;
 
-/** Minimum gap when route/settings call syncFriendCarouselEffects (not DOM observer). */
 const EXTERNAL_SYNC_MIN_MS = 8000;
 
-/**
- * @param {HTMLAnchorElement} link
- * @returns {number | null}
- */
 export function parseUserIdFromProfileLink(link) {
 	try {
 		const url = new URL(link.href, "https://www.roblox.com");
@@ -59,9 +51,6 @@ export function parseUserIdFromProfileLink(link) {
 	}
 }
 
-/**
- * @param {HTMLAnchorElement} link
- */
 function isAvatarProfileLink(link) {
 	return (
 		link instanceof HTMLAnchorElement &&
@@ -70,10 +59,6 @@ function isAvatarProfileLink(link) {
 	);
 }
 
-/**
- * @param {HTMLElement} card
- * @returns {AvatarEffectContext | null}
- */
 function getCardContext(card) {
 	if (
 		card.matches(".friends-carousel-tile") ||
@@ -95,41 +80,23 @@ function getCardContext(card) {
 	return null;
 }
 
-/**
- * @param {AvatarEffectContext} context
- */
 function layerClassForContext(context) {
 	return context === "friends-list"
 		? FRIENDS_LIST_LAYER_CLASS
 		: CAROUSEL_LAYER_CLASS;
 }
 
-/**
- * @param {number} userId
- * @param {AvatarEffectContext} context
- */
 function layerIdFor(userId, context) {
 	return context === "friends-list"
 		? `roprime-friends-list-picture-${userId}`
 		: `roprime-friends-carousel-picture-${userId}`;
 }
 
-/**
- * @param {HTMLElement} root
- * @returns {HTMLElement | null}
- */
 function findAvatarContainerInRoot(root) {
 	const avatar = root.querySelector(AVATAR_CONTAINER_SELECTOR);
 	return avatar instanceof HTMLElement ? avatar : null;
 }
 
-/**
- * Profile link and avatar are often siblings on the friends list (link not nested
- * inside div.avatar.avatar-card-fullbody). Mount on the avatar in the same card.
- *
- * @param {HTMLAnchorElement} link
- * @returns {HTMLElement | null}
- */
 function findPictureEffectHostFromLink(link) {
 	if (!isAvatarProfileLink(link)) return null;
 
@@ -153,11 +120,6 @@ function findPictureEffectHostFromLink(link) {
 	return null;
 }
 
-/**
- * @param {import("./profileEffectsCatalog.js").ProfileEffect} effect
- * @param {{ layerId: string, layerAttr: string, layerClass: string }} options
- * @param {HTMLElement} host
- */
 function mountFriendPictureEffect(
 	host,
 	effect,
@@ -183,11 +145,6 @@ function mountFriendPictureEffect(
 	host.appendChild(layer);
 }
 
-/**
- * @param {HTMLElement} root
- * @param {number} userId
- * @returns {HTMLAnchorElement | null}
- */
 function findAvatarProfileLink(root, userId) {
 	for (const link of root.querySelectorAll(AVATAR_PROFILE_LINK_SELECTOR)) {
 		if (!(link instanceof HTMLAnchorElement)) continue;
@@ -198,11 +155,6 @@ function findAvatarProfileLink(root, userId) {
 	return null;
 }
 
-/**
- * @param {HTMLElement} card
- * @param {number} userId
- * @returns {HTMLElement | null}
- */
 function findPictureEffectHost(card, userId) {
 	const link = findAvatarProfileLink(card, userId);
 	if (link instanceof HTMLAnchorElement) {
@@ -233,11 +185,6 @@ function removeLayersInCard(card) {
 	});
 }
 
-/**
- * @param {HTMLElement} host
- * @param {number} userId
- * @param {AvatarEffectContext} context
- */
 async function syncPictureEffectOnHost(host, userId, context) {
 	const layerId = layerIdFor(userId, context);
 	const kind = "picture";
@@ -350,7 +297,6 @@ async function flushPendingCardSyncs() {
 	}
 }
 
-/** Collect card + context; sync runs after debounce with one auth lookup. */
 function queueSyncCard(card, context) {
 	pendingCardSyncs.set(card, context);
 	schedulePendingCardFlush();
@@ -443,7 +389,6 @@ export function installFriendCarouselEffects() {
 	scheduleAvatarScan();
 }
 
-/** Re-scan avatars after navigation/settings — throttled; DOM changes use the observer. */
 export function syncFriendCarouselEffects() {
 	if (!installed) return;
 

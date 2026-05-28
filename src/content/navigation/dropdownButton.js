@@ -9,21 +9,16 @@ import {
 
 const RP_DROPDOWN_ITEM_CLASS = "roprime-dropdown-entry";
 
-/** Roblox gear menu: only this list gets the RoPrime row (not other `ul.dropdown-menu` on the site). */
 const SETTINGS_POPOVER_MENU_ID = "settings-popover-menu";
 
-/** Fixed copy for nav dropdown rows — intentionally not wired to `settingsT` / locale files. */
 const ROPRIME_DROPDOWN_SETTINGS_LABEL = "RoPrime Settings";
 
-/** @type {HTMLLIElement | null} */
 let rowTemplate = null;
 
-/** @type {MutationObserver | null} */
 let navObserver = null;
-/** Roots already passed to `observe()` for the current observer instance. */
+
 let observedNavRoots = new WeakSet();
 
-/** Observer on `#settings-popover-menu` so we can re-append after Roblox clears the list on close. */
 const menuSurvivalObservers = new Set();
 
 let pointerCaptureInstalled = false;
@@ -82,7 +77,7 @@ function getSettingsPopoverMenu() {
 function cloneRowForMenu() {
 	ensureRowTemplate();
 	if (!rowTemplate) return null;
-	const li = /** @type {HTMLLIElement} */ (rowTemplate.cloneNode(true));
+	const li = rowTemplate.cloneNode(true);
 	const a = li.querySelector("a");
 	if (a instanceof HTMLAnchorElement) {
 		a.href = buildRoPrimeSettingsFullUrl();
@@ -91,7 +86,6 @@ function cloneRowForMenu() {
 }
 
 function getNavigationObserverRoots() {
-	/** @type {HTMLElement[]} */
 	const out = [];
 	for (const id of ["navigation-container", "navigation", "header"]) {
 		const el = document.getElementById(id);

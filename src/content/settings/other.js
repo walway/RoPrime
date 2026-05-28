@@ -115,7 +115,7 @@ function migrateLegacyEquippedByUserMap() {
 			}
 			changed = true;
 		}
-		for (const slot of /** @type {const} */ (["picture", "profile"])) {
+		for (const slot of ["picture", "profile"]) {
 			const id = normalized[slot];
 			if (!id) continue;
 			const effect = getProfileEffectById(id);

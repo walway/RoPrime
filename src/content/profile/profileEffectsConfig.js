@@ -1,4 +1,3 @@
-/** Injected at build time from .env via Vite `define`. */
 export const SUPABASE_URL =
 	typeof __ROPrime_SUPABASE_URL__ !== "undefined"
 		? String(__ROPrime_SUPABASE_URL__ || "").trim()

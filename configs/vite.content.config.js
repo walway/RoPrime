@@ -12,7 +12,6 @@ const supabaseAnonKey = String(
 	process.env.SUPABASE_KEY || process.env.SUPABASE_ANON_KEY || "",
 ).trim();
 
-/** Chrome content scripts cannot use bare `import` — bundle as one IIFE file. */
 export default defineConfig({
 	define: {
 		"process.env.NODE_ENV": JSON.stringify("production"),

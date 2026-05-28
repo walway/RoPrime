@@ -1,6 +1,3 @@
-/* MUI-inspired Switch, Slider, Divider (CSS only — not the React package).
-   Scoped to Design, Other, and Sidebar content. Language (settings) tab unchanged. */
-
 .roprime-settings-section[data-roprime-section="design"] .roprime-switch,
 .roprime-settings-section[data-roprime-section="other"] .roprime-switch,
 .roprime-settings-section[data-roprime-section="sidebar-content"]

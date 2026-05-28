@@ -4,9 +4,6 @@ const RIPPLE_BUTTON_SELECTOR =
 const RIPPLE_ROOT_SELECTOR =
 	".roprime-mui-ripple-root, .roprime-nav-menu-button-ripple, .MuiTouchRipple-root";
 
-/**
- * @param {HTMLElement} button
- */
 function ensureRippleRoot(button) {
 	let root = button.querySelector(RIPPLE_ROOT_SELECTOR);
 	if (root instanceof HTMLElement) return root;
@@ -21,9 +18,6 @@ function ensureRippleRoot(button) {
 	return root;
 }
 
-/**
- * @param {HTMLElement} button
- */
 export function attachMuiRipple(button) {
 	if (!(button instanceof HTMLElement)) return;
 	if (button.dataset.roprimeMuiRipple === "1") return;
@@ -57,9 +51,6 @@ export function attachMuiRipple(button) {
 	);
 }
 
-/**
- * @param {ParentNode} [root]
- */
 export function bindMuiRipplesIn(root = document) {
 	root.querySelectorAll(RIPPLE_BUTTON_SELECTOR).forEach((node) => {
 		if (node instanceof HTMLElement) attachMuiRipple(node);

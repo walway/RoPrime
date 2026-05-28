@@ -50,7 +50,6 @@ import {
 const RP_DEBUG_UNLOCK = "debug";
 const RP_SETTINGS_SIDE_RAIL_HIDDEN_CLASS = "roprime-settings-side-rail-hidden";
 
-/** Roblox account secondary rail: flex width-[289px] height-full scroll-y */
 function isRobloxAccountSideRail(el) {
 	if (!(el instanceof HTMLElement)) return false;
 	const cls = typeof el.className === "string" ? el.className : "";
@@ -872,7 +871,7 @@ function refreshProfileSettingsUi(root) {
 			"is-renames-disabled",
 			!settingsState.renameDropdownEnabled,
 		);
-		// Expand/collapse is user-controlled via the accordion header, not tied to the master switch.
+
 		const isOpen = accordion.classList.contains("is-open");
 		if (accHeader instanceof HTMLElement) {
 			accHeader.setAttribute("aria-expanded", String(isOpen));

@@ -4,15 +4,10 @@ import { getRobloxUserId } from "./robloxUserId.js";
 const HEADSHOT_API = "https://thumbnails.roblox.com/v1/users/avatar-headshot";
 const HEADSHOT_CACHE_TTL_MS = 15 * 60 * 1000;
 
-/** @type {Map<number, { profile: { imageUrl: string, displayName: string, username: string } | null, at: number }>} */
 const headshotCache = new Map();
-/** @type {Map<number, Promise<{ imageUrl: string, displayName: string, username: string } | null>>} */
+
 const headshotFetchInFlight = new Map();
 
-/**
- * @param {number} userId
- * @returns {Promise<{ imageUrl: string, displayName: string, username: string } | null>}
- */
 export async function fetchAuthUserHeadshot(userId) {
 	const id = Number(userId);
 	if (!Number.isFinite(id) || id <= 0) return null;
@@ -83,19 +78,12 @@ export async function fetchAuthUserHeadshot(userId) {
 	}
 }
 
-/**
- * Live
- * @param {{ imageUrl: string, displayName: string }} profile
- */
 export function buildRobloxAvatarHeadshotHtml(profile) {
 	const alt = profile.displayName.replace(/"/g, "&quot;");
 	const src = profile.imageUrl.replace(/"/g, "&quot;");
 	return `<div class="user-profile-header-details-avatar-container avatar-headshot-lg roprime-effect-shop-avatar"><div class="avatar avatar-card-fullbody" data-testid="avatar-card-container"><span class="thumbnail-2d-container avatar-card-image"><img src="${src}" alt="${alt}" title="${alt}" loading="lazy" /></span></div></div>`;
 }
 
-/**
- * @param {HTMLElement} shop
- */
 export async function hydrateProfilePictureEffectAvatars(shop) {
 	const userId = await getRobloxUserId();
 	if (!userId) return;

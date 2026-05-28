@@ -1,8 +1,3 @@
-/**
- * Roblox-style MUI settings shell markup (secondary rail + content pane).
- * Class names mirror Roblox web-blox-css / MUI output for visual parity.
- */
-
 const MUI = {
 	secondaryRail:
 		"MuiGrid-root web-blox-css-tss-9lz23s-Grid-root-secondaryRail-scroll web-blox-css-mui-rfnosa",
@@ -53,7 +48,6 @@ const MENU_OPEN_PATH =
 
 const TREE_VIEW_ID = "roprime-settings-tree";
 
-/** MenuOpenIcon (@mui/icons-material/MenuOpen) in a circular MUI IconButton. */
 export function buildMenuOpenIconButton(
 	extraClass = "",
 	{ ariaLabel = "menu" } = {},
@@ -101,13 +95,6 @@ function buildTreeNavItem({ page, labelKey, hidden = false }) {
 </li>`;
 }
 
-/**
- * @param {object} options
- * @param {Array<{page: string, labelKey: string, titleKey: string, hidden?: boolean}>} options.navItems
- * @param {string} options.sectionsHtml - wrapped sections including per-section headers
- * @param {boolean} [options.showProfileEffectsAlert]
- * @param {string} [options.searchPlaceholderKey]
- */
 export function buildSettingsShell({
 	navItems,
 	sectionsHtml,

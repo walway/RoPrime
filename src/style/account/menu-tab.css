@@ -1,17 +1,14 @@
-/* Sidebar Button Container - Fixed 160x33px */
 #roprime-settings-tab .menu-option-content {
 	display: flex !important;
 	align-items: center !important;
 	justify-content: flex-start !important;
 
-	/* Exact Dimensions */
 	width: 160px !important;
 	height: 33px !important;
 	padding: 9px 5px 9px 9px !important;
 	box-sizing: border-box !important;
 }
 
-/* Sidebar Text - Font stays here */
 #roprime-settings-tab .menu-option-content .menu-text {
 	font-size: 12px;
 }

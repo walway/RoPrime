@@ -25,18 +25,13 @@ const NATIVE_HEADER_MENU_BUTTON_SELECTOR =
 	"#header-menu-icon.rbx-nav-collapse button.menu-button:not([data-roprime-nav-menu-button]), .container-fluid .rbx-navbar-header #header-menu-icon.rbx-nav-collapse button.menu-button:not([data-roprime-nav-menu-button])";
 const ROPRIME_HEADER_MENU_BUTTON_SELECTOR =
 	"#header-menu-icon.rbx-nav-collapse button[data-roprime-nav-menu-button], .container-fluid .rbx-navbar-header #header-menu-icon.rbx-nav-collapse button[data-roprime-nav-menu-button]";
-/** @type {WeakMap<HTMLButtonElement, HTMLButtonElement>} */
+
 const originalNavMenuButtons = new WeakMap();
-/** @type {MutationObserver | null} */
+
 let headerMenuIconObserver = null;
-/** @type {'full' | 'small' | 'icon' | null} */
+
 let sidebarSizeBeforeCollapseMenu = null;
 
-/** @typedef {'full' | 'small' | 'icon'} SidebarSizeMode */
-
-/** @typedef {{ id: string, label: string, find: (nav: HTMLElement) => Element | null, conditional?: boolean, sizes?: SidebarSizeMode[] }} SidebarNavItemDef */
-
-/** Which sidebar modes include each item in the configure UI. */
 const SIDEBAR_ITEM_AVAILABLE_SIZES = {
 	"profile-with-avatar": ["full", "small", "icon"],
 	home: ["full", "small", "icon"],
@@ -56,7 +51,6 @@ const SIDEBAR_ITEM_AVAILABLE_SIZES = {
 	"game-events": ["full", "small"],
 };
 
-/** @type {SidebarNavItemDef[]} */
 export const SIDEBAR_NAV_ITEM_DEFS = [
 	{
 		id: "profile-with-avatar",
@@ -146,7 +140,7 @@ export const SIDEBAR_NAV_ITEM_DEFS = [
 
 let lastSidebarSyncKey = "";
 let lastHideStyleCss = "";
-/** @type {MutationObserver | null} */
+
 let sidebarNavObserver = null;
 let sidebarNavDebounce = 0;
 
@@ -384,7 +378,6 @@ export function resetSidebarItemsForMode(sizeMode = getActiveSidebarSize()) {
 	syncSidebarContent({ force: true });
 }
 
-/** Items to show in the configure UI for a given sidebar size. */
 export function discoverSidebarNavItems(sizeMode = getActiveSidebarSize()) {
 	const nav = getLeftNav();
 	const defs = defsForSidebarSize(sizeMode);
@@ -689,9 +682,6 @@ function ensureSidebarNavObserver() {
 	}
 }
 
-/**
- * @param {{ force?: boolean }} [options]
- */
 export function syncSidebarContent(options = {}) {
 	const key = getSidebarSyncKey();
 	if (!options.force && key === lastSidebarSyncKey) {

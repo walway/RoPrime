@@ -2,7 +2,6 @@ import { langList } from "../../../.locales/lang-config.js";
 
 const extensionApi = globalThis.browser || globalThis.chrome;
 
-// (Settings UI removed) - keep runtime/style constants only.
 export const RP_SMALL_NEW_NAV_STYLE_ID = "roprime-small-new-nav-style";
 export const RP_SIDEBAR_COMPACT_STYLE_ID = "roprime-sidebar-compact-style";
 export const RP_FRIEND_STYLING_REIMAGNED_STYLE_ID =
@@ -21,12 +20,11 @@ export const RP_SUPPORTED_PAGES = new Set([
 ]);
 export const RP_SETTINGS_KEY = "rpSettings";
 export const RP_PROFILE_SETTINGS_ROOT_ID = "roprime-profile-settings-root";
-/** Appended to /my/account settings links so Roblox account SPA tab state stays correct (e.g. #!/info). */
+
 export const RP_ACCOUNT_URL_HASH_DEFAULT = "#!/info";
-/** Set on `<html>` while RoPrime account settings URL is active — hides native chrome before mount. */
+
 export const RP_ACCOUNT_SETTINGS_SHELL_CLASS = "roprime-account-settings-open";
 
-/** Left inset for RoPrime account settings shell (Roblox nav width + 1px divider). */
 export const ACCOUNT_SETTINGS_LEFT_INSET_BY_SIZE = {
 	icon: 83,
 	small: 200,
@@ -105,10 +103,6 @@ export function syncAccountSettingsLayoutInset() {
 	);
 }
 
-/**
- * After reload/disable, extension `runtime.getURL` can throw even when `getURL` is a function.
- * Probe with a real call so stale content scripts stop touching extension APIs.
- */
 export function isExtensionContextAlive() {
 	try {
 		if (typeof extensionApi?.runtime?.getURL !== "function") return false;
@@ -133,8 +127,6 @@ export function getExtensionResourceUrl(relativePath) {
 	}
 }
 
-/** Merged per-locale `translation-keys.json` files under `.locales` for UI copy (from `settingsState.language`). */
-/** @type {Record<string, string>} */
 let settingsUiStrings = {};
 
 function normalizeUiLocale(raw) {
@@ -168,7 +160,6 @@ async function buildSettingsUiStringMap(language) {
 	return { ...en, ...cur };
 }
 
-/** Load strings for `settingsState.language` (after `loadSettings()`). */
 export async function loadSettingsUiStrings() {
 	settingsUiStrings = await buildSettingsUiStringMap(settingsState.language);
 }
@@ -177,14 +168,12 @@ export async function reloadSettingsUiStrings() {
 	return loadSettingsUiStrings();
 }
 
-/** Localized UI string from `.locales` phrase keys (e.g. `Settings hero title`). */
 export function settingsT(key) {
 	const v = settingsUiStrings[key];
 	if (typeof v === "string" && v.length > 0) return v;
 	return key;
 }
 
-/** Toggle early shell class so native account layout stays hidden until our panel mounts. */
 export function setAccountSettingsShellClass(active) {
 	if (typeof document === "undefined" || !document.documentElement) return;
 	document.documentElement.classList.toggle(
@@ -194,7 +183,6 @@ export function setAccountSettingsShellClass(active) {
 	syncAccountSettingsLayoutInset();
 }
 
-/** If URL is already a RoPrime account tab, apply shell class before first paint (content script). */
 export function applyAccountSettingsShellFromUrl() {
 	try {
 		if (!isMyAccountPath() || !isPluginRoute()) return;
@@ -244,7 +232,7 @@ export const RP_DEFAULT_SETTINGS = {
 	cosmeticsEnabled: false,
 	profileEffectsLayoutView: "grid",
 	ownedProfileEffects: [],
-	/** @deprecated Migrated to equippedProfilePictureEffect / equippedProfilePageEffect */
+
 	equippedProfileEffect: "",
 	equippedProfilePictureEffect: "",
 	equippedProfilePageEffect: "",
@@ -284,7 +272,6 @@ export function getStorageApi() {
 	}
 }
 
-/** @param {unknown} stored */
 export function mergeStoredSettings(stored) {
 	if (!stored || typeof stored !== "object") return;
 
@@ -453,7 +440,6 @@ export function isAccountPage() {
 	);
 }
 
-/** True only on /my/account (optional locale prefix), not /my/profile. */
 export function isMyAccountPath() {
 	const path = window.location.pathname || "";
 	return /^\/(?:[a-z]{2,3}(?:-[a-z0-9]{2,8})?\/)?my\/account(?:\/|$)/i.test(
@@ -461,7 +447,6 @@ export function isMyAccountPath() {
 	);
 }
 
-/** Locale segment only when path is `/xx/my/...` or `/xx-yy/my/...`, never `/my/...` (avoids treating `my` as a locale). */
 export function getRobloxLocalePathPrefix() {
 	const path = window.location.pathname || "";
 	const m = path.match(/^\/([a-z]{2,3}(?:-[a-z0-9]{2,8})?)\/my\//i);

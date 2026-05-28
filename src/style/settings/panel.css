@@ -2,7 +2,6 @@
 	margin-top: 8px;
 }
 
-/* Legacy layout hooks (non-MUI shell fallbacks) */
 .roprime-settings-layout {
 	display: block;
 }
@@ -120,8 +119,6 @@
 	gap: 10px;
 }
 
-/* Do not use border-top on sections here: first DOM child of .main is a hint div, so the first
-   visible section was incorrectly getting a top rule and looked like a stray divider. */
 .roprime-settings-wrapper.is-search-mode .roprime-settings-section {
 	margin: 0;
 }
@@ -134,7 +131,6 @@
 	padding: 0 1px;
 }
 
-/* Boxed controls only (dropdowns, text areas, selection groups) — not plain toggle rows. */
 .roprime-setting-control-wrap {
 	display: flex;
 	flex-direction: column;
@@ -194,10 +190,8 @@
 	border-radius: 12px;
 }
 
-/*
-stupid MUI
- */
-.game-details-carousel-container .carousel-item.carousel-video.game-preview-video-container
+.game-details-carousel-container
+	.carousel-item.carousel-video.game-preview-video-container
 	.video-preview-wrapper.is-ready
 	video,
 .game-details-carousel-container
@@ -215,8 +209,8 @@ stupid MUI
 	border-radius: 12px;
 }
 
-/* Same tree when the carousel root is not wrapped by the stable id/class above */
-.carousel-item.carousel-video.game-preview-video-container .video-preview-wrapper.is-ready
+.carousel-item.carousel-video.game-preview-video-container
+	.video-preview-wrapper.is-ready
 	video,
 .carousel-item.carousel-video.game-preview-video-container
 	.video-preview-wrapper
@@ -224,8 +218,8 @@ stupid MUI
 	border-radius: 12px;
 }
 
-/* Video controls wrapper — class is web-blox-css-tss-<hash>-controlsWrapper; hash changes each load */
-.game-details-carousel-container .carousel-item.carousel-video.game-preview-video-container
+.game-details-carousel-container
+	.carousel-item.carousel-video.game-preview-video-container
 	[class*="web-blox-css-tss"][class*="controlsWrapper"],
 #game-details-carousel-container
 	.carousel-item.carousel-video.game-preview-video-container
@@ -617,7 +611,6 @@ stupid MUI
 	color: var(--color-content-default);
 }
 
-/* RoPrime header nav menu — MUI MenuOpen IconButton (replaces Roblox span.icon-nav-menu) */
 #header-menu-icon .roprime-nav-menu-button.menu-button,
 .container-fluid
 	.rbx-navbar-header
@@ -820,7 +813,6 @@ body.roprime-sidebar-collapse-menu-enabled div.rbx-navbar-header {
 	cursor: pointer;
 }
 
-/* Avoid flex min-content blow-up from long locale labels (was showing as huge `min-width` on the button). */
 .roprime-language-trigger [data-roprime-lang-current] {
 	min-width: 0;
 	flex: 1 1 auto;
@@ -875,7 +867,6 @@ body.roprime-sidebar-collapse-menu-enabled div.rbx-navbar-header {
 	background: color-mix(in srgb, var(--color-content-emphasis) 8%, transparent);
 }
 
-/* Keep account content fluid when RoPrime panel is open. */
 #react-user-account-base:has(
 		#roprime-standalone-settings[style*="display: block"]
 	)
@@ -898,7 +889,6 @@ body.roprime-sidebar-collapse-menu-enabled div.rbx-navbar-header {
 	flex: 0 0 auto;
 }
 
-/* Keep every switch aligned to the same x-position as the header switch. */
 .roprime-toggle-row .roprime-switch,
 .roprime-accordion-header .roprime-switch {
 	margin-right: 14px;

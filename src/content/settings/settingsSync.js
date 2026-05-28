@@ -9,7 +9,6 @@ import { t as accountSettingsPaneT } from "./roprimeAccountSettingsPage.js";
 
 const extensionApi = globalThis.browser || globalThis.chrome;
 
-/** Not exported — ownership/equip comes from the profile-effects registry JSON. */
 const PROFILE_EFFECTS_SYNC_STRIP_KEYS = [
 	"ownedProfileEffects",
 	"equippedProfileEffect",
@@ -18,13 +17,11 @@ const PROFILE_EFFECTS_SYNC_STRIP_KEYS = [
 	"profileEffectsEquippedByUser",
 ];
 
-/** Custom CSS is edited in-app only — never included in sync export/import. */
 const SETTINGS_SYNC_STRIP_KEYS = [
 	...PROFILE_EFFECTS_SYNC_STRIP_KEYS,
 	"customCss",
 ];
 
-/** @param {Record<string, unknown>} payload */
 function stripSettingsSyncPayload(payload) {
 	for (const key of SETTINGS_SYNC_STRIP_KEYS) {
 		delete payload[key];
@@ -58,14 +55,10 @@ function parseFirstJsonObjectFromText(text) {
 	const raw = stripUtf8Bom(text).trim();
 	if (!raw) throw new Error("invalid");
 
-	// Fast path for valid JSON documents.
 	try {
 		return JSON.parse(raw);
-	} catch {
-		/* scan for first valid object below */
-	}
+	} catch {}
 
-	// Fallback: parse the first balanced {...} object, respecting strings/escapes.
 	const firstBrace = raw.indexOf("{");
 	if (firstBrace < 0) throw new Error("invalid");
 
@@ -104,7 +97,6 @@ function parseFirstJsonObjectFromText(text) {
 				try {
 					return JSON.parse(candidate);
 				} catch {
-					// keep scanning for the next complete object
 					start = -1;
 				}
 			}
@@ -116,8 +108,6 @@ function parseFirstJsonObjectFromText(text) {
 
 function parseJsObjectLiteral(candidate) {
 	try {
-		// Parse relaxed JS object-literal payloads (single quotes, trailing commas, etc.).
-		// This is intentionally local-only parsing for user-provided sync files.
 		return Function(`"use strict"; return (${candidate});`)();
 	} catch {
 		return null;
@@ -130,9 +120,7 @@ function parseFirstObjectLikeFromText(text) {
 
 	try {
 		return parseFirstJsonObjectFromText(raw);
-	} catch {
-		/* try JS object-literal parsing below */
-	}
+	} catch {}
 
 	const firstBrace = raw.indexOf("{");
 	if (firstBrace < 0) throw new Error("invalid");
@@ -217,7 +205,6 @@ function parseFirstObjectLikeFromText(text) {
 function resolveImportSettingsPayload(parsed) {
 	if (!parsed || typeof parsed !== "object") return null;
 
-	// Common wrapper shapes
 	const candidates = [];
 	if (!Array.isArray(parsed)) {
 		candidates.push(parsed);
@@ -243,7 +230,6 @@ function resolveImportSettingsPayload(parsed) {
 		}
 	}
 
-	// Array payloads: accept first object-like entry.
 	if (Array.isArray(parsed)) {
 		for (const item of parsed) {
 			if (item && typeof item === "object" && !Array.isArray(item)) {
@@ -270,7 +256,6 @@ function resolveImportSettingsPayload(parsed) {
 		if (hasKnownKey(candidate)) return candidate;
 	}
 
-	// Fallback: first plain object candidate.
 	for (const candidate of candidates) {
 		if (
 			candidate &&
@@ -290,18 +275,14 @@ function getReadableErrorMessage(error) {
 }
 
 async function storageSetCompat(storage, data) {
-	// Promise-first path (Firefox browser.* and modern Chromium).
 	try {
 		const maybePromise = storage.set(data);
 		if (maybePromise && typeof maybePromise.then === "function") {
 			await maybePromise;
 			return;
 		}
-	} catch {
-		// Fall through to callback path.
-	}
+	} catch {}
 
-	// Callback fallback (older Chrome-style APIs).
 	await new Promise((resolve, reject) => {
 		try {
 			storage.set(data, () => {
@@ -435,9 +416,6 @@ export function exportSettingsFile() {
 	URL.revokeObjectURL(url);
 }
 
-/**
- * @param {File} file
- */
 export async function importSettingsFile(file) {
 	const text = await file.text();
 	await importSettingsText(text);
@@ -462,10 +440,6 @@ export async function importSettingsText(text) {
 	await storageSetCompat(storage, { [RP_SETTINGS_KEY]: payload });
 }
 
-/**
- * Bind sync listeners to the settings sync panel.
- * @param {HTMLElement} inner
- */
 export function initializeSyncPanelListeners(inner) {
 	if (inner.getAttribute("data-roprime-settings-sync-bound") === "1") return;
 	inner.setAttribute("data-roprime-settings-sync-bound", "1");
@@ -560,5 +534,4 @@ export function initializeSyncPanelListeners(inner) {
 	}
 }
 
-// Backward-compatible alias used by existing settings page wiring.
 export const bindSettingsSyncControls = initializeSyncPanelListeners;

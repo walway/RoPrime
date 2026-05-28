@@ -1,5 +1,3 @@
-/** Roblox friend / avatar card roots (home carousel and similar). */
-
 export const USER_CARD_SELECTORS = [
 	".friends-carousel-tile",
 	"li.list-item.avatar-card",
@@ -63,10 +61,6 @@ export function observeUserCardElements() {
 		});
 }
 
-/**
- * @param {(element: HTMLElement) => void} callback
- * @param {{ exclude?: string[] }} [options]
- */
 export function onUserCardElement(callback, options = {}) {
 	const sub = { callback, options };
 	subscriptions.add(sub);

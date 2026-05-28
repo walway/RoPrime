@@ -1,11 +1,5 @@
-/**
- * @typedef {"picture" | "profile"} ProfileEffectKind
- * @typedef {{ id: string, kind: ProfileEffectKind, cdnEffect?: string, titleKey: string }} ProfileEffect
- */
-
 const PROFILE_EFFECT_CDN_BASE = "https://walway.github.io/cdn/index.html";
 
-/** CDN slug for ?effect= (e.g. dizzy512 → dizzy, clockwork → clockwork). */
 export function getProfileEffectCdnName(effect) {
 	if (!effect) return "";
 	if (effect.cdnEffect) return String(effect.cdnEffect);
@@ -35,11 +29,9 @@ export function getProfileEffectCdnEmbedSrc(
 	return url.toString();
 }
 
-/** Inline attrs for shop preview iframes (allowTransparency + transparent chrome). */
 export const PROFILE_EFFECT_IFRAME_TRANSPARENT_ATTRS =
 	'allowtransparency="true" style="background:transparent;background-color:transparent"';
 
-/** @param {HTMLIFrameElement} iframe */
 export function configureProfileEffectIframe(iframe) {
 	iframe.setAttribute("allowtransparency", "true");
 	iframe.setAttribute("frameborder", "0");
@@ -48,12 +40,10 @@ export function configureProfileEffectIframe(iframe) {
 	iframe.style.backgroundColor = "transparent";
 }
 
-/** Same transparent iframe setup as settings shop previews. */
 export function applyProfileEffectIframeTransparentAttrs(iframe) {
 	configureProfileEffectIframe(iframe);
 }
 
-/** @type {ProfileEffect[]} */
 export const PROFILE_PICTURE_EFFECTS = [
 	{
 		id: "dizzy",
@@ -62,7 +52,6 @@ export const PROFILE_PICTURE_EFFECTS = [
 	},
 ];
 
-/** @type {ProfileEffect[]} */
 export const PROFILE_EFFECTS = [
 	{
 		id: "clockwork",
@@ -133,10 +122,8 @@ export function getProfileEffectShopEmbedSrc(effect) {
 	return getProfileEffectCdnEmbedSrc(effect, null, "settings");
 }
 
-/** Roblox profile avatar overlay or full-profile layer. */
 export function getProfileEffectProfileEmbedSrc(effect) {
 	if (effect?.kind === "profile") {
-		// Profile pages: play once and let API/CDN replay after 5s.
 		return getProfileEffectCdnEmbedSrc(effect, {
 			loop: "0",
 			cooldown: "5000",

@@ -9,7 +9,6 @@ import { updateSmallNewNavVisibility } from "../sidebar/smallNewNav.js";
 import { updateDocumentTitle } from "./pageChrome.js";
 
 export function syncRoPrimeView() {
-	// Feature toggles that apply globally.
 	syncOldNavigationBar();
 	updateSmallNewNavVisibility();
 	updateSidebarCompactVisibility();
@@ -17,6 +16,5 @@ export function syncRoPrimeView() {
 	syncAlwaysShowCloseButton();
 	updateFriendStylingReimagnedVisibility();
 
-	// Keep title in sync with Roblox when not on RoPrime route.
 	updateDocumentTitle(false);
 }

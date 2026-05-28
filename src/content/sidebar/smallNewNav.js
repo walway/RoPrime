@@ -126,7 +126,6 @@ export function syncSmallNavSidebarRenames() {
 	}
 }
 
-/** @deprecated Use syncSmallNavSidebarRenames */
 export const syncOfficialStoreSidebarRename = syncSmallNavSidebarRenames;
 
 export function updateSmallNewNavVisibility() {
