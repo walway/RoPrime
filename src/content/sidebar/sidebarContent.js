@@ -29,6 +29,8 @@ const ROPRIME_HEADER_MENU_BUTTON_SELECTOR =
 const originalNavMenuButtons = new WeakMap();
 /** @type {MutationObserver | null} */
 let headerMenuIconObserver = null;
+/** @type {'full' | 'small' | 'icon' | null} */
+let sidebarSizeBeforeCollapseMenu = null;
 
 /** @typedef {'full' | 'small' | 'icon'} SidebarSizeMode */
 
@@ -635,9 +637,25 @@ export function syncSidebarCollapseMenuIcon() {
 		),
 	);
 	if (!settingsState.sidebarCollapseMenuEnabled) {
+		const restoreMode = sidebarSizeBeforeCollapseMenu;
+		sidebarSizeBeforeCollapseMenu = null;
+		if (restoreMode) {
+			const nextMode = normalizeSidebarSizeMode(restoreMode);
+			settingsState.sidebarSize = nextMode;
+			settingsState.smallNewNavigationBarEnabled = nextMode === "small";
+			settingsState.sidebarIconsOnlyEnabled = nextMode === "icon";
+			updateSmallNewNavVisibility();
+			updateSidebarCompactVisibility();
+			syncSidebarCompactDecorations();
+			syncAccountSettingsLayoutInset();
+			saveSettings();
+		}
 		stopHeaderMenuIconObserver();
 		restoreNavbarMenuButtons();
 		return;
+	}
+	if (!sidebarSizeBeforeCollapseMenu) {
+		sidebarSizeBeforeCollapseMenu = normalizeSidebarSizeMode(settingsState.sidebarSize);
 	}
 	if (settingsState.sidebarSize !== "full") {
 		settingsState.sidebarSize = "full";

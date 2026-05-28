@@ -165,10 +165,29 @@ function ensureObserver() {
 	});
 }
 
+function restoreSidebarRailsDisplay() {
+	const rails289 = Array.from(
+		document.querySelectorAll(".width-\\[289px\\], [class~='width-[289px]']"),
+	).filter((el) => el instanceof HTMLElement);
+	rails289.forEach((el) => {
+		if (!(el instanceof HTMLElement)) return;
+		if (!("rpPrevDisplay" in el.dataset)) return;
+		el.style.display = el.dataset.rpPrevDisplay || "";
+		delete el.dataset.rpPrevDisplay;
+	});
+}
+
+function clearAlwaysShowCloseState() {
+	document.documentElement.classList.remove(RP_ALWAYS_CLOSE_COLLAPSED_CLASS);
+	document.body?.classList.remove(RP_ALWAYS_CLOSE_COLLAPSED_CLASS);
+	restoreSidebarRailsDisplay();
+}
+
 export function syncAlwaysShowCloseButton() {
 	const existingStyle = document.getElementById(RP_ALWAYS_SHOW_CLOSE_STYLE_ID);
 	if (!settingsState.alwaysShowCloseButtonEnabled) {
 		if (existingStyle instanceof HTMLStyleElement) existingStyle.remove();
+		clearAlwaysShowCloseState();
 		return;
 	}
 	ensureObserver();

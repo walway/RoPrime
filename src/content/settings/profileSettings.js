@@ -657,11 +657,6 @@ function bindOnce(root) {
 	if (sidebarCollapse instanceof HTMLInputElement) {
 		sidebarCollapse.addEventListener("change", () => {
 			settingsState.sidebarCollapseMenuEnabled = sidebarCollapse.checked;
-			if (settingsState.sidebarCollapseMenuEnabled) {
-				settingsState.sidebarSize = "full";
-				settingsState.smallNewNavigationBarEnabled = false;
-				settingsState.sidebarIconsOnlyEnabled = false;
-			}
 			saveSettings();
 			syncSidebarContent();
 			syncSidebarSliderFromState(inner);
