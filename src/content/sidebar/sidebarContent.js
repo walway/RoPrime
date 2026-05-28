@@ -655,7 +655,9 @@ export function syncSidebarCollapseMenuIcon() {
 		return;
 	}
 	if (!sidebarSizeBeforeCollapseMenu) {
-		sidebarSizeBeforeCollapseMenu = normalizeSidebarSizeMode(settingsState.sidebarSize);
+		sidebarSizeBeforeCollapseMenu = normalizeSidebarSizeMode(
+			settingsState.sidebarSize,
+		);
 	}
 	if (settingsState.sidebarSize !== "full") {
 		settingsState.sidebarSize = "full";

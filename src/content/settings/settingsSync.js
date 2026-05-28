@@ -227,7 +227,10 @@ function resolveImportSettingsPayload(parsed) {
 		if (parsed.settings && typeof parsed.settings === "object") {
 			candidates.push(parsed.settings);
 		}
-		if (parsed[RP_SETTINGS_KEY] && typeof parsed[RP_SETTINGS_KEY] === "object") {
+		if (
+			parsed[RP_SETTINGS_KEY] &&
+			typeof parsed[RP_SETTINGS_KEY] === "object"
+		) {
 			candidates.push(parsed[RP_SETTINGS_KEY]);
 		}
 		if (
@@ -269,7 +272,11 @@ function resolveImportSettingsPayload(parsed) {
 
 	// Fallback: first plain object candidate.
 	for (const candidate of candidates) {
-		if (candidate && typeof candidate === "object" && !Array.isArray(candidate)) {
+		if (
+			candidate &&
+			typeof candidate === "object" &&
+			!Array.isArray(candidate)
+		) {
 			return candidate;
 		}
 	}
