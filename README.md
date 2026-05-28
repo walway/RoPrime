@@ -20,7 +20,7 @@
 <hr>
 
 RoPrime is absolutely free browser extension that makes the **Roblox website** feel cleaner and adds new features while upgrading its new design.<br>
-It layers onto the official website offering a dedicated settings page with options you can tune to your liking. Here's some features:
+You can customize Roblox with a bunch of features to your liking. Here's some features:
 
 - 🎨 Roblox’s UI design style
 - 📐 Sidebar sizes — full, compact, or icon-only
