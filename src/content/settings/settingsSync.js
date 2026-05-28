@@ -333,7 +333,9 @@ export function bindSettingsSyncControls(inner) {
 				try {
 					await importSettingsFile(file);
 					refreshSettingsSyncPreview(inner);
-					const nextPreview = inner.querySelector("[data-roprime-settings-preview]");
+					const nextPreview = inner.querySelector(
+						"[data-roprime-settings-preview]",
+					);
 					if (nextPreview instanceof HTMLTextAreaElement) {
 						previewLastSaved = nextPreview.value;
 					}

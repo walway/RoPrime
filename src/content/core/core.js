@@ -95,7 +95,8 @@ export function syncAccountSettingsLayoutInset() {
 		return;
 	}
 	const effectiveSize =
-		settingsState.sidebarCollapseMenuEnabled && settingsState.sidebarIconsOnlyEnabled
+		settingsState.sidebarCollapseMenuEnabled &&
+		settingsState.sidebarIconsOnlyEnabled
 			? "icon"
 			: getActiveSidebarSize();
 	document.documentElement.style.setProperty(
@@ -273,7 +274,7 @@ export function getStorageApi() {
 		if (typeof browser !== "undefined" && browser.storage?.local) {
 			return browser.storage.local;
 		}
-		const chromeApi = globalThis["chrome"];
+		const chromeApi = globalThis.chrome;
 		if (chromeApi?.storage?.local) {
 			return chromeApi.storage.local;
 		}

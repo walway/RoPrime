@@ -14,7 +14,10 @@ const SMALL_NEW_NAV_BASE_CSS = [
 const SMALL_NAV_LABEL_REPLACEMENTS = [
 	{ pattern: /official store/gi, replacement: "Store" },
 	{ pattern: /buy gift cards/gi, replacement: "Gift Cards" },
-	{ pattern: /More fun for less Robux\. Subscribe to Roblox Plus\./gi, replacement: "Subscribe to Roblox Plus." },
+	{
+		pattern: /More fun for less Robux\. Subscribe to Roblox Plus\./gi,
+		replacement: "Subscribe to Roblox Plus.",
+	},
 ];
 
 function buildSmallNewNavStylesheet() {

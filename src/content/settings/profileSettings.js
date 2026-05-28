@@ -27,6 +27,7 @@ import {
 	refreshSidebarContentList,
 	refreshSidebarSizeWarnings,
 } from "../sidebar/sidebarSettingsUi.js";
+import { bindMuiRipplesIn } from "../ui/muiRipple.js";
 import {
 	bindCustomCssControls,
 	buildCustomCssHtml,
@@ -39,7 +40,6 @@ import {
 	syncCosmeticsUi,
 } from "./other.js";
 import { t as accountSettingsPaneT } from "./roprimeAccountSettingsPage.js";
-import { bindMuiRipplesIn } from "../ui/muiRipple.js";
 import { buildSettingsShell, wrapSettingsSection } from "./settingsShell.js";
 import {
 	bindSettingsSyncControls,
@@ -81,15 +81,17 @@ function toggleSettingsSideRails(inner) {
 		RP_SETTINGS_SIDE_RAIL_HIDDEN_CLASS,
 		collapsed,
 	);
-	inner.querySelectorAll(".roprime-settings-menu-btn svg path").forEach((node) => {
-		if (!(node instanceof SVGPathElement)) return;
-		node.setAttribute(
-			"d",
-			collapsed
-				? "M3 18h18v-2H3zm0-5h18v-2H3zm0-7v2h18V6z"
-				: "M3 18h13v-2H3zm0-5h10v-2H3zm0-7v2h13V6zm18 9.59L17.42 12 21 8.41 19.59 7l-5 5 5 5z",
-		);
-	});
+	inner
+		.querySelectorAll(".roprime-settings-menu-btn svg path")
+		.forEach((node) => {
+			if (!(node instanceof SVGPathElement)) return;
+			node.setAttribute(
+				"d",
+				collapsed
+					? "M3 18h18v-2H3zm0-5h18v-2H3zm0-7v2h18V6z"
+					: "M3 18h13v-2H3zm0-5h10v-2H3zm0-7v2h13V6zm18 9.59L17.42 12 21 8.41 19.59 7l-5 5 5 5z",
+			);
+		});
 
 	for (const el of queryRobloxAccountSideRails()) {
 		if (collapsed) {
@@ -249,7 +251,8 @@ function setSidebarModeVisual(inner, mode) {
 }
 
 function applySidebarMode(inner, mode) {
-	if (settingsState.sidebarCollapseMenuEnabled && mode !== "full") mode = "full";
+	if (settingsState.sidebarCollapseMenuEnabled && mode !== "full")
+		mode = "full";
 	settingsState.sidebarSize = mode;
 	settingsState.smallNewNavigationBarEnabled = mode === "small";
 	settingsState.sidebarIconsOnlyEnabled = mode === "icon";
@@ -276,13 +279,11 @@ function syncSidebarSliderFromState(inner) {
 	});
 	setSidebarModeVisual(inner, mode);
 	const locked = !!settingsState.sidebarCollapseMenuEnabled;
-	inner
-		.querySelectorAll(".roprime-sidebar-size-tick")
-		.forEach((tick) => {
-			if (!(tick instanceof HTMLButtonElement)) return;
-			tick.disabled = locked;
-			tick.setAttribute("aria-disabled", locked ? "true" : "false");
-		});
+	inner.querySelectorAll(".roprime-sidebar-size-tick").forEach((tick) => {
+		if (!(tick instanceof HTMLButtonElement)) return;
+		tick.disabled = locked;
+		tick.setAttribute("aria-disabled", locked ? "true" : "false");
+	});
 	refreshSidebarSizeWarnings(inner);
 }
 

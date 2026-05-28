@@ -82,9 +82,11 @@ function showSupportAlertModal() {
 			resolve(accepted);
 		};
 
-		root.querySelector(".roprime-support-alert-ok")?.addEventListener("click", () => {
-			close(true);
-		});
+		root
+			.querySelector(".roprime-support-alert-ok")
+			?.addEventListener("click", () => {
+				close(true);
+			});
 		root
 			.querySelector(".roprime-support-alert-close")
 			?.addEventListener("click", () => close(false));

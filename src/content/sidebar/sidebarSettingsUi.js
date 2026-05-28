@@ -102,12 +102,14 @@ function visibleSidebarItemsCount(sizeMode = getActiveSidebarSize()) {
 export function refreshSidebarSizeWarnings(inner) {
 	const mode = normalizeSidebarSizeMode(getActiveSidebarSize());
 	const noVisibleItems = visibleSidebarItemsCount(mode) === 0;
-	inner.querySelectorAll("[data-roprime-sidebar-empty-warning]").forEach((node) => {
-		if (!(node instanceof HTMLElement)) return;
-		node.hidden = !noVisibleItems;
-		node.style.display = noVisibleItems ? "flex" : "none";
-		node.setAttribute("aria-hidden", noVisibleItems ? "false" : "true");
-	});
+	inner
+		.querySelectorAll("[data-roprime-sidebar-empty-warning]")
+		.forEach((node) => {
+			if (!(node instanceof HTMLElement)) return;
+			node.hidden = !noVisibleItems;
+			node.style.display = noVisibleItems ? "flex" : "none";
+			node.setAttribute("aria-hidden", noVisibleItems ? "false" : "true");
+		});
 }
 
 export function bindSidebarContentList(inner) {

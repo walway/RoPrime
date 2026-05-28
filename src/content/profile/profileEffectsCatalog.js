@@ -21,7 +21,10 @@ export function getProfileEffectCdnEmbedSrc(
 	const name = getProfileEffectCdnName(effect);
 	const url = new URL(PROFILE_EFFECT_CDN_BASE);
 	if (name) url.searchParams.set("effect", name);
-	url.searchParams.set("target", target === "settings" ? "settings" : "profile");
+	url.searchParams.set(
+		"target",
+		target === "settings" ? "settings" : "profile",
+	);
 	url.searchParams.set("source", "iframe");
 	if (query && typeof query === "object") {
 		for (const [key, value] of Object.entries(query)) {

@@ -55,7 +55,11 @@ function isRobloxHost(hostname) {
 function isRobloxSender(sender) {
 	try {
 		const rawUrl =
-			sender?.tab?.url || sender?.url || sender?.documentUrl || sender?.origin || "";
+			sender?.tab?.url ||
+			sender?.url ||
+			sender?.documentUrl ||
+			sender?.origin ||
+			"";
 		if (!rawUrl) return false;
 		const parsed = new URL(rawUrl);
 		if (!/^https?:$/i.test(parsed.protocol)) return false;

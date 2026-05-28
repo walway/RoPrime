@@ -1,4 +1,7 @@
-import { getStorageApi, isExtensionContextInvalidatedError } from "../core/core.js";
+import {
+	getStorageApi,
+	isExtensionContextInvalidatedError,
+} from "../core/core.js";
 
 export const RP_HOME_WELCOME_DISMISSED_KEY = "rpHomeWelcomeDismissed";
 
@@ -57,7 +60,10 @@ function appendWelcomeWhenBodyReady(root) {
 		}
 		if (mount()) observer.disconnect();
 	});
-	observer.observe(document.documentElement, { childList: true, subtree: true });
+	observer.observe(document.documentElement, {
+		childList: true,
+		subtree: true,
+	});
 }
 
 function persistWelcomeDismissed() {
@@ -113,7 +119,9 @@ function showWelcomeModal() {
 	};
 
 	root.querySelector(".roprime-welcome-ok")?.addEventListener("click", dismiss);
-	root.querySelector(".roprime-welcome-close")?.addEventListener("click", dismiss);
+	root
+		.querySelector(".roprime-welcome-close")
+		?.addEventListener("click", dismiss);
 	root
 		.querySelector("[data-roprime-welcome-dismiss='backdrop']")
 		?.addEventListener("click", (event) => {

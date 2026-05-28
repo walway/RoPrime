@@ -619,7 +619,10 @@ stupid MUI
 
 /* RoPrime header nav menu — MUI MenuOpen IconButton (replaces Roblox span.icon-nav-menu) */
 #header-menu-icon .roprime-nav-menu-button.menu-button,
-.container-fluid .rbx-navbar-header #header-menu-icon .roprime-nav-menu-button.menu-button {
+.container-fluid
+	.rbx-navbar-header
+	#header-menu-icon
+	.roprime-nav-menu-button.menu-button {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
@@ -642,7 +645,10 @@ stupid MUI
 }
 
 #header-menu-icon .roprime-nav-menu-button.menu-button:hover,
-.container-fluid .rbx-navbar-header #header-menu-icon .roprime-nav-menu-button.menu-button:hover {
+.container-fluid
+	.rbx-navbar-header
+	#header-menu-icon
+	.roprime-nav-menu-button.menu-button:hover {
 	background-color: color-mix(
 		in srgb,
 		var(--color-content-emphasis, currentColor) 8%,
@@ -652,7 +658,11 @@ stupid MUI
 
 #header-menu-icon .roprime-nav-menu-button .roprime-nav-menu-button-icon,
 #header-menu-icon .roprime-nav-menu-button .MuiSvgIcon-root,
-.container-fluid .rbx-navbar-header #header-menu-icon .roprime-nav-menu-button .MuiSvgIcon-root {
+.container-fluid
+	.rbx-navbar-header
+	#header-menu-icon
+	.roprime-nav-menu-button
+	.MuiSvgIcon-root {
 	width: 24px;
 	height: 24px;
 	fill: currentColor;
@@ -660,7 +670,11 @@ stupid MUI
 }
 
 #header-menu-icon .roprime-nav-menu-button .roprime-nav-menu-button-label,
-.container-fluid .rbx-navbar-header #header-menu-icon .roprime-nav-menu-button .roprime-nav-menu-button-label {
+.container-fluid
+	.rbx-navbar-header
+	#header-menu-icon
+	.roprime-nav-menu-button
+	.roprime-nav-menu-button-label {
 	width: 100%;
 	display: flex;
 	align-items: center;
@@ -668,7 +682,11 @@ stupid MUI
 }
 
 #header-menu-icon .roprime-nav-menu-button .icon-nav-menu,
-.container-fluid .rbx-navbar-header #header-menu-icon .roprime-nav-menu-button .icon-nav-menu {
+.container-fluid
+	.rbx-navbar-header
+	#header-menu-icon
+	.roprime-nav-menu-button
+	.icon-nav-menu {
 	display: none;
 }
 

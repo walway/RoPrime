@@ -2,23 +2,24 @@ import {
 	getActiveSidebarSize,
 	normalizeSidebarSizeMode,
 	saveSettings,
-	syncAccountSettingsLayoutInset,
 	settingsState,
+	syncAccountSettingsLayoutInset,
 } from "../core/core.js";
-import {
-	syncSidebarCompactDecorations,
-	updateSidebarCompactVisibility,
-} from "./sidebarCompact.js";
-import { attachMuiRipple, bindMuiRipplesIn } from "../ui/muiRipple.js";
 import {
 	createRoPrimeNavMenuButton,
 	setCollapseButtonIcon,
 } from "../ui/components/collapse.js";
+import { attachMuiRipple, bindMuiRipplesIn } from "../ui/muiRipple.js";
+import {
+	syncSidebarCompactDecorations,
+	updateSidebarCompactVisibility,
+} from "./sidebarCompact.js";
 import { updateSmallNewNavVisibility } from "./smallNewNav.js";
 
 const RP_SIDEBAR_CONTENT_STYLE_ID = "roprime-sidebar-content-hide-style";
 const RP_MENU_ICON_BOUND_ATTR = "data-roprime-menu-icon-bound";
-const RP_SIDEBAR_COLLAPSE_ENABLED_CLASS = "roprime-sidebar-collapse-menu-enabled";
+const RP_SIDEBAR_COLLAPSE_ENABLED_CLASS =
+	"roprime-sidebar-collapse-menu-enabled";
 const RP_SIDEBAR_ICON_ONLY_ACTIVE_CLASS = "roprime-sidebar-icon-only-active";
 const NATIVE_HEADER_MENU_BUTTON_SELECTOR =
 	"#header-menu-icon.rbx-nav-collapse button.menu-button:not([data-roprime-nav-menu-button]), .container-fluid .rbx-navbar-header #header-menu-icon.rbx-nav-collapse button.menu-button:not([data-roprime-nav-menu-button])";
@@ -192,9 +193,7 @@ function findLinkByPatterns(nav, patterns) {
 		const matched = patterns.some((pattern) => {
 			if (pattern instanceof RegExp) {
 				return (
-					pattern.test(hrefAttr) ||
-					pattern.test(hrefFull) ||
-					pattern.test(path)
+					pattern.test(hrefAttr) || pattern.test(hrefFull) || pattern.test(path)
 				);
 			}
 			const token = String(pattern).toLowerCase();
@@ -224,7 +223,10 @@ function findFriendsLink(nav) {
 }
 
 function findAvatarLink(nav) {
-	return findLinkByPatterns(nav, ["https://www.roblox.com/my/avatar", "/my/avatar"]);
+	return findLinkByPatterns(nav, [
+		"https://www.roblox.com/my/avatar",
+		"/my/avatar",
+	]);
 }
 
 function findInventoryLink(nav) {
@@ -246,7 +248,10 @@ function findCommunitiesLink(nav) {
 }
 
 function findBlogLink(nav) {
-	return findLinkByPatterns(nav, ["https://blog.roblox.com/", "blog.roblox.com"]);
+	return findLinkByPatterns(nav, [
+		"https://blog.roblox.com/",
+		"blog.roblox.com",
+	]);
 }
 
 function findBuyGiftCardsLink(nav) {
@@ -258,7 +263,7 @@ function findBuyGiftCardsLink(nav) {
 
 function findOfficialStoreButton(nav) {
 	const btn = nav.querySelector(
-		'button.bg-none.width-full.stroke-none.content-emphasis.text-title-large.flex.items-center.gap-small.padding-left-xsmall.padding-right-xxsmall.radius-medium.relative.clip.group\\/interactable.focus-visible\\:outline-focus.disabled\\:outline-none',
+		"button.bg-none.width-full.stroke-none.content-emphasis.text-title-large.flex.items-center.gap-small.padding-left-xsmall.padding-right-xxsmall.radius-medium.relative.clip.group\\/interactable.focus-visible\\:outline-focus.disabled\\:outline-none",
 	);
 	if (btn instanceof HTMLElement) return hideTarget(btn);
 	return null;
@@ -288,11 +293,14 @@ function findFavoritesItem(nav) {
 		"/my/favorites",
 	]);
 	if (fromHref instanceof HTMLElement) return fromHref;
-	const favoritesLabel = Array.from(nav.querySelectorAll("a[href]")).find((a) => {
-		if (!(a instanceof HTMLAnchorElement)) return false;
-		return /favorites/i.test(a.textContent || "");
-	});
-	if (favoritesLabel instanceof HTMLAnchorElement) return hideTarget(favoritesLabel);
+	const favoritesLabel = Array.from(nav.querySelectorAll("a[href]")).find(
+		(a) => {
+			if (!(a instanceof HTMLAnchorElement)) return false;
+			return /favorites/i.test(a.textContent || "");
+		},
+	);
+	if (favoritesLabel instanceof HTMLAnchorElement)
+		return hideTarget(favoritesLabel);
 	return null;
 }
 
@@ -457,8 +465,8 @@ function buildHideStyle() {
 	const extraBlocks = [];
 	if (hidden.includes("game-events")) {
 		const gameEventsSelectors = [".left-nav.fixed div.roseal-events-nav"]
-		.map((selector) => `${selector}{${SIDEBAR_ITEM_HIDE_CSS}}`)
-		.join("\n");
+			.map((selector) => `${selector}{${SIDEBAR_ITEM_HIDE_CSS}}`)
+			.join("\n");
 		extraBlocks.push(gameEventsSelectors);
 	}
 	if (noSidebarButtons) {

@@ -14,8 +14,8 @@ import {
 	getRobloxUserId,
 	isSupabaseProfileEffectsEnabled,
 	normalizeEquippedEntry,
-	registerProfileEffectPurchase,
 	registerProfileEffectEquip,
+	registerProfileEffectPurchase,
 	syncOwnedEffectsFromRegistry,
 } from "../profile/profileEffectsRegistry.js";
 import { t as accountSettingsPaneT } from "./roprimeAccountSettingsPage.js";
@@ -33,7 +33,9 @@ async function grantAllProfileEffectsToCurrentUser() {
 	if (!userId) return;
 
 	await Promise.allSettled(
-		allEffectIds.map((effectId) => registerProfileEffectPurchase(userId, effectId)),
+		allEffectIds.map((effectId) =>
+			registerProfileEffectPurchase(userId, effectId),
+		),
 	);
 }
 

@@ -69,4 +69,3 @@ export function setCollapseButtonIcon(button, collapsed) {
 	const svg = button.querySelector("svg");
 	ensureSvgPath(svg, collapsed);
 }
-
