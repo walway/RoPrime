@@ -1,6 +1,7 @@
 import { RP_ALWAYS_SHOW_CLOSE_STYLE_ID, settingsState } from "../core/core.js";
 
 const RP_ALWAYS_CLOSE_COLLAPSED_CLASS = "roprime-always-close-collapsed";
+const RP_ALWAYS_SHOW_CLOSE_ENABLED_CLASS = "roprime-always-show-close-enabled";
 const boundCloseButtons = new WeakSet();
 
 function getAlwaysShowCloseCss() {
@@ -13,38 +14,7 @@ button.menu-button.btn-navigation-nav-menu-md {
   pointer-events: auto !important;
 }
 
-/* Keep top header items on one row: menu button -> Roblox logo -> page title */
-.navbar-header,
-.rbx-header .rbx-navbar-header {
-  display: flex !important;
-  align-items: center !important;
-}
-
-button.menu-button.btn-navigation-nav-menu-md {
-  order: 1 !important;
-  flex: 0 0 auto !important;
-}
-
-a.nav-logo-link.navbar-brand,
-a.navbar-brand,
-.navbar-brand {
-  order: 2 !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  position: static !important;
-  top: auto !important;
-  left: auto !important;
-  transform: none !important;
-  margin: 0 8px !important;
-  flex: 0 0 auto !important;
-}
-
-.font-header-2.nav-menu-title.text-header,
-.nav-menu-title.font-header-2.text-header {
-  order: 3 !important;
-  margin-left: 0 !important;
-}
+/* Header row is styled in src/style/navigation/navbar-header.css */
 
 /* Animate the visible 288px old-nav host when menu button toggles collapse class */
 #roprime-classic-left-nav-host.roprime-classic-left-nav-host {
@@ -77,25 +47,6 @@ body.roprime-old-navigation-bar-collapsed #roprime-classic-left-nav-host {
   .no-gutter-ads.logged-in.left-nav-new-width {
     --left-nav-reserved-width: 0px !important;
   }
-}
-
-/* Keep Roblox brand in full logo mode */
-a.nav-logo-link.navbar-brand span.icon-logo,
-a.navbar-brand span.icon-logo,
-.navbar-brand span.icon-logo {
-  display: inline-block !important;
-  position: static !important;
-  top: auto !important;
-  left: auto !important;
-  transform: none !important;
-  vertical-align: middle !important;
-}
-
-/* Hide the compact "R" logo variant to prevent overlap */
-a.nav-logo-link.navbar-brand span.icon-logo-r,
-a.navbar-brand span.icon-logo-r,
-.navbar-brand span.icon-logo-r {
-  display: none !important;
 }
 
 `.trim();
@@ -168,9 +119,13 @@ function ensureObserver() {
 export function syncAlwaysShowCloseButton() {
 	const existingStyle = document.getElementById(RP_ALWAYS_SHOW_CLOSE_STYLE_ID);
 	if (!settingsState.alwaysShowCloseButtonEnabled) {
+		document.documentElement.classList.remove(RP_ALWAYS_SHOW_CLOSE_ENABLED_CLASS);
+		document.body?.classList.remove(RP_ALWAYS_SHOW_CLOSE_ENABLED_CLASS);
 		if (existingStyle instanceof HTMLStyleElement) existingStyle.remove();
 		return;
 	}
+	document.documentElement.classList.add(RP_ALWAYS_SHOW_CLOSE_ENABLED_CLASS);
+	document.body?.classList.add(RP_ALWAYS_SHOW_CLOSE_ENABLED_CLASS);
 	ensureObserver();
 	const css = getAlwaysShowCloseCss();
 	if (existingStyle instanceof HTMLStyleElement) {

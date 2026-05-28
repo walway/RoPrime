@@ -38,6 +38,7 @@ import {
 	syncCosmeticsUi,
 } from "./other.js";
 import { t as accountSettingsPaneT } from "./roprimeAccountSettingsPage.js";
+import { bindMuiRipplesIn } from "../ui/muiRipple.js";
 import { buildSettingsShell, wrapSettingsSection } from "./settingsShell.js";
 import {
 	bindSettingsSyncControls,
@@ -79,6 +80,15 @@ function toggleSettingsSideRails(inner) {
 		RP_SETTINGS_SIDE_RAIL_HIDDEN_CLASS,
 		collapsed,
 	);
+	inner.querySelectorAll(".roprime-settings-menu-btn svg path").forEach((node) => {
+		if (!(node instanceof SVGPathElement)) return;
+		node.setAttribute(
+			"d",
+			collapsed
+				? "M3 18h18v-2H3zm0-5h18v-2H3zm0-7v2h18V6z"
+				: "M3 18h13v-2H3zm0-5h10v-2H3zm0-7v2h13V6zm18 9.59L17.42 12 21 8.41 19.59 7l-5 5 5 5z",
+		);
+	});
 
 	for (const el of queryRobloxAccountSideRails()) {
 		if (collapsed) {
@@ -238,6 +248,7 @@ function setSidebarModeVisual(inner, mode) {
 }
 
 function applySidebarMode(inner, mode) {
+	if (settingsState.sidebarCollapseMenuEnabled && mode !== "full") mode = "full";
 	settingsState.sidebarSize = mode;
 	settingsState.smallNewNavigationBarEnabled = mode === "small";
 	settingsState.sidebarIconsOnlyEnabled = mode === "icon";
@@ -257,8 +268,19 @@ function syncSidebarSliderFromState(inner) {
 	inner.querySelectorAll(".roprime-sidebar-size-slider").forEach((slider) => {
 		if (!(slider instanceof HTMLInputElement)) return;
 		slider.value = String(mv[mode] ?? mv.full);
+		const locked = !!settingsState.sidebarCollapseMenuEnabled;
+		slider.disabled = locked;
+		slider.setAttribute("aria-disabled", locked ? "true" : "false");
 	});
 	setSidebarModeVisual(inner, mode);
+	const locked = !!settingsState.sidebarCollapseMenuEnabled;
+	inner
+		.querySelectorAll(".roprime-sidebar-size-tick")
+		.forEach((tick) => {
+			if (!(tick instanceof HTMLButtonElement)) return;
+			tick.disabled = locked;
+			tick.setAttribute("aria-disabled", locked ? "true" : "false");
+		});
 }
 
 function isDeveloperPageUnlocked() {
@@ -631,8 +653,14 @@ function bindOnce(root) {
 	if (sidebarCollapse instanceof HTMLInputElement) {
 		sidebarCollapse.addEventListener("change", () => {
 			settingsState.sidebarCollapseMenuEnabled = sidebarCollapse.checked;
+			if (settingsState.sidebarCollapseMenuEnabled) {
+				settingsState.sidebarSize = "full";
+				settingsState.smallNewNavigationBarEnabled = false;
+				settingsState.sidebarIconsOnlyEnabled = false;
+			}
 			saveSettings();
 			syncSidebarContent();
+			syncSidebarSliderFromState(inner);
 		});
 	}
 
@@ -803,6 +831,7 @@ function bindOnce(root) {
 	bindCustomCssControls(inner);
 	bindCosmeticsControls(inner);
 	bindSettingsSyncControls(inner);
+	bindMuiRipplesIn(inner);
 }
 
 function clearLanguageControlSizing(inner) {
@@ -907,6 +936,7 @@ function refreshProfileSettingsUi(root) {
 	syncCustomCssUi(inner);
 	syncCosmeticsUi(inner);
 	refreshSettingsSyncPreview(inner);
+	bindMuiRipplesIn(inner);
 
 	refreshLayoutAndNav(root);
 

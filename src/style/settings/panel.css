@@ -600,15 +600,6 @@ stupid MUI
 	);
 }
 
-#header-menu-icon .roprime-nav-menu-button.menu-button:active,
-.container-fluid .rbx-navbar-header #header-menu-icon .roprime-nav-menu-button.menu-button:active {
-	background-color: color-mix(
-		in srgb,
-		var(--color-content-emphasis, currentColor) 16%,
-		transparent
-	);
-}
-
 #header-menu-icon .roprime-nav-menu-button .roprime-nav-menu-button-icon,
 #header-menu-icon .roprime-nav-menu-button .MuiSvgIcon-root,
 .container-fluid .rbx-navbar-header #header-menu-icon .roprime-nav-menu-button .MuiSvgIcon-root {
@@ -624,30 +615,6 @@ stupid MUI
 	display: flex;
 	align-items: center;
 	justify-content: center;
-}
-
-#header-menu-icon .roprime-nav-menu-button .roprime-nav-menu-button-ripple,
-#header-menu-icon .roprime-nav-menu-button .MuiTouchRipple-root,
-.container-fluid .rbx-navbar-header #header-menu-icon .roprime-nav-menu-button .MuiTouchRipple-root {
-	position: absolute;
-	inset: 0;
-	border-radius: inherit;
-	pointer-events: none;
-	overflow: hidden;
-}
-
-#header-menu-icon .roprime-nav-menu-button.menu-button:active .MuiTouchRipple-root,
-.container-fluid
-	.rbx-navbar-header
-	#header-menu-icon
-	.roprime-nav-menu-button.menu-button:active
-	.MuiTouchRipple-root {
-	opacity: 1;
-	background: color-mix(
-		in srgb,
-		var(--color-content-emphasis, currentColor) 20%,
-		transparent
-	);
 }
 
 #header-menu-icon .roprime-nav-menu-button .icon-nav-menu,

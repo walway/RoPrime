@@ -262,36 +262,11 @@ html.roprime-account-settings-open #react-user-account-base .container-footer {
 	);
 }
 
-.roprime-settings-menu-btn.MuiIconButton-root:active {
-	background-color: color-mix(
-		in srgb,
-		var(--color-content-emphasis) 16%,
-		transparent
-	);
-}
-
 .roprime-settings-menu-btn .MuiSvgIcon-root {
 	width: 24px;
 	height: 24px;
 	fill: currentColor;
 	flex-shrink: 0;
-}
-
-.roprime-settings-menu-btn .MuiTouchRipple-root {
-	position: absolute;
-	inset: 0;
-	border-radius: inherit;
-	pointer-events: none;
-	overflow: hidden;
-}
-
-.roprime-settings-menu-btn.MuiIconButton-root:active .MuiTouchRipple-root {
-	opacity: 1;
-	background: color-mix(
-		in srgb,
-		var(--color-content-emphasis) 20%,
-		transparent
-	);
 }
 
 .roprime-settings-section-header {

@@ -67,7 +67,7 @@ export function buildMenuOpenIconButton(
 			<path d="${MENU_OPEN_PATH}"></path>
 		</svg>
 	</span>
-	<span class="${MUI.touchRipple}"></span>
+	<span class="${MUI.touchRipple} roprime-mui-ripple-root"></span>
 </button>`;
 }
 

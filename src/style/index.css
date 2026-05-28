@@ -3,8 +3,10 @@
 @import "./settings/panel.css";
 @import "./settings/settings-mui-shell.css";
 @import "./components/mui-controls.css";
+@import "./components/mui-ripple.css";
 @import "./layout/chrome.css";
 @import "./welcome/welcome.css";
+@import "./navigation/navbar-header.css";
 @import "./navigation/old-nav.css";
 @import "./settings/light-overrides.css";
 @import "./settings/custom-css.css";

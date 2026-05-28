@@ -8,11 +8,16 @@ import {
 	syncSidebarCompactDecorations,
 	updateSidebarCompactVisibility,
 } from "./sidebarCompact.js";
-import { createRoPrimeNavMenuButton } from "./sidebarIcons.js";
+import { attachMuiRipple, bindMuiRipplesIn } from "../ui/muiRipple.js";
+import {
+	createRoPrimeNavMenuButton,
+	setCollapseButtonIcon,
+} from "../ui/components/collapse.js";
 import { updateSmallNewNavVisibility } from "./smallNewNav.js";
 
 const RP_SIDEBAR_CONTENT_STYLE_ID = "roprime-sidebar-content-hide-style";
 const RP_MENU_ICON_BOUND_ATTR = "data-roprime-menu-icon-bound";
+const RP_SIDEBAR_COLLAPSE_ENABLED_CLASS = "roprime-sidebar-collapse-menu-enabled";
 const NATIVE_HEADER_MENU_BUTTON_SELECTOR =
 	"#header-menu-icon.rbx-nav-collapse button.menu-button:not([data-roprime-nav-menu-button]), .container-fluid .rbx-navbar-header #header-menu-icon.rbx-nav-collapse button.menu-button:not([data-roprime-nav-menu-button])";
 const ROPRIME_HEADER_MENU_BUTTON_SELECTOR =
@@ -390,22 +395,27 @@ function restoreNavbarMenuButtons() {
 function applyNavbarMenuButton() {
 	queryNativeHeaderMenuButtons().forEach((original) => {
 		if (!(original instanceof HTMLButtonElement)) return;
-		const replacement = createRoPrimeNavMenuButton(original);
+		const replacement = createRoPrimeNavMenuButton(original, {
+			collapsed: !!settingsState.sidebarIconsOnlyEnabled,
+		});
 		originalNavMenuButtons.set(replacement, original);
 		original.replaceWith(replacement);
+		attachMuiRipple(replacement);
 	});
+	bindMuiRipplesIn(document);
 }
 
 function toggleFullToIconSidebar() {
-	const next = settingsState.sidebarSize === "icon" ? "full" : "icon";
-	settingsState.sidebarSize = next;
+	const next = !settingsState.sidebarIconsOnlyEnabled;
+	settingsState.sidebarIconsOnlyEnabled = next;
 	settingsState.smallNewNavigationBarEnabled = false;
-	settingsState.sidebarIconsOnlyEnabled = next === "icon";
-	saveSettings();
 	updateSmallNewNavVisibility();
 	updateSidebarCompactVisibility();
 	syncSidebarCompactDecorations();
 	syncSidebarContent({ force: true });
+	queryRoPrimeHeaderMenuButtons().forEach((btn) => {
+		if (btn instanceof HTMLButtonElement) setCollapseButtonIcon(btn, next);
+	});
 }
 
 function bindCollapseMenuHandler() {
@@ -431,10 +441,24 @@ function bindCollapseMenuHandler() {
 
 export function syncSidebarCollapseMenuIcon() {
 	bindCollapseMenuHandler();
+	document.documentElement.classList.toggle(
+		RP_SIDEBAR_COLLAPSE_ENABLED_CLASS,
+		!!settingsState.sidebarCollapseMenuEnabled,
+	);
+	document.body?.classList.toggle(
+		RP_SIDEBAR_COLLAPSE_ENABLED_CLASS,
+		!!settingsState.sidebarCollapseMenuEnabled,
+	);
 	if (!settingsState.sidebarCollapseMenuEnabled) {
 		stopHeaderMenuIconObserver();
 		restoreNavbarMenuButtons();
 		return;
+	}
+	if (settingsState.sidebarSize !== "full") {
+		settingsState.sidebarSize = "full";
+		settingsState.smallNewNavigationBarEnabled = false;
+		settingsState.sidebarIconsOnlyEnabled = false;
+		saveSettings();
 	}
 	ensureHeaderMenuIconObserver();
 	applyNavbarMenuButton();

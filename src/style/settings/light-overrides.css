@@ -50,6 +50,8 @@ html.roprime-account-settings-open
 }
 
 .roprime-settings-primary-btn {
+	position: relative;
+	overflow: hidden;
 	align-self: flex-start;
 	border: 1px solid
 		color-mix(in srgb, var(--color-content-emphasis) 22%, transparent);
