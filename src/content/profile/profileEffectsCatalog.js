@@ -3,7 +3,7 @@
  * @typedef {{ id: string, kind: ProfileEffectKind, cdnEffect?: string, titleKey: string }} ProfileEffect
  */
 
-const PROFILE_EFFECT_CDN_BASE = "https://walway.github.io/cdn/";
+const PROFILE_EFFECT_CDN_BASE = "https://walway.github.io/cdn/index.html";
 
 /** CDN slug for ?effect= (e.g. dizzy512 → dizzy, clockwork → clockwork). */
 export function getProfileEffectCdnName(effect) {
@@ -13,10 +13,16 @@ export function getProfileEffectCdnName(effect) {
 	return id.replace(/\d+$/, "") || id;
 }
 
-export function getProfileEffectCdnEmbedSrc(effect, query = null) {
+export function getProfileEffectCdnEmbedSrc(
+	effect,
+	query = null,
+	target = "profile",
+) {
 	const name = getProfileEffectCdnName(effect);
 	const url = new URL(PROFILE_EFFECT_CDN_BASE);
 	if (name) url.searchParams.set("effect", name);
+	url.searchParams.set("target", target === "settings" ? "settings" : "profile");
+	url.searchParams.set("source", "iframe");
 	if (query && typeof query === "object") {
 		for (const [key, value] of Object.entries(query)) {
 			if (value == null || value === "") continue;
@@ -121,7 +127,7 @@ export function getProfileEffectsByKind(kind) {
 }
 
 export function getProfileEffectShopEmbedSrc(effect) {
-	return getProfileEffectCdnEmbedSrc(effect);
+	return getProfileEffectCdnEmbedSrc(effect, null, "settings");
 }
 
 /** Roblox profile avatar overlay or full-profile layer. */
@@ -134,5 +140,5 @@ export function getProfileEffectProfileEmbedSrc(effect) {
 			replayDelay: "5000",
 		});
 	}
-	return getProfileEffectCdnEmbedSrc(effect);
+	return getProfileEffectCdnEmbedSrc(effect, null, "profile");
 }

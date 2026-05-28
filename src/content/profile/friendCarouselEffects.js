@@ -7,7 +7,7 @@ import {
 import {
 	applyProfileEffectIframeTransparentAttrs,
 	getProfileEffectById,
-	getProfileEffectShopEmbedSrc,
+	getProfileEffectProfileEmbedSrc,
 } from "./profileEffectsCatalog.js";
 import { getRobloxUserId, peekRobloxUserId } from "./robloxUserId.js";
 import {
@@ -172,7 +172,7 @@ function mountFriendPictureEffect(
 	lottie.className = LOTTIE_WRAP_CLASS;
 
 	const iframe = document.createElement("iframe");
-	iframe.src = getProfileEffectShopEmbedSrc(effect);
+	iframe.src = getProfileEffectProfileEmbedSrc(effect);
 	iframe.title = effect.titleKey;
 	iframe.loading = "lazy";
 	iframe.setAttribute("tabindex", "-1");
