@@ -10,9 +10,9 @@ import {
 	reloadSettingsUiStrings,
 	saveSettings,
 	setAccountSettingsShellClass,
-	syncAccountSettingsLayoutInset,
 	settingsState,
 	shouldRunRoPrimeOnCurrentPage,
+	syncAccountSettingsLayoutInset,
 } from "../core/core.js";
 import { updateRenameLoop } from "../features/rename.js";
 import {
@@ -32,11 +32,6 @@ import {
 	syncCustomCssUi,
 } from "./customCss.js";
 import {
-	bindSettingsSyncControls,
-	buildSettingsSyncHtml,
-	refreshSettingsSyncPreview,
-} from "./settingsSync.js";
-import {
 	bindCosmeticsControls,
 	buildCosmeticsShopHtml,
 	resizeCosmeticsPreviews,
@@ -44,6 +39,11 @@ import {
 } from "./other.js";
 import { t as accountSettingsPaneT } from "./roprimeAccountSettingsPage.js";
 import { buildSettingsShell, wrapSettingsSection } from "./settingsShell.js";
+import {
+	bindSettingsSyncControls,
+	buildSettingsSyncHtml,
+	refreshSettingsSyncPreview,
+} from "./settingsSync.js";
 
 const RP_DEBUG_UNLOCK = "debug";
 const RP_SETTINGS_SIDE_RAIL_HIDDEN_CLASS = "roprime-settings-side-rail-hidden";
@@ -300,10 +300,7 @@ function syncTreeNavSelection(inner, activePage, isSearchMode) {
 function setProfileEffectsAlertSuppressed(root, suppressed) {
 	const inner = root.querySelector("#rp-settings-inner");
 	if (inner instanceof HTMLElement) {
-		inner.setAttribute(
-			"data-roprime-search-active",
-			suppressed ? "1" : "0",
-		);
+		inner.setAttribute("data-roprime-search-active", suppressed ? "1" : "0");
 	}
 	root
 		.querySelectorAll("[data-roprime-profile-effects-alert]")
@@ -882,11 +879,13 @@ function refreshProfileSettingsUi(root) {
 
 	const activePage = getCurrentrp() || RP_DEFAULT_PAGE;
 	const onSidebarContentPage = activePage === "sidebar-content";
-	inner.querySelectorAll("[data-roprime-open-sidebar-content]").forEach((btn) => {
-		if (!(btn instanceof HTMLElement)) return;
-		btn.hidden = onSidebarContentPage;
-		btn.style.display = onSidebarContentPage ? "none" : "";
-	});
+	inner
+		.querySelectorAll("[data-roprime-open-sidebar-content]")
+		.forEach((btn) => {
+			if (!(btn instanceof HTMLElement)) return;
+			btn.hidden = onSidebarContentPage;
+			btn.style.display = onSidebarContentPage ? "none" : "";
+		});
 	if (onSidebarContentPage) refreshSidebarContentList(inner);
 
 	inner.querySelectorAll(".roprime-sidebar-size-tick span").forEach((span) => {

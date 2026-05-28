@@ -475,7 +475,8 @@ stupid MUI
 		color-mix(in srgb, var(--color-content-emphasis) 14%, transparent);
 }
 
-.roprime-sidebar-content-size-section:last-child .roprime-sidebar-content-size-rows {
+.roprime-sidebar-content-size-section:last-child
+	.roprime-sidebar-content-size-rows {
 	border-bottom: 0;
 }
 

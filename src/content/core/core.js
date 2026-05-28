@@ -42,9 +42,7 @@ export function getActiveSidebarSize() {
 	return normalizeSidebarSizeMode(settingsState.sidebarSize);
 }
 
-export function getAccountSettingsLeftInsetPx(
-	size = getActiveSidebarSize(),
-) {
+export function getAccountSettingsLeftInsetPx(size = getActiveSidebarSize()) {
 	const mode = normalizeSidebarSizeMode(size);
 	return (
 		ACCOUNT_SETTINGS_LEFT_INSET_BY_SIZE[mode] ??
@@ -305,7 +303,9 @@ export function mergeStoredSettings(stored) {
 				? "small"
 				: "full";
 	} else {
-		settingsState.sidebarSize = String(stored.sidebarSize || "full").toLowerCase();
+		settingsState.sidebarSize = String(
+			stored.sidebarSize || "full",
+		).toLowerCase();
 		if (!["full", "small", "icon"].includes(settingsState.sidebarSize)) {
 			settingsState.sidebarSize = "full";
 		}
@@ -356,7 +356,9 @@ export function serializeSettingsPayload() {
 			settingsState.blockedExecutionPages,
 		),
 		customCss:
-			typeof settingsState.customCss === "string" ? settingsState.customCss : "",
+			typeof settingsState.customCss === "string"
+				? settingsState.customCss
+				: "",
 		cosmeticsEnabled: !!settingsState.cosmeticsEnabled,
 		profileEffectsLayoutView: ["grid", "list", "wide"].includes(
 			settingsState.profileEffectsLayoutView,

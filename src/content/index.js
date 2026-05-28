@@ -10,13 +10,13 @@ import {
 	syncAccountSettingsLayoutInset,
 	syncIntervalId,
 } from "./core/core.js";
+import { syncCustomCss } from "./features/customCss.js";
 import {
 	applyCommunityRename,
 	applyExperiencesRename,
 	applyMarketplaceRename,
 	updateRenameLoop,
 } from "./features/rename.js";
-import { syncCustomCss } from "./features/customCss.js";
 import { syncHomeWelcomeModal } from "./features/welcome.js";
 import { syncRoEliteView } from "./panel/panel.js";
 import {

@@ -58,9 +58,7 @@ export async function getRobloxUserId(options = {}) {
 			if (response.status === 429) {
 				authBackoffUntil = Date.now() + AUTH_BACKOFF_MS;
 				if (cachedAuthUserId == null) {
-					console.warn(
-						"ERROR BLOCKED_BY_CLIENT BULLETIN 60",
-					);
+					console.warn("ERROR BLOCKED_BY_CLIENT BULLETIN 60");
 				}
 				return cachedAuthUserId;
 			}

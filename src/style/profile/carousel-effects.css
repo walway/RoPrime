@@ -1,7 +1,6 @@
 /* Friends carousel — effect on div.avatar.avatar-card-fullbody (profile link = user id) */
 
-.react-friends-carousel-container
-	.thumbnail-2d-container.avatar-card-image,
+.react-friends-carousel-container .thumbnail-2d-container.avatar-card-image,
 .friend-carousel-container .thumbnail-2d-container.avatar-card-image {
 	position: relative;
 	display: block;

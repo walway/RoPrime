@@ -375,7 +375,8 @@
 	max-width: min(360px, calc(100vw - 32px));
 	padding: 12px 14px;
 	border-radius: 10px;
-	border: 1px solid color-mix(in srgb, var(--color-content-emphasis) 18%, transparent);
+	border: 1px solid
+		color-mix(in srgb, var(--color-content-emphasis) 18%, transparent);
 	background: var(--color-surface-100, #2a2a2a);
 	color: var(--color-content-emphasis, #fff);
 	font-size: 13px;

@@ -158,7 +158,11 @@ function findPictureEffectHostFromLink(link) {
  * @param {{ layerId: string, layerAttr: string, layerClass: string }} options
  * @param {HTMLElement} host
  */
-function mountFriendPictureEffect(host, effect, { layerId, layerAttr, layerClass }) {
+function mountFriendPictureEffect(
+	host,
+	effect,
+	{ layerId, layerAttr, layerClass },
+) {
 	const layer = document.createElement("div");
 	layer.id = layerId;
 	layer.setAttribute(layerAttr, effect.id);
@@ -370,14 +374,19 @@ function scanCarouselAvatars() {
 	)) {
 		if (!(container instanceof HTMLElement)) continue;
 
-		for (const link of container.querySelectorAll(AVATAR_PROFILE_LINK_SELECTOR)) {
+		for (const link of container.querySelectorAll(
+			AVATAR_PROFILE_LINK_SELECTOR,
+		)) {
 			if (link instanceof HTMLAnchorElement) {
 				queueSyncAvatarLink(link, "carousel");
 			}
 		}
 
-		for (const avatar of container.querySelectorAll(AVATAR_CONTAINER_SELECTOR)) {
-			if (avatar instanceof HTMLElement) queueSyncAvatarHost(avatar, "carousel");
+		for (const avatar of container.querySelectorAll(
+			AVATAR_CONTAINER_SELECTOR,
+		)) {
+			if (avatar instanceof HTMLElement)
+				queueSyncAvatarHost(avatar, "carousel");
 		}
 	}
 }

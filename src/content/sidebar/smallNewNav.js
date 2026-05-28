@@ -59,7 +59,8 @@ function restoreSmallNavSidebarLabels() {
 			parent?.hasAttribute("data-rp-orig-text") &&
 			typeof node.nodeValue === "string"
 		) {
-			node.nodeValue = parent.getAttribute("data-rp-orig-text") || node.nodeValue;
+			node.nodeValue =
+				parent.getAttribute("data-rp-orig-text") || node.nodeValue;
 			parent.removeAttribute("data-rp-orig-text");
 		}
 		node = walker.nextNode();
@@ -83,7 +84,9 @@ export function syncSmallNavSidebarRenames() {
 			}
 			el.setAttribute(
 				"aria-label",
-				applySmallNavLabelRenames(el.getAttribute("data-rp-orig-aria-label") || aria),
+				applySmallNavLabelRenames(
+					el.getAttribute("data-rp-orig-aria-label") || aria,
+				),
 			);
 		}
 
@@ -94,7 +97,9 @@ export function syncSmallNavSidebarRenames() {
 			}
 			el.setAttribute(
 				"title",
-				applySmallNavLabelRenames(el.getAttribute("data-rp-orig-title") || title),
+				applySmallNavLabelRenames(
+					el.getAttribute("data-rp-orig-title") || title,
+				),
 			);
 		}
 	});

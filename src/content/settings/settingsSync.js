@@ -72,11 +72,12 @@ function formatExportFilename() {
 /** @param {unknown} parsed */
 function extractSettingsFromImport(parsed) {
 	if (!parsed || typeof parsed !== "object") return null;
-	if (parsed.roprime && typeof parsed.roprime === "object") return parsed.roprime;
+	if (parsed.roprime && typeof parsed.roprime === "object")
+		return parsed.roprime;
 	if (parsed[RP_SETTINGS_KEY] && typeof parsed[RP_SETTINGS_KEY] === "object") {
 		return parsed[RP_SETTINGS_KEY];
 	}
-	const keys = Object.keys(parsed);
+	const _keys = Object.keys(parsed);
 	const looksLikeSettings =
 		"language" in parsed ||
 		"renameDropdownEnabled" in parsed ||
@@ -132,7 +133,11 @@ export async function copySettingsExport(inner) {
 		setSyncStatus(inner, accountSettingsPaneT("Settings sync copied"));
 		window.setTimeout(() => setSyncStatus(inner, ""), 2200);
 	} catch {
-		setSyncStatus(inner, accountSettingsPaneT("Settings sync copy failed"), true);
+		setSyncStatus(
+			inner,
+			accountSettingsPaneT("Settings sync copy failed"),
+			true,
+		);
 	}
 }
 
@@ -209,7 +214,9 @@ export function bindSettingsSyncControls(inner) {
 	}
 
 	const importBtn = inner.querySelector("[data-roprime-settings-import]");
-	const importInput = inner.querySelector("[data-roprime-settings-import-input]");
+	const importInput = inner.querySelector(
+		"[data-roprime-settings-import-input]",
+	);
 	if (
 		importBtn instanceof HTMLButtonElement &&
 		importInput instanceof HTMLInputElement

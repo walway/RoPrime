@@ -1,4 +1,3 @@
-import { syncAccountSettingsMenuButton } from "../account/accountSettingsLink.js";
 import {
 	isExtensionContextInvalidatedError,
 	RP_ALWAYS_SHOW_CLOSE_STYLE_ID,
@@ -10,13 +9,13 @@ import {
 	settingsState,
 	shouldRunRoPrimeOnCurrentPage,
 } from "../core/core.js";
+import { syncCustomCss } from "../features/customCss.js";
 import {
 	applyCommunityRename,
 	applyExperiencesRename,
 	applyMarketplaceRename,
 	stopRenameLoop,
 } from "../features/rename.js";
-import { syncCustomCss } from "../features/customCss.js";
 import { syncHomeWelcomeModal } from "../features/welcome.js";
 import { syncAlwaysShowCloseButton } from "../navigation/alwaysShowCloseButton.js";
 import {
@@ -25,12 +24,10 @@ import {
 } from "../navigation/dropdownButton.js";
 import { updateFriendStylingReimagnedVisibility } from "../navigation/friendStylingReimagned.js";
 import { syncOldNavigationBar } from "../navigation/oldNavigationBar.js";
-import { syncFriendCarouselEffects } from "../profile/friendCarouselEffects.js";
 import {
 	syncSidebarCompactDecorations,
 	updateSidebarCompactVisibility,
 } from "../sidebar/sidebarCompact.js";
-import { syncSidebarContent } from "../sidebar/sidebarContent.js";
 import { updateSmallNewNavVisibility } from "../sidebar/smallNewNav.js";
 
 export function updateOldNavigationBarVisibility() {

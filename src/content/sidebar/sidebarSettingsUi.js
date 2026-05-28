@@ -50,7 +50,8 @@ function buildSidebarContentRowHtml(item, mode, sizeMode) {
 
 function buildSidebarContentSectionHtml(sizeMode) {
 	const mode = normalizeSidebarSizeMode(sizeMode);
-	const titleKey = SIDEBAR_SIZE_TITLE_KEYS[mode] || SIDEBAR_SIZE_TITLE_KEYS.full;
+	const titleKey =
+		SIDEBAR_SIZE_TITLE_KEYS[mode] || SIDEBAR_SIZE_TITLE_KEYS.full;
 	const items = discoverSidebarNavItems(mode);
 	if (!items.length) {
 		return "";
@@ -75,9 +76,7 @@ function buildSidebarContentSectionHtml(sizeMode) {
 		</div>`;
 }
 
-export function buildSidebarContentListHtml(
-	sizeMode = getActiveSidebarSize(),
-) {
+export function buildSidebarContentListHtml(sizeMode = getActiveSidebarSize()) {
 	const section = buildSidebarContentSectionHtml(sizeMode);
 	if (!section) {
 		return `<p class="roprime-sidebar-content-empty" data-i18n="Sidebar content empty hint"></p>`;

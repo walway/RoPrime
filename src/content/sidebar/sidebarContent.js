@@ -299,7 +299,11 @@ function buildHideStyle() {
 		.join("\n");
 }
 
-function applySidebarItemHideState(el, itemId, sizeMode = getActiveSidebarSize()) {
+function applySidebarItemHideState(
+	el,
+	itemId,
+	sizeMode = getActiveSidebarSize(),
+) {
 	if (!(el instanceof HTMLElement)) return;
 	const hidden = isSidebarItemHidden(itemId, sizeMode);
 	const wasHidden = el.getAttribute("data-roprime-sidebar-hidden") === "1";

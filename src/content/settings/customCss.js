@@ -47,7 +47,8 @@ function getEditorWrap() {
 function configureEditorShadow(host) {
 	const shadow = host.shadowRoot;
 	const container = shadow?.querySelector(".prism-code-editor");
-	if (!(shadow instanceof ShadowRoot) || !(container instanceof HTMLElement)) return;
+	if (!(shadow instanceof ShadowRoot) || !(container instanceof HTMLElement))
+		return;
 
 	let override = shadow.getElementById("roprime-pce-overrides");
 	if (!override) {
@@ -96,8 +97,7 @@ function applyEditorHeight(editor) {
 	const contentH = lineCount * LINE_HEIGHT_PX + EDITOR_PADDING_PX;
 	const editorH = Math.max(minH, contentH);
 
-	const wrapScrollTop =
-		wrap instanceof HTMLElement ? wrap.scrollTop : 0;
+	const wrapScrollTop = wrap instanceof HTMLElement ? wrap.scrollTop : 0;
 	const selStart = editor.textarea.selectionStart;
 	const selEnd = editor.textarea.selectionEnd;
 
@@ -121,7 +121,9 @@ function applyEditorHeight(editor) {
 }
 
 function syncPlaceholder(inner) {
-	const placeholder = inner.querySelector("[data-roprime-custom-css-placeholder]");
+	const placeholder = inner.querySelector(
+		"[data-roprime-custom-css-placeholder]",
+	);
 	if (!(placeholder instanceof HTMLElement)) return;
 
 	const value = String(cssEditor?.value ?? settingsState.customCss ?? "");
@@ -164,7 +166,9 @@ function ensureCssEditor(inner) {
 			applyEditorHeight(cssEditor);
 			syncPlaceholder(inner);
 
-			cssEditor.textarea.addEventListener("focus", () => syncPlaceholder(inner));
+			cssEditor.textarea.addEventListener("focus", () =>
+				syncPlaceholder(inner),
+			);
 			cssEditor.textarea.addEventListener("blur", () => syncPlaceholder(inner));
 		},
 	);
@@ -181,7 +185,9 @@ export function syncCustomCssUi(inner) {
 		applyEditorHeight(cssEditor);
 	}
 
-	const placeholder = inner.querySelector("[data-roprime-custom-css-placeholder]");
+	const placeholder = inner.querySelector(
+		"[data-roprime-custom-css-placeholder]",
+	);
 	if (placeholder instanceof HTMLElement && !placeholder.textContent?.trim()) {
 		placeholder.textContent = accountSettingsPaneT("Custom CSS placeholder");
 	}
