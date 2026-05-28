@@ -7,7 +7,7 @@
 		"node": ">=26.1.0"
 	},
 	"scripts": {
-		"build": "node build.js"
+		"build": "node tasks/build.js"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "2.4.15",

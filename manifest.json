@@ -18,7 +18,7 @@
 	],
 	"optional_permissions": ["management"],
 	"background": {
-		"service_worker": "background.js"
+		"service_worker": "src/content/background.js"
 	},
 	"action": {
 		"default_title": "RoPrime"

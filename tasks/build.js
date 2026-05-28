@@ -134,7 +134,7 @@ if (!existsSync(viteCli)) {
 	console.error("Missing Vite CLI. Run `npm install` first.");
 	process.exit(1);
 }
-await runNode(viteCli, ["build", "--config", "vite.content.config.js"]);
+await runNode(viteCli, ["build", "--config", "configs/vite.content.config.js"]);
 
 copyStyleTreeToDist();
 
