@@ -246,6 +246,7 @@ export const RP_DEFAULT_SETTINGS = {
 	equippedProfilePictureEffect: "",
 	equippedProfilePageEffect: "",
 	profileEffectsEquippedByUser: {},
+	profileEffectsSupportNoticeAccepted: false,
 };
 
 export let isSyncing = false;
@@ -383,6 +384,8 @@ export function serializeSettingsPayload() {
 			typeof settingsState.profileEffectsEquippedByUser === "object"
 				? settingsState.profileEffectsEquippedByUser
 				: {},
+		profileEffectsSupportNoticeAccepted:
+			!!settingsState.profileEffectsSupportNoticeAccepted,
 	};
 }
 

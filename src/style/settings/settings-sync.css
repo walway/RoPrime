@@ -27,6 +27,12 @@
 .roprime-settings-sync-preview {
 	margin: 0;
 	padding: 12px 14px;
+	border: 0;
+	outline: none;
+	width: 100%;
+	min-height: min(52vh, 420px);
+	resize: vertical;
+	background: transparent;
 	font-size: 12px;
 	line-height: 1.45;
 	white-space: pre;

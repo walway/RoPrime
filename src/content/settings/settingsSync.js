@@ -103,10 +103,11 @@ export function buildSettingsSyncHtml() {
 				<button type="button" class="roprime-settings-primary-btn" data-roprime-settings-copy data-i18n="Settings sync copy"></button>
 				<button type="button" class="roprime-settings-primary-btn" data-roprime-settings-export data-i18n="Settings sync export"></button>
 				<button type="button" class="roprime-settings-primary-btn" data-roprime-settings-import data-i18n="Settings sync import"></button>
+				<button type="button" class="roprime-settings-primary-btn" data-roprime-settings-apply data-i18n="Settings sync apply">Apply</button>
 				<input type="file" accept=".json,application/json" hidden data-roprime-settings-import-input />
 			</div>
 			<div class="roprime-settings-sync-preview-wrap" data-roprime-settings-preview-wrap>
-				<pre class="roprime-settings-sync-preview" data-roprime-settings-preview spellcheck="false"></pre>
+				<textarea class="roprime-settings-sync-preview" data-roprime-settings-preview spellcheck="false"></textarea>
 			</div>
 			<p class="roprime-settings-sync-status" data-roprime-settings-sync-status hidden></p>
 		</div>`;
@@ -127,12 +128,16 @@ function setSyncStatus(inner, message, isError = false) {
 
 export function refreshSettingsSyncPreview(inner) {
 	const preview = inner.querySelector("[data-roprime-settings-preview]");
-	if (!(preview instanceof HTMLElement)) return;
-	preview.textContent = formatSettingsExportJson();
+	if (!(preview instanceof HTMLTextAreaElement)) return;
+	preview.value = formatSettingsExportJson();
 }
 
 export async function copySettingsExport(inner) {
-	const text = formatSettingsExportJson();
+	const preview = inner.querySelector("[data-roprime-settings-preview]");
+	const text =
+		preview instanceof HTMLTextAreaElement
+			? preview.value || formatSettingsExportJson()
+			: formatSettingsExportJson();
 	refreshSettingsSyncPreview(inner);
 	try {
 		await navigator.clipboard.writeText(text);
@@ -167,6 +172,10 @@ export function exportSettingsFile() {
  */
 export async function importSettingsFile(file) {
 	const text = await file.text();
+	await importSettingsText(text);
+}
+
+export async function importSettingsText(text) {
 	const parsed = JSON.parse(text);
 	const settings = extractSettingsFromImport(parsed);
 	if (!settings) {
@@ -222,6 +231,7 @@ export function bindSettingsSyncControls(inner) {
 	}
 
 	const importBtn = inner.querySelector("[data-roprime-settings-import]");
+	const applyBtn = inner.querySelector("[data-roprime-settings-apply]");
 	const importInput = inner.querySelector(
 		"[data-roprime-settings-import-input]",
 	);
@@ -239,6 +249,25 @@ export function bindSettingsSyncControls(inner) {
 			void (async () => {
 				try {
 					await importSettingsFile(file);
+					window.location.reload();
+				} catch {
+					setSyncStatus(
+						inner,
+						accountSettingsPaneT("Settings sync import failed"),
+						true,
+					);
+				}
+			})();
+		});
+	}
+
+	if (applyBtn instanceof HTMLButtonElement) {
+		applyBtn.addEventListener("click", () => {
+			const preview = inner.querySelector("[data-roprime-settings-preview]");
+			if (!(preview instanceof HTMLTextAreaElement)) return;
+			void (async () => {
+				try {
+					await importSettingsText(preview.value);
 					window.location.reload();
 				} catch {
 					setSyncStatus(

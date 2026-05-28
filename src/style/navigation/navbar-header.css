@@ -1,0 +1,66 @@
+/* Shared Roblox top bar layout — menu, logo, title */
+
+.navbar-header,
+.rbx-header .rbx-navbar-header {
+	display: flex !important;
+	align-items: center !important;
+}
+
+button.menu-button.btn-navigation-nav-menu-md,
+#header-menu-icon .roprime-nav-menu-button.menu-button,
+.container-fluid .rbx-navbar-header #header-menu-icon .roprime-nav-menu-button.menu-button {
+	order: 1 !important;
+	flex: 0 0 auto !important;
+}
+
+a.nav-logo-link.navbar-brand,
+a.navbar-brand,
+.navbar-brand {
+	order: 2 !important;
+	display: inline-flex !important;
+	align-items: center !important;
+	justify-content: center !important;
+	position: static !important;
+	top: auto !important;
+	left: auto !important;
+	transform: none !important;
+	margin: 0 8px !important;
+	flex: 0 0 auto !important;
+}
+
+.font-header-2.nav-menu-title.text-header,
+.nav-menu-title.font-header-2.text-header {
+	order: 3 !important;
+	margin-left: 0 !important;
+}
+
+/* When collapse-menu features are enabled, use compact Roblox logo variant */
+html.roprime-sidebar-collapse-menu-enabled a.nav-logo-link.navbar-brand span.icon-logo,
+body.roprime-sidebar-collapse-menu-enabled a.nav-logo-link.navbar-brand span.icon-logo,
+html.roprime-sidebar-collapse-menu-enabled a.navbar-brand span.icon-logo,
+body.roprime-sidebar-collapse-menu-enabled a.navbar-brand span.icon-logo,
+html.roprime-sidebar-collapse-menu-enabled .navbar-brand span.icon-logo,
+body.roprime-sidebar-collapse-menu-enabled .navbar-brand span.icon-logo,
+html.roprime-always-show-close-enabled a.nav-logo-link.navbar-brand span.icon-logo,
+body.roprime-always-show-close-enabled a.nav-logo-link.navbar-brand span.icon-logo,
+html.roprime-always-show-close-enabled a.navbar-brand span.icon-logo,
+body.roprime-always-show-close-enabled a.navbar-brand span.icon-logo,
+html.roprime-always-show-close-enabled .navbar-brand span.icon-logo,
+body.roprime-always-show-close-enabled .navbar-brand span.icon-logo {
+	display: none !important;
+}
+
+html.roprime-sidebar-collapse-menu-enabled a.nav-logo-link.navbar-brand span.icon-logo-r,
+body.roprime-sidebar-collapse-menu-enabled a.nav-logo-link.navbar-brand span.icon-logo-r,
+html.roprime-sidebar-collapse-menu-enabled a.navbar-brand span.icon-logo-r,
+body.roprime-sidebar-collapse-menu-enabled a.navbar-brand span.icon-logo-r,
+html.roprime-sidebar-collapse-menu-enabled .navbar-brand span.icon-logo-r,
+body.roprime-sidebar-collapse-menu-enabled .navbar-brand span.icon-logo-r,
+html.roprime-always-show-close-enabled a.nav-logo-link.navbar-brand span.icon-logo-r,
+body.roprime-always-show-close-enabled a.nav-logo-link.navbar-brand span.icon-logo-r,
+html.roprime-always-show-close-enabled a.navbar-brand span.icon-logo-r,
+body.roprime-always-show-close-enabled a.navbar-brand span.icon-logo-r,
+html.roprime-always-show-close-enabled .navbar-brand span.icon-logo-r,
+body.roprime-always-show-close-enabled .navbar-brand span.icon-logo-r {
+	display: flex !important;
+}

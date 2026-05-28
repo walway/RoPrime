@@ -1,7 +1,7 @@
 import { saveSettings, settingsState } from "../core/core.js";
+import { promptProfileEffectsSupportNotice } from "../features/alert.js";
 import { hydrateProfilePictureEffectAvatars } from "../profile/profileEffectAvatar.js";
 import {
-	getAllProfileEffectIds,
 	getProfileEffectById,
 	getProfileEffectShopEmbedSrc,
 	PROFILE_EFFECT_IFRAME_TRANSPARENT_ATTRS,
@@ -11,39 +11,14 @@ import {
 import {
 	equipSlotForKind,
 	getRobloxUserId,
-	isPluginOwner,
 	isSupabaseProfileEffectsEnabled,
 	normalizeEquippedEntry,
 	registerProfileEffectEquip,
-	registerProfileEffectPurchase,
 	syncOwnedEffectsFromRegistry,
 } from "../profile/profileEffectsRegistry.js";
 import { t as accountSettingsPaneT } from "./roprimeAccountSettingsPage.js";
 
 let cachedAuthUserId = null;
-let profileEffectNoticeTimer = 0;
-
-function showProfileEffectPurchaseNotice() {
-	const message = accountSettingsPaneT("Profile effect purchase wait notice");
-	let notice = document.getElementById("roprime-profile-effect-notice");
-	if (!(notice instanceof HTMLElement)) {
-		notice = document.createElement("div");
-		notice.id = "roprime-profile-effect-notice";
-		notice.className = "roprime-profile-effect-notice";
-		notice.setAttribute("role", "status");
-		notice.setAttribute("aria-live", "polite");
-		document.body.appendChild(notice);
-	}
-	notice.textContent = message;
-	notice.classList.add("is-visible");
-	if (profileEffectNoticeTimer) {
-		window.clearTimeout(profileEffectNoticeTimer);
-	}
-	profileEffectNoticeTimer = window.setTimeout(() => {
-		notice.classList.remove("is-visible");
-		profileEffectNoticeTimer = 0;
-	}, 10000);
-}
 
 function equippedFieldForKind(kind) {
 	return kind === "picture"
@@ -59,12 +34,8 @@ function setEquippedEffectIdForKind(kind, effectId) {
 	settingsState[equippedFieldForKind(kind)] = effectId ? String(effectId) : "";
 }
 
-function isEffectOwned(effectId) {
-	if (isPluginOwner(cachedAuthUserId)) return true;
-	return (
-		Array.isArray(settingsState.ownedProfileEffects) &&
-		settingsState.ownedProfileEffects.includes(effectId)
-	);
+function isEffectOwned(_effectId) {
+	return true;
 }
 
 function isEffectEquipped(effectId) {
@@ -214,7 +185,7 @@ export function buildProfileEffectsMarkup(effects = PROFILE_EFFECTS) {
 			</div>
 			<div class="roprime-profile-effect-footer">
 				<div class="roprime-profile-effect-title" data-i18n="${effect.titleKey}"></div>
-				<button type="button" class="roprime-settings-primary-btn roprime-profile-effect-action" data-roprime-effect-id="${effect.id}" data-roprime-effect-action="buy" data-i18n="Buy profile effect"></button>
+				<button type="button" class="roprime-settings-primary-btn roprime-profile-effect-action" data-roprime-effect-id="${effect.id}" data-roprime-effect-action="equip" data-i18n="Equip profile effect"></button>
 			</div>
 		</article>`,
 		)
@@ -352,9 +323,6 @@ async function ensureRegistryOwnershipSynced() {
 			JSON.stringify(merged) !==
 			JSON.stringify(settingsState.ownedProfileEffects);
 		settingsState.ownedProfileEffects = merged;
-		if (isPluginOwner(userId)) {
-			settingsState.ownedProfileEffects = getAllProfileEffectIds();
-		}
 		const equipMigrated = normalizeEquippedProfileEffects();
 		if (changed || equipMigrated) saveSettings();
 	})();
@@ -370,17 +338,13 @@ function syncEffectButtons(shop) {
 	shop.querySelectorAll("[data-roprime-effect-id]").forEach((btn) => {
 		if (!(btn instanceof HTMLButtonElement)) return;
 		const effectId = btn.getAttribute("data-roprime-effect-id") || "";
-		const owned = isEffectOwned(effectId);
 		const equipped = isEffectEquipped(effectId);
 		const card = btn.closest("[data-roprime-profile-effect]");
 
 		btn.disabled = false;
 		btn.classList.toggle("roprime-profile-effect-action--equipped", equipped);
 
-		if (!owned) {
-			btn.setAttribute("data-roprime-effect-action", "buy");
-			btn.textContent = accountSettingsPaneT("Buy profile effect");
-		} else if (equipped) {
+		if (equipped) {
 			btn.setAttribute("data-roprime-effect-action", "unequip");
 			btn.textContent = accountSettingsPaneT("Unequip profile effect");
 		} else {
@@ -482,45 +446,14 @@ export function bindCosmeticsControls(inner) {
 			const effect = getProfileEffectById(effectId);
 			if (!effect) return;
 
-			if (action === "buy") {
-				if (isEffectOwned(effectId)) return;
-				void (async () => {
-					const userId = await refreshAuthUserId();
-					let purchaseSaved = false;
-					if (userId) {
-						purchaseSaved = await registerProfileEffectPurchase(
-							userId,
-							effectId,
-						);
-					}
-					if (isSupabaseProfileEffectsEnabled() && !purchaseSaved) {
-						console.warn(
-							"RoPrime: purchase not saved to Supabase — check schema and .env",
-						);
-						return;
-					}
-					if (!Array.isArray(settingsState.ownedProfileEffects)) {
-						settingsState.ownedProfileEffects = [];
-					}
-					if (!settingsState.ownedProfileEffects.includes(effectId)) {
-						settingsState.ownedProfileEffects = [
-							...settingsState.ownedProfileEffects,
-							effectId,
-						];
-					}
-					if (isPluginOwner(userId)) {
-						settingsState.ownedProfileEffects = getAllProfileEffectIds();
-					}
-					saveSettings();
-					syncCosmeticsUi(inner);
-					showProfileEffectPurchaseNotice();
-				})();
-				return;
-			}
-
 			if (action === "equip") {
-				if (!isEffectOwned(effectId)) return;
 				void (async () => {
+					if (!settingsState.profileEffectsSupportNoticeAccepted) {
+						const accepted = await promptProfileEffectsSupportNotice();
+						if (!accepted) return;
+						settingsState.profileEffectsSupportNoticeAccepted = true;
+						saveSettings();
+					}
 					const userId = await refreshAuthUserId();
 					let equipSaved = true;
 					if (userId) {

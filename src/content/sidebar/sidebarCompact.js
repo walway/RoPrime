@@ -343,6 +343,7 @@ body .no-gutter-ads.logged-in.left-nav-new-width {
   transform-origin: top right !important;
   pointer-events: none !important;
 }
+
 `.trim();
 
 /** @type {HTMLButtonElement | null} */
