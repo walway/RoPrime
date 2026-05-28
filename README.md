@@ -47,7 +47,7 @@ It layers onto the official website offering a dedicated settings page with opti
 
 ## 🫂 Contribute to the extension
 
-Found a bug or have an idea? [Open an issue](https://github.com/walway/RoPrime/issues) or start a [discussion](https://github.com/walway/RoPrime/discussions). Pull requests are welcome — see below.
+Found a bug or have an idea? [Open an issue](https://github.com/walway/RoPrime/issues) or start a [discussion](https://github.com/walway/RoPrime/discussions). Pull requests are welcome.
 
 ## ❤️ Supporters
 
