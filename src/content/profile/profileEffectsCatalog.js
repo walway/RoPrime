@@ -13,10 +13,17 @@ export function getProfileEffectCdnName(effect) {
 	return id.replace(/\d+$/, "") || id;
 }
 
-export function getProfileEffectCdnEmbedSrc(effect) {
+export function getProfileEffectCdnEmbedSrc(effect, query = null) {
 	const name = getProfileEffectCdnName(effect);
-	if (!name) return PROFILE_EFFECT_CDN_BASE;
-	return `${PROFILE_EFFECT_CDN_BASE}?effect=${encodeURIComponent(name)}`;
+	const url = new URL(PROFILE_EFFECT_CDN_BASE);
+	if (name) url.searchParams.set("effect", name);
+	if (query && typeof query === "object") {
+		for (const [key, value] of Object.entries(query)) {
+			if (value == null || value === "") continue;
+			url.searchParams.set(String(key), String(value));
+		}
+	}
+	return url.toString();
 }
 
 /** Inline attrs for shop preview iframes (allowTransparency + transparent chrome). */
@@ -53,6 +60,46 @@ export const PROFILE_EFFECTS = [
 		kind: "profile",
 		titleKey: "Profile effect clockwork title",
 	},
+	{
+		id: "heartbroken",
+		kind: "profile",
+		titleKey: "Profile effect heartbroken title",
+	},
+	{
+		id: "highvoltage",
+		kind: "profile",
+		titleKey: "Profile effect highvoltage title",
+	},
+	{
+		id: "laughing",
+		kind: "profile",
+		titleKey: "Profile effect laughing title",
+	},
+	{
+		id: "monkeys",
+		kind: "profile",
+		titleKey: "Profile effect monkeys title",
+	},
+	{
+		id: "neutral",
+		kind: "profile",
+		titleKey: "Profile effect neutral title",
+	},
+	{
+		id: "supersnow",
+		kind: "profile",
+		titleKey: "Profile effect supersnow title",
+	},
+	{
+		id: "trophy",
+		kind: "profile",
+		titleKey: "Profile effect trophy title",
+	},
+	{
+		id: "ufo",
+		kind: "profile",
+		titleKey: "Profile effect ufo title",
+	},
 ];
 
 export function getProfileEffectsCatalog() {
@@ -79,5 +126,13 @@ export function getProfileEffectShopEmbedSrc(effect) {
 
 /** Roblox profile avatar overlay or full-profile layer. */
 export function getProfileEffectProfileEmbedSrc(effect) {
+	if (effect?.kind === "profile") {
+		// Profile pages: play once and let API/CDN replay after 5s.
+		return getProfileEffectCdnEmbedSrc(effect, {
+			loop: "0",
+			cooldown: "5000",
+			replayDelay: "5000",
+		});
+	}
 	return getProfileEffectCdnEmbedSrc(effect);
 }
