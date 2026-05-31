@@ -44,10 +44,10 @@ export function getActiveSidebarSize() {
 
 export function getAccountSettingsLeftInsetPx(size = getActiveSidebarSize()) {
 	const mode = normalizeSidebarSizeMode(size);
-	return (
+	const sidebarWidth =
 		ACCOUNT_SETTINGS_LEFT_INSET_BY_SIZE[mode] ??
-		ACCOUNT_SETTINGS_LEFT_INSET_BY_SIZE.full
-	);
+		ACCOUNT_SETTINGS_LEFT_INSET_BY_SIZE.full;
+	return sidebarWidth + 1;
 }
 
 function emptyHiddenSidebarMap() {

@@ -7,53 +7,91 @@ html.roprime-account-settings-open #react-user-account-base .container-footer {
 	pointer-events: none !important;
 }
 
+html.roprime-account-settings-open main.container-main {
+	display: flex !important;
+	flex-direction: column !important;
+	align-items: stretch !important;
+	width: 100% !important;
+	max-width: none !important;
+	min-width: 0 !important;
+	min-height: calc(100dvh - 40px);
+	margin: 0 !important;
+	padding: 0 !important;
+	box-sizing: border-box;
+}
+
 html.roprime-account-settings-open main.container-main .content.roprime-settings-page-content,
 html.roprime-account-settings-open #content.roprime-settings-page-content {
+	flex: 1 1 auto !important;
 	width: 100% !important;
+	max-width: none !important;
+	min-width: 0 !important;
 	height: auto !important;
-	min-height: 800px;
+	min-height: calc(100dvh - 40px);
 	box-sizing: border-box;
-	border-radius: 10px;
-	overflow: hidden;
-	padding: 25px 0;
+	border-radius: 0;
+	overflow: visible;
+	padding: 0;
+	margin: 0 !important;
 	position: relative;
 }
 
 html.roprime-account-settings-open
 	#user-account.roprime-settings-page-user-account,
-html.roprime-account-settings-open #user-account:has(#react-user-account-base) {
+html.roprime-account-settings-open #user-account:has(#react-user-account-base),
+html.roprime-account-settings-open
+	#user-account.row.page-content.new-username-pwd-rule {
 	display: flex !important;
+	flex: 1 1 auto !important;
 	flex-direction: column !important;
 	align-items: stretch !important;
 	justify-content: flex-start !important;
+	align-self: stretch !important;
 	width: 100% !important;
-	max-width: 100% !important;
-	margin-left: auto !important;
-	margin-right: auto !important;
-	padding-left: 0 !important;
-	padding-right: 0 !important;
+	max-width: none !important;
+	min-width: 0 !important;
+	min-height: calc(100dvh - 40px);
+	margin: 0 !important;
+	padding: 0 !important;
 	box-sizing: border-box;
 }
 
 html.roprime-account-settings-open #react-user-account-base {
+	display: flex !important;
+	flex: 1 1 auto !important;
+	flex-direction: column !important;
+	align-items: stretch !important;
 	width: 100% !important;
-	max-width: 100% !important;
+	max-width: none !important;
+	min-width: 0 !important;
+	min-height: calc(100dvh - 40px);
 	box-sizing: border-box;
 }
 
 #react-user-account-base > #rp-settings-inner.roprime-settings-mui-shell {
 	position: relative;
 	z-index: 1;
+	flex: 1 1 auto;
 	max-width: none;
-	width: 100%;
+	width: calc(100% - var(--roprime-settings-left-inset, 290px));
 	height: auto;
-	min-height: 0;
-	margin: 0;
+	min-height: calc(100dvh - 40px);
+	margin: 40px 0 0 var(--roprime-settings-left-inset, 290px);
 	padding: 0;
 	overflow-x: hidden;
 	overflow-y: visible;
 	box-sizing: border-box;
 	background: var(--color-surface-0);
+}
+
+html.roprime-sidebar-collapse-menu-enabled.roprime-sidebar-icon-only-active
+	#react-user-account-base
+	> #rp-settings-inner.roprime-settings-mui-shell,
+body.roprime-sidebar-collapse-menu-enabled.roprime-sidebar-icon-only-active
+	#react-user-account-base
+	> #rp-settings-inner.roprime-settings-mui-shell {
+	margin-left: var(--roprime-settings-left-inset, 84px) !important;
+	width: calc(100% - var(--roprime-settings-left-inset, 84px)) !important;
 }
 
 .roprime-settings-mui-shell {
@@ -62,12 +100,11 @@ html.roprime-account-settings-open #react-user-account-base {
 	gap: 0;
 	width: 100%;
 	height: auto;
-	min-height: 0;
-	max-width: 100%;
+	min-height: calc(100dvh - 40px);
+	max-width: none;
 	box-sizing: border-box;
 	font-family: inherit;
 	overflow: visible;
-	margin-left: 0;
 }
 
 .roprime-settings-rail {
@@ -150,7 +187,7 @@ html.roprime-account-settings-open #react-user-account-base {
 
 .roprime-settings-content-container {
 	width: 100%;
-	max-width: 920px;
+	max-width: none;
 }
 
 .roprime-settings-rail-header {
@@ -330,6 +367,12 @@ html.roprime-settings-side-rail-hidden
 }
 
 @media (max-width: 991px) {
+	#react-user-account-base > #rp-settings-inner.roprime-settings-mui-shell {
+		margin-top: 0 !important;
+		margin-left: 0 !important;
+		width: 100% !important;
+	}
+
 	.roprime-settings-mui-shell {
 		flex-direction: column;
 	}
