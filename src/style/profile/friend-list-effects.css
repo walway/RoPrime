@@ -93,5 +93,5 @@ li.list-item.avatar-card .thumbnail-2d-container.avatar-card-image img,
 }
 
 img[src*="AvatarHeadshot"] {
-  border-radius: 999px;
+	border-radius: 999px;
 }

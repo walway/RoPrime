@@ -20,7 +20,9 @@ html.roprime-account-settings-open main.container-main {
 	box-sizing: border-box;
 }
 
-html.roprime-account-settings-open main.container-main .content.roprime-settings-page-content,
+html.roprime-account-settings-open
+	main.container-main
+	.content.roprime-settings-page-content,
 html.roprime-account-settings-open #content.roprime-settings-page-content {
 	flex: 1 1 auto !important;
 	width: 100% !important;

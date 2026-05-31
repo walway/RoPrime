@@ -244,7 +244,10 @@ let lastNavRenderKey = "";
 function renderInto(host) {
 	const { href, avatar, name } = scrapeProfile();
 	const renderKey = `${href}|${avatar}|${name}`;
-	if (renderKey === lastNavRenderKey && host.querySelector(".roprime-cln-list")) {
+	if (
+		renderKey === lastNavRenderKey &&
+		host.querySelector(".roprime-cln-list")
+	) {
 		return;
 	}
 	lastNavRenderKey = renderKey;

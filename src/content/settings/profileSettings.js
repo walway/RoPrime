@@ -39,11 +39,11 @@ import {
 	syncCosmeticsUi,
 } from "./other.js";
 import { t as accountSettingsPaneT } from "./roprimeAccountSettingsPage.js";
-import { buildSettingsShell, wrapSettingsSection } from "./settingsShell.js";
 import {
 	clearSettingsPageLayout,
 	resolveSettingsMountHost,
 } from "./settingsPageHost.js";
+import { buildSettingsShell, wrapSettingsSection } from "./settingsShell.js";
 import {
 	bindSettingsSyncControls,
 	buildSettingsSyncHtml,

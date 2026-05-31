@@ -84,9 +84,11 @@ function showAlertModal({ title, bodyHtml, okLabel = "Ok" }) {
 		root.querySelector(".roprime-alert-ok")?.addEventListener("click", () => {
 			close(true);
 		});
-		root.querySelector(".roprime-alert-close")?.addEventListener("click", () => {
-			close(false);
-		});
+		root
+			.querySelector(".roprime-alert-close")
+			?.addEventListener("click", () => {
+				close(false);
+			});
 		root
 			.querySelector("[data-roprime-alert-overlay]")
 			?.addEventListener("click", (event) => {

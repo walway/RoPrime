@@ -1,5 +1,6 @@
 export const RP_SETTINGS_PAGE_CONTENT_CLASS = "roprime-settings-page-content";
-export const RP_SETTINGS_PAGE_USER_ACCOUNT_CLASS = "roprime-settings-page-user-account";
+export const RP_SETTINGS_PAGE_USER_ACCOUNT_CLASS =
+	"roprime-settings-page-user-account";
 const RP_SETTINGS_HOST_ACTIVE_ATTR = "data-roprime-settings-host-active";
 
 function findAccountContainerMain() {

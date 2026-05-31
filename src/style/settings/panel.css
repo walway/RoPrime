@@ -200,7 +200,7 @@
 	-webkit-user-select: none;
 	-moz-user-select: none;
 	-ms-user-select: none;
-  	user-select: none;
+	user-select: none;
 }
 
 .game-details-carousel-container
@@ -622,6 +622,18 @@
 	font-size: 12px;
 	line-height: 1.4;
 	color: var(--color-content-default);
+}
+
+#roprime-sidebar-collapse-button {
+	display: none !important;
+}
+
+#rovalra-sidebar-collapse-icon {
+	display: none !important;
+}
+
+.rovalra-sidebar-collapse-icon-overlay {
+	display: none !important;
 }
 
 #header-menu-icon .roprime-nav-menu-button.menu-button,

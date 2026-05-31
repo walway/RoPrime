@@ -25,7 +25,9 @@ export function installDomSyncScheduler() {
 
 	if (document.body) startObserver();
 	else {
-		document.addEventListener("DOMContentLoaded", startObserver, { once: true });
+		document.addEventListener("DOMContentLoaded", startObserver, {
+			once: true,
+		});
 	}
 
 	if (fallbackIntervalId === null) {

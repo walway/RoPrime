@@ -2,8 +2,8 @@ import {
 	getStorageApi,
 	isExtensionContextAlive,
 	mergeStoredSettings,
-	resetSettingsToDefaults,
 	RP_SETTINGS_KEY,
+	resetSettingsToDefaults,
 	saveSettings,
 	serializeSettingsPayload,
 	settingsState,
@@ -254,12 +254,15 @@ export async function resetAllSettingsFromSync(inner) {
 	resetSettingsToDefaults();
 	updateRenameLoop();
 	syncRoEliteView();
-	const [{ syncProfileSettingsRoute }, { reloadSettingsUiStrings }, { syncCustomCss }] =
-		await Promise.all([
-			import("./profileSettings.js"),
-			import("../core/core.js"),
-			import("../features/customCss.js"),
-		]);
+	const [
+		{ syncProfileSettingsRoute },
+		{ reloadSettingsUiStrings },
+		{ syncCustomCss },
+	] = await Promise.all([
+		import("./profileSettings.js"),
+		import("../core/core.js"),
+		import("../features/customCss.js"),
+	]);
 	await reloadSettingsUiStrings();
 	syncCustomCss();
 	syncProfileSettingsRoute();
@@ -298,26 +301,35 @@ export function bindSettingsSyncControls(inner) {
 
 	const preview = inner.querySelector("[data-roprime-settings-preview]");
 	let previewSaveTimer = 0;
-	let previewLastSaved = preview instanceof HTMLTextAreaElement ? preview.value : "";
+	let previewLastSaved =
+		preview instanceof HTMLTextAreaElement ? preview.value : "";
 
-	inner.querySelector("[data-roprime-settings-copy]")?.addEventListener("click", () => {
-		void copySettingsExport(inner);
-	});
+	inner
+		.querySelector("[data-roprime-settings-copy]")
+		?.addEventListener("click", () => {
+			void copySettingsExport(inner);
+		});
 
-	inner.querySelector("[data-roprime-settings-export]")?.addEventListener("click", () => {
-		refreshSettingsSyncPreview(inner);
-		exportSettingsFile();
-		setSyncStatus(inner, accountSettingsPaneT("Settings sync exported"));
-		window.setTimeout(() => setSyncStatus(inner, ""), 2200);
-	});
+	inner
+		.querySelector("[data-roprime-settings-export]")
+		?.addEventListener("click", () => {
+			refreshSettingsSyncPreview(inner);
+			exportSettingsFile();
+			setSyncStatus(inner, accountSettingsPaneT("Settings sync exported"));
+			window.setTimeout(() => setSyncStatus(inner, ""), 2200);
+		});
 
-	const importInput = inner.querySelector("[data-roprime-settings-import-input]");
-	inner.querySelector("[data-roprime-settings-import]")?.addEventListener("click", () => {
-		if (importInput instanceof HTMLInputElement) {
-			importInput.value = "";
-			importInput.click();
-		}
-	});
+	const importInput = inner.querySelector(
+		"[data-roprime-settings-import-input]",
+	);
+	inner
+		.querySelector("[data-roprime-settings-import]")
+		?.addEventListener("click", () => {
+			if (importInput instanceof HTMLInputElement) {
+				importInput.value = "";
+				importInput.click();
+			}
+		});
 
 	importInput?.addEventListener("change", () => {
 		const file =
@@ -327,13 +339,15 @@ export function bindSettingsSyncControls(inner) {
 			try {
 				await importSettingsFile(file);
 				refreshSettingsSyncPreview(inner);
-				const nextPreview = inner.querySelector("[data-roprime-settings-preview]");
+				const nextPreview = inner.querySelector(
+					"[data-roprime-settings-preview]",
+				);
 				if (nextPreview instanceof HTMLTextAreaElement) {
 					previewLastSaved = nextPreview.value;
 				}
 				setSyncStatus(inner, accountSettingsPaneT("Settings sync imported"));
 				window.setTimeout(() => setSyncStatus(inner, ""), 2200);
-			} catch (error) {
+			} catch (_error) {
 				setSyncStatus(
 					inner,
 					accountSettingsPaneT("Settings sync import failed"),
@@ -343,9 +357,9 @@ export function bindSettingsSyncControls(inner) {
 		})();
 	});
 
-	inner.querySelector("[data-roprime-settings-reset]")?.addEventListener(
-		"click",
-		() => {
+	inner
+		.querySelector("[data-roprime-settings-reset]")
+		?.addEventListener("click", () => {
 			void (async () => {
 				try {
 					previewLastSaved = await resetAllSettingsFromSync(inner);
@@ -362,8 +376,7 @@ export function bindSettingsSyncControls(inner) {
 					);
 				}
 			})();
-		},
-	);
+		});
 
 	if (preview instanceof HTMLTextAreaElement) {
 		preview.addEventListener("input", () => {

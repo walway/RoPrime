@@ -1,5 +1,5 @@
-import { debounce } from "../core/debounce.js";
 import { RP_SETTINGS_INNER_ID, settingsState } from "../core/core.js";
+import { debounce } from "../core/debounce.js";
 
 const RENAME_DEBOUNCE_MS = 500;
 let renameObserver = null;

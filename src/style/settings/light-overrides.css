@@ -22,7 +22,8 @@ html.roprime-account-settings-open
 	padding-right: 0 !important;
 }
 
-#react-user-account-base > #rp-settings-inner
+#react-user-account-base
+	> #rp-settings-inner
 	.roprime-accordion.is-open
 	.roprime-accordion-body {
 	max-height: 520px;

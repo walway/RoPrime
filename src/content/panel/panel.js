@@ -6,7 +6,6 @@ import {
 	RP_SETTINGS_INNER_ID,
 	RP_SIDEBAR_COMPACT_STYLE_ID,
 	RP_SMALL_NEW_NAV_STYLE_ID,
-	settingsState,
 	shouldRunRoPrimeOnCurrentPage,
 } from "../core/core.js";
 import { syncCustomCss } from "../features/customCss.js";

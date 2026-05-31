@@ -1,5 +1,5 @@
-import { debounce } from "../core/debounce.js";
 import { shouldRunRoPrimeOnCurrentPage } from "../core/core.js";
+import { debounce } from "../core/debounce.js";
 import {
 	layerIsCurrent,
 	mountProfileEffectLayer,
