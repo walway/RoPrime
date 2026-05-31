@@ -11,6 +11,7 @@
 	},
 	"permissions": ["storage"],
 	"host_permissions": [
+	    "https://crowdin.net*",
 		"*://*.supabase.co/*",
 		"https://users.roblox.com/*",
 		"https://thumbnails.roblox.com/*",
