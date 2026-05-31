@@ -41,6 +41,10 @@ import {
 import { t as accountSettingsPaneT } from "./roprimeAccountSettingsPage.js";
 import { buildSettingsShell, wrapSettingsSection } from "./settingsShell.js";
 import {
+	clearSettingsPageLayout,
+	resolveSettingsMountHost,
+} from "./settingsPageHost.js";
+import {
 	bindSettingsSyncControls,
 	buildSettingsSyncHtml,
 	refreshSettingsSyncPreview,
@@ -139,10 +143,7 @@ function languageMenuOptionsHtml() {
 }
 
 function findSettingsMountHost() {
-	const userAccount = document.getElementById("user-account");
-	if (!(userAccount instanceof HTMLElement)) return null;
-	const accountBase = userAccount.querySelector("#react-user-account-base");
-	return accountBase instanceof HTMLElement ? accountBase : null;
+	return resolveSettingsMountHost();
 }
 
 function getSettingsInner(root) {
@@ -155,6 +156,7 @@ function getSettingsInner(root) {
 
 function removeProfileSettingsMarkup() {
 	document.getElementById(RP_SETTINGS_INNER_ID)?.remove();
+	clearSettingsPageLayout();
 }
 
 function setNativeAccountChromeHidden(hidden) {
@@ -1016,6 +1018,7 @@ export function syncProfileSettingsRoute() {
 	if (!isMyAccountPath()) {
 		setAccountSettingsShellClass(false);
 		syncAccountSettingsLayoutInset();
+		clearSettingsPageLayout();
 		setNativeAccountChromeHidden(false);
 		removeProfileSettingsMarkup();
 		updateDocumentTitle(false);
@@ -1025,6 +1028,7 @@ export function syncProfileSettingsRoute() {
 
 	if (!isPluginRoute()) {
 		setAccountSettingsShellClass(false);
+		clearSettingsPageLayout();
 		setNativeAccountChromeHidden(false);
 		removeProfileSettingsMarkup();
 		updateDocumentTitle(false);

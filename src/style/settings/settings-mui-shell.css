@@ -1,9 +1,3 @@
-html.roprime-account-settings-open,
-html.roprime-account-settings-open body {
-	height: 100%;
-	overflow: hidden;
-}
-
 html.roprime-account-settings-open #footer-container,
 html.roprime-account-settings-open .container-footer,
 html.roprime-account-settings-open #react-user-account-base #footer-container,
@@ -13,20 +7,51 @@ html.roprime-account-settings-open #react-user-account-base .container-footer {
 	pointer-events: none !important;
 }
 
+html.roprime-account-settings-open main.container-main .content.roprime-settings-page-content,
+html.roprime-account-settings-open #content.roprime-settings-page-content {
+	width: 100% !important;
+	height: auto !important;
+	min-height: 800px;
+	box-sizing: border-box;
+	border-radius: 10px;
+	overflow: hidden;
+	padding: 25px 0;
+	position: relative;
+}
+
+html.roprime-account-settings-open
+	#user-account.roprime-settings-page-user-account,
+html.roprime-account-settings-open #user-account:has(#react-user-account-base) {
+	display: flex !important;
+	flex-direction: column !important;
+	align-items: stretch !important;
+	justify-content: flex-start !important;
+	width: 100% !important;
+	max-width: 100% !important;
+	margin-left: auto !important;
+	margin-right: auto !important;
+	padding-left: 0 !important;
+	padding-right: 0 !important;
+	box-sizing: border-box;
+}
+
+html.roprime-account-settings-open #react-user-account-base {
+	width: 100% !important;
+	max-width: 100% !important;
+	box-sizing: border-box;
+}
+
 #react-user-account-base > #rp-settings-inner.roprime-settings-mui-shell {
-	position: fixed;
-	top: 40px;
-	right: 0;
-	bottom: 0;
-	left: var(--roprime-settings-left-inset, 289px);
-	z-index: 120;
+	position: relative;
+	z-index: 1;
 	max-width: none;
-	width: auto;
+	width: 100%;
 	height: auto;
+	min-height: 0;
 	margin: 0;
 	padding: 0;
 	overflow-x: hidden;
-	overflow-y: auto;
+	overflow-y: visible;
 	box-sizing: border-box;
 	background: var(--color-surface-0);
 }
@@ -50,8 +75,8 @@ html.roprime-account-settings-open #react-user-account-base .container-footer {
 	width: 227px !important;
 	min-width: 227px !important;
 	max-width: 227px !important;
-	height: 100%;
-	min-height: 100dvh;
+	height: auto;
+	min-height: 0;
 	display: flex;
 	flex-direction: row;
 	align-items: stretch;
@@ -100,8 +125,8 @@ html.roprime-account-settings-open #react-user-account-base .container-footer {
 	width: 1px;
 	min-width: 1px;
 	align-self: stretch;
-	height: 100%;
-	min-height: 100dvh;
+	height: auto;
+	min-height: 0;
 	margin: 0;
 	padding: 0;
 	border: 0;
@@ -121,15 +146,6 @@ html.roprime-account-settings-open #react-user-account-base .container-footer {
 	overflow-x: hidden;
 	overflow-y: visible;
 	background: var(--color-surface-0);
-}
-
-html.roprime-sidebar-collapse-menu-enabled.roprime-sidebar-icon-only-active
-	#react-user-account-base
-	> #rp-settings-inner.roprime-settings-mui-shell,
-body.roprime-sidebar-collapse-menu-enabled.roprime-sidebar-icon-only-active
-	#react-user-account-base
-	> #rp-settings-inner.roprime-settings-mui-shell {
-	left: 83px !important;
 }
 
 .roprime-settings-content-container {
@@ -314,11 +330,6 @@ html.roprime-settings-side-rail-hidden
 }
 
 @media (max-width: 991px) {
-	#react-user-account-base > #rp-settings-inner.roprime-settings-mui-shell {
-		top: 0;
-		left: 0;
-	}
-
 	.roprime-settings-mui-shell {
 		flex-direction: column;
 	}
