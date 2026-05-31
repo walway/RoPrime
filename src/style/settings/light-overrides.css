@@ -9,9 +9,17 @@ html.roprime-account-settings-open
 	pointer-events: none !important;
 }
 
-#react-user-account-base > #rp-settings-inner .roprime-settings-mui-shell {
+#react-user-account-base > #rp-settings-inner.roprime-settings-mui-shell {
 	max-width: none;
-	margin: 0;
+}
+
+#rp-settings-inner.roprime-settings-mui-shell > .roprime-settings-rail,
+#rp-settings-inner.roprime-settings-mui-shell
+	> aside.roprime-settings-rail[class*="Grid-root-secondaryRail-scroll"] {
+	margin-left: -11px !important;
+	margin-right: 0 !important;
+	padding-left: 0 !important;
+	padding-right: 0 !important;
 }
 
 #react-user-account-base > #rp-settings-inner

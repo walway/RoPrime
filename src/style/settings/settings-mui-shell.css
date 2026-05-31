@@ -73,10 +73,10 @@ html.roprime-account-settings-open #react-user-account-base {
 	z-index: 1;
 	flex: 1 1 auto;
 	max-width: none;
-	width: calc(100% - var(--roprime-settings-left-inset, 290px));
+	width: calc(100% - var(--roprime-settings-left-inset, 290px) - 8px);
 	height: auto;
 	min-height: calc(100dvh - 40px);
-	margin: 40px 0 0 var(--roprime-settings-left-inset, 290px);
+	margin: 40px 8px 0 var(--roprime-settings-left-inset, 290px);
 	padding: 0;
 	overflow-x: hidden;
 	overflow-y: visible;
@@ -91,12 +91,14 @@ body.roprime-sidebar-collapse-menu-enabled.roprime-sidebar-icon-only-active
 	#react-user-account-base
 	> #rp-settings-inner.roprime-settings-mui-shell {
 	margin-left: var(--roprime-settings-left-inset, 84px) !important;
-	width: calc(100% - var(--roprime-settings-left-inset, 84px)) !important;
+	margin-right: 8px !important;
+	width: calc(100% - var(--roprime-settings-left-inset, 84px) - 8px) !important;
 }
 
 .roprime-settings-mui-shell {
 	display: flex;
 	align-items: stretch;
+	justify-content: flex-start;
 	gap: 0;
 	width: 100%;
 	height: auto;
@@ -105,20 +107,25 @@ body.roprime-sidebar-collapse-menu-enabled.roprime-sidebar-icon-only-active
 	box-sizing: border-box;
 	font-family: inherit;
 	overflow: visible;
+	margin-left: 0;
 }
 
-.roprime-settings-rail {
-	flex: 0 0 227px;
-	width: 227px !important;
-	min-width: 227px !important;
-	max-width: 227px !important;
+#rp-settings-inner.roprime-settings-mui-shell > .roprime-settings-rail,
+#rp-settings-inner.roprime-settings-mui-shell
+	> aside.roprime-settings-rail[class*="Grid-root-secondaryRail-scroll"] {
+	flex: 0 0 235px;
+	width: 235px !important;
+	min-width: 235px !important;
+	max-width: 235px !important;
 	height: auto;
 	min-height: 0;
 	display: flex;
-	flex-direction: row;
+	flex-direction: column;
 	align-items: stretch;
-	padding: 0;
-	margin: 0;
+	padding: 0 !important;
+	margin: 0 !important;
+	margin-left: -11px !important;
+	margin-right: 0 !important;
 	box-sizing: border-box;
 	overflow: hidden;
 	background: var(--color-surface-0);
@@ -164,7 +171,7 @@ body.roprime-sidebar-collapse-menu-enabled.roprime-sidebar-icon-only-active
 	align-self: stretch;
 	height: auto;
 	min-height: 0;
-	margin: 0;
+	margin: 0 !important;
 	padding: 0;
 	border: 0;
 	border-left: 1px solid
@@ -370,6 +377,7 @@ html.roprime-settings-side-rail-hidden
 	#react-user-account-base > #rp-settings-inner.roprime-settings-mui-shell {
 		margin-top: 0 !important;
 		margin-left: 0 !important;
+		margin-right: 0 !important;
 		width: 100% !important;
 	}
 
