@@ -888,9 +888,8 @@ body.roprime-sidebar-collapse-menu-enabled div.rbx-navbar-header {
 		#roprime-standalone-settings[style*="display: block"]
 	)
 	#content-container,
-#react-user-account-base:has(#roprime-profile-settings-root) .content-container,
-#react-user-account-base:has(#roprime-profile-settings-root)
-	#content-container {
+#react-user-account-base:has(> #rp-settings-inner) .content-container,
+#react-user-account-base:has(> #rp-settings-inner) #content-container {
 	width: auto !important;
 	max-width: none !important;
 	flex-shrink: 1 !important;

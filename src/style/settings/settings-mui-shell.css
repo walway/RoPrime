@@ -13,7 +13,7 @@ html.roprime-account-settings-open #react-user-account-base .container-footer {
 	pointer-events: none !important;
 }
 
-#roprime-profile-settings-root.roprime-profile-settings-root {
+#react-user-account-base > #rp-settings-inner.roprime-settings-mui-shell {
 	position: fixed;
 	top: 40px;
 	right: 0;
@@ -46,10 +46,10 @@ html.roprime-account-settings-open #react-user-account-base .container-footer {
 }
 
 .roprime-settings-rail {
-	flex: 0 0 243px;
-	width: 243px !important;
-	min-width: 243px !important;
-	max-width: 243px !important;
+	flex: 0 0 227px;
+	width: 227px !important;
+	min-width: 227px !important;
+	max-width: 227px !important;
 	height: 100%;
 	min-height: 100dvh;
 	display: flex;
@@ -124,9 +124,11 @@ html.roprime-account-settings-open #react-user-account-base .container-footer {
 }
 
 html.roprime-sidebar-collapse-menu-enabled.roprime-sidebar-icon-only-active
-	#roprime-profile-settings-root.roprime-profile-settings-root,
+	#react-user-account-base
+	> #rp-settings-inner.roprime-settings-mui-shell,
 body.roprime-sidebar-collapse-menu-enabled.roprime-sidebar-icon-only-active
-	#roprime-profile-settings-root.roprime-profile-settings-root {
+	#react-user-account-base
+	> #rp-settings-inner.roprime-settings-mui-shell {
 	left: 83px !important;
 }
 
@@ -312,7 +314,7 @@ html.roprime-settings-side-rail-hidden
 }
 
 @media (max-width: 991px) {
-	#roprime-profile-settings-root.roprime-profile-settings-root {
+	#react-user-account-base > #rp-settings-inner.roprime-settings-mui-shell {
 		top: 0;
 		left: 0;
 	}

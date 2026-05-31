@@ -19,7 +19,7 @@ export const RP_SUPPORTED_PAGES = new Set([
 	"sidebar-content",
 ]);
 export const RP_SETTINGS_KEY = "rpSettings";
-export const RP_PROFILE_SETTINGS_ROOT_ID = "roprime-profile-settings-root";
+export const RP_SETTINGS_INNER_ID = "rp-settings-inner";
 
 export const RP_ACCOUNT_URL_HASH_DEFAULT = "#!/info";
 
@@ -192,31 +192,11 @@ export function applyAccountSettingsShellFromUrl() {
 	}
 }
 
-function normalizeBlockedExecutionPages(value) {
-	if (!Array.isArray(value)) return [];
-	const seen = new Set();
-	return value
-		.map((entry) => (typeof entry === "string" ? entry.trim() : ""))
-		.filter(Boolean)
-		.filter((entry) => {
-			const key = entry.toLowerCase();
-			if (seen.has(key)) return false;
-			seen.add(key);
-			return true;
-		});
-}
-
 export const RP_DEFAULT_SETTINGS = {
 	language: "en",
 	renameDropdownEnabled: true,
 	renameCommunitiesToGroups: true,
-	renameExperiencesToGames: true,
-	renameMarketplaceToAvatarShop: true,
-	renameDropdownRestore: {
-		renameCommunitiesToGroups: true,
-		renameExperiencesToGames: true,
-		renameMarketplaceToAvatarShop: true,
-	},
+	renameMarketplaceToCatalog: true,
 	oldNavigationBarEnabled: false,
 	smallNewNavigationBarEnabled: false,
 	sidebarIconsOnlyEnabled: false,
@@ -227,7 +207,6 @@ export const RP_DEFAULT_SETTINGS = {
 	sidebarSize: "full",
 	sidebarCollapseMenuEnabled: false,
 	hiddenSidebarItemsBySize: { full: [], small: [], icon: [] },
-	blockedExecutionPages: [],
 	customCss: "",
 	customCssCautionAccepted: false,
 	cosmeticsEnabled: false,
@@ -267,9 +246,16 @@ export function mergeStoredSettings(stored) {
 	if (!stored || typeof stored !== "object") return;
 
 	Object.assign(settingsState, RP_DEFAULT_SETTINGS, stored);
-	settingsState.blockedExecutionPages = normalizeBlockedExecutionPages(
-		stored.blockedExecutionPages,
-	);
+	if (stored.renameMarketplaceToCatalog === undefined) {
+		if (stored.renameMarketplaceToAvatarShop != null) {
+			settingsState.renameMarketplaceToCatalog =
+				!!stored.renameMarketplaceToAvatarShop;
+		}
+	}
+	delete settingsState.renameMarketplaceToAvatarShop;
+	delete settingsState.renameExperiencesToGames;
+	delete settingsState.renameDropdownRestore;
+	delete settingsState.blockedExecutionPages;
 	settingsState.developerPageUnlocked = !!stored.developerPageUnlocked;
 	if (stored.enablePluginControlPanel != null) {
 		settingsState.enablePluginControlPanel = !!stored.enablePluginControlPanel;
@@ -300,33 +286,22 @@ export function mergeStoredSettings(stored) {
 	settingsState.hiddenSidebarItemsBySize =
 		normalizeHiddenSidebarItemsBySize(stored);
 	delete settingsState.hiddenSidebarItems;
-	if (
-		stored.renameDropdownRestore &&
-		typeof stored.renameDropdownRestore === "object"
-	) {
-		if (stored.renameCommunitiesToGroups === undefined) {
-			settingsState.renameCommunitiesToGroups =
-				!!stored.renameDropdownRestore.renameCommunitiesToGroups;
-		}
-		if (stored.renameExperiencesToGames === undefined) {
-			settingsState.renameExperiencesToGames =
-				!!stored.renameDropdownRestore.renameExperiencesToGames;
-		}
-		if (stored.renameMarketplaceToAvatarShop === undefined) {
-			settingsState.renameMarketplaceToAvatarShop =
-				!!stored.renameDropdownRestore.renameMarketplaceToAvatarShop;
-		}
+}
+
+export function resetSettingsToDefaults() {
+	for (const key of Object.keys(settingsState)) {
+		delete settingsState[key];
 	}
+	Object.assign(settingsState, { ...RP_DEFAULT_SETTINGS });
+	saveSettings();
 }
 
 export function serializeSettingsPayload() {
 	return {
-		renameDropdownEnabled: settingsState.renameDropdownEnabled,
-		renameDropdownRestore: settingsState.renameDropdownRestore,
 		language: settingsState.language,
+		renameDropdownEnabled: settingsState.renameDropdownEnabled,
 		renameCommunitiesToGroups: settingsState.renameCommunitiesToGroups,
-		renameExperiencesToGames: settingsState.renameExperiencesToGames,
-		renameMarketplaceToAvatarShop: settingsState.renameMarketplaceToAvatarShop,
+		renameMarketplaceToCatalog: settingsState.renameMarketplaceToCatalog,
 		oldNavigationBarEnabled: settingsState.oldNavigationBarEnabled,
 		smallNewNavigationBarEnabled: settingsState.smallNewNavigationBarEnabled,
 		sidebarIconsOnlyEnabled: settingsState.sidebarIconsOnlyEnabled,
@@ -339,9 +314,6 @@ export function serializeSettingsPayload() {
 		hiddenSidebarItemsBySize: normalizeHiddenSidebarItemsBySize({
 			hiddenSidebarItemsBySize: settingsState.hiddenSidebarItemsBySize,
 		}),
-		blockedExecutionPages: normalizeBlockedExecutionPages(
-			settingsState.blockedExecutionPages,
-		),
 		customCss:
 			typeof settingsState.customCss === "string"
 				? settingsState.customCss
@@ -475,33 +447,8 @@ export function isForeignAccountPluginRoute() {
 	return Array.from(params.keys()).length > 0;
 }
 
-export function isCurrentPageBlockedByUser() {
-	const rules = normalizeBlockedExecutionPages(
-		settingsState.blockedExecutionPages,
-	);
-	if (!rules.length) return false;
-	const href = window.location.href.toLowerCase();
-	const path = window.location.pathname.toLowerCase();
-	const search = window.location.search.toLowerCase();
-	const hash = window.location.hash.toLowerCase();
-	const pathWithSearch = `${path}${search}`;
-	const pathWithSearchAndHash = `${path}${search}${hash}`;
-	return rules.some((rule) => {
-		const normalizedRule = rule.toLowerCase();
-		return (
-			href.includes(normalizedRule) ||
-			path === normalizedRule ||
-			search === normalizedRule ||
-			pathWithSearch === normalizedRule ||
-			pathWithSearchAndHash === normalizedRule ||
-			pathWithSearch.includes(normalizedRule) ||
-			pathWithSearchAndHash.includes(normalizedRule)
-		);
-	});
-}
-
 export function shouldRunRoPrimeOnCurrentPage() {
-	return !isCurrentPageBlockedByUser();
+	return true;
 }
 
 export function getCurrentrp() {

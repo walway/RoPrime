@@ -44,6 +44,23 @@ function getEditorWrap() {
 	return cssEditorHost?.closest("[data-roprime-custom-css-editor-wrap]");
 }
 
+function isCustomCssEditorLocked() {
+	return !settingsState.customCssCautionAccepted;
+}
+
+function applyCustomCssEditorLock(inner) {
+	const locked = isCustomCssEditorLocked();
+	const wrap = getEditorWrap();
+	if (wrap instanceof HTMLElement) {
+		wrap.classList.toggle("is-locked", locked);
+	}
+	if (cssEditor) {
+		cssEditor.textarea.readOnly = locked;
+		cssEditor.textarea.setAttribute("aria-readonly", locked ? "true" : "false");
+	}
+	syncPlaceholder(inner);
+}
+
 function configureEditorShadow(host) {
 	const shadow = host.shadowRoot;
 	const container = shadow?.querySelector(".prism-code-editor");
@@ -152,6 +169,7 @@ function ensureCssEditor(inner) {
 			if (!accepted) return false;
 			settingsState.customCssCautionAccepted = true;
 			saveSettings();
+			applyCustomCssEditorLock(inner);
 			return true;
 		} finally {
 			cautionPromptActive = false;
@@ -168,7 +186,9 @@ function ensureCssEditor(inner) {
 			lineNumbers: false,
 			insertSpaces: true,
 			tabSize: 2,
+			readOnly: isCustomCssEditorLocked(),
 			onUpdate: (value, editor) => {
+				if (isCustomCssEditorLocked()) return;
 				settingsState.customCss = value;
 				saveSettings();
 				syncCustomCss();
@@ -181,10 +201,14 @@ function ensureCssEditor(inner) {
 			if (!cssEditor) return;
 			configureEditorShadow(host);
 			applyEditorHeight(cssEditor);
-			syncPlaceholder(inner);
+			applyCustomCssEditorLock(inner);
 
 			cssEditor.textarea.addEventListener("focus", () => {
 				void (async () => {
+					if (settingsState.customCssCautionAccepted) {
+						syncPlaceholder(inner);
+						return;
+					}
 					const allowed = await ensureCustomCssCautionAccepted();
 					if (!allowed) cssEditor?.textarea.blur();
 					syncPlaceholder(inner);
@@ -213,7 +237,7 @@ export function syncCustomCssUi(inner) {
 		placeholder.textContent = accountSettingsPaneT("Custom CSS placeholder");
 	}
 
-	syncPlaceholder(inner);
+	applyCustomCssEditorLock(inner);
 }
 
 export function bindCustomCssControls(_inner) {}

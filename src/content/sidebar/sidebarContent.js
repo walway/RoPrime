@@ -469,7 +469,7 @@ function buildHideStyle() {
 				'.width-\\[288px\\], [class~="width-[288px]"] { display: none !important; }',
 				'.flex.width-\\[289px\\].height-full.scroll-y, .flex[class~="width-[289px]"][class~="height-full"][class~="scroll-y"] { display: none !important; }',
 				"@media (min-width: 1141px) { .no-gutter-ads.logged-in.left-nav-new-width { --left-nav-reserved-width: 0px !important; } }",
-				"@media (max-width: 747px) { #roprime-profile-settings-root.roprime-profile-settings-root { left: 0 !important; } }",
+				"@media (max-width: 747px) { #react-user-account-base > #rp-settings-inner.roprime-settings-mui-shell { left: 0 !important; } }",
 			].join("\n"),
 		);
 	}

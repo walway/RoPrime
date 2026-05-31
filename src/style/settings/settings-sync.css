@@ -47,6 +47,22 @@
 	color: #22c55e;
 }
 
-.roprime-settings-sync-status.is-error {
-	color: #ef4444;
+.roprime-settings-sync-reset-row {
+	margin-top: 14px;
+	padding-top: 14px;
+	border-top: 1px solid
+		color-mix(in srgb, var(--color-content-emphasis) 14%, transparent);
+}
+
+.roprime-settings-sync-reset-row .roprime-settings-primary-btn {
+	flex: 0 0 auto;
+	margin-left: auto;
+}
+
+.roprime-custom-css-editor-wrap.is-locked .roprime-custom-css-editor-host {
+	opacity: 0.72;
+}
+
+.roprime-custom-css-editor-wrap.is-locked .prism-code-editor textarea {
+	cursor: not-allowed;
 }

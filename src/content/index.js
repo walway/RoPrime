@@ -11,7 +11,6 @@ import {
 import { syncCustomCss } from "./features/customCss.js";
 import {
 	applyCommunityRename,
-	applyExperiencesRename,
 	applyMarketplaceRename,
 	updateRenameLoop,
 } from "./features/rename.js";
@@ -127,7 +126,6 @@ function bootstrap() {
 				syncSidebarContent({ force: true });
 				if (shouldRunRoPrimeOnCurrentPage()) {
 					applyCommunityRename(document.body);
-					applyExperiencesRename(document.body);
 					applyMarketplaceRename(document.body);
 					syncHomeWelcomeModal();
 				}

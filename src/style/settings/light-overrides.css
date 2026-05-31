@@ -9,12 +9,12 @@ html.roprime-account-settings-open
 	pointer-events: none !important;
 }
 
-#roprime-profile-settings-root .roprime-settings-mui-shell {
+#react-user-account-base > #rp-settings-inner .roprime-settings-mui-shell {
 	max-width: none;
 	margin: 0;
 }
 
-#roprime-profile-settings-root
+#react-user-account-base > #rp-settings-inner
 	.roprime-accordion.is-open
 	.roprime-accordion-body {
 	max-height: 520px;

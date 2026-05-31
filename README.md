@@ -27,7 +27,7 @@ You can customize Roblox with a bunch of features to your liking. Here's some fe
 - 🧩 Choose what appears in the sidebar
 - 👥 Reimagined friend list styling
 - 🏃 Fast and lightweight
-- ✏️ Rename wording (Groups/Communities, Games/Experiences, Catalog/Marketplace)
+- ✏️ Rename wording (Groups/Communities, Catalog/Marketplace)
 - 🖼️ Profile page & picture effects
 - 🎛️ Custom CSS injection
 - 🔄 Sync settings

@@ -3,7 +3,7 @@ import {
 	RP_ALWAYS_SHOW_CLOSE_STYLE_ID,
 	RP_CUSTOM_CSS_STYLE_ID,
 	RP_FRIEND_STYLING_REIMAGNED_STYLE_ID,
-	RP_PROFILE_SETTINGS_ROOT_ID,
+	RP_SETTINGS_INNER_ID,
 	RP_SIDEBAR_COMPACT_STYLE_ID,
 	RP_SMALL_NEW_NAV_STYLE_ID,
 	settingsState,
@@ -32,7 +32,7 @@ export function updateOldNavigationBarVisibility() {
 function cleanupBlockedRouteUi() {
 	stopRenameLoop();
 	stopRobloxNavDropdownButton();
-	document.getElementById(RP_PROFILE_SETTINGS_ROOT_ID)?.remove();
+	document.getElementById(RP_SETTINGS_INNER_ID)?.remove();
 	document.getElementById(RP_SMALL_NEW_NAV_STYLE_ID)?.remove();
 	document.getElementById(RP_SIDEBAR_COMPACT_STYLE_ID)?.remove();
 	document.getElementById(RP_ALWAYS_SHOW_CLOSE_STYLE_ID)?.remove();

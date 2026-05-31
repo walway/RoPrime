@@ -6,7 +6,7 @@ import {
 	isMyAccountPath,
 	isPluginRoute,
 	RP_DEFAULT_PAGE,
-	RP_PROFILE_SETTINGS_ROOT_ID,
+	RP_SETTINGS_INNER_ID,
 	reloadSettingsUiStrings,
 	saveSettings,
 	setAccountSettingsShellClass,
@@ -60,7 +60,7 @@ function isRobloxAccountSideRail(el) {
 }
 
 function queryRobloxAccountSideRails() {
-	const settingsRoot = document.getElementById(RP_PROFILE_SETTINGS_ROOT_ID);
+	const settingsRoot = document.getElementById(RP_SETTINGS_INNER_ID);
 	return Array.from(
 		document.querySelectorAll(".width-\\[289px\\], [class~='width-[289px]']"),
 	).filter(
@@ -139,21 +139,22 @@ function languageMenuOptionsHtml() {
 }
 
 function findSettingsMountHost() {
-	const main = document.querySelector(
-		"main#container-main.container-main.content-no-ads, main.container-main.content-no-ads#container-main",
-	);
-	if (!(main instanceof HTMLElement)) return null;
-	const content = main.querySelector("#content.content, div#content.content");
-	return content instanceof HTMLElement ? content : null;
+	const userAccount = document.getElementById("user-account");
+	if (!(userAccount instanceof HTMLElement)) return null;
+	const accountBase = userAccount.querySelector("#react-user-account-base");
+	return accountBase instanceof HTMLElement ? accountBase : null;
 }
 
-function snapshotRenameRestore() {
-	settingsState.renameDropdownRestore = {
-		renameCommunitiesToGroups: !!settingsState.renameCommunitiesToGroups,
-		renameExperiencesToGames: !!settingsState.renameExperiencesToGames,
-		renameMarketplaceToAvatarShop:
-			!!settingsState.renameMarketplaceToAvatarShop,
-	};
+function getSettingsInner(root) {
+	if (root instanceof HTMLElement && root.id === RP_SETTINGS_INNER_ID) {
+		return root;
+	}
+	const inner = root?.querySelector(`#${RP_SETTINGS_INNER_ID}`);
+	return inner instanceof HTMLElement ? inner : null;
+}
+
+function removeProfileSettingsMarkup() {
+	document.getElementById(RP_SETTINGS_INNER_ID)?.remove();
 }
 
 function setNativeAccountChromeHidden(hidden) {
@@ -314,7 +315,7 @@ function syncTreeNavSelection(inner, activePage, isSearchMode) {
 }
 
 function refreshLayoutAndNav(root) {
-	const inner = root.querySelector("#rp-settings-inner");
+	const inner = getSettingsInner(root);
 	if (!(inner instanceof HTMLElement)) return;
 
 	const activePage = getCurrentrp() || RP_DEFAULT_PAGE;
@@ -459,7 +460,7 @@ function bindOnce(root) {
 	if (root.getAttribute("data-roprime-profile-bound") === "1") return;
 	root.setAttribute("data-roprime-profile-bound", "1");
 
-	const inner = root.querySelector("#rp-settings-inner");
+	const inner = getSettingsInner(root);
 	if (!(inner instanceof HTMLElement)) return;
 
 	const enterSearchMode = () => {
@@ -552,7 +553,6 @@ function bindOnce(root) {
 	if (renameMaster instanceof HTMLInputElement) {
 		renameMaster.addEventListener("change", () => {
 			settingsState.renameDropdownEnabled = renameMaster.checked;
-			if (settingsState.renameDropdownEnabled) snapshotRenameRestore();
 			saveSettings();
 			updateRenameLoop();
 			syncRoEliteView();
@@ -566,19 +566,14 @@ function bindOnce(root) {
 			key: "renameCommunitiesToGroups",
 		},
 		{
-			id: "roprime-toggle-rename-experiences",
-			key: "renameExperiencesToGames",
-		},
-		{
 			id: "roprime-toggle-rename-marketplace",
-			key: "renameMarketplaceToAvatarShop",
+			key: "renameMarketplaceToCatalog",
 		},
 	]) {
 		const el = inner.querySelector(`#${id}`);
 		if (!(el instanceof HTMLInputElement)) continue;
 		el.addEventListener("change", () => {
 			settingsState[key] = el.checked;
-			snapshotRenameRestore();
 			saveSettings();
 			updateRenameLoop();
 			syncRoEliteView();
@@ -804,7 +799,7 @@ function clearLanguageControlSizing(inner) {
 }
 
 function refreshProfileSettingsUi(root) {
-	const inner = root.querySelector("#rp-settings-inner");
+	const inner = getSettingsInner(root);
 	if (!(inner instanceof HTMLElement)) return;
 
 	applyI18n(root);
@@ -820,12 +815,9 @@ function refreshProfileSettingsUi(root) {
 	const communities = inner.querySelector("#roprime-toggle-rename-communities");
 	if (communities instanceof HTMLInputElement)
 		communities.checked = !!settingsState.renameCommunitiesToGroups;
-	const experiences = inner.querySelector("#roprime-toggle-rename-experiences");
-	if (experiences instanceof HTMLInputElement)
-		experiences.checked = !!settingsState.renameExperiencesToGames;
 	const marketplace = inner.querySelector("#roprime-toggle-rename-marketplace");
 	if (marketplace instanceof HTMLInputElement)
-		marketplace.checked = !!settingsState.renameMarketplaceToAvatarShop;
+		marketplace.checked = !!settingsState.renameMarketplaceToCatalog;
 
 	const accordion = inner.querySelector('[data-roprime-accordion="rename"]');
 	const accBody = accordion?.querySelector(".roprime-accordion-body");
@@ -922,7 +914,6 @@ function buildMarkup() {
                     </div>
                     <div class="roprime-accordion-body" hidden>
                         <div class="roprime-toggle-row"><div class="roprime-toggle-copy"><div class="roprime-toggle-title" data-i18n="Rename communities label"></div></div><label class="roprime-switch" for="roprime-toggle-rename-communities"><input id="roprime-toggle-rename-communities" type="checkbox" /><span class="roprime-switch-slider" aria-hidden="true"></span></label></div>
-                        <div class="roprime-toggle-row"><div class="roprime-toggle-copy"><div class="roprime-toggle-title" data-i18n="Rename experiences label"></div></div><label class="roprime-switch" for="roprime-toggle-rename-experiences"><input id="roprime-toggle-rename-experiences" type="checkbox" /><span class="roprime-switch-slider" aria-hidden="true"></span></label></div>
                         <div class="roprime-toggle-row"><div class="roprime-toggle-copy"><div class="roprime-toggle-title" data-i18n="Rename marketplace label"></div></div><label class="roprime-switch" for="roprime-toggle-rename-marketplace"><input id="roprime-toggle-rename-marketplace" type="checkbox" /><span class="roprime-switch-slider" aria-hidden="true"></span></label></div>
                     </div>
                 </div>
@@ -1026,7 +1017,7 @@ export function syncProfileSettingsRoute() {
 		setAccountSettingsShellClass(false);
 		syncAccountSettingsLayoutInset();
 		setNativeAccountChromeHidden(false);
-		document.getElementById(RP_PROFILE_SETTINGS_ROOT_ID)?.remove();
+		removeProfileSettingsMarkup();
 		updateDocumentTitle(false);
 		updateAccountHeader(false);
 		return;
@@ -1035,7 +1026,7 @@ export function syncProfileSettingsRoute() {
 	if (!isPluginRoute()) {
 		setAccountSettingsShellClass(false);
 		setNativeAccountChromeHidden(false);
-		document.getElementById(RP_PROFILE_SETTINGS_ROOT_ID)?.remove();
+		removeProfileSettingsMarkup();
 		updateDocumentTitle(false);
 		updateAccountHeader(false);
 		return;
@@ -1060,17 +1051,14 @@ export function syncProfileSettingsRoute() {
 	updateDocumentTitle(true);
 	updateAccountHeader(true);
 
-	let root = document.getElementById(RP_PROFILE_SETTINGS_ROOT_ID);
+	let root = document.getElementById(RP_SETTINGS_INNER_ID);
 	if (!(root instanceof HTMLElement)) {
-		root = document.createElement("div");
-		root.id = RP_PROFILE_SETTINGS_ROOT_ID;
-		root.className = "roprime-profile-settings-root";
-		mountHost.appendChild(root);
-		root.innerHTML = buildMarkup();
-		bindOnce(root);
+		mountHost.insertAdjacentHTML("beforeend", buildMarkup());
+		root = document.getElementById(RP_SETTINGS_INNER_ID);
+		if (root instanceof HTMLElement) bindOnce(root);
 	} else if (root.parentElement !== mountHost) {
 		mountHost.appendChild(root);
 	}
 
-	refreshProfileSettingsUi(root);
+	if (root instanceof HTMLElement) refreshProfileSettingsUi(root);
 }

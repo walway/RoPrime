@@ -97,7 +97,7 @@ body.dark-theme.age-13-plus-theme {
 }
 
 .roprime-settings-wrapper,
-#roprime-profile-settings-root .roprime-settings-wrapper {
+#react-user-account-base > #rp-settings-inner.roprime-settings-wrapper {
 	color: var(--color-content-emphasis);
 }
 

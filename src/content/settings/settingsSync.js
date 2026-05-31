@@ -2,11 +2,14 @@ import {
 	getStorageApi,
 	isExtensionContextAlive,
 	mergeStoredSettings,
+	resetSettingsToDefaults,
 	RP_SETTINGS_KEY,
 	saveSettings,
 	serializeSettingsPayload,
 	settingsState,
 } from "../core/core.js";
+import { updateRenameLoop } from "../features/rename.js";
+import { syncRoEliteView } from "../panel/panel.js";
 import { t as accountSettingsPaneT } from "./roprimeAccountSettingsPage.js";
 
 const extensionApi = globalThis.browser || globalThis.chrome;
@@ -81,7 +84,7 @@ function parseImportPayload(text) {
 		"renameDropdownEnabled" in obj ||
 		"sidebarSize" in obj ||
 		"oldNavigationBarEnabled" in obj ||
-		"blockedExecutionPages" in obj;
+		"renameMarketplaceToCatalog" in obj;
 
 	for (const candidate of candidates) {
 		if (hasKnownKey(candidate)) return { ...candidate };
@@ -159,6 +162,12 @@ export function buildSettingsSyncHtml() {
 			<div class="roprime-settings-sync-preview-wrap" data-roprime-settings-preview-wrap>
 				<textarea class="roprime-settings-sync-preview" data-roprime-settings-preview spellcheck="false"></textarea>
 			</div>
+			<div class="roprime-toggle-row roprime-settings-sync-reset-row">
+				<div class="roprime-toggle-copy">
+					<div class="roprime-toggle-title" data-i18n="Settings sync reset title"></div>
+				</div>
+				<button type="button" class="roprime-settings-primary-btn" data-roprime-settings-reset data-i18n="Settings sync reset button"></button>
+			</div>
 			<p class="roprime-settings-sync-status" data-roprime-settings-sync-status hidden></p>
 		</div>`;
 }
@@ -230,6 +239,31 @@ export function exportSettingsFile() {
 	a.click();
 	a.remove();
 	window.setTimeout(() => URL.revokeObjectURL(url), 1500);
+}
+
+function applySettingsAfterReset(inner) {
+	refreshSettingsSyncPreview(inner);
+	const preview = inner.querySelector("[data-roprime-settings-preview]");
+	if (preview instanceof HTMLTextAreaElement) {
+		return preview.value;
+	}
+	return formatSettingsExportJson();
+}
+
+export async function resetAllSettingsFromSync(inner) {
+	resetSettingsToDefaults();
+	updateRenameLoop();
+	syncRoEliteView();
+	const [{ syncProfileSettingsRoute }, { reloadSettingsUiStrings }, { syncCustomCss }] =
+		await Promise.all([
+			import("./profileSettings.js"),
+			import("../core/core.js"),
+			import("../features/customCss.js"),
+		]);
+	await reloadSettingsUiStrings();
+	syncCustomCss();
+	syncProfileSettingsRoute();
+	return applySettingsAfterReset(inner);
 }
 
 export async function importSettingsText(text) {
@@ -309,12 +343,53 @@ export function bindSettingsSyncControls(inner) {
 		})();
 	});
 
+	inner.querySelector("[data-roprime-settings-reset]")?.addEventListener(
+		"click",
+		() => {
+			void (async () => {
+				try {
+					previewLastSaved = await resetAllSettingsFromSync(inner);
+					setSyncStatus(
+						inner,
+						accountSettingsPaneT("Settings sync reset done"),
+					);
+					window.setTimeout(() => setSyncStatus(inner, ""), 2200);
+				} catch {
+					setSyncStatus(
+						inner,
+						accountSettingsPaneT("Settings sync reset failed"),
+						true,
+					);
+				}
+			})();
+		},
+	);
+
 	if (preview instanceof HTMLTextAreaElement) {
 		preview.addEventListener("input", () => {
 			window.clearTimeout(previewSaveTimer);
 			previewSaveTimer = window.setTimeout(() => {
 				const normalized = preview.value;
-				if (!normalized.trim() || normalized === previewLastSaved) return;
+				if (normalized === previewLastSaved) return;
+				if (!normalized.trim()) {
+					void (async () => {
+						try {
+							previewLastSaved = await resetAllSettingsFromSync(inner);
+							setSyncStatus(
+								inner,
+								accountSettingsPaneT("Settings sync reset done"),
+							);
+							window.setTimeout(() => setSyncStatus(inner, ""), 2200);
+						} catch {
+							setSyncStatus(
+								inner,
+								accountSettingsPaneT("Settings sync reset failed"),
+								true,
+							);
+						}
+					})();
+					return;
+				}
 				void (async () => {
 					try {
 						await importSettingsText(normalized);

@@ -1,14 +1,10 @@
 import { debounce } from "../core/debounce.js";
-import {
-	RP_PROFILE_SETTINGS_ROOT_ID,
-	settingsState,
-} from "../core/core.js";
+import { RP_SETTINGS_INNER_ID, settingsState } from "../core/core.js";
 
 const RENAME_DEBOUNCE_MS = 500;
 let renameObserver = null;
 const applyAllRenames = debounce(() => {
 	applyCommunityRename(document.body);
-	applyExperiencesRename(document.body);
 	applyMarketplaceRename(document.body);
 }, RENAME_DEBOUNCE_MS);
 
@@ -28,29 +24,13 @@ function renameGroupsBackText(text) {
 		.replace(/\bgroup\b/g, "community");
 }
 
-function renameExperiencesText(text) {
-	return text
-		.replace(/\bExperiences\b/g, "Games")
-		.replace(/\bexperiences\b/g, "games")
-		.replace(/\bExperience\b/g, "Game")
-		.replace(/\bexperience\b/g, "game");
-}
-
-function renameGamesBackText(text) {
-	return text
-		.replace(/\bGames\b/g, "Experiences")
-		.replace(/\bgames\b/g, "experiences")
-		.replace(/\bGame\b/g, "Experience")
-		.replace(/\bgame\b/g, "experience");
-}
-
 function renameMarketplaceText(text) {
 	return text
 		.replace(/\bMarketplace\b/g, "Catalog")
 		.replace(/\bmarketplace\b/g, "catalog");
 }
 
-function renameAvatarShopBackText(text) {
+function renameCatalogBackText(text) {
 	return text
 		.replace(/\bCatalog\b/g, "Marketplace")
 		.replace(/\bcatalog\b/g, "marketplace");
@@ -68,7 +48,7 @@ function shouldSkipNode(node) {
 		return true;
 	if (
 		node.parentElement.closest(
-			`#${RP_PROFILE_SETTINGS_ROOT_ID}, #react-user-account-base`,
+			`#${RP_SETTINGS_INNER_ID}, #react-user-account-base`,
 		)
 	)
 		return true;
@@ -97,12 +77,12 @@ export function applyMarketplaceRename(rootNode) {
 	applyTextTransform(
 		rootNode,
 		renameMarketplaceText,
-		settingsState.renameMarketplaceToAvatarShop,
+		settingsState.renameMarketplaceToCatalog,
 	);
 }
 
-export function applyAvatarShopBackRename(rootNode) {
-	applyTextTransform(rootNode, renameAvatarShopBackText, true);
+export function applyCatalogBackRename(rootNode) {
+	applyTextTransform(rootNode, renameCatalogBackText, true);
 }
 
 export function applyCommunityRename(rootNode) {
@@ -117,18 +97,6 @@ export function applyGroupsBackRename(rootNode) {
 	applyTextTransform(rootNode, renameGroupsBackText, true);
 }
 
-export function applyExperiencesRename(rootNode) {
-	applyTextTransform(
-		rootNode,
-		renameExperiencesText,
-		settingsState.renameExperiencesToGames,
-	);
-}
-
-export function applyGamesBackRename(rootNode) {
-	applyTextTransform(rootNode, renameGamesBackText, true);
-}
-
 function startRenameObserver() {
 	if (renameObserver) return;
 	renameObserver = new MutationObserver(() => {
@@ -138,7 +106,6 @@ function startRenameObserver() {
 		if (!document.body) return;
 		renameObserver.observe(document.body, { childList: true, subtree: true });
 		applyCommunityRename(document.body);
-		applyExperiencesRename(document.body);
 		applyMarketplaceRename(document.body);
 	};
 	if (document.body) start();
@@ -155,8 +122,7 @@ export function updateRenameLoop() {
 	if (
 		settingsState.renameDropdownEnabled &&
 		(settingsState.renameCommunitiesToGroups ||
-			settingsState.renameExperiencesToGames ||
-			settingsState.renameMarketplaceToAvatarShop)
+			settingsState.renameMarketplaceToCatalog)
 	) {
 		startRenameObserver();
 		return;
