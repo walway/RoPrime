@@ -9,7 +9,6 @@ import {
 	createRoPrimeNavMenuButton,
 	setCollapseButtonIcon,
 } from "../ui/components/collapse.js";
-import { attachMuiRipple, bindMuiRipplesIn } from "../ui/muiRipple.js";
 import {
 	syncSidebarCompactDecorations,
 	updateSidebarCompactVisibility,
@@ -565,9 +564,7 @@ function applyNavbarMenuButton() {
 		});
 		originalNavMenuButtons.set(replacement, original);
 		original.replaceWith(replacement);
-		attachMuiRipple(replacement);
 	});
-	bindMuiRipplesIn(document);
 }
 
 function toggleFullToIconSidebar() {

@@ -1,3 +1,4 @@
+import { debounce } from "../core/debounce.js";
 import { shouldRunRoPrimeOnCurrentPage } from "../core/core.js";
 import {
 	layerIsCurrent,
@@ -14,6 +15,10 @@ const PROFILE_LAYER_ID = "roprime-profile-page-profile-effect-layer";
 
 let syncPromise = null;
 let observer = null;
+const PROFILE_SYNC_DEBOUNCE_MS = 400;
+const scheduleProfileSync = debounce(() => {
+	void syncProfilePageEffect();
+}, PROFILE_SYNC_DEBOUNCE_MS);
 
 export function parseUserProfileIdFromLocation(loc = window.location) {
 	const path = loc.pathname || "";
@@ -101,16 +106,45 @@ export function syncProfilePageEffect() {
 	return syncPromise;
 }
 
-export function installProfilePageEffectObserver() {
+function disconnectProfileObserver() {
+	scheduleProfileSync.cancel();
+	observer?.disconnect();
+	observer = null;
+	removeProfileEffectLayers();
+}
+
+function connectProfileObserver() {
 	if (observer) return;
 	observer = new MutationObserver(() => {
-		void syncProfilePageEffect();
+		scheduleProfileSync();
 	});
-	const start = () => {
-		if (!document.body) return;
-		observer.observe(document.body, { childList: true, subtree: true });
-		void syncProfilePageEffect();
+	if (!document.body) return;
+	observer.observe(document.body, { childList: true, subtree: true });
+	void syncProfilePageEffect();
+}
+
+function syncProfileObserverForRoute() {
+	if (!shouldRunRoPrimeOnCurrentPage() || !isUserProfilePage()) {
+		disconnectProfileObserver();
+		return;
+	}
+	connectProfileObserver();
+}
+
+export function installProfilePageEffectObserver() {
+	if (installProfilePageEffectObserver.installed) return;
+	installProfilePageEffectObserver.installed = true;
+
+	const onRoute = () => {
+		syncProfileObserverForRoute();
 	};
-	if (document.body) start();
-	else document.addEventListener("DOMContentLoaded", start, { once: true });
+	window.addEventListener("roprime-location-change", onRoute);
+	window.addEventListener("popstate", onRoute);
+
+	if (document.body) syncProfileObserverForRoute();
+	else {
+		document.addEventListener("DOMContentLoaded", syncProfileObserverForRoute, {
+			once: true,
+		});
+	}
 }

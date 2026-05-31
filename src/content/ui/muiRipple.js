@@ -1,5 +1,4 @@
-const RIPPLE_BUTTON_SELECTOR =
-	".roprime-nav-menu-button, .roprime-settings-menu-btn, .roprime-settings-primary-btn";
+const RIPPLE_BUTTON_SELECTOR = ".roprime-settings-menu-btn";
 
 const RIPPLE_ROOT_SELECTOR =
 	".roprime-mui-ripple-root, .roprime-nav-menu-button-ripple, .MuiTouchRipple-root";

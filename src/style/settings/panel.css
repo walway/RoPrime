@@ -190,6 +190,19 @@
 	border-radius: 12px;
 }
 
+#roprime-settings-tree,
+.MuiTreeItem-root li,
+.MuiTreeItem-content div,
+.MuiTreeItem-label div,
+.a[href="#"],
+.roprime-settings-nav-btn,
+.MuiTypography-root span {
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+  	user-select: none;
+}
+
 .game-details-carousel-container
 	.carousel-item.carousel-video.game-preview-video-container
 	.video-preview-wrapper.is-ready

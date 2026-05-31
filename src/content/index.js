@@ -5,10 +5,8 @@ import {
 	loadSettingsUiStrings,
 	RP_SETTINGS_KEY,
 	reloadSettingsUiStrings,
-	setSyncIntervalId,
 	shouldRunRoPrimeOnCurrentPage,
 	syncAccountSettingsLayoutInset,
-	syncIntervalId,
 } from "./core/core.js";
 import { syncCustomCss } from "./features/customCss.js";
 import {
@@ -18,6 +16,7 @@ import {
 	updateRenameLoop,
 } from "./features/rename.js";
 import { syncHomeWelcomeModal } from "./features/welcome.js";
+import { installDomSyncScheduler } from "./panel/domSyncScheduler.js";
 import { syncRoEliteView } from "./panel/panel.js";
 import {
 	installFriendCarouselEffects,
@@ -85,6 +84,7 @@ function installHistoryListeners() {
 	const handleRouteChange = () => {
 		try {
 			syncRoEliteView();
+			syncHomeWelcomeModal();
 			syncProfileSettingsRoute();
 			syncAccountSettingsMenuButton();
 			void syncProfilePageEffect();
@@ -113,9 +113,7 @@ function bootstrap() {
 				installHistoryListeners();
 				installProfilePageEffectObserver();
 				installFriendCarouselEffects();
-				if (syncIntervalId === null) {
-					setSyncIntervalId(window.setInterval(syncRoEliteView, 1200));
-				}
+				installDomSyncScheduler();
 				if (shouldRunRoPrimeOnCurrentPage()) {
 					updateRenameLoop();
 				}

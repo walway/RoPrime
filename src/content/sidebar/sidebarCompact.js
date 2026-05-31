@@ -299,39 +299,39 @@ body .no-gutter-ads.logged-in.left-nav-new-width {
   pointer-events: none !important;
 
 }
-.left-nav.fixed li:has(a[href*="https:
+.left-nav.fixed li:has(a[href*="friend-requests" i]) {
   overflow: visible !important;
   position: relative !important;
   z-index: 80 !important;
 }
-.left-nav.fixed a[href*="https:
-.left-nav.fixed a[href*="https:
-.left-nav.fixed a[href*="https:
-.left-nav.fixed a[href*="https:
+.left-nav.fixed a[href*="friend-requests" i],
+.left-nav.fixed a[href*="friend-requests" i]:hover,
+.left-nav.fixed a[href*="friend-requests" i]:focus-visible,
+.left-nav.fixed a[href*="friend-requests" i]:active {
   position: relative !important;
   overflow: visible !important;
   z-index: 1 !important;
   border-radius: var(--radius-medium, 10px) !important;
 }
-.left-nav.fixed a[href*="https:
-.left-nav.fixed a[href*="https:
-.left-nav.fixed a[href*="https:
-.left-nav.fixed a[href*="https:
-.left-nav.fixed a[href*="https:
-.left-nav.fixed a[href*="https:
-.left-nav.fixed a[href*="https:
-.left-nav.fixed a[href*="https:
+.left-nav.fixed a[href*="friend-requests" i] > div,
+.left-nav.fixed a[href*="friend-requests" i] > div.absolute,
+.left-nav.fixed a[href*="friend-requests" i] > div[class*="inset-"],
+.left-nav.fixed a[href*="friend-requests" i] > span[class*="absolute"],
+.left-nav.fixed a[href*="friend-requests" i] > span[class*="inset-"],
+.left-nav.fixed a[href*="friend-requests" i] [class*="inset-"][class*="absolute"],
+.left-nav.fixed a[href*="friend-requests" i]::before,
+.left-nav.fixed a[href*="friend-requests" i]::after {
   border-radius: var(--radius-medium, 10px) !important;
 }
-.left-nav.fixed a[href*="https:
-.left-nav.fixed a[href*="https:
+.left-nav.fixed a[href*="friend-requests" i] > span.grow-0.shrink-0.basis-auto.icon.icon-regular-speech-bubble-align-center,
+.left-nav.fixed a[href*="friend-requests" i] span.icon-regular-speech-bubble-align-center {
   position: relative !important;
   z-index: 1 !important;
 }
-.left-nav.fixed a[href*="https:
-.left-nav.fixed a[href*="https:
-.left-nav.fixed a[href*="https:
-.left-nav.fixed a[href*="https:
+.left-nav.fixed a[href*="friend-requests" i] span.fill.basis-auto.padding-x-small.flex.justify-end.items-center,
+.left-nav.fixed a[href*="friend-requests" i] span.fill[class*="basis-auto"][class*="padding-x-small"][class*="justify-end"][class*="items-center"],
+.left-nav.fixed a[href*="friend-requests" i] .foundation-web-badge,
+.left-nav.fixed a[href*="friend-requests" i] [class*="foundation-web-badge"] {
   position: absolute !important;
   top: 4px !important;
   right: 1px !important;

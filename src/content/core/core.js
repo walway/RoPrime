@@ -229,6 +229,7 @@ export const RP_DEFAULT_SETTINGS = {
 	hiddenSidebarItemsBySize: { full: [], small: [], icon: [] },
 	blockedExecutionPages: [],
 	customCss: "",
+	customCssCautionAccepted: false,
 	cosmeticsEnabled: false,
 	profileEffectsLayoutView: "grid",
 	ownedProfileEffects: [],
@@ -241,20 +242,10 @@ export const RP_DEFAULT_SETTINGS = {
 };
 
 export let isSyncing = false;
-export let syncIntervalId = null;
-export let renameIntervalId = null;
 export const settingsState = { ...RP_DEFAULT_SETTINGS };
 
 export function setIsSyncing(value) {
 	isSyncing = value;
-}
-
-export function setSyncIntervalId(value) {
-	syncIntervalId = value;
-}
-
-export function setRenameIntervalId(value) {
-	renameIntervalId = value;
 }
 
 export function getStorageApi() {
@@ -355,6 +346,7 @@ export function serializeSettingsPayload() {
 			typeof settingsState.customCss === "string"
 				? settingsState.customCss
 				: "",
+		customCssCautionAccepted: !!settingsState.customCssCautionAccepted,
 		cosmeticsEnabled: !!settingsState.cosmeticsEnabled,
 		profileEffectsLayoutView: ["grid", "list", "wide"].includes(
 			settingsState.profileEffectsLayoutView,
@@ -509,7 +501,7 @@ export function isCurrentPageBlockedByUser() {
 }
 
 export function shouldRunRoPrimeOnCurrentPage() {
-	return !isForeignAccountPluginRoute() && !isCurrentPageBlockedByUser();
+	return !isCurrentPageBlockedByUser();
 }
 
 export function getCurrentrp() {

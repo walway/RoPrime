@@ -208,14 +208,11 @@ body.roprime-sidebar-collapse-menu-enabled.roprime-sidebar-icon-only-active
 	overflow: hidden;
 }
 
-.roprime-settings-tree-item .MuiTreeItem-label {
-	flex: 1 1 auto;
-	min-width: 0;
-}
-
 .roprime-settings-nav-btn {
-	display: block;
+	display: flex;
+	align-items: center;
 	width: 100%;
+	box-sizing: border-box;
 	padding: 0;
 	border: 0;
 	background: transparent;
@@ -227,6 +224,8 @@ body.roprime-sidebar-collapse-menu-enabled.roprime-sidebar-icon-only-active
 
 .roprime-settings-nav-btn [class*="Typography-root-label"] {
 	display: block;
+	flex: 1 1 auto;
+	min-width: 0;
 	padding-left: 12px;
 	font-size: 14px;
 	font-weight: 500;

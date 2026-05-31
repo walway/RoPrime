@@ -2,6 +2,7 @@ import { minimalEditor } from "prism-code-editor/setups";
 import "prism-code-editor/languages/css";
 import "prism-code-editor/prism/languages/css";
 import { saveSettings, settingsState } from "../core/core.js";
+import { promptCustomCssCautionNotice } from "../features/alert.js";
 import { syncCustomCss } from "../features/customCss.js";
 import { t as accountSettingsPaneT } from "./roprimeAccountSettingsPage.js";
 
@@ -140,6 +141,23 @@ function ensureCssEditor(inner) {
 	destroyCssEditor();
 	cssEditorHost = host;
 
+	let cautionPromptActive = false;
+
+	async function ensureCustomCssCautionAccepted() {
+		if (settingsState.customCssCautionAccepted) return true;
+		if (cautionPromptActive) return false;
+		cautionPromptActive = true;
+		try {
+			const accepted = await promptCustomCssCautionNotice();
+			if (!accepted) return false;
+			settingsState.customCssCautionAccepted = true;
+			saveSettings();
+			return true;
+		} finally {
+			cautionPromptActive = false;
+		}
+	}
+
 	cssEditor = minimalEditor(
 		host,
 		{
@@ -165,9 +183,13 @@ function ensureCssEditor(inner) {
 			applyEditorHeight(cssEditor);
 			syncPlaceholder(inner);
 
-			cssEditor.textarea.addEventListener("focus", () =>
-				syncPlaceholder(inner),
-			);
+			cssEditor.textarea.addEventListener("focus", () => {
+				void (async () => {
+					const allowed = await ensureCustomCssCautionAccepted();
+					if (!allowed) cssEditor?.textarea.blur();
+					syncPlaceholder(inner);
+				})();
+			});
 			cssEditor.textarea.addEventListener("blur", () => syncPlaceholder(inner));
 		},
 	);

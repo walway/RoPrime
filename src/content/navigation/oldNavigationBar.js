@@ -239,8 +239,15 @@ function buildNavHtml(profileHref, avatarUrl, displayName) {
 </nav>`.trim();
 }
 
+let lastNavRenderKey = "";
+
 function renderInto(host) {
 	const { href, avatar, name } = scrapeProfile();
+	const renderKey = `${href}|${avatar}|${name}`;
+	if (renderKey === lastNavRenderKey && host.querySelector(".roprime-cln-list")) {
+		return;
+	}
+	lastNavRenderKey = renderKey;
 	host.innerHTML = buildNavHtml(href, avatar, name);
 }
 
@@ -256,6 +263,7 @@ export function syncOldNavigationBar() {
 	if (!settingsState.oldNavigationBarEnabled) {
 		document.getElementById(HOST_ID)?.remove();
 		root.classList.remove(COLLAPSED_CLASS);
+		lastNavRenderKey = "";
 		try {
 			delete window.__oldRobloxOldNavigationBar;
 		} catch {

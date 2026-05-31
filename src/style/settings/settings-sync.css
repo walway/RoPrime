@@ -50,20 +50,3 @@
 .roprime-settings-sync-status.is-error {
 	color: #ef4444;
 }
-
-.roprime-settings-nav-alert.roprime-settings-nav-alert--suppressed,
-#rp-settings-inner[data-roprime-search-active="1"] .roprime-settings-nav-alert,
-.roprime-settings-mui-shell.is-search-mode .roprime-settings-nav-alert,
-.roprime-settings-wrapper.is-search-mode .roprime-settings-nav-alert {
-	display: none !important;
-	visibility: hidden !important;
-	height: 0 !important;
-	min-height: 0 !important;
-	max-height: 0 !important;
-	margin: 0 !important;
-	padding: 0 !important;
-	overflow: hidden !important;
-	opacity: 0 !important;
-	pointer-events: none !important;
-	border: 0 !important;
-}

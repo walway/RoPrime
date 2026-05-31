@@ -91,3 +91,7 @@ li.list-item.avatar-card .thumbnail-2d-container.avatar-card-image img,
 	position: relative;
 	z-index: 2;
 }
+
+img[src*="AvatarHeadshot"] {
+  border-radius: 999px;
+}

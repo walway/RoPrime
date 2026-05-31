@@ -4,6 +4,10 @@
 	display: block;
 }
 
+span.thumbnail-2d-container.avatar-card-image img {
+    border-radius: 999px;
+}
+
 .react-friends-carousel-container div.avatar.avatar-card-fullbody,
 .friend-carousel-container div.avatar.avatar-card-fullbody {
 	position: relative !important;

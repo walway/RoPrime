@@ -10,6 +10,7 @@ const extensionApi = globalThis.browser || globalThis.chrome;
 
 let welcomeKeydownHandler = null;
 let storageDismissListenerAttached = false;
+let welcomeDismissedCache = null;
 
 function attachDismissStorageListener() {
 	if (storageDismissListenerAttached) return;
@@ -19,6 +20,7 @@ function attachDismissStorageListener() {
 		try {
 			if (area !== "local") return;
 			if (changes[RP_HOME_WELCOME_DISMISSED_KEY]?.newValue === true) {
+				welcomeDismissedCache = true;
 				removeWelcomeIfPresent();
 			}
 		} catch (error) {
@@ -65,6 +67,7 @@ function appendWelcomeWhenBodyReady(root) {
 }
 
 function persistWelcomeDismissed() {
+	welcomeDismissedCache = true;
 	try {
 		const storage = getStorageApi();
 		if (storage) storage.set({ [RP_HOME_WELCOME_DISMISSED_KEY]: true });
@@ -141,8 +144,18 @@ export function syncHomeWelcomeModal() {
 		return;
 	}
 
+	if (welcomeDismissedCache === true) {
+		removeWelcomeIfPresent();
+		return;
+	}
+	if (welcomeDismissedCache === false) {
+		showWelcomeModal();
+		return;
+	}
+
 	const storage = getStorageApi();
 	if (!storage) {
+		welcomeDismissedCache = false;
 		showWelcomeModal();
 		return;
 	}
@@ -156,9 +169,11 @@ export function syncHomeWelcomeModal() {
 				}
 				if (!isRobloxHomePage()) return;
 				if (result?.[RP_HOME_WELCOME_DISMISSED_KEY] === true) {
+					welcomeDismissedCache = true;
 					removeWelcomeIfPresent();
 					return;
 				}
+				welcomeDismissedCache = false;
 				showWelcomeModal();
 			} catch {
 				/* ignore */

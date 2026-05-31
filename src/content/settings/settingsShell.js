@@ -85,13 +85,9 @@ function buildTreeNavItem({ page, labelKey, hidden = false }) {
 	const hiddenAttr = hidden ? " hidden" : "";
 	return `
 <li role="treeitem" tabindex="0" id="${TREE_VIEW_ID}-${page}" aria-selected="false" class="${MUI.treeItem} roprime-settings-tree-item" data-roprime-tree-item="${page}" style="--TreeView-itemDepth: 0;"${hiddenAttr}>
-	<div class="${MUI.treeItemContent} roprime-settings-tree-content" data-roprime-page="${page}">
-		<div class="${MUI.treeItemLabel}">
-			<a href="#" class="${MUI.treeLink} roprime-settings-nav-btn" data-roprime-page="${page}">
-				<span class="${MUI.treeLinkLabel}" data-i18n="${labelKey}"></span>
-			</a>
-		</div>
-	</div>
+	<a href="#" class="${MUI.treeItemContent} ${MUI.treeLink} roprime-settings-tree-content roprime-settings-nav-btn" data-roprime-page="${page}">
+		<span class="${MUI.treeLinkLabel}" data-i18n="${labelKey}"></span>
+	</a>
 </li>`;
 }
 

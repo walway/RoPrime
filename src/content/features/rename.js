@@ -1,9 +1,16 @@
+import { debounce } from "../core/debounce.js";
 import {
 	RP_PROFILE_SETTINGS_ROOT_ID,
-	renameIntervalId,
-	setRenameIntervalId,
 	settingsState,
 } from "../core/core.js";
+
+const RENAME_DEBOUNCE_MS = 500;
+let renameObserver = null;
+const applyAllRenames = debounce(() => {
+	applyCommunityRename(document.body);
+	applyExperiencesRename(document.body);
+	applyMarketplaceRename(document.body);
+}, RENAME_DEBOUNCE_MS);
 
 function renameCommunityText(text) {
 	return text
@@ -122,6 +129,28 @@ export function applyGamesBackRename(rootNode) {
 	applyTextTransform(rootNode, renameGamesBackText, true);
 }
 
+function startRenameObserver() {
+	if (renameObserver) return;
+	renameObserver = new MutationObserver(() => {
+		applyAllRenames();
+	});
+	const start = () => {
+		if (!document.body) return;
+		renameObserver.observe(document.body, { childList: true, subtree: true });
+		applyCommunityRename(document.body);
+		applyExperiencesRename(document.body);
+		applyMarketplaceRename(document.body);
+	};
+	if (document.body) start();
+	else document.addEventListener("DOMContentLoaded", start, { once: true });
+}
+
+function stopRenameObserver() {
+	applyAllRenames.cancel();
+	renameObserver?.disconnect();
+	renameObserver = null;
+}
+
 export function updateRenameLoop() {
 	if (
 		settingsState.renameDropdownEnabled &&
@@ -129,27 +158,12 @@ export function updateRenameLoop() {
 			settingsState.renameExperiencesToGames ||
 			settingsState.renameMarketplaceToAvatarShop)
 	) {
-		if (renameIntervalId === null) {
-			setRenameIntervalId(
-				window.setInterval(() => {
-					applyCommunityRename(document.body);
-					applyExperiencesRename(document.body);
-					applyMarketplaceRename(document.body);
-				}, 1500),
-			);
-		}
+		startRenameObserver();
 		return;
 	}
-
-	if (renameIntervalId !== null) {
-		window.clearInterval(renameIntervalId);
-		setRenameIntervalId(null);
-	}
+	stopRenameObserver();
 }
 
 export function stopRenameLoop() {
-	if (renameIntervalId !== null) {
-		window.clearInterval(renameIntervalId);
-		setRenameIntervalId(null);
-	}
+	stopRenameObserver();
 }

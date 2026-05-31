@@ -11,7 +11,6 @@ import {
 	saveSettings,
 	setAccountSettingsShellClass,
 	settingsState,
-	shouldRunRoPrimeOnCurrentPage,
 	syncAccountSettingsLayoutInset,
 } from "../core/core.js";
 import { updateRenameLoop } from "../features/rename.js";
@@ -139,21 +138,13 @@ function languageMenuOptionsHtml() {
 		.join("");
 }
 
-function findMountHost() {
-	const acc = document.getElementById("react-user-account-base");
-	if (acc instanceof HTMLElement) {
-		const inner =
-			acc.querySelector(".content-container") ||
-			acc.querySelector("#content-container") ||
-			acc.querySelector(".account-content") ||
-			acc;
-		if (inner instanceof HTMLElement) return inner;
-	}
-	const main = document.querySelector("#container-main");
-	if (main instanceof HTMLElement) return main;
-	const root = document.getElementById("root");
-	if (root instanceof HTMLElement) return root;
-	return document.body;
+function findSettingsMountHost() {
+	const main = document.querySelector(
+		"main#container-main.container-main.content-no-ads, main.container-main.content-no-ads#container-main",
+	);
+	if (!(main instanceof HTMLElement)) return null;
+	const content = main.querySelector("#content.content, div#content.content");
+	return content instanceof HTMLElement ? content : null;
 }
 
 function snapshotRenameRestore() {
@@ -322,25 +313,6 @@ function syncTreeNavSelection(inner, activePage, isSearchMode) {
 	});
 }
 
-function setProfileEffectsAlertSuppressed(root, suppressed) {
-	const inner = root.querySelector("#rp-settings-inner");
-	if (inner instanceof HTMLElement) {
-		inner.setAttribute("data-roprime-search-active", suppressed ? "1" : "0");
-	}
-	root
-		.querySelectorAll("[data-roprime-profile-effects-alert]")
-		.forEach((node) => {
-			if (!(node instanceof HTMLElement)) return;
-			node.classList.toggle(
-				"roprime-settings-nav-alert--suppressed",
-				suppressed,
-			);
-			node.hidden = suppressed;
-			node.style.display = suppressed ? "none" : "";
-			node.setAttribute("aria-hidden", suppressed ? "true" : "false");
-		});
-}
-
 function refreshLayoutAndNav(root) {
 	const inner = root.querySelector("#rp-settings-inner");
 	if (!(inner instanceof HTMLElement)) return;
@@ -375,8 +347,6 @@ function refreshLayoutAndNav(root) {
 			!isSearchMode && button.dataset.roprimePage === activePage,
 		);
 	});
-
-	setProfileEffectsAlertSuppressed(root, isSearchMode);
 
 	const profileEffectsAlert = inner.querySelector(
 		"[data-roprime-profile-effects-alert]",
@@ -505,7 +475,6 @@ function bindOnce(root) {
 			if (si instanceof HTMLInputElement) si.value = "";
 		}
 		inner.setAttribute("data-roprime-search-mode", "1");
-		setProfileEffectsAlertSuppressed(root, true);
 		refreshLayoutAndNav(root);
 	};
 
@@ -522,9 +491,6 @@ function bindOnce(root) {
 	if (search instanceof HTMLInputElement) {
 		search.addEventListener("focus", enterSearchMode);
 		search.addEventListener("click", enterSearchMode);
-		search.addEventListener("pointerdown", () => {
-			setProfileEffectsAlertSuppressed(root, true);
-		});
 		search.addEventListener("input", () => {
 			if (inner.getAttribute("data-roprime-search-mode") !== "1") return;
 			if (search.value.trim().toLowerCase() === RP_DEBUG_UNLOCK)
@@ -536,7 +502,6 @@ function bindOnce(root) {
 		searchWrap.addEventListener(
 			"pointerdown",
 			() => {
-				setProfileEffectsAlertSuppressed(root, true);
 				enterSearchMode();
 			},
 			true,
@@ -546,7 +511,6 @@ function bindOnce(root) {
 	const navigateToPage = (nextPage) => {
 		inner.removeAttribute("data-roprime-search-mode");
 		inner.removeAttribute("data-roprime-search-source-page");
-		setProfileEffectsAlertSuppressed(root, false);
 		const searchBox = inner.querySelector("#roprime-settings-search");
 		if (searchBox instanceof HTMLInputElement) searchBox.value = "";
 		const nextUrl = buildPluginUrl(nextPage);
@@ -1068,7 +1032,7 @@ export function syncProfileSettingsRoute() {
 		return;
 	}
 
-	if (!shouldRunRoPrimeOnCurrentPage() || !isPluginRoute()) {
+	if (!isPluginRoute()) {
 		setAccountSettingsShellClass(false);
 		setNativeAccountChromeHidden(false);
 		document.getElementById(RP_PROFILE_SETTINGS_ROOT_ID)?.remove();
@@ -1076,6 +1040,9 @@ export function syncProfileSettingsRoute() {
 		updateAccountHeader(false);
 		return;
 	}
+
+	const mountHost = findSettingsMountHost();
+	if (!(mountHost instanceof HTMLElement)) return;
 
 	const rpPage = getCurrentrp();
 	if (rpPage === "developer" && !settingsState.developerPageUnlocked) {
@@ -1098,15 +1065,11 @@ export function syncProfileSettingsRoute() {
 		root = document.createElement("div");
 		root.id = RP_PROFILE_SETTINGS_ROOT_ID;
 		root.className = "roprime-profile-settings-root";
-		const acc = document.getElementById("react-user-account-base");
-		if (acc instanceof HTMLElement) {
-			acc.appendChild(root);
-		} else {
-			const host = findMountHost();
-			host.insertBefore(root, host.firstChild);
-		}
+		mountHost.appendChild(root);
 		root.innerHTML = buildMarkup();
 		bindOnce(root);
+	} else if (root.parentElement !== mountHost) {
+		mountHost.appendChild(root);
 	}
 
 	refreshProfileSettingsUi(root);

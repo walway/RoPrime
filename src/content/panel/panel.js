@@ -10,13 +10,7 @@ import {
 	shouldRunRoPrimeOnCurrentPage,
 } from "../core/core.js";
 import { syncCustomCss } from "../features/customCss.js";
-import {
-	applyCommunityRename,
-	applyExperiencesRename,
-	applyMarketplaceRename,
-	stopRenameLoop,
-} from "../features/rename.js";
-import { syncHomeWelcomeModal } from "../features/welcome.js";
+import { stopRenameLoop } from "../features/rename.js";
 import { syncAlwaysShowCloseButton } from "../navigation/alwaysShowCloseButton.js";
 import {
 	stopRobloxNavDropdownButton,
@@ -77,14 +71,6 @@ export function syncRoEliteView() {
 		syncSidebarCompactDecorations();
 		syncSidebarCollapseMenuIcon();
 		syncCustomCss();
-
-		if (settingsState.renameCommunitiesToGroups)
-			applyCommunityRename(document.body);
-		if (settingsState.renameExperiencesToGames)
-			applyExperiencesRename(document.body);
-		if (settingsState.renameMarketplaceToAvatarShop)
-			applyMarketplaceRename(document.body);
-		syncHomeWelcomeModal();
 		syncRobloxNavDropdownButton();
 	} catch (e) {
 		if (isExtensionContextInvalidatedError(e)) return;

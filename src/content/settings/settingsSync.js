@@ -3,27 +3,26 @@ import {
 	isExtensionContextAlive,
 	mergeStoredSettings,
 	RP_SETTINGS_KEY,
+	saveSettings,
 	serializeSettingsPayload,
+	settingsState,
 } from "../core/core.js";
 import { t as accountSettingsPaneT } from "./roprimeAccountSettingsPage.js";
 
 const extensionApi = globalThis.browser || globalThis.chrome;
 
-const PROFILE_EFFECTS_SYNC_STRIP_KEYS = [
+const SYNC_EXCLUDED_KEYS = [
 	"ownedProfileEffects",
 	"equippedProfileEffect",
 	"equippedProfilePictureEffect",
 	"equippedProfilePageEffect",
 	"profileEffectsEquippedByUser",
-];
-
-const SETTINGS_SYNC_STRIP_KEYS = [
-	...PROFILE_EFFECTS_SYNC_STRIP_KEYS,
 	"customCss",
+	"customCssCautionAccepted",
 ];
 
-function stripSettingsSyncPayload(payload) {
-	for (const key of SETTINGS_SYNC_STRIP_KEYS) {
+function stripSyncExcludedKeys(payload) {
+	for (const key of SYNC_EXCLUDED_KEYS) {
 		delete payload[key];
 	}
 	return payload;
@@ -51,227 +50,48 @@ function stripUtf8Bom(text) {
 	return raw.charCodeAt(0) === 0xfeff ? raw.slice(1) : raw;
 }
 
-function parseFirstJsonObjectFromText(text) {
+function parseImportPayload(text) {
 	const raw = stripUtf8Bom(text).trim();
-	if (!raw) throw new Error("invalid");
+	if (!raw) throw new Error("Empty file.");
 
+	let parsed;
 	try {
-		return JSON.parse(raw);
-	} catch {}
-
-	const firstBrace = raw.indexOf("{");
-	if (firstBrace < 0) throw new Error("invalid");
-
-	let depth = 0;
-	let inString = false;
-	let escaped = false;
-	let start = -1;
-	for (let i = firstBrace; i < raw.length; i++) {
-		const ch = raw[i];
-		if (inString) {
-			if (escaped) {
-				escaped = false;
-				continue;
-			}
-			if (ch === "\\") {
-				escaped = true;
-				continue;
-			}
-			if (ch === '"') inString = false;
-			continue;
-		}
-		if (ch === '"') {
-			inString = true;
-			continue;
-		}
-		if (ch === "{") {
-			if (depth === 0) start = i;
-			depth++;
-			continue;
-		}
-		if (ch === "}") {
-			if (depth === 0) continue;
-			depth--;
-			if (depth === 0 && start >= 0) {
-				const candidate = raw.slice(start, i + 1);
-				try {
-					return JSON.parse(candidate);
-				} catch {
-					start = -1;
-				}
-			}
-		}
-	}
-
-	throw new Error("invalid");
-}
-
-function parseJsObjectLiteral(candidate) {
-	try {
-		return Function(`"use strict"; return (${candidate});`)();
+		parsed = JSON.parse(raw);
 	} catch {
-		return null;
-	}
-}
-
-function parseFirstObjectLikeFromText(text) {
-	const raw = stripUtf8Bom(text).trim();
-	if (!raw) throw new Error("invalid");
-
-	try {
-		return parseFirstJsonObjectFromText(raw);
-	} catch {}
-
-	const firstBrace = raw.indexOf("{");
-	if (firstBrace < 0) throw new Error("invalid");
-
-	let depth = 0;
-	let inString = false;
-	let escaped = false;
-	let stringQuote = '"';
-	let inLineComment = false;
-	let inBlockComment = false;
-	let start = -1;
-
-	for (let i = firstBrace; i < raw.length; i++) {
-		const ch = raw[i];
-		const next = raw[i + 1] || "";
-
-		if (inLineComment) {
-			if (ch === "\n") inLineComment = false;
-			continue;
-		}
-		if (inBlockComment) {
-			if (ch === "*" && next === "/") {
-				inBlockComment = false;
-				i++;
-			}
-			continue;
-		}
-
-		if (inString) {
-			if (escaped) {
-				escaped = false;
-				continue;
-			}
-			if (ch === "\\") {
-				escaped = true;
-				continue;
-			}
-			if (ch === stringQuote) inString = false;
-			continue;
-		}
-
-		if (ch === "/" && next === "/") {
-			inLineComment = true;
-			i++;
-			continue;
-		}
-		if (ch === "/" && next === "*") {
-			inBlockComment = true;
-			i++;
-			continue;
-		}
-		if (ch === "'" || ch === '"' || ch === "`") {
-			inString = true;
-			stringQuote = ch;
-			continue;
-		}
-
-		if (ch === "{") {
-			if (depth === 0) start = i;
-			depth++;
-			continue;
-		}
-		if (ch === "}") {
-			if (depth === 0) continue;
-			depth--;
-			if (depth === 0 && start >= 0) {
-				const candidate = raw.slice(start, i + 1);
-				try {
-					return JSON.parse(candidate);
-				} catch {
-					const parsedJs = parseJsObjectLiteral(candidate);
-					if (parsedJs && typeof parsedJs === "object") return parsedJs;
-					start = -1;
-				}
-			}
-		}
+		const start = raw.indexOf("{");
+		const end = raw.lastIndexOf("}");
+		if (start < 0 || end <= start) throw new Error("Invalid JSON.");
+		parsed = JSON.parse(raw.slice(start, end + 1));
 	}
 
-	throw new Error("invalid");
-}
-
-function resolveImportSettingsPayload(parsed) {
-	if (!parsed || typeof parsed !== "object") return null;
-
-	const candidates = [];
-	if (!Array.isArray(parsed)) {
-		candidates.push(parsed);
-		if (parsed.roprime && typeof parsed.roprime === "object") {
-			candidates.push(parsed.roprime);
-		}
-		if (parsed.settings && typeof parsed.settings === "object") {
-			candidates.push(parsed.settings);
-		}
-		if (
-			parsed[RP_SETTINGS_KEY] &&
-			typeof parsed[RP_SETTINGS_KEY] === "object"
-		) {
-			candidates.push(parsed[RP_SETTINGS_KEY]);
-		}
-		if (
-			parsed.data &&
-			typeof parsed.data === "object" &&
-			parsed.data.roprime &&
-			typeof parsed.data.roprime === "object"
-		) {
-			candidates.push(parsed.data.roprime);
-		}
+	if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
+		throw new Error("No importable settings object found.");
 	}
 
-	if (Array.isArray(parsed)) {
-		for (const item of parsed) {
-			if (item && typeof item === "object" && !Array.isArray(item)) {
-				candidates.push(item);
-				break;
-			}
-		}
-	}
+	const candidates = [
+		parsed,
+		parsed.roprime,
+		parsed.settings,
+		parsed[RP_SETTINGS_KEY],
+		parsed.data?.roprime,
+	].filter((item) => item && typeof item === "object" && !Array.isArray(item));
 
 	const hasKnownKey = (obj) =>
-		obj &&
-		typeof obj === "object" &&
-		("language" in obj ||
-			"renameDropdownEnabled" in obj ||
-			"sidebarSize" in obj ||
-			"sidebarCollapseMenuEnabled" in obj ||
-			"oldNavigationBarEnabled" in obj ||
-			"smallNewNavigationBarEnabled" in obj ||
-			"alwaysShowCloseButtonEnabled" in obj ||
-			"friendStylingReimagnedEnabled" in obj ||
-			"blockedExecutionPages" in obj);
+		"language" in obj ||
+		"renameDropdownEnabled" in obj ||
+		"sidebarSize" in obj ||
+		"oldNavigationBarEnabled" in obj ||
+		"blockedExecutionPages" in obj;
 
 	for (const candidate of candidates) {
-		if (hasKnownKey(candidate)) return candidate;
+		if (hasKnownKey(candidate)) return { ...candidate };
 	}
 
 	for (const candidate of candidates) {
-		if (
-			candidate &&
-			typeof candidate === "object" &&
-			!Array.isArray(candidate)
-		) {
-			return candidate;
-		}
+		return { ...candidate };
 	}
 
-	return null;
-}
-
-function getReadableErrorMessage(error) {
-	if (error instanceof Error && error.message) return error.message;
-	return String(error || "Unknown error");
+	throw new Error("No importable settings object found.");
 }
 
 async function storageSetCompat(storage, data) {
@@ -300,15 +120,12 @@ async function storageSetCompat(storage, data) {
 }
 
 export function buildSettingsExportDocument() {
-	const payload = stripSettingsSyncPayload({
-		...serializeSettingsPayload(),
-	});
 	return {
 		about: {
 			browser: detectBrowserName(),
 			version: getExtensionVersion(),
 		},
-		...payload,
+		...stripSyncExcludedKeys({ ...serializeSettingsPayload() }),
 	};
 }
 
@@ -323,7 +140,7 @@ function formatExportFilename() {
 	const h = String(d.getHours()).padStart(2, "0");
 	const m = String(d.getMinutes()).padStart(2, "0");
 	const s = String(d.getSeconds()).padStart(2, "0");
-	return `roprime-${version}-${date}_${h}_${m}_${s}.json`;
+	return `roprime-${version} ${date} ${h}_${m}_${s}.json`;
 }
 
 export function buildSettingsSyncHtml() {
@@ -337,7 +154,7 @@ export function buildSettingsSyncHtml() {
 				<button type="button" class="roprime-settings-primary-btn" data-roprime-settings-copy data-i18n="Settings sync copy"></button>
 				<button type="button" class="roprime-settings-primary-btn" data-roprime-settings-export data-i18n="Settings sync export"></button>
 				<button type="button" class="roprime-settings-primary-btn" data-roprime-settings-import data-i18n="Settings sync import"></button>
-				<input type="file" accept=".json,application/json" hidden data-roprime-settings-import-input />
+				<input type="file" accept=".json,application/json,text/plain" hidden data-roprime-settings-import-input />
 			</div>
 			<div class="roprime-settings-sync-preview-wrap" data-roprime-settings-preview-wrap>
 				<textarea class="roprime-settings-sync-preview" data-roprime-settings-preview spellcheck="false"></textarea>
@@ -365,17 +182,10 @@ export function refreshSettingsSyncPreview(inner) {
 	preview.value = formatSettingsExportJson();
 }
 
-export async function copySettingsExport(inner) {
-	const preview = inner.querySelector("[data-roprime-settings-preview]");
-	const text =
-		preview instanceof HTMLTextAreaElement
-			? preview.value || formatSettingsExportJson()
-			: formatSettingsExportJson();
-	refreshSettingsSyncPreview(inner);
+async function copyTextToClipboard(text) {
 	try {
 		await navigator.clipboard.writeText(text);
-		setSyncStatus(inner, accountSettingsPaneT("Settings sync copied"));
-		window.setTimeout(() => setSyncStatus(inner, ""), 2200);
+		return true;
 	} catch {
 		const fallback = document.createElement("textarea");
 		fallback.value = text;
@@ -386,15 +196,25 @@ export async function copySettingsExport(inner) {
 		fallback.select();
 		const copied = document.execCommand("copy");
 		fallback.remove();
-		setSyncStatus(
-			inner,
-			copied
-				? accountSettingsPaneT("Settings sync copied")
-				: accountSettingsPaneT("Settings sync copy failed"),
-			!copied,
-		);
-		window.setTimeout(() => setSyncStatus(inner, ""), 2200);
+		return copied;
 	}
+}
+
+export async function copySettingsExport(inner) {
+	const preview = inner.querySelector("[data-roprime-settings-preview]");
+	const text =
+		preview instanceof HTMLTextAreaElement
+			? preview.value || formatSettingsExportJson()
+			: formatSettingsExportJson();
+	const copied = await copyTextToClipboard(text);
+	setSyncStatus(
+		inner,
+		copied
+			? accountSettingsPaneT("Settings sync copied")
+			: accountSettingsPaneT("Settings sync copy failed"),
+		!copied,
+	);
+	window.setTimeout(() => setSyncStatus(inner, ""), 2200);
 }
 
 export function exportSettingsFile() {
@@ -409,11 +229,26 @@ export function exportSettingsFile() {
 	document.body.appendChild(a);
 	a.click();
 	a.remove();
-	if (detectBrowserName() === "firefox") {
-		window.setTimeout(() => URL.revokeObjectURL(url), 1500);
-		return;
-	}
-	URL.revokeObjectURL(url);
+	window.setTimeout(() => URL.revokeObjectURL(url), 1500);
+}
+
+export async function importSettingsText(text) {
+	const imported = parseImportPayload(text);
+	stripSyncExcludedKeys(imported);
+
+	const storage = getStorageApi();
+	if (!storage) throw new Error("Storage API unavailable.");
+
+	const preservedCustomCss = String(settingsState.customCss || "");
+	const preservedCustomCssCaution = !!settingsState.customCssCautionAccepted;
+
+	mergeStoredSettings(imported);
+	settingsState.customCss = preservedCustomCss;
+	settingsState.customCssCautionAccepted = preservedCustomCssCaution;
+
+	const payload = serializeSettingsPayload();
+	await storageSetCompat(storage, { [RP_SETTINGS_KEY]: payload });
+	saveSettings();
 }
 
 export async function importSettingsFile(file) {
@@ -421,117 +256,80 @@ export async function importSettingsFile(file) {
 	await importSettingsText(text);
 }
 
-export async function importSettingsText(text) {
-	const parsed = parseFirstObjectLikeFromText(text);
-	const settings = resolveImportSettingsPayload(parsed);
-	if (!settings || typeof settings !== "object" || Array.isArray(settings)) {
-		throw new Error("No importable settings object found.");
-	}
-
-	stripSettingsSyncPayload(settings);
-
-	const storage = getStorageApi();
-	if (!storage) throw new Error("Storage API unavailable.");
-
-	const preservedCustomCss = String(settingsState.customCss || "");
-	mergeStoredSettings(settings);
-	settingsState.customCss = preservedCustomCss;
-	const payload = serializeSettingsPayload();
-	await storageSetCompat(storage, { [RP_SETTINGS_KEY]: payload });
-}
-
-export function initializeSyncPanelListeners(inner) {
+export function bindSettingsSyncControls(inner) {
 	if (inner.getAttribute("data-roprime-settings-sync-bound") === "1") return;
 	inner.setAttribute("data-roprime-settings-sync-bound", "1");
 
 	refreshSettingsSyncPreview(inner);
 
-	const copyBtn = inner.querySelector("[data-roprime-settings-copy]");
-	if (copyBtn instanceof HTMLButtonElement) {
-		copyBtn.addEventListener("click", () => {
-			void copySettingsExport(inner);
-		});
-	}
-
-	const exportBtn = inner.querySelector("[data-roprime-settings-export]");
-	if (exportBtn instanceof HTMLButtonElement) {
-		exportBtn.addEventListener("click", () => {
-			refreshSettingsSyncPreview(inner);
-			exportSettingsFile();
-			setSyncStatus(inner, accountSettingsPaneT("Settings sync exported"));
-			window.setTimeout(() => setSyncStatus(inner, ""), 2200);
-		});
-	}
-
-	const importBtn = inner.querySelector("[data-roprime-settings-import]");
-	const importInput = inner.querySelector(
-		"[data-roprime-settings-import-input]",
-	);
 	const preview = inner.querySelector("[data-roprime-settings-preview]");
 	let previewSaveTimer = 0;
-	let previewLastSaved = "";
+	let previewLastSaved = preview instanceof HTMLTextAreaElement ? preview.value : "";
 
-	const savePreviewText = (text) => {
-		const normalized = String(text || "");
-		if (!normalized.trim() || normalized === previewLastSaved) return;
+	inner.querySelector("[data-roprime-settings-copy]")?.addEventListener("click", () => {
+		void copySettingsExport(inner);
+	});
+
+	inner.querySelector("[data-roprime-settings-export]")?.addEventListener("click", () => {
+		refreshSettingsSyncPreview(inner);
+		exportSettingsFile();
+		setSyncStatus(inner, accountSettingsPaneT("Settings sync exported"));
+		window.setTimeout(() => setSyncStatus(inner, ""), 2200);
+	});
+
+	const importInput = inner.querySelector("[data-roprime-settings-import-input]");
+	inner.querySelector("[data-roprime-settings-import]")?.addEventListener("click", () => {
+		if (importInput instanceof HTMLInputElement) {
+			importInput.value = "";
+			importInput.click();
+		}
+	});
+
+	importInput?.addEventListener("change", () => {
+		const file =
+			importInput instanceof HTMLInputElement ? importInput.files?.[0] : null;
+		if (!file) return;
 		void (async () => {
 			try {
-				await importSettingsText(normalized);
-				previewLastSaved = normalized;
-				setSyncStatus(inner, "Settings saved.");
-				window.setTimeout(() => setSyncStatus(inner, ""), 1600);
+				await importSettingsFile(file);
+				refreshSettingsSyncPreview(inner);
+				const nextPreview = inner.querySelector("[data-roprime-settings-preview]");
+				if (nextPreview instanceof HTMLTextAreaElement) {
+					previewLastSaved = nextPreview.value;
+				}
+				setSyncStatus(inner, accountSettingsPaneT("Settings sync imported"));
+				window.setTimeout(() => setSyncStatus(inner, ""), 2200);
 			} catch (error) {
 				setSyncStatus(
 					inner,
-					`Save failed: ${getReadableErrorMessage(error)}`,
+					accountSettingsPaneT("Settings sync import failed"),
 					true,
 				);
 			}
 		})();
-	};
+	});
 
 	if (preview instanceof HTMLTextAreaElement) {
-		previewLastSaved = preview.value;
 		preview.addEventListener("input", () => {
 			window.clearTimeout(previewSaveTimer);
 			previewSaveTimer = window.setTimeout(() => {
-				savePreviewText(preview.value);
+				const normalized = preview.value;
+				if (!normalized.trim() || normalized === previewLastSaved) return;
+				void (async () => {
+					try {
+						await importSettingsText(normalized);
+						previewLastSaved = normalized;
+						setSyncStatus(inner, accountSettingsPaneT("Settings sync saved"));
+						window.setTimeout(() => setSyncStatus(inner, ""), 1600);
+					} catch {
+						setSyncStatus(
+							inner,
+							accountSettingsPaneT("Settings sync import failed"),
+							true,
+						);
+					}
+				})();
 			}, 500);
 		});
 	}
-	if (
-		importBtn instanceof HTMLButtonElement &&
-		importInput instanceof HTMLInputElement
-	) {
-		importBtn.addEventListener("click", () => {
-			importInput.value = "";
-			importInput.click();
-		});
-		importInput.addEventListener("change", () => {
-			const file = importInput.files?.[0];
-			if (!file) return;
-			void (async () => {
-				try {
-					await importSettingsFile(file);
-					refreshSettingsSyncPreview(inner);
-					const nextPreview = inner.querySelector(
-						"[data-roprime-settings-preview]",
-					);
-					if (nextPreview instanceof HTMLTextAreaElement) {
-						previewLastSaved = nextPreview.value;
-					}
-					setSyncStatus(inner, "Settings imported.");
-					window.setTimeout(() => setSyncStatus(inner, ""), 2200);
-				} catch (error) {
-					setSyncStatus(
-						inner,
-						`Import failed: ${getReadableErrorMessage(error)}`,
-						true,
-					);
-				}
-			})();
-		});
-	}
 }
-
-export const bindSettingsSyncControls = initializeSyncPanelListeners;

@@ -6,14 +6,11 @@ export const USER_CARD_SELECTORS = [
 ];
 
 const subscriptions = new Set();
-const observedElements = new Set();
 let active = false;
 
 function handleElement(element) {
-	if (observedElements.has(element)) return;
 	if (element.dataset.roprimeUserCardObserved === "1") return;
 	element.dataset.roprimeUserCardObserved = "1";
-	observedElements.add(element);
 
 	for (const sub of subscriptions) {
 		try {
@@ -65,14 +62,15 @@ export function onUserCardElement(callback, options = {}) {
 	const sub = { callback, options };
 	subscriptions.add(sub);
 
-	for (const element of observedElements) {
-		try {
-			if (options.exclude?.some((selector) => element.matches(selector))) {
-				continue;
+	for (const selector of USER_CARD_SELECTORS) {
+		for (const element of document.querySelectorAll(selector)) {
+			if (!(element instanceof HTMLElement)) continue;
+			try {
+				if (options.exclude?.some((s) => element.matches(s))) continue;
+				callback(element);
+			} catch (e) {
+				console.warn("RoPrime: user card callback error", e);
 			}
-			callback(element);
-		} catch (e) {
-			console.warn("RoPrime: user card callback error", e);
 		}
 	}
 
