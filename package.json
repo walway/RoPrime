@@ -10,7 +10,7 @@
 		"build": "node tasks/build.js"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "2.4.16",
+		"@biomejs/biome": "2.5.0",
 		"@vitejs/plugin-react": "^6.0.2",
 		"adm-zip": "^0.5.17",
 		"lottie-web": "^5.13.0",
