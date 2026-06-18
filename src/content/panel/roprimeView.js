@@ -5,6 +5,7 @@ import {
 	syncSidebarCompactDecorations,
 	updateSidebarCompactVisibility,
 } from "../sidebar/sidebarCompact.js";
+import { syncHideAgeBadge } from "../sidebar/hideAgeBadge.js";
 import { updateSmallNewNavVisibility } from "../sidebar/smallNewNav.js";
 import { updateDocumentTitle } from "./pageChrome.js";
 
@@ -15,6 +16,7 @@ export function syncRoPrimeView() {
 	syncSidebarCompactDecorations();
 	syncAlwaysShowCloseButton();
 	updateFriendStylingReimagnedVisibility();
+	syncHideAgeBadge();
 
 	updateDocumentTitle(false);
 }

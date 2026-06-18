@@ -19,7 +19,7 @@ export default defineConfig({
 		__ROPrime_SUPABASE_ANON_KEY__: JSON.stringify(supabaseAnonKey),
 	},
 	build: {
-		outDir: "dist",
+		outDir: "dist/_build",
 		emptyOutDir: true,
 		sourcemap: true,
 		lib: {

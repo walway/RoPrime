@@ -4,6 +4,7 @@ import {
 	isExtensionContextAlive,
 	isExtensionContextInvalidatedError,
 	isMyAccountPath,
+	isNativeMyAccountHashRoute,
 	RP_PARAM_KEY,
 	shouldRunRoPrimeOnCurrentPage,
 } from "../core/core.js";
@@ -81,7 +82,7 @@ function extensionIconUrl() {
 }
 
 function shouldInjectVerticalAccountTab() {
-	return isMyAccountPath() && shouldRunRoPrimeOnCurrentPage();
+	return isNativeMyAccountHashRoute() && shouldRunRoPrimeOnCurrentPage();
 }
 
 function shouldInjectSettingsPopoverEntry() {

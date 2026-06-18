@@ -22,6 +22,7 @@ const SYNC_EXCLUDED_KEYS = [
 	"profileEffectsEquippedByUser",
 	"customCss",
 	"customCssCautionAccepted",
+	"hideAgeBadgeEnabled",
 ];
 
 function stripSyncExcludedKeys(payload) {

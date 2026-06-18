@@ -1,4 +1,4 @@
-import { langList } from "../../../.locales/lang-config.js";
+import { langList } from "../../i18n/i18n-config.js";
 import { syncAccountSettingsMenuButton } from "../account/accountSettingsLink.js";
 import {
 	buildPluginUrl,
@@ -611,6 +611,15 @@ function bindOnce(root) {
 		});
 	}
 
+	const hideAgeBadge = inner.querySelector("#roprime-toggle-hide-age-badge");
+	if (hideAgeBadge instanceof HTMLInputElement) {
+		hideAgeBadge.addEventListener("change", () => {
+			settingsState.hideAgeBadgeEnabled = hideAgeBadge.checked;
+			saveSettings();
+			syncRoEliteView();
+		});
+	}
+
 	const sidebarCollapse = inner.querySelector(
 		"#roprime-toggle-sidebar-collapse-menu",
 	);
@@ -856,6 +865,11 @@ function refreshProfileSettingsUi(root) {
 	if (friendStyle instanceof HTMLInputElement)
 		friendStyle.checked = !!settingsState.friendStylingReimagnedEnabled;
 
+	const hideAgeBadge = inner.querySelector("#roprime-toggle-hide-age-badge");
+	if (hideAgeBadge instanceof HTMLInputElement) {
+		hideAgeBadge.checked = !!settingsState.hideAgeBadgeEnabled;
+	}
+
 	const sidebarCollapse = inner.querySelector(
 		"#roprime-toggle-sidebar-collapse-menu",
 	);
@@ -923,7 +937,8 @@ function buildMarkup() {
                 <div class="roprime-toggle-row roprime-sidebar-size-row"><div class="roprime-toggle-copy"><div class="roprime-toggle-title" data-i18n="Sidebar size title"></div><div class="roprime-toggle-desc" data-i18n="Sidebar size description"></div></div><div class="roprime-setting-control">${buildSidebarSizeControlHtml()}</div></div>
                 <div class="roprime-toggle-row"><div class="roprime-toggle-copy"><div class="roprime-toggle-title" data-i18n="Sidebar collapse menu title"></div><div class="roprime-toggle-desc" data-i18n="Sidebar collapse menu description"></div></div><label class="roprime-switch" for="roprime-toggle-sidebar-collapse-menu"><input id="roprime-toggle-sidebar-collapse-menu" type="checkbox" /><span class="roprime-switch-slider" aria-hidden="true"></span></label></div>
                 <div class="roprime-toggle-row"><div class="roprime-toggle-copy"><div class="roprime-toggle-title" data-i18n="Always show close title"></div><div class="roprime-toggle-desc" data-i18n="Always show close description"></div></div><label class="roprime-switch" for="roprime-toggle-always-show-close"><input id="roprime-toggle-always-show-close" type="checkbox" /><span class="roprime-switch-slider" aria-hidden="true"></span></label></div>
-                <div class="roprime-toggle-row"><div class="roprime-toggle-copy"><div class="roprime-toggle-title" data-i18n="Friend styling title"></div><div class="roprime-toggle-desc" data-i18n="Friend styling description"></div></div><label class="roprime-switch" for="roprime-toggle-friend-styling-reimagned"><input id="roprime-toggle-friend-styling-reimagned" type="checkbox" /><span class="roprime-switch-slider" aria-hidden="true"></span></label></div>`;
+                <div class="roprime-toggle-row"><div class="roprime-toggle-copy"><div class="roprime-toggle-title" data-i18n="Friend styling title"></div><div class="roprime-toggle-desc" data-i18n="Friend styling description"></div></div><label class="roprime-switch" for="roprime-toggle-friend-styling-reimagned"><input id="roprime-toggle-friend-styling-reimagned" type="checkbox" /><span class="roprime-switch-slider" aria-hidden="true"></span></label></div>
+                <div class="roprime-toggle-row"><div class="roprime-toggle-copy"><div class="roprime-toggle-title" data-i18n="Hide age badge title"></div><div class="roprime-toggle-desc" data-i18n="Hide age badge description"></div></div><label class="roprime-switch" for="roprime-toggle-hide-age-badge"><input id="roprime-toggle-hide-age-badge" type="checkbox" /><span class="roprime-switch-slider" aria-hidden="true"></span></label></div>`;
 
 	const sidebarContentBody = `
                 <button type="button" class="roprime-sidebar-content-back" data-roprime-sidebar-content-back data-i18n="Sidebar content back"></button>

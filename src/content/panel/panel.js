@@ -22,6 +22,7 @@ import {
 	updateSidebarCompactVisibility,
 } from "../sidebar/sidebarCompact.js";
 import { syncSidebarCollapseMenuIcon } from "../sidebar/sidebarContent.js";
+import { syncHideAgeBadge, RP_HIDE_AGE_BADGE_STYLE_ID } from "../sidebar/hideAgeBadge.js";
 import { updateSmallNewNavVisibility } from "../sidebar/smallNewNav.js";
 
 export function updateOldNavigationBarVisibility() {
@@ -37,6 +38,7 @@ function cleanupBlockedRouteUi() {
 	document.getElementById(RP_ALWAYS_SHOW_CLOSE_STYLE_ID)?.remove();
 	document.getElementById(RP_CUSTOM_CSS_STYLE_ID)?.remove();
 	document.getElementById(RP_FRIEND_STYLING_REIMAGNED_STYLE_ID)?.remove();
+	document.getElementById(RP_HIDE_AGE_BADGE_STYLE_ID)?.remove();
 	document.getElementById("roprime-sidebar-content-hide-style")?.remove();
 	document.getElementById("roprime-classic-left-nav-host")?.remove();
 	document.getElementById("roprime-old-navbar-style")?.remove();
@@ -70,6 +72,7 @@ export function syncRoEliteView() {
 		syncSidebarCompactDecorations();
 		syncSidebarCollapseMenuIcon();
 		syncCustomCss();
+		syncHideAgeBadge();
 		syncRobloxNavDropdownButton();
 	} catch (e) {
 		if (isExtensionContextInvalidatedError(e)) return;

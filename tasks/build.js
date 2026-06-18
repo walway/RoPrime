@@ -17,14 +17,16 @@ import { globSync } from "glob";
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 dotenv.config({ path: join(root, ".env") });
 const distDir = join(root, "dist");
+const bundleDir = join(distDir, "_build");
+const platforms = ["chrome", "firefox"];
 const error = chalk.bold.red;
 const warning = chalk.hex("#FFA500");
 
-function copyPathsToDist(relativePaths) {
+function copyPathsToDist(relativePaths, targetBase) {
 	for (const file of relativePaths) {
 		const src = join(root, file);
 		if (!existsSync(src)) continue;
-		const dst = join(distDir, file);
+		const dst = join(targetBase, file);
 		mkdirSync(dirname(dst), { recursive: true });
 		cpSync(src, dst);
 	}
@@ -73,12 +75,12 @@ function runNode(scriptPath, args, opts) {
 	});
 }
 
-function copyStyleTreeToDist() {
+function copyStyleTreeToDist(targetBase) {
 	const styleFiles = globSync("src/style/**/*.css", { nodir: true });
 	if (styleFiles.length === 0) {
 		throw new Error("No stylesheets under src/style/");
 	}
-	copyPathsToDist(styleFiles);
+	copyPathsToDist(styleFiles, targetBase);
 }
 
 function getStyleCssOrderFromIndex() {
@@ -99,9 +101,12 @@ function getStyleCssOrderFromIndex() {
 	return order;
 }
 
-function writeDistManifest(distPath) {
-	const raw = readFileSync(join(root, "manifest.json"), "utf8");
-	const manifest = JSON.parse(raw);
+function writeDistManifest(platform, platformDistDir) {
+	const manifestPath = join(root, "src/manifests", `${platform}.json`);
+	if (!existsSync(manifestPath)) {
+		throw new Error(`Missing platform manifest: src/manifests/${platform}.json`);
+	}
+	const manifest = JSON.parse(readFileSync(manifestPath, "utf8"));
 	const styleCssOrder = getStyleCssOrderFromIndex();
 	for (const entry of manifest.content_scripts || []) {
 		if (Array.isArray(entry.js)) {
@@ -111,16 +116,42 @@ function writeDistManifest(distPath) {
 		}
 		entry.css = [...styleCssOrder];
 	}
-	writeFileSync(distPath, `${JSON.stringify(manifest, null, 2)}\n`, "utf8");
+	writeFileSync(
+		join(platformDistDir, "manifest.json"),
+		`${JSON.stringify(manifest, null, 2)}\n`,
+		"utf8",
+	);
+}
+
+function copyBundleToPlatform(platformDistDir) {
+	for (const file of ["content.js", "content.js.map"]) {
+		const src = join(bundleDir, file);
+		if (!existsSync(src)) continue;
+		cpSync(src, join(platformDistDir, file));
+	}
+	if (!existsSync(join(platformDistDir, "content.js"))) {
+		throw new Error("Missing bundled content.js after Vite build.");
+	}
+}
+
+function assemblePlatformDist(platform) {
+	const platformDistDir = join(distDir, platform);
+	mkdirSync(platformDistDir, { recursive: true });
+	copyBundleToPlatform(platformDistDir);
+	copyStyleTreeToDist(platformDistDir);
+	copyPathsToDist(
+		[
+			"src/content/background.js",
+			...globSync("resources/**/*", { nodir: true }),
+			...globSync("src/strings/**/*", { nodir: true }),
+			...globSync(".locales/lang-config.js", { nodir: true }),
+		],
+		platformDistDir,
+	);
+	writeDistManifest(platform, platformDistDir);
 }
 
 prepareLottieVendorAssets();
-
-const localeFiles = globSync(".locales/**/*", {
-	nodir: true,
-	ignore: [".locales/example.md"],
-});
-const resourceFiles = globSync("resources/**/*", { nodir: true });
 
 console.log("Building RoPrime with Vite...");
 if (process.env.SUPABASE_URL?.trim()) {
@@ -141,32 +172,30 @@ if (!existsSync(viteCli)) {
 }
 await runNode(viteCli, ["build", "--config", "configs/vite.content.config.js"]);
 
-copyStyleTreeToDist();
+for (const platform of platforms) {
+	assemblePlatformDist(platform);
+}
 
-copyPathsToDist([
-	"src/content/background.js",
-	...resourceFiles,
-	...localeFiles,
-]);
-
-writeDistManifest(join(distDir, "manifest.json"));
+rmSync(bundleDir, { recursive: true, force: true });
 
 console.log("Build complete.");
 console.log(
-	"Load unpacked from project root RoPrime (uses dist/content.js) or from RoPrime/dist (uses content.js).",
+	"Successfully generated dist/chrome (Chromium) and dist/firefox (Gecko) builds.",
 );
 console.log();
 console.log(
-	error("WARNING!!! MAKE SURE TO UPDATE THE VERSION IN THE MANIFEST.JSON"),
+	error(
+		"WARNING!!! MAKE SURE TO UPDATE THE VERSION IN src/manifests/chrome.json AND src/manifests/firefox.json",
+	),
 );
-console.log(warning("USE THIS PATTERN MAP TO CREATE VERSION - "));
+console.log(warning("USE THIS PATTERN MAP TO DONT FORGET MAKE NEW VERSION NUMBER - "));
 console.log();
 console.log(warning("The version map should be Major.Minor.Patch"));
 console.log();
-console.log(chalk.bold("fix: fix typo- automatically bumps Patch (1.1.2) !!!"));
+console.log(chalk.bold("Fix something - bump version as Patch (1.1.2) !!!"));
 console.log(
-	chalk.bold("feat: add login - automatically bumps Minor (1.2.0) !!!"),
+	chalk.bold("New feature - bump version as Minor (1.2.0) !!!"),
 );
 console.log(
-	chalk.bold("feat!: breaking change - automatically bumps Major (2.0.0) !!!"),
+	chalk.bold("Massive changes and a lot of features - bump version as Major (2.0.0) !!!"),
 );

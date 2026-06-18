@@ -1,4 +1,4 @@
-import { langList } from "../../../.locales/lang-config.js";
+import { langList } from "../../i18n/i18n-config";
 
 const extensionApi = globalThis.browser || globalThis.chrome;
 
@@ -147,15 +147,17 @@ function fetchExtensionJson(path) {
 }
 
 async function buildSettingsUiStringMap(language) {
-	const enRes = await fetchExtensionJson(".locales/en/translation-keys.json");
-	if (!enRes.ok) throw new Error(`locales en: ${enRes.status}`);
+	const enRes = await fetchExtensionJson(
+		"src/strings/values/en/translation-keys.json",
+	);
+	if (!enRes.ok) throw new Error(`strings en: ${enRes.status}`);
 	const en = await enRes.json();
 	const loc = normalizeUiLocale(language);
 	if (loc === "en") return { ...en };
 	const curRes = await fetchExtensionJson(
-		`.locales/${loc}/translation-keys.json`,
+		`src/strings/values/${loc}/translation-keys.json`,
 	);
-	if (!curRes.ok) throw new Error(`locales ${loc}: ${curRes.status}`);
+	if (!curRes.ok) return { ...en };
 	const cur = await curRes.json();
 	return { ...en, ...cur };
 }
@@ -202,6 +204,7 @@ export const RP_DEFAULT_SETTINGS = {
 	sidebarIconsOnlyEnabled: false,
 	alwaysShowCloseButtonEnabled: false,
 	friendStylingReimagnedEnabled: false,
+	hideAgeBadgeEnabled: false,
 	developerPageUnlocked: false,
 	enablePluginControlPanel: false,
 	sidebarSize: "full",
@@ -307,6 +310,7 @@ export function serializeSettingsPayload() {
 		sidebarIconsOnlyEnabled: settingsState.sidebarIconsOnlyEnabled,
 		alwaysShowCloseButtonEnabled: settingsState.alwaysShowCloseButtonEnabled,
 		friendStylingReimagnedEnabled: settingsState.friendStylingReimagnedEnabled,
+		hideAgeBadgeEnabled: !!settingsState.hideAgeBadgeEnabled,
 		developerPageUnlocked: !!settingsState.developerPageUnlocked,
 		enablePluginControlPanel: !!settingsState.enablePluginControlPanel,
 		sidebarSize: settingsState.sidebarSize || "full",
@@ -409,6 +413,14 @@ export function isMyAccountPath() {
 	return /^\/(?:[a-z]{2,3}(?:-[a-z0-9]{2,8})?\/)?my\/account(?:\/|$)/i.test(
 		path,
 	);
+}
+
+export function isNativeMyAccountHashRoute() {
+	if (!isMyAccountPath()) return false;
+	const search = window.location.search || "";
+	if (search.length > 1) return false;
+	const hash = window.location.hash || "";
+	return hash.startsWith("#!/");
 }
 
 export function getRobloxLocalePathPrefix() {
