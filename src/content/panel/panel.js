@@ -12,6 +12,10 @@ import { syncCustomCss } from "../features/customCss.js";
 import { stopRenameLoop } from "../features/rename.js";
 import { syncAlwaysShowCloseButton } from "../navigation/alwaysShowCloseButton.js";
 import {
+	stopRobloxFoundationWebMenuButton,
+	syncRobloxFoundationWebMenuButton,
+} from "../navigation/foundationWebMenuButton.js";
+import {
 	stopRobloxNavDropdownButton,
 	syncRobloxNavDropdownButton,
 } from "../navigation/dropdownButton.js";
@@ -32,6 +36,7 @@ export function updateOldNavigationBarVisibility() {
 function cleanupBlockedRouteUi() {
 	stopRenameLoop();
 	stopRobloxNavDropdownButton();
+	stopRobloxFoundationWebMenuButton();
 	document.getElementById(RP_SETTINGS_INNER_ID)?.remove();
 	document.getElementById(RP_SMALL_NEW_NAV_STYLE_ID)?.remove();
 	document.getElementById(RP_SIDEBAR_COMPACT_STYLE_ID)?.remove();
@@ -74,6 +79,7 @@ export function syncRoEliteView() {
 		syncCustomCss();
 		syncHideAgeBadge();
 		syncRobloxNavDropdownButton();
+		syncRobloxFoundationWebMenuButton();
 	} catch (e) {
 		if (isExtensionContextInvalidatedError(e)) return;
 		throw e;
