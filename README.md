@@ -23,14 +23,14 @@ RoPrime is absolutely free browser extension that makes the **Roblox website** f
 You can customize Roblox with a bunch of features to your liking. Here's some features:
 
 - 🎨 Roblox’s UI design style
-- 📐 Sidebar sizes — full, compact, or icon-only
+- 📐 Adjust your sidebar - Full, compact, or icon-only available
 - 🧩 Choose what appears in the sidebar
 - 👥 Reimagined friend list styling
 - 🏃 Fast and lightweight
 - ✏️ Rename wording (Groups/Communities, Catalog/Marketplace)
 - 🖼️ Profile page & picture effects
 - 🎛️ Custom CSS injection
-- 🔄 Sync settings
+- 🔄 Sync settings easily
 - 🌓 Light and dark theme support for Normal, Select and Kids Roblox
 - 🌎 Multilanguage
 <br>
@@ -69,7 +69,7 @@ Found a bug or have an idea? [Open an issue](https://github.com/walway/RoPrime/i
 Thanks to **meflamey** for the Bengali translation<br>
 Thanks to **Ryan Lua** for helping fund the Chrome Developer account
 
-<h2 id="contribution">🌍 Localization</h2> <ol> <li><a href="https://github.com/walway/RoPrime/fork">Fork</a> this project</li> <li>Navigate to the <code>/.locales</code> folder</li> <li>Create a folder with a <a href="https://wikipedia.org/wiki/List_of_ISO_639_language_codes">2-digit ISO 639 code</a> or open an existing one</li> <li>Use <code>example.md</code> in the <code>/.locales</code> folder for guidance. Copy and fill out the template, using the example to translate it into other languages</li> <li>After finishing, verify that your language code exists in <code>lang-config.js</code>. If it doesn't, add your <a href="https://wikipedia.org/wiki/List_of_ISO_639_language_codes">ISO 639 code</a> to the <code>subsets</code> constant, and the name of your language in its native tongue to the <code>langList</code> constant, for example: "English", "普通话", "Español"</li> <li>Open a pull request</li> </ol> 
+<h2 id="contribution">🌍 Localization</h2> <ol> <li><a>New localization will be released soon</li>
 
 <br>
 
