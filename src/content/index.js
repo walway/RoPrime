@@ -9,6 +9,7 @@ import {
 	syncAccountSettingsLayoutInset,
 } from "./core/core.js";
 import { syncCustomCss } from "./features/customCss.js";
+import { installSearchBanObserver, syncSearchBan } from "./features/searchBan.js";
 import {
 	applyCommunityRename,
 	applyMarketplaceRename,
@@ -53,6 +54,7 @@ function installStorageSyncListener() {
 						syncCustomCss();
 						syncAccountSettingsLayoutInset();
 						syncSidebarContent({ force: true });
+						syncSearchBan();
 					} catch (e) {
 						if (!isExtensionContextInvalidatedError(e)) throw e;
 					}
@@ -90,6 +92,7 @@ function installHistoryListeners() {
 			syncFriendCarouselEffects();
 			syncCustomCss();
 			syncAccountSettingsLayoutInset();
+			syncSearchBan();
 		} catch (e) {
 			if (!isExtensionContextInvalidatedError(e)) throw e;
 		}
@@ -110,6 +113,7 @@ function bootstrap() {
 				}
 				await loadSettingsUiStrings();
 				installHistoryListeners();
+				installSearchBanObserver();
 				installProfilePageEffectObserver();
 				installFriendCarouselEffects();
 				installDomSyncScheduler();
@@ -124,6 +128,7 @@ function bootstrap() {
 				syncCustomCss();
 				syncAccountSettingsLayoutInset();
 				syncSidebarContent({ force: true });
+				syncSearchBan();
 				if (shouldRunRoPrimeOnCurrentPage()) {
 					applyCommunityRename(document.body);
 					applyMarketplaceRename(document.body);

@@ -9,6 +9,7 @@ import {
 	shouldRunRoPrimeOnCurrentPage,
 } from "../core/core.js";
 import { syncCustomCss } from "../features/customCss.js";
+import { stopSearchBan, syncSearchBan } from "../features/searchBan.js";
 import { stopRenameLoop } from "../features/rename.js";
 import { syncAlwaysShowCloseButton } from "../navigation/alwaysShowCloseButton.js";
 import {
@@ -37,6 +38,7 @@ function cleanupBlockedRouteUi() {
 	stopRenameLoop();
 	stopRobloxNavDropdownButton();
 	stopRobloxFoundationWebMenuButton();
+	stopSearchBan();
 	document.getElementById(RP_SETTINGS_INNER_ID)?.remove();
 	document.getElementById(RP_SMALL_NEW_NAV_STYLE_ID)?.remove();
 	document.getElementById(RP_SIDEBAR_COMPACT_STYLE_ID)?.remove();
@@ -80,6 +82,7 @@ export function syncRoEliteView() {
 		syncHideAgeBadge();
 		syncRobloxNavDropdownButton();
 		syncRobloxFoundationWebMenuButton();
+		syncSearchBan();
 	} catch (e) {
 		if (isExtensionContextInvalidatedError(e)) return;
 		throw e;

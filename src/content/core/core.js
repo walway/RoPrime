@@ -17,6 +17,7 @@ export const RP_SUPPORTED_PAGES = new Set([
 	"info",
 	"developer",
 	"sidebar-content",
+	"privacy",
 ]);
 export const RP_SETTINGS_KEY = "rpSettings";
 export const RP_SETTINGS_INNER_ID = "rp-settings-inner";
@@ -221,6 +222,8 @@ export const RP_DEFAULT_SETTINGS = {
 	equippedProfilePageEffect: "",
 	profileEffectsEquippedByUser: {},
 	profileEffectsSupportNoticeAccepted: false,
+	searchBanEnabled: false,
+	searchBannedWords: [],
 };
 
 export let isSyncing = false;
@@ -289,6 +292,26 @@ export function mergeStoredSettings(stored) {
 	settingsState.hiddenSidebarItemsBySize =
 		normalizeHiddenSidebarItemsBySize(stored);
 	delete settingsState.hiddenSidebarItems;
+	settingsState.searchBanEnabled = !!stored.searchBanEnabled;
+	settingsState.searchBannedWords = normalizeSearchBannedWords(
+		stored.searchBannedWords,
+	);
+}
+
+export function normalizeSearchBannedWords(words) {
+	if (!Array.isArray(words)) return [];
+	const seen = new Set();
+	const next = [];
+	for (const word of words) {
+		if (typeof word !== "string") continue;
+		const trimmed = word.trim();
+		if (!trimmed) continue;
+		const key = trimmed.toLowerCase();
+		if (seen.has(key)) continue;
+		seen.add(key);
+		next.push(trimmed);
+	}
+	return next;
 }
 
 export function resetSettingsToDefaults() {
@@ -349,6 +372,8 @@ export function serializeSettingsPayload() {
 				: {},
 		profileEffectsSupportNoticeAccepted:
 			!!settingsState.profileEffectsSupportNoticeAccepted,
+		searchBanEnabled: !!settingsState.searchBanEnabled,
+		searchBannedWords: normalizeSearchBannedWords(settingsState.searchBannedWords),
 	};
 }
 

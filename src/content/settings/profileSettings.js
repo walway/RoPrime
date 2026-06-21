@@ -38,6 +38,11 @@ import {
 	resizeCosmeticsPreviews,
 	syncCosmeticsUi,
 } from "./other.js";
+import {
+	bindPrivacyControls,
+	buildPrivacySettingsHtml,
+	refreshPrivacySettingsUi,
+} from "./privacySettings.js";
 import { t as accountSettingsPaneT } from "./roprimeAccountSettingsPage.js";
 import {
 	clearSettingsPageLayout,
@@ -290,6 +295,11 @@ const PROFILE_SETTINGS_NAV = [
 		page: "settings",
 		labelKey: "Nav tab settings",
 		titleKey: "Nav tab settings",
+	},
+	{
+		page: "privacy",
+		labelKey: "Nav tab privacy",
+		titleKey: "Nav tab privacy",
 	},
 	{ page: "other", labelKey: "Nav tab other", titleKey: "Nav tab other" },
 	{ page: "info", labelKey: "Nav tab info", titleKey: "Nav tab info" },
@@ -799,6 +809,7 @@ function bindOnce(root) {
 	bindCustomCssControls(inner);
 	bindCosmeticsControls(inner);
 	bindSettingsSyncControls(inner);
+	bindPrivacyControls(inner);
 	bindMuiRipplesIn(inner);
 }
 
@@ -906,6 +917,7 @@ function refreshProfileSettingsUi(root) {
 
 	syncCustomCssUi(inner);
 	syncCosmeticsUi(inner);
+	refreshPrivacySettingsUi(inner);
 	refreshSettingsSyncPreview(inner);
 	bindMuiRipplesIn(inner);
 
@@ -1007,6 +1019,8 @@ function buildMarkup() {
                     <div class="roprime-setting-desc" data-i18n="Developer section description"></div>
                 </div>`;
 
+	const privacyBody = buildPrivacySettingsHtml();
+
 	const sectionsHtml = [
 		wrapSettingsSection("design", "Nav tab design", designBody),
 		wrapSettingsSection(
@@ -1015,6 +1029,7 @@ function buildMarkup() {
 			sidebarContentBody,
 		),
 		wrapSettingsSection("settings", "Nav tab settings", settingsBody),
+		wrapSettingsSection("privacy", "Nav tab privacy", privacyBody),
 		wrapSettingsSection("other", "Nav tab other", otherBody),
 		wrapSettingsSection("info", "Nav tab info", infoBody),
 		wrapSettingsSection("developer", "Nav tab developer", developerBody, {

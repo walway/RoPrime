@@ -1127,3 +1127,37 @@ body.roprime-classic-left-nav-on .rbx-header .rbx-navbar-header {
 	margin: 0 5px;
 	position: relative;
 }
+
+.roprime-search-ban-field {
+	align-items: flex-start;
+}
+
+.roprime-search-ban-controls {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 10px;
+	width: min(100%, 420px);
+}
+
+.roprime-search-ban-input {
+	flex: 1 1 180px;
+	min-width: 0;
+	height: 40px;
+	padding: 0 12px;
+	border: 1px solid
+		color-mix(in srgb, var(--color-content-emphasis) 18%, transparent);
+	border-radius: 10px;
+	background: var(--color-surface-100, #fff);
+	color: var(--color-content-default);
+	font: inherit;
+}
+
+.roprime-search-ban-input:focus-visible {
+	outline: 2px solid var(--color-focus, #005cc8);
+	outline-offset: 1px;
+}
+
+.roprime-search-ban-add-btn {
+	flex: 0 0 auto;
+	min-width: 96px;
+}
