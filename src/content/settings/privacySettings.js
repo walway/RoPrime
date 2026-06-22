@@ -84,6 +84,22 @@ function commitSearchBanInput(inner) {
 	}
 }
 
+function syncSearchBanSettingsUi(inner) {
+	const enabled = !!settingsState.searchBanEnabled;
+
+	const field = inner.querySelector(".roprime-search-ban-field");
+	if (field instanceof HTMLElement) {
+		field.hidden = !enabled;
+		field.setAttribute("aria-hidden", enabled ? "false" : "true");
+	}
+
+	const panel = inner.querySelector("[data-roprime-search-ban-panel]");
+	if (panel instanceof HTMLElement) {
+		panel.hidden = !enabled;
+		panel.setAttribute("aria-hidden", enabled ? "false" : "true");
+	}
+}
+
 export function buildPrivacySettingsHtml() {
 	return `
                 <div class="roprime-toggle-row">
@@ -118,7 +134,7 @@ export function buildPrivacySettingsHtml() {
                         ></button>
                     </div>
                 </div>
-                <div class="roprime-sidebar-content-panel">
+                <div class="roprime-sidebar-content-panel" data-roprime-search-ban-panel>
                     <div class="roprime-sidebar-content-list" data-roprime-search-ban-list></div>
                 </div>`;
 }
@@ -133,6 +149,7 @@ export function bindPrivacyControls(inner) {
 		toggle.addEventListener("change", () => {
 			settingsState.searchBanEnabled = toggle.checked;
 			saveSettings();
+			syncSearchBanSettingsUi(inner);
 			syncSearchBan();
 		});
 	}
@@ -162,5 +179,6 @@ export function refreshPrivacySettingsUi(inner) {
 		toggle.checked = !!settingsState.searchBanEnabled;
 	}
 
+	syncSearchBanSettingsUi(inner);
 	refreshSearchBanList(inner);
 }

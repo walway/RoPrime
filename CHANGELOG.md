@@ -1,0 +1,4 @@
+- Fixed settings header layout
+- Fixed dropdown button appearing in other dropdowns
+- Fixed dropdown button for users having roblox website under parental controls
+- Dropdown button is now 10th/9th in the list

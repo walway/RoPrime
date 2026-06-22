@@ -15,10 +15,13 @@ export function getProfileEffectCdnEmbedSrc(
 	const name = getProfileEffectCdnName(effect);
 	const url = new URL(PROFILE_EFFECT_CDN_BASE);
 	if (name) url.searchParams.set("effect", name);
-	url.searchParams.set(
-		"target",
-		target === "settings" ? "settings" : "profile",
-	);
+	const resolvedTarget =
+		target === "settings"
+			? "settings"
+			: target === "picture"
+				? "picture"
+				: "profile";
+	url.searchParams.set("target", resolvedTarget);
 	url.searchParams.set("source", "iframe");
 	if (query && typeof query === "object") {
 		for (const [key, value] of Object.entries(query)) {
@@ -129,6 +132,9 @@ export function getProfileEffectProfileEmbedSrc(effect) {
 			cooldown: "5000",
 			replayDelay: "5000",
 		});
+	}
+	if (effect?.kind === "picture") {
+		return getProfileEffectCdnEmbedSrc(effect, null, "picture");
 	}
 	return getProfileEffectCdnEmbedSrc(effect, null, "profile");
 }

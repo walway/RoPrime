@@ -9,7 +9,33 @@ import {
 export const RP_SEARCH_BAN_ERROR_ID = "roprime-search-ban-error";
 export const RP_SEARCH_BAN_HIDE_STYLE_ID = "roprime-search-ban-hide-style";
 
-const DISCOVER_ERROR_HTML = `<div data-testid="error-container" class="discovery-error-container" data-roprime-search-ban-error="1"><div class="error-container-content"><img data-testid="error-container-image" class="error-container-content-image" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiBmaWxsPSJub25lIiB2aWV3Qm94PSIwIDAgMTAwIDEwMCI+PHBhdGggc3Ryb2tlPSIjZjdmN2Y4IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIHN0cm9rZS13aWR0aD0iMyIgZD0iTTQ3Ljc3NyAyNi4yMzhjLjk4OC0xLjY1IDMuNDU4LTEuNjUgNC40NDYgMGwyNi42OCA0NC41NWMuOTg3IDEuNjUtLjI0OCAzLjcxMi0yLjIyNCAzLjcxMkgyMy4zMjFjLTEuOTc2IDAtMy4yMTEtMi4wNjItMi4yMjMtMy43MTN6Ii8+PGNpcmNsZSBjeD0iNDkuOTI1IiBjeT0iNjIuMzUyIiByPSIyLjM3NSIgZmlsbD0iI2Y3ZjdmOCIvPjxwYXRoIHN0cm9rZT0iI2Y3ZjdmOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2Utd2lkdGg9IjMiIGQ9Ik00OS45MjUgNTQuMjVWNDMiLz48L3N2Zz4=" alt=""><h2>Something went wrong</h2><p class="error-container-content-subtext">Experiences failed to load</p></div><button type="button" data-testid="error-refresh-button" class="foundation-web-button relative clip group/interactable focus-visible:outline-focus disabled:outline-none cursor-pointer relative flex items-center justify-center stroke-none padding-y-none select-none radius-medium text-label-medium height-1000 padding-x-medium bg-action-standard content-action-standard" style="text-decoration: none;"><div role="presentation" class="absolute inset-[0] transition-colors group-hover/interactable:bg-[var(--color-state-hover)] group-active/interactable:bg-[var(--color-state-press)] group-disabled/interactable:bg-none"></div><span class="flex items-center min-width-0 gap-small"><span class="padding-y-xsmall text-truncate-end text-no-wrap"><span>Retry</span></span></span></button></div>`;
+const DISCOVER_ERROR_HTML = `
+<div data-testid="error-container" class="discovery-error-container" data-roprime-search-ban-error="1">
+  <div class="error-container-content">
+    <img 
+      data-testid="error-container-image" 
+      class="error-container-content-image" 
+      src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiBmaWxsPSJub25lIiB2aWV3Qm94PSIwIDAgMTAwIDEwMCI+PHBhdGggc3Ryb2tlPSIjZjdmN2Y4IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIHN0cm9rZS13aWR0aD0iMyIgZD0iTTQ3Ljc3NyAyNi4yMzhjLjk4OC0xLjY1IDMuNDU4LTEuNjUgNC40NDYgMGwyNi42OCA0NC41NWMuOTg3IDEuNjUtLjI0OCAzLjcxMi0yLjIyNCAzLjcxMkgyMy4zMjFjLTEuOTc2IDAtMy4yMTEtMi4wNjItMi4yMjMtMy43MTN6Ii8+PGNpcmNsZSBjeD0iNDkuOTI1IiBjeT0iNjIuMzUyIiByPSIyLjM3NSIgZmlsbD0iI2Y3ZjdmOCIvPjxwYXRoIHN0cm9rZT0iI2Y3ZjdmOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2Utd2lkdGg9IjMiIGQ9Ik00OS45MjUgNTQuMjVWNDMiLz48L3N2Zz4=" 
+      alt="Error Icon"
+    >
+    <h2>Something went wrong</h2>
+    <p class="error-container-content-subtext">You dont have access to this page</p>
+  </div>
+  <button 
+    type="button" 
+    data-testid="error-refresh-button" 
+    class="foundation-web-button relative clip group/interactable focus-visible:outline-focus disabled:outline-none cursor-pointer relative flex items-center justify-center stroke-none padding-y-none select-none radius-medium text-label-medium height-1000 padding-x-medium bg-action-standard content-action-standard" 
+    style="text-decoration: none;"
+  >
+    <div role="presentation" class="absolute inset-[0] transition-colors group-hover/interactable:bg-[var(--color-state-hover)] group-active/interactable:bg-[var(--color-state-press)] group-disabled/interactable:bg-none"></div>
+    <span class="flex items-center min-width-0 gap-small">
+      <span class="padding-y-xsmall text-truncate-end text-no-wrap">
+        <span>Retry</span>
+      </span>
+    </span>
+  </button>
+</div>
+`;
 
 let domObserver = null;
 
@@ -37,13 +63,29 @@ export function isSearchBanActive() {
 	return normalizeSearchBannedWords(settingsState.searchBannedWords).length > 0;
 }
 
+export function normalizeSearchKeyword(keyword) {
+	let normalized = String(keyword || "").trim();
+	if (
+		normalized.length >= 2 &&
+		((normalized.startsWith('"') && normalized.endsWith('"')) ||
+			(normalized.startsWith("'") && normalized.endsWith("'")))
+	) {
+		normalized = normalized.slice(1, -1).trim();
+	}
+	return normalized.toLowerCase();
+}
+
 export function isKeywordSearchBanned(keyword) {
 	if (!isSearchBanActive()) return false;
-	const normalizedKeyword = String(keyword || "").trim().toLowerCase();
+	const normalizedKeyword = normalizeSearchKeyword(keyword);
 	if (!normalizedKeyword) return false;
 
 	return normalizeSearchBannedWords(settingsState.searchBannedWords).some(
-		(word) => word.toLowerCase() === normalizedKeyword,
+		(word) => {
+			const bannedWord = normalizeSearchKeyword(word);
+			if (!bannedWord) return false;
+			return normalizedKeyword.includes(bannedWord);
+		},
 	);
 }
 
