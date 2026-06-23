@@ -9,6 +9,7 @@ export const RP_FRIEND_STYLING_REIMAGNED_STYLE_ID =
 export const RP_ALWAYS_SHOW_CLOSE_STYLE_ID = "roprime-always-show-close-style";
 export const RP_CUSTOM_CSS_STYLE_ID = "roprime-custom-css-style";
 export const RP_PARAM_KEY = "roprime";
+export const RP_PARAM_KEY_NEW = "roprime-new";
 export const RP_DEFAULT_PAGE = "design";
 export const RP_SUPPORTED_PAGES = new Set([
 	"design",
@@ -21,6 +22,7 @@ export const RP_SUPPORTED_PAGES = new Set([
 ]);
 export const RP_SETTINGS_KEY = "rpSettings";
 export const RP_SETTINGS_INNER_ID = "rp-settings-inner";
+export const RP_SETTINGS_FLAT_INNER_ID = "rp-settings-flat-inner";
 
 export const RP_ACCOUNT_URL_HASH_DEFAULT = "#!/info";
 
@@ -188,7 +190,7 @@ export function setAccountSettingsShellClass(active) {
 
 export function applyAccountSettingsShellFromUrl() {
 	try {
-		if (!isMyAccountPath() || !isPluginRoute()) return;
+		if (!isMyAccountPath() || !isOnRoPrimeSettingsPage()) return;
 		setAccountSettingsShellClass(true);
 	} catch {
 		/* ignore */
@@ -460,7 +462,7 @@ export function buildRoPrimeSettingsFullUrl(
 ) {
 	const slug =
 		typeof page === "string" && page.trim() ? page.trim() : RP_DEFAULT_PAGE;
-	const base = `${window.location.origin}${getRobloxLocalePathPrefix()}/my/account?${RP_PARAM_KEY}=${encodeURIComponent(slug)}`;
+	const base = `${window.location.origin}${getRobloxLocalePathPrefix()}/my/account?${RP_PARAM_KEY_NEW}=${encodeURIComponent(slug)}`;
 	const h =
 		typeof hashFragment === "string" && hashFragment.trim()
 			? hashFragment.trim().startsWith("#")
@@ -473,14 +475,38 @@ export function buildRoPrimeSettingsFullUrl(
 export function isPluginRoute() {
 	if (!isMyAccountPath()) return false;
 	const params = new URLSearchParams(window.location.search);
-	const route = (params.get(RP_PARAM_KEY) || "").toLowerCase();
+	const route = (params.get(RP_PARAM_KEY_NEW) || "").toLowerCase();
 	return RP_SUPPORTED_PAGES.has(route);
+}
+
+export function isFlatSettingsRoute() {
+	if (!isMyAccountPath()) return false;
+	const params = new URLSearchParams(window.location.search);
+	if (!params.has(RP_PARAM_KEY)) return false;
+	const route = (params.get(RP_PARAM_KEY) || "").toLowerCase();
+	return !RP_SUPPORTED_PAGES.has(route);
+}
+
+export function isOnRoPrimeSettingsPage() {
+	return isPluginRoute() || isFlatSettingsRoute();
+}
+
+export function getLegacyRoPrimePageFromUrl() {
+	if (!isMyAccountPath()) return null;
+	const params = new URLSearchParams(window.location.search);
+	if (params.has(RP_PARAM_KEY_NEW)) return null;
+	const route = (params.get(RP_PARAM_KEY) || "").toLowerCase();
+	return RP_SUPPORTED_PAGES.has(route) ? route : null;
 }
 
 export function isForeignAccountPluginRoute() {
 	if (!isAccountPage()) return false;
 	const params = new URLSearchParams(window.location.search);
-	if (params.has(RP_PARAM_KEY)) return !isPluginRoute();
+	if (params.has(RP_PARAM_KEY_NEW)) return !isPluginRoute();
+	if (params.has(RP_PARAM_KEY)) {
+		const route = (params.get(RP_PARAM_KEY) || "").toLowerCase();
+		return route !== "" && !RP_SUPPORTED_PAGES.has(route);
+	}
 	return Array.from(params.keys()).length > 0;
 }
 
@@ -491,14 +517,22 @@ export function shouldRunRoPrimeOnCurrentPage() {
 export function getCurrentrp() {
 	if (!isMyAccountPath()) return null;
 	const params = new URLSearchParams(window.location.search);
-	const route = (params.get(RP_PARAM_KEY) || "").toLowerCase();
+	const route = (params.get(RP_PARAM_KEY_NEW) || "").toLowerCase();
 	if (RP_SUPPORTED_PAGES.has(route)) return route;
 	return null;
 }
 
 export function buildPluginUrl(page = RP_DEFAULT_PAGE) {
 	const url = new URL(window.location.href);
-	url.searchParams.set(RP_PARAM_KEY, page);
+	url.searchParams.delete(RP_PARAM_KEY);
+	url.searchParams.set(RP_PARAM_KEY_NEW, page);
+	return `${url.pathname}${url.search}${url.hash || ""}`;
+}
+
+export function buildFlatSettingsUrl() {
+	const url = new URL(window.location.href);
+	url.searchParams.delete(RP_PARAM_KEY_NEW);
+	url.searchParams.set(RP_PARAM_KEY, "");
 	return `${url.pathname}${url.search}${url.hash || ""}`;
 }
 

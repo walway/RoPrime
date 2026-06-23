@@ -145,6 +145,8 @@ body.roprime-sidebar-collapse-menu-enabled.roprime-sidebar-icon-only-active
 	box-sizing: border-box;
 	scrollbar-gutter: auto;
 	scrollbar-width: thin;
+	display: flex;
+	flex-direction: column;
 	scrollbar-color: color-mix(
 			in srgb,
 			var(--color-content-emphasis) 22%,
@@ -429,4 +431,29 @@ html.roprime-settings-side-rail-hidden
 		height: auto;
 		flex: 1 1 auto;
 	}
+}
+
+.roprime-settings-return-old-layout-btn {
+	display: block;
+	width: 100%;
+	margin-top: auto;
+	padding: 10px 8px;
+	border: 0;
+	border-radius: 0px;
+	background: transparent;
+	color: var(--color-content-emphasis);
+	text-decoration: none;
+	font: inherit;
+	font-size: 14px;
+	font-weight: 600;
+	line-height: 1.35;
+	text-align: left;
+	cursor: pointer;
+	box-sizing: border-box;
+}
+
+.roprime-settings-return-old-layout-btn:hover,
+.roprime-settings-return-old-layout-btn:focus-visible {
+	color: var(--color-content-emphasis);
+	text-decoration: none;
 }

@@ -2,7 +2,7 @@ import {
 	buildRoPrimeSettingsFullUrl,
 	isExtensionContextAlive,
 	isExtensionContextInvalidatedError,
-	RP_PARAM_KEY,
+	isOnRoPrimeSettingsPage,
 	shouldRunRoPrimeOnCurrentPage,
 } from "../core/core.js";
 
@@ -24,7 +24,7 @@ let clickInstalled = false;
 function navigateToRoPrimeSettings(e) {
 	e.preventDefault();
 	e.stopPropagation();
-	if (window.location.search.includes(`${RP_PARAM_KEY}=`)) {
+	if (isOnRoPrimeSettingsPage()) {
 		window.location.reload();
 		return;
 	}

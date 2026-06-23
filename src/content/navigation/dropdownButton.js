@@ -3,7 +3,8 @@ import {
 	getExtensionResourceUrl,
 	isExtensionContextAlive,
 	isExtensionContextInvalidatedError,
-	RP_PARAM_KEY,
+	isOnRoPrimeSettingsPage,
+	RP_PARAM_KEY_NEW,
 	shouldRunRoPrimeOnCurrentPage,
 } from "../core/core.js";
 
@@ -207,7 +208,7 @@ function onDelegatedRoPrimeDropdownClick(ev) {
 	ev.preventDefault();
 	ev.stopPropagation();
 	const settingsUrl = buildRoPrimeSettingsFullUrl();
-	if (window.location.search.includes(`${RP_PARAM_KEY}=`))
+	if (isOnRoPrimeSettingsPage())
 		window.location.reload();
 	else window.location.assign(settingsUrl);
 }
@@ -229,7 +230,7 @@ function injectIntoDropdownMenuIfMissing(menu) {
 		return;
 	}
 
-	const hrefNeedle = `?${RP_PARAM_KEY}=`;
+	const hrefNeedle = `?${RP_PARAM_KEY_NEW}=`;
 	const foreignPrime = [
 		...menu.querySelectorAll(`a.rbx-menu-item[href*="${hrefNeedle}"]`),
 	].find((node) => {

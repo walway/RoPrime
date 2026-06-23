@@ -5,7 +5,8 @@ import {
 	isExtensionContextInvalidatedError,
 	isMyAccountPath,
 	isNativeMyAccountHashRoute,
-	RP_PARAM_KEY,
+	isOnRoPrimeSettingsPage,
+	RP_PARAM_KEY_NEW,
 	shouldRunRoPrimeOnCurrentPage,
 } from "../core/core.js";
 
@@ -150,7 +151,7 @@ function injectSettingsPopoverRow() {
 
 	let li = ul.querySelector(`li[${POP_ENTRY_ATTR}="1"]`);
 	if (!(li instanceof HTMLLIElement)) {
-		const hrefNeedle = `?${RP_PARAM_KEY}=`;
+		const hrefNeedle = `?${RP_PARAM_KEY_NEW}=`;
 		const foreignPrime = [
 			...ul.querySelectorAll(`a.rbx-menu-item[href*="${hrefNeedle}"]`),
 		].find((node) => {
@@ -169,7 +170,7 @@ function injectSettingsPopoverRow() {
 
 		a.addEventListener("click", (e) => {
 			e.preventDefault();
-			if (window.location.search.includes(`${RP_PARAM_KEY}=`)) {
+			if (isOnRoPrimeSettingsPage()) {
 				window.location.reload();
 			} else {
 				window.location.href = buildRoPrimeSettingsFullUrl();
@@ -216,7 +217,7 @@ function removeInjectedEntries() {
 function navigateToRoPrimeSettings(e) {
 	e.preventDefault();
 	const targetUrl = buildRoPrimeSettingsFullUrl();
-	if (new URLSearchParams(window.location.search).has(RP_PARAM_KEY)) {
+	if (isOnRoPrimeSettingsPage()) {
 		window.location.reload();
 		return;
 	}

@@ -134,6 +134,9 @@ export function buildSettingsShell({
 				${treeItems}
 			</ul>
 			${profileEffectsAlert}
+			<a href="#" class="roprime-settings-return-old-layout-btn" data-roprime-return-old-layout>
+				<span data-i18n="Return to old settings layout"></span>
+			</a>
 		</div>
 	</aside>
 	<div class="${MUI.verticalDivider} roprime-settings-pane-divider" role="separator" aria-orientation="vertical"></div>

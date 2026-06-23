@@ -1,8 +1,11 @@
 import { langList } from "../../i18n/i18n-config.js";
 import { syncAccountSettingsMenuButton } from "../account/accountSettingsLink.js";
 import {
+	buildFlatSettingsUrl,
 	buildPluginUrl,
 	getCurrentrp,
+	getLegacyRoPrimePageFromUrl,
+	isFlatSettingsRoute,
 	isMyAccountPath,
 	isPluginRoute,
 	RP_DEFAULT_PAGE,
@@ -44,6 +47,10 @@ import {
 	refreshPrivacySettingsUi,
 } from "./privacySettings.js";
 import { t as accountSettingsPaneT } from "./roprimeAccountSettingsPage.js";
+import {
+	removeFlatSettingsMarkup,
+	syncFlatSettingsRoute,
+} from "./flatSettingsPage.js";
 import {
 	clearSettingsPageLayout,
 	resolveSettingsMountHost,
@@ -161,6 +168,7 @@ function getSettingsInner(root) {
 
 function removeProfileSettingsMarkup() {
 	document.getElementById(RP_SETTINGS_INNER_ID)?.remove();
+	removeFlatSettingsMarkup();
 	clearSettingsPageLayout();
 }
 
@@ -558,6 +566,21 @@ function bindOnce(root) {
 		profileEffectsAlert.addEventListener("click", (event) => {
 			event.preventDefault();
 			navigateToPage("other");
+		});
+	}
+
+	const returnOldLayoutBtn = inner.querySelector(
+		"[data-roprime-return-old-layout]",
+	);
+	if (returnOldLayoutBtn instanceof HTMLAnchorElement) {
+		const flatUrl = buildFlatSettingsUrl();
+		returnOldLayoutBtn.href = flatUrl;
+		returnOldLayoutBtn.addEventListener("click", (event) => {
+			event.preventDefault();
+			const currentUrl = `${window.location.pathname}${window.location.search}${window.location.hash}`;
+			if (currentUrl !== flatUrl) {
+				window.location.href = flatUrl;
+			}
 		});
 	}
 
@@ -1056,6 +1079,22 @@ export function syncProfileSettingsRoute() {
 		return;
 	}
 
+	const legacyPage = getLegacyRoPrimePageFromUrl();
+	if (legacyPage) {
+		const nextUrl = buildPluginUrl(legacyPage);
+		const currentUrl = `${window.location.pathname}${window.location.search}${window.location.hash}`;
+		if (currentUrl !== nextUrl) {
+			window.history.replaceState({}, "", nextUrl);
+			window.dispatchEvent(new Event("roprime-location-change"));
+		}
+		return;
+	}
+
+	if (isFlatSettingsRoute()) {
+		syncFlatSettingsRoute({ setNativeAccountChromeHidden });
+		return;
+	}
+
 	if (!isPluginRoute()) {
 		setAccountSettingsShellClass(false);
 		clearSettingsPageLayout();
@@ -1068,6 +1107,8 @@ export function syncProfileSettingsRoute() {
 
 	const mountHost = findSettingsMountHost();
 	if (!(mountHost instanceof HTMLElement)) return;
+
+	removeFlatSettingsMarkup();
 
 	const rpPage = getCurrentrp();
 	if (rpPage === "developer" && !settingsState.developerPageUnlocked) {
