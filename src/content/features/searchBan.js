@@ -23,6 +23,7 @@ const DISCOVER_ERROR_HTML = `
   </div>
   <button 
     type="button" 
+	onclick="window.location.href='https://roblox.com/home';"
     data-testid="error-refresh-button" 
     class="foundation-web-button relative clip group/interactable focus-visible:outline-focus disabled:outline-none cursor-pointer relative flex items-center justify-center stroke-none padding-y-none select-none radius-medium text-label-medium height-1000 padding-x-medium bg-action-standard content-action-standard" 
     style="text-decoration: none;"
@@ -30,7 +31,7 @@ const DISCOVER_ERROR_HTML = `
     <div role="presentation" class="absolute inset-[0] transition-colors group-hover/interactable:bg-[var(--color-state-hover)] group-active/interactable:bg-[var(--color-state-press)] group-disabled/interactable:bg-none"></div>
     <span class="flex items-center min-width-0 gap-small">
       <span class="padding-y-xsmall text-truncate-end text-no-wrap">
-        <span>Retry</span>
+        <span>Home</span>
       </span>
     </span>
   </button>
