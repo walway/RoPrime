@@ -20,7 +20,7 @@ import {
 	stopRobloxNavDropdownButton,
 	syncRobloxNavDropdownButton,
 } from "../redirect/dropdownButton.js";
-import { updateFriendStylingReimagnedVisibility } from "../friends/friendStylingReimagned.js";
+import { updateFriendStylingReimagnedVisibility } from "../friends/friendStylingReimagined.js";
 import { syncOldNavigationBar } from "../navigation/oldNavigationBar.js";
 import {
 	syncSidebarCompactDecorations,
