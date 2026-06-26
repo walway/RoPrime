@@ -2,7 +2,7 @@ import { minimalEditor } from "prism-code-editor/setups";
 import "prism-code-editor/languages/css";
 import "prism-code-editor/prism/languages/css";
 import { saveSettings, settingsState } from "../core/core.js";
-import { promptCustomCssCautionNotice } from "../features/alert.js";
+import { promptCustomCssCautionNotice } from "../alerts/alert.js";
 import { syncCustomCss } from "../features/customCss.js";
 import { t as accountSettingsPaneT } from "./roprimeAccountSettingsPage.js";
 

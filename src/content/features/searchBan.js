@@ -19,7 +19,7 @@ const DISCOVER_ERROR_HTML = `
       alt="Error Icon"
     >
     <h2>Something went wrong</h2>
-    <p class="error-container-content-subtext">You dont have access to this page</p>
+    <p class="error-container-content-subtext">You don't have access to this page</p>
   </div>
   <button 
     type="button" 

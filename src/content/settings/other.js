@@ -1,5 +1,5 @@
 import { saveSettings, settingsState } from "../core/core.js";
-import { promptProfileEffectsSupportNotice } from "../features/alert.js";
+import { promptProfileEffectsSupportNotice } from "../alerts/alert.js";
 import { hydrateProfilePictureEffectAvatars } from "../profile/profileEffectAvatar.js";
 import {
 	getAllProfileEffectIds,
