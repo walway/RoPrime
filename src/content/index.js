@@ -15,7 +15,7 @@ import {
 	applyMarketplaceRename,
 	updateRenameLoop,
 } from "./features/rename.js";
-import { syncHomeWelcomeModal } from "./features/welcome.js";
+import { syncHomeWelcomeModal } from "./alerts/welcome.js";
 import { installDomSyncScheduler } from "./panel/domSyncScheduler.js";
 import { syncRoEliteView } from "./panel/panel.js";
 import {
