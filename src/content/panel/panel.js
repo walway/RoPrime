@@ -15,12 +15,12 @@ import { syncAlwaysShowCloseButton } from "../navigation/alwaysShowCloseButton.j
 import {
 	stopRobloxFoundationWebMenuButton,
 	syncRobloxFoundationWebMenuButton,
-} from "../navigation/foundationWebMenuButton.js";
+} from "../redirect/smallDeviceDropdownButton.js";
 import {
 	stopRobloxNavDropdownButton,
 	syncRobloxNavDropdownButton,
-} from "../navigation/dropdownButton.js";
-import { updateFriendStylingReimagnedVisibility } from "../navigation/friendStylingReimagned.js";
+} from "../redirect/dropdownButton.js";
+import { updateFriendStylingReimagnedVisibility } from "../friends/friendStylingReimagned.js";
 import { syncOldNavigationBar } from "../navigation/oldNavigationBar.js";
 import {
 	syncSidebarCompactDecorations,

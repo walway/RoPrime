@@ -1,4 +1,4 @@
-import { syncAccountSettingsMenuButton } from "./account/accountSettingsLink.js";
+import { syncAccountSettingsMenuButton } from "./redirect/settingsButton.js";
 import {
 	isExtensionContextInvalidatedError,
 	loadSettings,

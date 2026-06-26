@@ -1,5 +1,5 @@
 import { langList } from "../../i18n/i18n-config.js";
-import { syncAccountSettingsMenuButton } from "../account/accountSettingsLink.js";
+import { syncAccountSettingsMenuButton } from "../redirect/settingsButton.js";
 import {
 	buildFlatSettingsUrl,
 	buildPluginUrl,
