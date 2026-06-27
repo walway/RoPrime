@@ -21,8 +21,8 @@ export const RP_SUPPORTED_PAGES = new Set([
 	"privacy",
 ]);
 export const RP_SETTINGS_KEY = "rpSettings";
-export const RP_SETTINGS_INNER_ID = "rp-settings-inner";
 export const RP_SETTINGS_FLAT_INNER_ID = "rp-settings-flat-inner";
+export const RP_SETTINGS_INNER_ID = RP_SETTINGS_FLAT_INNER_ID;
 
 export const RP_ACCOUNT_URL_HASH_DEFAULT = "#!/info";
 
@@ -479,16 +479,8 @@ export function isPluginRoute() {
 	return RP_SUPPORTED_PAGES.has(route);
 }
 
-export function isFlatSettingsRoute() {
-	if (!isMyAccountPath()) return false;
-	const params = new URLSearchParams(window.location.search);
-	if (!params.has(RP_PARAM_KEY)) return false;
-	const route = (params.get(RP_PARAM_KEY) || "").toLowerCase();
-	return !RP_SUPPORTED_PAGES.has(route);
-}
-
 export function isOnRoPrimeSettingsPage() {
-	return isPluginRoute() || isFlatSettingsRoute();
+	return isPluginRoute();
 }
 
 export function getLegacyRoPrimePageFromUrl() {
@@ -526,13 +518,6 @@ export function buildPluginUrl(page = RP_DEFAULT_PAGE) {
 	const url = new URL(window.location.href);
 	url.searchParams.delete(RP_PARAM_KEY);
 	url.searchParams.set(RP_PARAM_KEY_NEW, page);
-	return `${url.pathname}${url.search}${url.hash || ""}`;
-}
-
-export function buildFlatSettingsUrl() {
-	const url = new URL(window.location.href);
-	url.searchParams.delete(RP_PARAM_KEY_NEW);
-	url.searchParams.set(RP_PARAM_KEY, "");
 	return `${url.pathname}${url.search}${url.hash || ""}`;
 }
 

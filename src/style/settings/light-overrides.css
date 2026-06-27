@@ -9,21 +9,12 @@ html.roprime-account-settings-open
 	pointer-events: none !important;
 }
 
-#react-user-account-base > #rp-settings-inner.roprime-settings-mui-shell {
+#react-user-account-base > #rp-settings-flat-inner.roprime-settings-flat {
 	max-width: none;
 }
 
-#rp-settings-inner.roprime-settings-mui-shell > .roprime-settings-rail,
-#rp-settings-inner.roprime-settings-mui-shell
-	> aside.roprime-settings-rail[class*="Grid-root-secondaryRail-scroll"] {
-	margin-left: -11px !important;
-	margin-right: 0 !important;
-	padding-left: 0 !important;
-	padding-right: 0 !important;
-}
-
 #react-user-account-base
-	> #rp-settings-inner
+	> #rp-settings-flat-inner
 	.roprime-accordion.is-open
 	.roprime-accordion-body {
 	max-height: 520px;

@@ -191,12 +191,7 @@
 }
 
 #roprime-settings-tree,
-.MuiTreeItem-root li,
-.MuiTreeItem-content div,
-.MuiTreeItem-label div,
-.a[href="#"],
-.roprime-settings-nav-btn,
-.MuiTypography-root span {
+.roprime-settings-nav-btn {
 	-webkit-user-select: none;
 	-moz-user-select: none;
 	-ms-user-select: none;

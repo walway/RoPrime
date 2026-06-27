@@ -1,15 +1,13 @@
 import { langList } from "../../i18n/i18n-config.js";
 import { syncAccountSettingsMenuButton } from "../redirect/settingsButton.js";
 import {
-	buildFlatSettingsUrl,
 	buildPluginUrl,
 	getCurrentrp,
 	getLegacyRoPrimePageFromUrl,
-	isFlatSettingsRoute,
 	isMyAccountPath,
 	isPluginRoute,
 	RP_DEFAULT_PAGE,
-	RP_SETTINGS_INNER_ID,
+	RP_SETTINGS_FLAT_INNER_ID,
 	reloadSettingsUiStrings,
 	saveSettings,
 	setAccountSettingsShellClass,
@@ -29,7 +27,6 @@ import {
 	refreshSidebarContentList,
 	refreshSidebarSizeWarnings,
 } from "../sidebar/sidebarSettingsUi.js";
-import { bindMuiRipplesIn } from "../ui/muiRipple.js";
 import {
 	bindCustomCssControls,
 	buildCustomCssHtml,
@@ -48,10 +45,6 @@ import {
 } from "./privacySettings.js";
 import { t as accountSettingsPaneT } from "./roprimeAccountSettingsPage.js";
 import {
-	removeFlatSettingsMarkup,
-	syncFlatSettingsRoute,
-} from "./flatSettingsPage.js";
-import {
 	clearSettingsPageLayout,
 	resolveSettingsMountHost,
 } from "./settingsPageHost.js";
@@ -63,64 +56,6 @@ import {
 } from "./settingsSync.js";
 
 const RP_DEBUG_UNLOCK = "debug";
-const RP_SETTINGS_SIDE_RAIL_HIDDEN_CLASS = "roprime-settings-side-rail-hidden";
-
-function isRobloxAccountSideRail(el) {
-	if (!(el instanceof HTMLElement)) return false;
-	const cls = typeof el.className === "string" ? el.className : "";
-	return (
-		cls.includes("width-[289px]") &&
-		cls.includes("height-full") &&
-		cls.includes("scroll-y")
-	);
-}
-
-function queryRobloxAccountSideRails() {
-	const settingsRoot = document.getElementById(RP_SETTINGS_INNER_ID);
-	return Array.from(
-		document.querySelectorAll(".width-\\[289px\\], [class~='width-[289px]']"),
-	).filter(
-		(el) =>
-			el instanceof HTMLElement &&
-			isRobloxAccountSideRail(el) &&
-			!(settingsRoot instanceof HTMLElement && settingsRoot.contains(el)),
-	);
-}
-
-function toggleSettingsSideRails(inner) {
-	if (!(inner instanceof HTMLElement)) return;
-	inner.classList.toggle("is-rail-collapsed");
-	const collapsed = inner.classList.contains("is-rail-collapsed");
-	document.documentElement.classList.toggle(
-		RP_SETTINGS_SIDE_RAIL_HIDDEN_CLASS,
-		collapsed,
-	);
-	inner
-		.querySelectorAll(".roprime-settings-menu-btn svg path")
-		.forEach((node) => {
-			if (!(node instanceof SVGPathElement)) return;
-			node.setAttribute(
-				"d",
-				collapsed
-					? "M3 18h18v-2H3zm0-5h18v-2H3zm0-7v2h18V6z"
-					: "M3 18h13v-2H3zm0-5h10v-2H3zm0-7v2h13V6zm18 9.59L17.42 12 21 8.41 19.59 7l-5 5 5 5z",
-			);
-		});
-
-	for (const el of queryRobloxAccountSideRails()) {
-		if (collapsed) {
-			if (getComputedStyle(el).display === "none") continue;
-			if (!el.dataset.rpSettingsRailPrevDisplay) {
-				el.dataset.rpSettingsRailPrevDisplay = el.style.display || "";
-			}
-			el.style.display = "none";
-			continue;
-		}
-		if (!el.dataset.rpSettingsRailPrevDisplay) continue;
-		el.style.display = el.dataset.rpSettingsRailPrevDisplay || "";
-		delete el.dataset.rpSettingsRailPrevDisplay;
-	}
-}
 
 function currentUiLanguageCode() {
 	const s = String(settingsState.language || "en").toLowerCase();
@@ -159,16 +94,15 @@ function findSettingsMountHost() {
 }
 
 function getSettingsInner(root) {
-	if (root instanceof HTMLElement && root.id === RP_SETTINGS_INNER_ID) {
+	if (root instanceof HTMLElement && root.id === RP_SETTINGS_FLAT_INNER_ID) {
 		return root;
 	}
-	const inner = root?.querySelector(`#${RP_SETTINGS_INNER_ID}`);
+	const inner = root?.querySelector(`#${RP_SETTINGS_FLAT_INNER_ID}`);
 	return inner instanceof HTMLElement ? inner : null;
 }
 
 function removeProfileSettingsMarkup() {
-	document.getElementById(RP_SETTINGS_INNER_ID)?.remove();
-	removeFlatSettingsMarkup();
+	document.getElementById(RP_SETTINGS_FLAT_INNER_ID)?.remove();
 	clearSettingsPageLayout();
 }
 
@@ -319,21 +253,6 @@ const PROFILE_SETTINGS_NAV = [
 	},
 ];
 
-function syncTreeNavSelection(inner, activePage, isSearchMode) {
-	inner.querySelectorAll("[data-roprime-tree-item]").forEach((item) => {
-		if (!(item instanceof HTMLElement)) return;
-		const page = item.getAttribute("data-roprime-tree-item") || "";
-		const content = item.querySelector(".roprime-settings-tree-content");
-		const isActive = !isSearchMode && page === activePage;
-		item.setAttribute("aria-selected", isActive ? "true" : "false");
-		if (content instanceof HTMLElement) {
-			content.classList.toggle("Mui-selected", isActive);
-			if (isActive) content.setAttribute("data-selected", "");
-			else content.removeAttribute("data-selected");
-		}
-	});
-}
-
 function refreshLayoutAndNav(root) {
 	const inner = getSettingsInner(root);
 	if (!(inner instanceof HTMLElement)) return;
@@ -358,8 +277,6 @@ function refreshLayoutAndNav(root) {
 	if (hint instanceof HTMLElement)
 		hint.style.display = showSearchHint ? "block" : "none";
 
-	syncTreeNavSelection(inner, activePage, isSearchMode);
-
 	inner.querySelectorAll(".roprime-settings-nav-btn").forEach((button) => {
 		if (!(button instanceof HTMLElement)) return;
 		if (button.dataset.roprimePage === "developer" && !unlocked) return;
@@ -379,12 +296,12 @@ function refreshLayoutAndNav(root) {
 		);
 	}
 
-	const devTreeItem = inner.querySelector(
-		'[data-roprime-tree-item="developer"]',
+	const devNavBtn = inner.querySelector(
+		'.roprime-settings-nav-btn[data-roprime-page="developer"]',
 	);
-	if (devTreeItem instanceof HTMLElement) {
-		devTreeItem.hidden = !unlocked;
-		devTreeItem.style.display = unlocked ? "" : "none";
+	if (devNavBtn instanceof HTMLElement) {
+		devNavBtn.hidden = !unlocked;
+		devNavBtn.style.display = unlocked ? "" : "none";
 	}
 	const devLink = inner.querySelector(
 		'.roprime-settings-nav-btn[data-roprime-page="developer"]',
@@ -550,14 +467,6 @@ function bindOnce(root) {
 		});
 	});
 
-	inner.addEventListener("click", (event) => {
-		const menuBtn = event.target.closest(".roprime-settings-menu-btn");
-		if (!(menuBtn instanceof HTMLButtonElement)) return;
-		event.preventDefault();
-		event.stopPropagation();
-		toggleSettingsSideRails(inner);
-	});
-
 	const profileEffectsAlert = inner.querySelector(
 		"[data-roprime-profile-effects-alert]",
 	);
@@ -566,21 +475,6 @@ function bindOnce(root) {
 		profileEffectsAlert.addEventListener("click", (event) => {
 			event.preventDefault();
 			navigateToPage("other");
-		});
-	}
-
-	const returnOldLayoutBtn = inner.querySelector(
-		"[data-roprime-return-old-layout]",
-	);
-	if (returnOldLayoutBtn instanceof HTMLAnchorElement) {
-		const flatUrl = buildFlatSettingsUrl();
-		returnOldLayoutBtn.href = flatUrl;
-		returnOldLayoutBtn.addEventListener("click", (event) => {
-			event.preventDefault();
-			const currentUrl = `${window.location.pathname}${window.location.search}${window.location.hash}`;
-			if (currentUrl !== flatUrl) {
-				window.location.href = flatUrl;
-			}
 		});
 	}
 
@@ -805,8 +699,7 @@ function bindOnce(root) {
 		accHeader.addEventListener("click", (event) => {
 			if (
 				event.target instanceof Element &&
-				(event.target.closest(".roprime-accordion-master-switch") ||
-					event.target.closest(".roprime-settings-menu-btn"))
+				event.target.closest(".roprime-accordion-master-switch")
 			)
 				return;
 			accordion.classList.toggle("is-open");
@@ -833,7 +726,6 @@ function bindOnce(root) {
 	bindCosmeticsControls(inner);
 	bindSettingsSyncControls(inner);
 	bindPrivacyControls(inner);
-	bindMuiRipplesIn(inner);
 }
 
 function clearLanguageControlSizing(inner) {
@@ -942,7 +834,6 @@ function refreshProfileSettingsUi(root) {
 	syncCosmeticsUi(inner);
 	refreshPrivacySettingsUi(inner);
 	refreshSettingsSyncPreview(inner);
-	bindMuiRipplesIn(inner);
 
 	refreshLayoutAndNav(root);
 
@@ -1090,11 +981,6 @@ export function syncProfileSettingsRoute() {
 		return;
 	}
 
-	if (isFlatSettingsRoute()) {
-		syncFlatSettingsRoute({ setNativeAccountChromeHidden });
-		return;
-	}
-
 	if (!isPluginRoute()) {
 		setAccountSettingsShellClass(false);
 		clearSettingsPageLayout();
@@ -1107,8 +993,6 @@ export function syncProfileSettingsRoute() {
 
 	const mountHost = findSettingsMountHost();
 	if (!(mountHost instanceof HTMLElement)) return;
-
-	removeFlatSettingsMarkup();
 
 	const rpPage = getCurrentrp();
 	if (rpPage === "developer" && !settingsState.developerPageUnlocked) {
@@ -1126,10 +1010,10 @@ export function syncProfileSettingsRoute() {
 	updateDocumentTitle(true);
 	updateAccountHeader(true);
 
-	let root = document.getElementById(RP_SETTINGS_INNER_ID);
+	let root = document.getElementById(RP_SETTINGS_FLAT_INNER_ID);
 	if (!(root instanceof HTMLElement)) {
 		mountHost.insertAdjacentHTML("beforeend", buildMarkup());
-		root = document.getElementById(RP_SETTINGS_INNER_ID);
+		root = document.getElementById(RP_SETTINGS_FLAT_INNER_ID);
 		if (root instanceof HTMLElement) bindOnce(root);
 	} else if (root.parentElement !== mountHost) {
 		mountHost.appendChild(root);
