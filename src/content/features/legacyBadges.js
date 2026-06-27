@@ -103,9 +103,17 @@ const CUSTOM_BADGES = {
 			label: "We miss you so much 😭",
 			alt: "We miss you so much",
 			imageUrl:
-				"https://tr.rbxcdn.com/180DAY-bae15f4fd078a8cb4229bee3c0bfebf3/420/420/Decal/Webp/noFilter",
+				"https://tr.rbxcdn.com/180DAY-e708f75aa1ec22891113fa67899793ff/420/420/Decal/Webp/noFilter",
+		},
+		{
+			title: "And you too",
+			label: "And you too :(",
+			alt: "And you too",
+			imageUrl:
+				"https://tr.rbxcdn.com/180DAY-0b2db3d5447c28449c4fa03d6cee6f29/420/420/Decal/Webp/noFilter",
 		},
 	],
+
 	447170745: [
 		{
 			title: "IM RAT AND I LIKE STEALING YOUR COOKIES",
@@ -148,6 +156,16 @@ const CUSTOM_BADGES = {
 			alt: "IM RAT AND I LIKE STEALING YOUR COOKIES",
 			imageUrl:
 				"https://tr.rbxcdn.com/180DAY-bae15f4fd078a8cb4229bee3c0bfebf3/420/420/Decal/Webp/noFilter",
+		},
+	],
+	
+	1564574922: [
+		{
+			title: "Who are you",
+			label: "Who are you?",
+			alt: "Who are you",
+			imageUrl:
+				"https://tr.rbxcdn.com/180DAY-9219655db8561c2178c7029c0d32d89d/420/420/Decal/Webp/noFilter",
 		},
 	],
 };
