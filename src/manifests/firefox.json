@@ -17,8 +17,7 @@
 		"https://walway.github.io/*"
 	],
 	"background": {
-		    "scripts": ["src/content/background.js"],
-            "persistent": false
+		"scripts": ["background.js"]
 	},
 	"action": {
 		"default_title": "RoPrime"
@@ -37,7 +36,8 @@
 				"resources/RblxPlusLogo.webp",
 				"resources/logo.svg",
 				"src/strings/*",
-				"resources/data/*"
+				"resources/data/*",
+				"resources/badges/*"
 			],
 			"matches": ["*://*.roblox.com/*"]
 		}

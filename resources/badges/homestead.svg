@@ -1,0 +1,15 @@
+<svg width="150" height="160" viewBox="0 0 150 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M75 160C97.091 160 115 155.523 115 150C115 144.477 97.091 140 75 140C52.909 140 35 144.477 35 150C35 155.523 52.909 160 75 160Z" fill="#E6E6E6"/>
+<path d="M75 150C116.421 150 150 116.421 150 75C150 33.579 116.421 0 75 0C33.579 0 0 33.579 0 75C0 116.421 33.579 150 75 150Z" fill="#F9D377"/>
+<path d="M76 142C38.4 142 8 111.6 8 74C8 36.4 38.4 6 76 6" fill="#F5B61C"/>
+<path d="M75 2C115.3 2 148 34.7 148 75C148 115.3 115.3 148 75 148C34.7 148 2 115.3 2 75C2 34.7 34.7 2 75 2ZM75 0C33.6 0 0 33.6 0 75C0 116.4 33.6 150 75 150C116.4 150 150 116.4 150 75C150 33.6 116.4 0 75 0Z" fill="#F4881B"/>
+<path d="M75 8C111.9 8 142 38.1 142 75C142 111.9 111.9 142 75 142C38.1 142 8 111.9 8 75C8 38.1 38.1 8 75 8ZM75 7C37.4 7 7 37.4 7 75C7 112.6 37.4 143 75 143C112.6 143 143 112.6 143 75C143 37.4 112.6 7 75 7Z" fill="#F4881B"/>
+<path d="M75.3 65L58 82.1V68H42V96.1L30.6 110H40V145H80V123H93V145H110V110H119.9L75.3 65Z" fill="white" stroke="#F4881B" stroke-width="4" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M66 116H49V135H66V116Z" fill="white" stroke="#F7931E" stroke-width="4" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M57.9 110H114.6" stroke="#F7931E" stroke-width="4" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M59 116V134" stroke="#F7931E" stroke-width="4" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M66 125H49" stroke="#F7931E" stroke-width="4" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M35.6 51.1H42.4V34.7H36.4V29.4C40 28.7 42.3 27.8 44.7 26.3H51V51.1H56.7V58H35.6V51.1Z" fill="white"/>
+<path d="M58.5 42C58.5 31.1 63.3 25.7 70.3 25.7C77.3 25.7 82.1 31.2 82.1 42C82.1 52.9 77.3 58.6 70.3 58.6C63.3 58.6 58.5 52.8 58.5 42ZM74 42C74 33.6 72.3 32.3 70.3 32.3C68.3 32.3 66.6 33.6 66.6 42C66.6 50.4 68.3 52 70.3 52C72.3 52 74 50.4 74 42Z" fill="white"/>
+<path d="M85.5 42C85.5 31.1 90.3 25.7 97.3 25.7C104.3 25.7 109.1 31.2 109.1 42C109.1 52.9 104.3 58.6 97.3 58.6C90.2 58.6 85.5 52.8 85.5 42ZM101 42C101 33.6 99.3 32.3 97.3 32.3C95.3 32.3 93.6 33.6 93.6 42C93.6 50.4 95.3 52 97.3 52C99.3 52 101 50.4 101 42Z" fill="white"/>
+</svg>

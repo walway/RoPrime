@@ -12,7 +12,7 @@
 	],
 	"optional_permissions": ["management"],
 	"background": {
-		"service_worker": "src/content/background.js"
+		"service_worker": "background.js"
 	},
 	"action": {
 		"default_title": "RoPrime"
@@ -31,7 +31,8 @@
 				"resources/RblxPlusLogo.webp",
 				"resources/logo.svg",
 				"src/strings/**/*",
-				"resources/data/*"
+				"resources/data/*",
+				"resources/badges/*"
 			],
 			"matches": ["*://*.roblox.com/*"]
 		}

@@ -134,14 +134,22 @@ function copyBundleToPlatform(platformDistDir) {
 	}
 }
 
+function copyBackgroundToPlatform(platformDistDir) {
+	const src = join(root, "src/content/background.js");
+	if (!existsSync(src)) {
+		throw new Error("Missing src/content/background.js.");
+	}
+	cpSync(src, join(platformDistDir, "background.js"));
+}
+
 function assemblePlatformDist(platform) {
 	const platformDistDir = join(distDir, platform);
 	mkdirSync(platformDistDir, { recursive: true });
 	copyBundleToPlatform(platformDistDir);
+	copyBackgroundToPlatform(platformDistDir);
 	copyStyleTreeToDist(platformDistDir);
 	copyPathsToDist(
 		[
-			"src/content/background.js",
 			...globSync("resources/**/*", { nodir: true }),
 			...globSync("src/strings/**/*", { nodir: true }),
 			...globSync(".locales/lang-config.js", { nodir: true }),

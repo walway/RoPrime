@@ -1,4 +1,3 @@
-import { syncAccountSettingsMenuButton } from "./redirect/settingsButton.js";
 import {
 	isExtensionContextInvalidatedError,
 	loadSettings,
@@ -9,13 +8,18 @@ import {
 	syncAccountSettingsLayoutInset,
 } from "./core/core.js";
 import { syncCustomCss } from "./features/customCss.js";
-import { installSearchBanObserver, syncSearchBan } from "./features/searchBan.js";
+import { syncAccountSettingsMenuButton } from "./redirect/settingsButton.js";
+import "./features/legacyBadges.js";
+import { syncHomeWelcomeModal } from "./alerts/welcome.js";
 import {
 	applyCommunityRename,
 	applyMarketplaceRename,
 	updateRenameLoop,
 } from "./features/rename.js";
-import { syncHomeWelcomeModal } from "./alerts/welcome.js";
+import {
+	installSearchBanObserver,
+	syncSearchBan,
+} from "./features/searchBan.js";
 import { installDomSyncScheduler } from "./panel/domSyncScheduler.js";
 import { syncRoEliteView } from "./panel/panel.js";
 import {
