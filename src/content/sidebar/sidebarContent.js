@@ -8,7 +8,7 @@ import {
 import {
 	createRoPrimeNavMenuButton,
 	setCollapseButtonIcon,
-} from "../ui/components/collapse.js";
+} from "../ui/collapse.js";
 import {
 	syncSidebarCompactDecorations,
 	updateSidebarCompactVisibility,

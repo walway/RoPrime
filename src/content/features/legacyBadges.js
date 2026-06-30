@@ -168,6 +168,52 @@ const CUSTOM_BADGES = {
 				"https://tr.rbxcdn.com/180DAY-9219655db8561c2178c7029c0d32d89d/420/420/Decal/Webp/noFilter",
 		},
 	],
+
+	1912490: [
+		{
+			title: "GOOnett",
+			label: "GOOnett",
+			alt: "GOOnett",
+			imageUrl:
+				"https://tr.rbxcdn.com/180DAY-137fd624cf8460aed0a026086d5f2ed8/420/420/Decal/Webp/noFilter",
+		},
+		{
+			title: "Sweety honey",
+			label: "Sweety honey",
+			alt: "Honey",	
+			imageUrl:
+				"https://tr.rbxcdn.com/180DAY-b0286ee7e37e59a7e9a1f0f743ec3388/420/420/Decal/Webp/noFilter",
+		},
+		{
+			title: "chill face",
+			label: "-‿-",
+			alt: "chill face",
+			imageUrl:
+				"resources/badges/memes/pumpkin-patch.webp",
+		},
+		{
+			title: "aphid",
+			label: ">:(",
+			alt: "aphid",
+			imageUrl:
+				"https://tr.rbxcdn.com/180DAY-8435374a6cf890406c8e18631ad95389/420/420/Decal/Webp/noFilter",
+		},
+		{
+			title: "Gummy Bear's Lair",
+			label: "Gummy Bear's Lair",
+			alt: "Gummy Bear's Lair",
+			imageUrl: 
+				"resources/badges/memes/goo.png",
+
+		},
+		{
+				title: "WHERE IS BBM QUEST ONETT",
+				label: "WHERE IS BBM QUEST ONETT???",
+				alt: "WHERE IS BBM QUEST ONETT",
+				imageUrl: 
+					"resources/badges/memes/onett-delayer.png",
+		},
+	],
 };
 
 const SEE_MORE_BUTTON =
