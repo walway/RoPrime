@@ -2,7 +2,7 @@
   <a href="https://github.com/walway/RoPrime">
     <img src="https://raw.githubusercontent.com/walway/RoPrime/main/resources/logo.svg" width="35%" alt="RoPrime">
   </a>
-  <p align="center"><strong>New era of Roblox website.</strong></p>
+  <p align="center"><strong>New Era of Roblox website.</strong></p>
 </div>
 
 <div align="center">
@@ -41,7 +41,7 @@ You can customize Roblox with a bunch of features to your liking. Here's some fe
 
 - Go to `chrome://extensions` or `edge://extensions`
 - Enable **Developer mode**
-- Click **Load unpacked** and select the project folder (uses `dist/content.js`) or the `dist` folder (uses `content.js`)
+- Click **Load unpacked** and select the project folder from the latest release
 
 <br>
 
