@@ -38,63 +38,6 @@ const DISCOVER_ERROR_HTML = `
 </div>
 `;
 
-const errorContainer = document.createElement("div");
-errorContainer.id = RP_SEARCH_BAN_ERROR_ID;
-errorContainer.classList.add("discovery-error-container");
-errorContainer.setAttribute("data-roprime-search-ban-error", "1");
-
-const errorContainerContent = document.createElement("div");
-errorContainerContent.classList.add("error-container-content");
-errorContainer.appendChild(errorContainerContent);
-
-const errorContainerContentImage = document.createElement("img");
-errorContainerContentImage.setAttribute("data-testid", "error-container-image");
-errorContainerContentImage.classList.add("error-container-content-image");
-errorContainerContentImage.src =
-  "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiBmaWxsPSJub25lIiB2aWV3Qm94PSIwIDAgMTAwIDEwMCI+PHBhdGggc3Ryb2tlPSIjZjdmN2Y4IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIHN0cm9rZS13aWR0aD0iMyIgZD0iTTQ3Ljc3NyAyNi4yMzhjLjk4OC0xLjY1IDMuNDU4LTEuNjUgNC40NDYgMGwyNi42OCA0NC41NWMuOTg3IDEuNjUtLjI0OCAzLjcxMi0yLjIyNCAzLjcxMkgyMy4zMjFjLTEuOTc2IDAtMy4yMTEtMi4wNjItMi4yMjMtMy43MTN6Ii8+PGNpcmNsZSBjeD0iNDkuOTI1IiBjeT0iNjIuMzUyIiByPSIyLjM3NSIgZmlsbD0iI2Y3ZjdmOCIvPjxwYXRoIHN0cm9rZT0iI2Y3ZjdmOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2Utd2lkdGg9IjMiIGQ9Ik00OS45MjUgNTQuMjVWNDMiLz48L3N2Zz4=";
-errorContainerContentImage.alt = "Error Icon";
-errorContainerContent.appendChild(errorContainerContentImage);
-
-const errorContainerContentTitle = document.createElement("h2");
-errorContainerContentTitle.textContent = "Something went wrong";
-errorContainerContentTitle.classList.add("error-container-content-title");
-errorContainerContent.appendChild(errorContainerContentTitle);
-
-const errorContainerContentSubtext = document.createElement("p");
-errorContainerContentSubtext.textContent = "You don't have access to this page";
-errorContainerContentSubtext.classList.add("error-container-content-subtext");
-errorContainerContent.appendChild(errorContainerContentSubtext);
-
-const errorContainerRefreshButton = document.createElement("button");
-errorContainerRefreshButton.setAttribute("data-testid", "error-refresh-button");
-errorContainerRefreshButton.classList.add("error-container-refresh-button");
-errorContainerRefreshButton.textContent = "Refresh";
-errorContainerRefreshButton.classList.add(
-  "foundation-web-button relative clip group/interactable focus-visible:outline-focus disabled:outline-none cursor-pointer relative flex items-center justify-center stroke-none padding-y-none select-none radius-medium text-label-medium height-1000 padding-x-medium bg-action-standard content-action-standard",
-);
-errorContainerRefreshButton.setAttribute(
-  "onclick",
-  "window.location.href='https://roblox.com/home';",
-);
-errorContainerRefreshButton.setAttribute("style", "text-decoration: none;");
-errorContainerContent.appendChild(errorContainerRefreshButton);
-
-const errorTextContainer = document.createElement("div");
-errorTextContainer.classList.add(
-  "absolute inset-[0] transition-colors group-hover/interactable:bg-[var(--color-state-hover)] group-active/interactable:bg-[var(--color-state-press)] group-disabled/interactable:bg-none",
-);
-
-const span = document.createElement("span");
-span.classList.add("flex items-center min-width-0 gap-small");
-appendChild(span);
-
-const span2 = document.createElement("span");
-span2.classList.add("padding-y-xsmall text-truncate-end text-no-wrap");
-
-span2.appendChild(document.createTextNode("Home"));
-
-errorContainerRefreshButton.appendChild(errorTextContainer);
-
 let domObserver = null;
 
 export function isDiscoverSearchPage() {
