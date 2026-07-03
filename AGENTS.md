@@ -6,7 +6,7 @@ RoPrime is a browser extension for roblox.com that provides design-change featur
 
 - Always use `pnpm build` to build the project. If the build fails, stop and request human intervention.
 - Run `pnpm install --filter <package_name>` to add a package to workspace so npm, Biome and JavaScript can see it.
-- Run `biome check --write .` to format the code and automatically fix safe linting errors.
+- Run `pnpm prettier --write path/to/file` to format the code and automatically fix safe linting errors.
 
 ## PR instructions
 
