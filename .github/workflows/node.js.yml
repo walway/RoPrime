@@ -23,10 +23,15 @@ jobs:
 
     steps:
       - uses: actions/checkout@v7
+      - name: Install pnpm
+        uses: pnpm/action-setup@v6
+        with:
+          version: 11.9.0
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v6
         with:
           node-version: ${{ matrix.node-version }}
           cache: "pnpm"
+
       - run: pnpm ci
-      - run: pnpm run build --if-present
+      - run: pnpm build --if-present
