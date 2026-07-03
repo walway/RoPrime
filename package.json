@@ -1,0 +1,29 @@
+{
+  "name": "roprime",
+  "version": "1.5.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=26.1.0"
+  },
+  "scripts": {
+    "build": "node tasks/build.js"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^6.0.3",
+    "adm-zip": "^0.5.17",
+    "lottie-web": "^5.13.0",
+    "prettier": "^3.9.4",
+    "vite": "^8.1.0"
+  },
+  "dependencies": {
+    "@lottiefiles/dotlottie-web": "^0.75.0",
+    "@supabase/supabase-js": "^2.108.2",
+    "chalk": "^5.6.2",
+    "dotenv": "^17.4.2",
+    "glob": "^13.0.6",
+    "prism-code-editor": "^5.2.0",
+    "react": "^19.2.6",
+    "react-dom": "^19.2.7"
+  }
+}

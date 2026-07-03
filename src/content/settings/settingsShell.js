@@ -1,28 +1,28 @@
 import { RP_SETTINGS_FLAT_INNER_ID } from "../core/core.js";
 
 function buildNavButton({ page, labelKey, hidden = false }) {
-	const hiddenAttr = hidden ? " hidden" : "";
-	return `<button class="roprime-settings-nav-btn" data-roprime-page="${page}" type="button" data-i18n="${labelKey}"${hiddenAttr}></button>`;
+  const hiddenAttr = hidden ? " hidden" : "";
+  return `<button class="roprime-settings-nav-btn" data-roprime-page="${page}" type="button" data-i18n="${labelKey}"${hiddenAttr}></button>`;
 }
 
 export function buildSettingsShell({
-	navItems,
-	sectionsHtml,
-	showProfileEffectsAlert = false,
-	searchPlaceholderKey = "Search settings placeholder",
+  navItems,
+  sectionsHtml,
+  showProfileEffectsAlert = false,
+  searchPlaceholderKey = "Search settings placeholder",
 }) {
-	const navButtons = navItems
-		.map((item) =>
-			buildNavButton({
-				page: item.page,
-				labelKey: item.labelKey,
-				hidden: item.hidden,
-			}),
-		)
-		.join("");
+  const navButtons = navItems
+    .map((item) =>
+      buildNavButton({
+        page: item.page,
+        labelKey: item.labelKey,
+        hidden: item.hidden,
+      }),
+    )
+    .join("");
 
-	const profileEffectsAlert = showProfileEffectsAlert
-		? `
+  const profileEffectsAlert = showProfileEffectsAlert
+    ? `
 		<a class="roprime-settings-nav-alert" data-roprime-profile-effects-alert data-roprime-page="other" href="#">
 			<span class="roprime-settings-nav-alert-icon" aria-hidden="true">
 				<svg viewBox="0 0 24 24" width="22" height="22" focusable="false">
@@ -31,9 +31,9 @@ export function buildSettingsShell({
 			</span>
 			<span class="roprime-settings-nav-alert-text" data-i18n="Try out new profile animations"></span>
 		</a>`
-		: "";
+    : "";
 
-	return `
+  return `
 <div class="roprime-settings-wrapper roprime-settings-flat" id="${RP_SETTINGS_FLAT_INNER_ID}">
 	<div class="roprime-settings-hero">
 		<h2 data-i18n="Settings hero title"></h2>
@@ -58,13 +58,13 @@ export function buildSettingsShell({
 }
 
 export function wrapSettingsSection(
-	page,
-	_titleKey,
-	bodyHtml,
-	{ hidden = false } = {},
+  page,
+  _titleKey,
+  bodyHtml,
+  { hidden = false } = {},
 ) {
-	const hiddenAttr = hidden ? " hidden" : "";
-	return `
+  const hiddenAttr = hidden ? " hidden" : "";
+  return `
 <section class="roprime-settings-section" data-roprime-section="${page}"${hiddenAttr}>
 	<div class="roprime-settings-section-body">
 		${bodyHtml}

@@ -1,107 +1,110 @@
 import {
-	normalizeSearchBannedWords,
-	saveSettings,
-	settingsState,
+  normalizeSearchBannedWords,
+  saveSettings,
+  settingsState,
 } from "../core/core.js";
 import { syncSearchBan } from "../features/searchBan.js";
 import { DELETE_ICON_SVG } from "../sidebar/sidebarIcons.js";
 
 function escapeHtml(value) {
-	return String(value)
-		.replace(/&/g, "&amp;")
-		.replace(/</g, "&lt;")
-		.replace(/>/g, "&gt;")
-		.replace(/"/g, "&quot;");
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
 }
 
 function buildSearchBanWordRowHtml(word) {
-	return `<div class="roprime-sidebar-content-row" data-roprime-search-ban-row="${escapeHtml(word)}"><span class="roprime-sidebar-content-row-label">${escapeHtml(word)}</span><button type="button" class="roprime-sidebar-content-delete" data-roprime-search-ban-remove="${escapeHtml(word)}" data-i18n-aria-label="Search ban remove word">${DELETE_ICON_SVG}</button></div>`;
+  return `<div class="roprime-sidebar-content-row" data-roprime-search-ban-row="${escapeHtml(word)}"><span class="roprime-sidebar-content-row-label">${escapeHtml(word)}</span><button type="button" class="roprime-sidebar-content-delete" data-roprime-search-ban-remove="${escapeHtml(word)}" data-i18n-aria-label="Search ban remove word">${DELETE_ICON_SVG}</button></div>`;
 }
 
 export function buildSearchBanListHtml() {
-	const words = normalizeSearchBannedWords(settingsState.searchBannedWords);
-	if (!words.length) {
-		return `<p class="roprime-sidebar-content-empty" data-i18n="Search ban empty hint"></p>`;
-	}
-	return words.map((word) => buildSearchBanWordRowHtml(word)).join("");
+  const words = normalizeSearchBannedWords(settingsState.searchBannedWords);
+  if (!words.length) {
+    return `<p class="roprime-sidebar-content-empty" data-i18n="Search ban empty hint"></p>`;
+  }
+  return words.map((word) => buildSearchBanWordRowHtml(word)).join("");
 }
 
 export function refreshSearchBanList(inner) {
-	const list = inner.querySelector("[data-roprime-search-ban-list]");
-	if (!(list instanceof HTMLElement)) return;
-	list.innerHTML = buildSearchBanListHtml();
-	bindSearchBanList(inner);
+  const list = inner.querySelector("[data-roprime-search-ban-list]");
+  if (!(list instanceof HTMLElement)) return;
+  list.innerHTML = buildSearchBanListHtml();
+  bindSearchBanList(inner);
 }
 
 function addSearchBannedWord(rawWord) {
-	const word = String(rawWord || "").trim();
-	if (!word) return false;
+  const word = String(rawWord || "").trim();
+  if (!word) return false;
 
-	const words = normalizeSearchBannedWords(settingsState.searchBannedWords);
-	const normalized = word.toLowerCase();
-	if (words.some((entry) => entry.toLowerCase() === normalized)) return false;
+  const words = normalizeSearchBannedWords(settingsState.searchBannedWords);
+  const normalized = word.toLowerCase();
+  if (words.some((entry) => entry.toLowerCase() === normalized)) return false;
 
-	settingsState.searchBannedWords = [...words, word];
-	saveSettings();
-	syncSearchBan();
-	return true;
+  settingsState.searchBannedWords = [...words, word];
+  saveSettings();
+  syncSearchBan();
+  return true;
 }
 
 function removeSearchBannedWord(rawWord) {
-	const word = String(rawWord || "").trim();
-	if (!word) return;
+  const word = String(rawWord || "").trim();
+  if (!word) return;
 
-	settingsState.searchBannedWords = normalizeSearchBannedWords(
-		settingsState.searchBannedWords,
-	).filter((entry) => entry.toLowerCase() !== word.toLowerCase());
-	saveSettings();
-	syncSearchBan();
+  settingsState.searchBannedWords = normalizeSearchBannedWords(
+    settingsState.searchBannedWords,
+  ).filter((entry) => entry.toLowerCase() !== word.toLowerCase());
+  saveSettings();
+  syncSearchBan();
 }
 
 function bindSearchBanList(inner) {
-	const list = inner.querySelector("[data-roprime-search-ban-list]");
-	if (!(list instanceof HTMLElement)) return;
+  const list = inner.querySelector("[data-roprime-search-ban-list]");
+  if (!(list instanceof HTMLElement)) return;
 
-	list.querySelectorAll("[data-roprime-search-ban-remove]").forEach((btn) => {
-		if (!(btn instanceof HTMLButtonElement)) return;
-		if (btn.getAttribute("data-roprime-search-ban-remove-bound") === "1") return;
-		btn.setAttribute("data-roprime-search-ban-remove-bound", "1");
-		btn.addEventListener("click", () => {
-			removeSearchBannedWord(btn.getAttribute("data-roprime-search-ban-remove") || "");
-			refreshSearchBanList(inner);
-		});
-	});
+  list.querySelectorAll("[data-roprime-search-ban-remove]").forEach((btn) => {
+    if (!(btn instanceof HTMLButtonElement)) return;
+    if (btn.getAttribute("data-roprime-search-ban-remove-bound") === "1")
+      return;
+    btn.setAttribute("data-roprime-search-ban-remove-bound", "1");
+    btn.addEventListener("click", () => {
+      removeSearchBannedWord(
+        btn.getAttribute("data-roprime-search-ban-remove") || "",
+      );
+      refreshSearchBanList(inner);
+    });
+  });
 }
 
 function commitSearchBanInput(inner) {
-	const input = inner.querySelector("[data-roprime-search-ban-input]");
-	if (!(input instanceof HTMLInputElement)) return;
+  const input = inner.querySelector("[data-roprime-search-ban-input]");
+  if (!(input instanceof HTMLInputElement)) return;
 
-	const added = addSearchBannedWord(input.value);
-	if (added) {
-		input.value = "";
-		refreshSearchBanList(inner);
-	}
+  const added = addSearchBannedWord(input.value);
+  if (added) {
+    input.value = "";
+    refreshSearchBanList(inner);
+  }
 }
 
 function syncSearchBanSettingsUi(inner) {
-	const enabled = !!settingsState.searchBanEnabled;
+  const enabled = !!settingsState.searchBanEnabled;
 
-	const field = inner.querySelector(".roprime-search-ban-field");
-	if (field instanceof HTMLElement) {
-		field.hidden = !enabled;
-		field.setAttribute("aria-hidden", enabled ? "false" : "true");
-	}
+  const field = inner.querySelector(".roprime-search-ban-field");
+  if (field instanceof HTMLElement) {
+    field.hidden = !enabled;
+    field.setAttribute("aria-hidden", enabled ? "false" : "true");
+  }
 
-	const panel = inner.querySelector("[data-roprime-search-ban-panel]");
-	if (panel instanceof HTMLElement) {
-		panel.hidden = !enabled;
-		panel.setAttribute("aria-hidden", enabled ? "false" : "true");
-	}
+  const panel = inner.querySelector("[data-roprime-search-ban-panel]");
+  if (panel instanceof HTMLElement) {
+    panel.hidden = !enabled;
+    panel.setAttribute("aria-hidden", enabled ? "false" : "true");
+  }
 }
 
 export function buildPrivacySettingsHtml() {
-	return `
+  return `
                 <div class="roprime-toggle-row">
                     <div class="roprime-toggle-copy">
                         <div class="roprime-toggle-title" data-i18n="Search ban enable title"></div>
@@ -140,45 +143,45 @@ export function buildPrivacySettingsHtml() {
 }
 
 export function bindPrivacyControls(inner) {
-	if (!(inner instanceof HTMLElement)) return;
-	if (inner.getAttribute("data-roprime-privacy-bound") === "1") return;
-	inner.setAttribute("data-roprime-privacy-bound", "1");
+  if (!(inner instanceof HTMLElement)) return;
+  if (inner.getAttribute("data-roprime-privacy-bound") === "1") return;
+  inner.setAttribute("data-roprime-privacy-bound", "1");
 
-	const toggle = inner.querySelector("#roprime-toggle-search-ban");
-	if (toggle instanceof HTMLInputElement) {
-		toggle.addEventListener("change", () => {
-			settingsState.searchBanEnabled = toggle.checked;
-			saveSettings();
-			syncSearchBanSettingsUi(inner);
-			syncSearchBan();
-		});
-	}
+  const toggle = inner.querySelector("#roprime-toggle-search-ban");
+  if (toggle instanceof HTMLInputElement) {
+    toggle.addEventListener("change", () => {
+      settingsState.searchBanEnabled = toggle.checked;
+      saveSettings();
+      syncSearchBanSettingsUi(inner);
+      syncSearchBan();
+    });
+  }
 
-	const addBtn = inner.querySelector("[data-roprime-search-ban-add]");
-	if (addBtn instanceof HTMLButtonElement) {
-		addBtn.addEventListener("click", () => commitSearchBanInput(inner));
-	}
+  const addBtn = inner.querySelector("[data-roprime-search-ban-add]");
+  if (addBtn instanceof HTMLButtonElement) {
+    addBtn.addEventListener("click", () => commitSearchBanInput(inner));
+  }
 
-	const input = inner.querySelector("[data-roprime-search-ban-input]");
-	if (input instanceof HTMLInputElement) {
-		input.addEventListener("keydown", (event) => {
-			if (event.key !== "Enter") return;
-			event.preventDefault();
-			commitSearchBanInput(inner);
-		});
-	}
+  const input = inner.querySelector("[data-roprime-search-ban-input]");
+  if (input instanceof HTMLInputElement) {
+    input.addEventListener("keydown", (event) => {
+      if (event.key !== "Enter") return;
+      event.preventDefault();
+      commitSearchBanInput(inner);
+    });
+  }
 
-	bindSearchBanList(inner);
+  bindSearchBanList(inner);
 }
 
 export function refreshPrivacySettingsUi(inner) {
-	if (!(inner instanceof HTMLElement)) return;
+  if (!(inner instanceof HTMLElement)) return;
 
-	const toggle = inner.querySelector("#roprime-toggle-search-ban");
-	if (toggle instanceof HTMLInputElement) {
-		toggle.checked = !!settingsState.searchBanEnabled;
-	}
+  const toggle = inner.querySelector("#roprime-toggle-search-ban");
+  if (toggle instanceof HTMLInputElement) {
+    toggle.checked = !!settingsState.searchBanEnabled;
+  }
 
-	syncSearchBanSettingsUi(inner);
-	refreshSearchBanList(inner);
+  syncSearchBanSettingsUi(inner);
+  refreshSearchBanList(inner);
 }

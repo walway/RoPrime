@@ -1,7 +1,5 @@
 {
-  "files": [
-    "../README.md"
-  ],
+  "files": ["../README.md"],
   "imageSize": 100,
   "commit": false,
   "commitType": "docs",
@@ -12,9 +10,7 @@
       "name": "meflamey",
       "avatar_url": "https://avatars.githubusercontent.com/u/213979811?v=4",
       "profile": "https://flameydev.github.io",
-      "contributions": [
-        "translation"
-      ]
+      "contributions": ["translation"]
     }
   ],
   "contributorsPerLine": 7,

@@ -1,9 +1,9 @@
 import {
-	buildRoPrimeSettingsFullUrl,
-	isExtensionContextAlive,
-	isExtensionContextInvalidatedError,
-	isOnRoPrimeSettingsPage,
-	shouldRunRoPrimeOnCurrentPage,
+  buildRoPrimeSettingsFullUrl,
+  isExtensionContextAlive,
+  isExtensionContextInvalidatedError,
+  isOnRoPrimeSettingsPage,
+  shouldRunRoPrimeOnCurrentPage,
 } from "../core/core.js";
 
 const ENTRY_ATTR = "data-roprime-foundation-menu-entry";
@@ -22,219 +22,234 @@ let domObserver = null;
 let clickInstalled = false;
 
 function navigateToRoPrimeSettings(e) {
-	e.preventDefault();
-	e.stopPropagation();
-	if (isOnRoPrimeSettingsPage()) {
-		window.location.reload();
-		return;
-	}
-	window.location.assign(buildRoPrimeSettingsFullUrl());
+  e.preventDefault();
+  e.stopPropagation();
+  if (isOnRoPrimeSettingsPage()) {
+    window.location.reload();
+    return;
+  }
+  window.location.assign(buildRoPrimeSettingsFullUrl());
 }
 
 function onRoPrimeMenuClick(ev) {
-	if (!shouldRunRoPrimeOnCurrentPage() || !isExtensionContextAlive()) return;
-	if (!(ev.target instanceof Element)) return;
-	const button = ev.target.closest(`button[${ENTRY_ATTR}="1"]`);
-	if (!(button instanceof HTMLButtonElement)) return;
-	navigateToRoPrimeSettings(ev);
+  if (!shouldRunRoPrimeOnCurrentPage() || !isExtensionContextAlive()) return;
+  if (!(ev.target instanceof Element)) return;
+  const button = ev.target.closest(`button[${ENTRY_ATTR}="1"]`);
+  if (!(button instanceof HTMLButtonElement)) return;
+  navigateToRoPrimeSettings(ev);
 }
 
 function getFoundationMenuItemTitle(button) {
-	if (!(button instanceof HTMLButtonElement)) return "";
-	const titleSpan = button.querySelector(
-		"div.grow-1 span.foundation-web-menu-item-title",
-	);
-	return titleSpan?.textContent?.trim() ?? "";
+  if (!(button instanceof HTMLButtonElement)) return "";
+  const titleSpan = button.querySelector(
+    "div.grow-1 span.foundation-web-menu-item-title",
+  );
+  return titleSpan?.textContent?.trim() ?? "";
 }
 
 function getFirstFoundationMenuItemButton(group) {
-	if (!(group instanceof HTMLElement)) return null;
-	for (const child of group.children) {
-		if (
-			child instanceof HTMLButtonElement &&
-			child.classList.contains("foundation-web-menu-item")
-		) {
-			return child;
-		}
-	}
-	return null;
+  if (!(group instanceof HTMLElement)) return null;
+  for (const child of group.children) {
+    if (
+      child instanceof HTMLButtonElement &&
+      child.classList.contains("foundation-web-menu-item")
+    ) {
+      return child;
+    }
+  }
+  return null;
 }
 
 function isAccountInfoFoundationMenuGroup(group) {
-	if (!(group instanceof HTMLElement)) return false;
-	if (group.getAttribute("role") !== "group" || !group.classList.contains("padding-small")) {
-		return false;
-	}
-	if (!(group.closest(".foundation-web-menu") instanceof HTMLElement)) return false;
+  if (!(group instanceof HTMLElement)) return false;
+  if (
+    group.getAttribute("role") !== "group" ||
+    !group.classList.contains("padding-small")
+  ) {
+    return false;
+  }
+  if (!(group.closest(".foundation-web-menu") instanceof HTMLElement))
+    return false;
 
-	const firstButton = getFirstFoundationMenuItemButton(group);
-	if (!(firstButton instanceof HTMLButtonElement)) return false;
+  const firstButton = getFirstFoundationMenuItemButton(group);
+  if (!(firstButton instanceof HTMLButtonElement)) return false;
 
-	return getFoundationMenuItemTitle(firstButton) === ACCOUNT_INFO_MENU_TITLE;
+  return getFoundationMenuItemTitle(firstButton) === ACCOUNT_INFO_MENU_TITLE;
 }
 
 function findAccountInfoMenuGroups() {
-	const groups = [];
-	for (const group of document.querySelectorAll(
-		'.foundation-web-menu [role="group"].padding-small',
-	)) {
-		if (isAccountInfoFoundationMenuGroup(group)) groups.push(group);
-	}
-	return groups;
+  const groups = [];
+  for (const group of document.querySelectorAll(
+    '.foundation-web-menu [role="group"].padding-small',
+  )) {
+    if (isAccountInfoFoundationMenuGroup(group)) groups.push(group);
+  }
+  return groups;
 }
 
 function getNativeMenuItemButtons(group) {
-	if (!(group instanceof HTMLElement)) return [];
-	return [...group.children].filter(
-		(child) =>
-			child instanceof HTMLButtonElement &&
-			child.classList.contains("foundation-web-menu-item") &&
-			!child.hasAttribute(ENTRY_ATTR),
-	);
+  if (!(group instanceof HTMLElement)) return [];
+  return [...group.children].filter(
+    (child) =>
+      child instanceof HTMLButtonElement &&
+      child.classList.contains("foundation-web-menu-item") &&
+      !child.hasAttribute(ENTRY_ATTR),
+  );
 }
 
 function getMenuItemButtonAtPosition(group, oneBasedPosition) {
-	return getNativeMenuItemButtons(group)[oneBasedPosition - 1] ?? null;
+  return getNativeMenuItemButtons(group)[oneBasedPosition - 1] ?? null;
 }
 
 function getRoPrimeMenuPosition(group) {
-	const seventhButton = getMenuItemButtonAtPosition(group, PARENTAL_CONTROLS_MENU_POSITION);
-	if (!(seventhButton instanceof HTMLButtonElement)) {
-		return ROPRIME_MENU_POSITION_WITHOUT_PARENTAL;
-	}
+  const seventhButton = getMenuItemButtonAtPosition(
+    group,
+    PARENTAL_CONTROLS_MENU_POSITION,
+  );
+  if (!(seventhButton instanceof HTMLButtonElement)) {
+    return ROPRIME_MENU_POSITION_WITHOUT_PARENTAL;
+  }
 
-	if (getFoundationMenuItemTitle(seventhButton) === PARENTAL_CONTROLS_MENU_TITLE) {
-		return ROPRIME_MENU_POSITION_WITH_PARENTAL;
-	}
+  if (
+    getFoundationMenuItemTitle(seventhButton) === PARENTAL_CONTROLS_MENU_TITLE
+  ) {
+    return ROPRIME_MENU_POSITION_WITH_PARENTAL;
+  }
 
-	return ROPRIME_MENU_POSITION_WITHOUT_PARENTAL;
+  return ROPRIME_MENU_POSITION_WITHOUT_PARENTAL;
 }
 
 function getInsertBeforeTarget(group, menuPosition) {
-	return getNativeMenuItemButtons(group)[menuPosition - 1] ?? null;
+  return getNativeMenuItemButtons(group)[menuPosition - 1] ?? null;
 }
 
 function ensureButtonAtMenuPosition(group, button) {
-	if (
-		!(group instanceof HTMLElement) ||
-		!(button instanceof HTMLButtonElement) ||
-		!group.contains(button)
-	) {
-		return;
-	}
+  if (
+    !(group instanceof HTMLElement) ||
+    !(button instanceof HTMLButtonElement) ||
+    !group.contains(button)
+  ) {
+    return;
+  }
 
-	const insertBefore = getInsertBeforeTarget(group, getRoPrimeMenuPosition(group));
-	if (insertBefore) {
-		if (button.nextElementSibling !== insertBefore) {
-			group.insertBefore(button, insertBefore);
-		}
-		return;
-	}
+  const insertBefore = getInsertBeforeTarget(
+    group,
+    getRoPrimeMenuPosition(group),
+  );
+  if (insertBefore) {
+    if (button.nextElementSibling !== insertBefore) {
+      group.insertBefore(button, insertBefore);
+    }
+    return;
+  }
 
-	if (group.lastElementChild !== button) {
-		group.appendChild(button);
-	}
+  if (group.lastElementChild !== button) {
+    group.appendChild(button);
+  }
 }
 
 function injectIntoGroup(group) {
-	if (!(group instanceof HTMLElement)) return;
+  if (!(group instanceof HTMLElement)) return;
 
-	const existing = group.querySelector(`button[${ENTRY_ATTR}="1"]`);
-	if (existing instanceof HTMLButtonElement) {
-		ensureButtonAtMenuPosition(group, existing);
-		return;
-	}
+  const existing = group.querySelector(`button[${ENTRY_ATTR}="1"]`);
+  if (existing instanceof HTMLButtonElement) {
+    ensureButtonAtMenuPosition(group, existing);
+    return;
+  }
 
-	const insertBefore = getInsertBeforeTarget(group, getRoPrimeMenuPosition(group));
-	if (insertBefore) {
-		insertBefore.insertAdjacentHTML("beforebegin", BUTTON_HTML);
-		return;
-	}
+  const insertBefore = getInsertBeforeTarget(
+    group,
+    getRoPrimeMenuPosition(group),
+  );
+  if (insertBefore) {
+    insertBefore.insertAdjacentHTML("beforebegin", BUTTON_HTML);
+    return;
+  }
 
-	group.insertAdjacentHTML("beforeend", BUTTON_HTML);
+  group.insertAdjacentHTML("beforeend", BUTTON_HTML);
 }
 
 function removeInjectedButtons() {
-	for (const button of document.querySelectorAll(`button[${ENTRY_ATTR}="1"]`)) {
-		button.remove();
-	}
+  for (const button of document.querySelectorAll(`button[${ENTRY_ATTR}="1"]`)) {
+    button.remove();
+  }
 }
 
 function injectFoundationWebMenuEntries() {
-	if (!shouldRunRoPrimeOnCurrentPage() || !isExtensionContextAlive()) {
-		removeInjectedButtons();
-		return;
-	}
+  if (!shouldRunRoPrimeOnCurrentPage() || !isExtensionContextAlive()) {
+    removeInjectedButtons();
+    return;
+  }
 
-	for (const button of document.querySelectorAll(`button[${ENTRY_ATTR}="1"]`)) {
-		const group = button.closest('[role="group"].padding-small');
-		if (!isAccountInfoFoundationMenuGroup(group)) {
-			button.remove();
-		}
-	}
+  for (const button of document.querySelectorAll(`button[${ENTRY_ATTR}="1"]`)) {
+    const group = button.closest('[role="group"].padding-small');
+    if (!isAccountInfoFoundationMenuGroup(group)) {
+      button.remove();
+    }
+  }
 
-	for (const group of findAccountInfoMenuGroups()) {
-		injectIntoGroup(group);
-	}
+  for (const group of findAccountInfoMenuGroups()) {
+    injectIntoGroup(group);
+  }
 }
 
 function ensureDomObserver() {
-	if (domObserver || !isExtensionContextAlive()) return;
-	try {
-		domObserver = new MutationObserver(() => {
-			try {
-				injectFoundationWebMenuEntries();
-			} catch (e) {
-				if (!isExtensionContextInvalidatedError(e)) throw e;
-			}
-		});
-		domObserver.observe(document.documentElement, {
-			childList: true,
-			subtree: true,
-		});
-	} catch {
-		domObserver = null;
-	}
+  if (domObserver || !isExtensionContextAlive()) return;
+  try {
+    domObserver = new MutationObserver(() => {
+      try {
+        injectFoundationWebMenuEntries();
+      } catch (e) {
+        if (!isExtensionContextInvalidatedError(e)) throw e;
+      }
+    });
+    domObserver.observe(document.documentElement, {
+      childList: true,
+      subtree: true,
+    });
+  } catch {
+    domObserver = null;
+  }
 }
 
 function teardownDomObserver() {
-	if (domObserver) {
-		try {
-			domObserver.disconnect();
-		} catch {
-			/* ignore */
-		}
-		domObserver = null;
-	}
+  if (domObserver) {
+    try {
+      domObserver.disconnect();
+    } catch {
+      /* ignore */
+    }
+    domObserver = null;
+  }
 }
 
 export function syncRobloxFoundationWebMenuButton() {
-	try {
-		if (!isExtensionContextAlive()) return;
+  try {
+    if (!isExtensionContextAlive()) return;
 
-		if (!shouldRunRoPrimeOnCurrentPage()) {
-			stopRobloxFoundationWebMenuButton();
-			return;
-		}
+    if (!shouldRunRoPrimeOnCurrentPage()) {
+      stopRobloxFoundationWebMenuButton();
+      return;
+    }
 
-		if (!clickInstalled) {
-			document.addEventListener("click", onRoPrimeMenuClick, true);
-			clickInstalled = true;
-		}
+    if (!clickInstalled) {
+      document.addEventListener("click", onRoPrimeMenuClick, true);
+      clickInstalled = true;
+    }
 
-		ensureDomObserver();
-		injectFoundationWebMenuEntries();
-	} catch (e) {
-		if (isExtensionContextInvalidatedError(e)) return;
-		throw e;
-	}
+    ensureDomObserver();
+    injectFoundationWebMenuEntries();
+  } catch (e) {
+    if (isExtensionContextInvalidatedError(e)) return;
+    throw e;
+  }
 }
 
 export function stopRobloxFoundationWebMenuButton() {
-	if (clickInstalled) {
-		document.removeEventListener("click", onRoPrimeMenuClick, true);
-		clickInstalled = false;
-	}
-	teardownDomObserver();
-	removeInjectedButtons();
+  if (clickInstalled) {
+    document.removeEventListener("click", onRoPrimeMenuClick, true);
+    clickInstalled = false;
+  }
+  teardownDomObserver();
+  removeInjectedButtons();
 }

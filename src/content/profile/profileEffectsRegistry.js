@@ -2,9 +2,9 @@ import { getExtensionResourceUrl } from "../core/core.js";
 import { getAllProfileEffectIds } from "./profileEffectsCatalog.js";
 import { isSupabaseProfileEffectsEnabled } from "./profileEffectsConfig.js";
 import {
-	fetchRegistryFromSupabase,
-	supabaseRegisterEquip,
-	supabaseRegisterPurchase,
+  fetchRegistryFromSupabase,
+  supabaseRegisterEquip,
+  supabaseRegisterPurchase,
 } from "./profileEffectsSupabase.js";
 
 export { isSupabaseProfileEffectsEnabled } from "./profileEffectsConfig.js";
@@ -14,16 +14,16 @@ export const PLUGIN_OWNER_USER_IDS = [];
 export const PROFILE_EFFECTS_API_BASE = "";
 
 export const PROFILE_EFFECTS_CDN_REGISTRY_URL = PROFILE_EFFECTS_API_BASE
-	? `${PROFILE_EFFECTS_API_BASE.replace(/\/$/, "")}/registry`
-	: "";
+  ? `${PROFILE_EFFECTS_API_BASE.replace(/\/$/, "")}/registry`
+  : "";
 
 export const PROFILE_EFFECTS_REGISTER_API_URL = PROFILE_EFFECTS_API_BASE
-	? `${PROFILE_EFFECTS_API_BASE.replace(/\/$/, "")}/purchase`
-	: "";
+  ? `${PROFILE_EFFECTS_API_BASE.replace(/\/$/, "")}/purchase`
+  : "";
 
 export const PROFILE_EFFECTS_EQUIP_API_URL = PROFILE_EFFECTS_API_BASE
-	? `${PROFILE_EFFECTS_API_BASE.replace(/\/$/, "")}/equip`
-	: "";
+  ? `${PROFILE_EFFECTS_API_BASE.replace(/\/$/, "")}/equip`
+  : "";
 
 const LOCAL_REGISTRY_PATH = "resources/data/profile-effects-owners.json";
 
@@ -31,249 +31,249 @@ let registryCache = null;
 let registryFetchPromise = null;
 
 export {
-	getRobloxUserId,
-	invalidateRobloxUserIdCache,
-	peekRobloxUserId,
+  getRobloxUserId,
+  invalidateRobloxUserIdCache,
+  peekRobloxUserId,
 } from "./robloxUserId.js";
 
 export function isPluginOwner(userId) {
-	const id = Number(userId);
-	return Number.isFinite(id) && PLUGIN_OWNER_USER_IDS.includes(id);
+  const id = Number(userId);
+  return Number.isFinite(id) && PLUGIN_OWNER_USER_IDS.includes(id);
 }
 
 export function normalizeEquippedEntry(entry) {
-	if (!entry) return { picture: "", profile: "" };
-	if (typeof entry === "string") {
-		const id = entry.trim();
-		return { picture: id, profile: "" };
-	}
-	if (typeof entry === "object") {
-		return {
-			picture: String(entry.picture || "").trim(),
-			profile: String(entry.profile || "").trim(),
-		};
-	}
-	return { picture: "", profile: "" };
+  if (!entry) return { picture: "", profile: "" };
+  if (typeof entry === "string") {
+    const id = entry.trim();
+    return { picture: id, profile: "" };
+  }
+  if (typeof entry === "object") {
+    return {
+      picture: String(entry.picture || "").trim(),
+      profile: String(entry.profile || "").trim(),
+    };
+  }
+  return { picture: "", profile: "" };
 }
 
 export function equipSlotForKind(kind) {
-	return kind === "picture" ? "picture" : "profile";
+  return kind === "picture" ? "picture" : "profile";
 }
 
 function parseRegistry(raw) {
-	if (!raw || typeof raw !== "object") {
-		return { version: 1, effects: {}, equipped: {} };
-	}
-	const effects =
-		raw.effects && typeof raw.effects === "object" ? raw.effects : {};
-	const equipped =
-		raw.equipped && typeof raw.equipped === "object" ? raw.equipped : {};
-	return { version: raw.version ?? 1, effects, equipped };
+  if (!raw || typeof raw !== "object") {
+    return { version: 1, effects: {}, equipped: {} };
+  }
+  const effects =
+    raw.effects && typeof raw.effects === "object" ? raw.effects : {};
+  const equipped =
+    raw.equipped && typeof raw.equipped === "object" ? raw.equipped : {};
+  return { version: raw.version ?? 1, effects, equipped };
 }
 
 function ownerIdsForEffect(registry, effectId) {
-	const owners = registry?.effects?.[effectId]?.owners;
-	if (!owners || typeof owners !== "object") return [];
-	return Object.keys(owners).filter((id) => /^\d+$/.test(String(id)));
+  const owners = registry?.effects?.[effectId]?.owners;
+  if (!owners || typeof owners !== "object") return [];
+  return Object.keys(owners).filter((id) => /^\d+$/.test(String(id)));
 }
 
 export function userOwnsOnRegistry(registry, userId, effectId) {
-	if (!registry || userId == null) return false;
-	if (isPluginOwner(userId)) return true;
-	return ownerIdsForEffect(registry, effectId).includes(String(userId));
+  if (!registry || userId == null) return false;
+  if (isPluginOwner(userId)) return true;
+  return ownerIdsForEffect(registry, effectId).includes(String(userId));
 }
 
 async function fetchRegistryFromUrl(url) {
-	if (!url) return null;
-	try {
-		const response = await fetch(url, { cache: "no-store" });
-		if (!response.ok) return null;
-		return parseRegistry(await response.json());
-	} catch {
-		return null;
-	}
+  if (!url) return null;
+  try {
+    const response = await fetch(url, { cache: "no-store" });
+    if (!response.ok) return null;
+    return parseRegistry(await response.json());
+  } catch {
+    return null;
+  }
 }
 
 export async function fetchProfileEffectsRegistry() {
-	if (registryCache) return registryCache;
-	if (registryFetchPromise) return registryFetchPromise;
+  if (registryCache) return registryCache;
+  if (registryFetchPromise) return registryFetchPromise;
 
-	registryFetchPromise = (async () => {
-		const sources = [];
+  registryFetchPromise = (async () => {
+    const sources = [];
 
-		if (isSupabaseProfileEffectsEnabled()) {
-			const supabaseRegistry = await fetchRegistryFromSupabase();
-			if (supabaseRegistry) sources.push(supabaseRegistry);
-		}
+    if (isSupabaseProfileEffectsEnabled()) {
+      const supabaseRegistry = await fetchRegistryFromSupabase();
+      if (supabaseRegistry) sources.push(supabaseRegistry);
+    }
 
-		const cdnRegistry = await fetchRegistryFromUrl(
-			PROFILE_EFFECTS_CDN_REGISTRY_URL,
-		);
-		if (cdnRegistry) sources.push(cdnRegistry);
+    const cdnRegistry = await fetchRegistryFromUrl(
+      PROFILE_EFFECTS_CDN_REGISTRY_URL,
+    );
+    if (cdnRegistry) sources.push(cdnRegistry);
 
-		if (!isSupabaseProfileEffectsEnabled()) {
-			const localUrl = getExtensionResourceUrl(LOCAL_REGISTRY_PATH);
-			const localRegistry = await fetchRegistryFromUrl(localUrl);
-			if (localRegistry) sources.push(localRegistry);
-		}
+    if (!isSupabaseProfileEffectsEnabled()) {
+      const localUrl = getExtensionResourceUrl(LOCAL_REGISTRY_PATH);
+      const localRegistry = await fetchRegistryFromUrl(localUrl);
+      if (localRegistry) sources.push(localRegistry);
+    }
 
-		const merged = parseRegistry(null);
-		for (const source of sources) {
-			for (const [effectId, effectData] of Object.entries(source.effects)) {
-				if (!merged.effects[effectId]) {
-					merged.effects[effectId] = { owners: {} };
-				}
-				const owners = effectData?.owners;
-				if (owners && typeof owners === "object") {
-					Object.assign(merged.effects[effectId].owners, owners);
-				}
-			}
-			if (source.equipped && typeof source.equipped === "object") {
-				for (const [userKey, entry] of Object.entries(source.equipped)) {
-					const prev = normalizeEquippedEntry(merged.equipped[userKey]);
-					const next = normalizeEquippedEntry(entry);
-					merged.equipped[userKey] = {
-						picture: next.picture || prev.picture,
-						profile: next.profile || prev.profile,
-					};
-				}
-			}
-		}
+    const merged = parseRegistry(null);
+    for (const source of sources) {
+      for (const [effectId, effectData] of Object.entries(source.effects)) {
+        if (!merged.effects[effectId]) {
+          merged.effects[effectId] = { owners: {} };
+        }
+        const owners = effectData?.owners;
+        if (owners && typeof owners === "object") {
+          Object.assign(merged.effects[effectId].owners, owners);
+        }
+      }
+      if (source.equipped && typeof source.equipped === "object") {
+        for (const [userKey, entry] of Object.entries(source.equipped)) {
+          const prev = normalizeEquippedEntry(merged.equipped[userKey]);
+          const next = normalizeEquippedEntry(entry);
+          merged.equipped[userKey] = {
+            picture: next.picture || prev.picture,
+            profile: next.profile || prev.profile,
+          };
+        }
+      }
+    }
 
-		registryCache = merged;
-		return merged;
-	})();
+    registryCache = merged;
+    return merged;
+  })();
 
-	try {
-		return await registryFetchPromise;
-	} finally {
-		registryFetchPromise = null;
-	}
+  try {
+    return await registryFetchPromise;
+  } finally {
+    registryFetchPromise = null;
+  }
 }
 
 export function invalidateProfileEffectsRegistryCache() {
-	registryCache = null;
+  registryCache = null;
 }
 
 export async function registerProfileEffectPurchase(userId, effectId) {
-	if (!userId || !effectId) return false;
+  if (!userId || !effectId) return false;
 
-	if (isSupabaseProfileEffectsEnabled()) {
-		const ok = await supabaseRegisterPurchase(userId, effectId);
-		if (ok) {
-			invalidateProfileEffectsRegistryCache();
-			return true;
-		}
-	}
+  if (isSupabaseProfileEffectsEnabled()) {
+    const ok = await supabaseRegisterPurchase(userId, effectId);
+    if (ok) {
+      invalidateProfileEffectsRegistryCache();
+      return true;
+    }
+  }
 
-	if (PROFILE_EFFECTS_REGISTER_API_URL) {
-		try {
-			const response = await fetch(PROFILE_EFFECTS_REGISTER_API_URL, {
-				method: "POST",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({
-					userId,
-					effectId,
-					purchasedAt: Date.now(),
-				}),
-			});
-			if (response.ok) {
-				invalidateProfileEffectsRegistryCache();
-				return true;
-			}
-		} catch {}
-	}
+  if (PROFILE_EFFECTS_REGISTER_API_URL) {
+    try {
+      const response = await fetch(PROFILE_EFFECTS_REGISTER_API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userId,
+          effectId,
+          purchasedAt: Date.now(),
+        }),
+      });
+      if (response.ok) {
+        invalidateProfileEffectsRegistryCache();
+        return true;
+      }
+    } catch {}
+  }
 
-	return false;
+  return false;
 }
 
 export async function registerProfileEffectEquip(userId, effectId, kind) {
-	if (!userId) return false;
+  if (!userId) return false;
 
-	const slot = equipSlotForKind(kind);
+  const slot = equipSlotForKind(kind);
 
-	if (isSupabaseProfileEffectsEnabled()) {
-		const ok = await supabaseRegisterEquip(userId, effectId, kind);
-		if (ok) {
-			invalidateProfileEffectsRegistryCache();
-			return true;
-		}
-		return false;
-	}
+  if (isSupabaseProfileEffectsEnabled()) {
+    const ok = await supabaseRegisterEquip(userId, effectId, kind);
+    if (ok) {
+      invalidateProfileEffectsRegistryCache();
+      return true;
+    }
+    return false;
+  }
 
-	const registry = await fetchProfileEffectsRegistry();
-	if (!registry.equipped || typeof registry.equipped !== "object") {
-		registry.equipped = {};
-	}
-	const key = String(userId);
-	const entry = normalizeEquippedEntry(registry.equipped[key]);
-	if (effectId) entry[slot] = effectId;
-	else entry[slot] = "";
+  const registry = await fetchProfileEffectsRegistry();
+  if (!registry.equipped || typeof registry.equipped !== "object") {
+    registry.equipped = {};
+  }
+  const key = String(userId);
+  const entry = normalizeEquippedEntry(registry.equipped[key]);
+  if (effectId) entry[slot] = effectId;
+  else entry[slot] = "";
 
-	if (!entry.picture && !entry.profile) delete registry.equipped[key];
-	else registry.equipped[key] = entry;
+  if (!entry.picture && !entry.profile) delete registry.equipped[key];
+  else registry.equipped[key] = entry;
 
-	if (PROFILE_EFFECTS_EQUIP_API_URL) {
-		try {
-			const response = await fetch(PROFILE_EFFECTS_EQUIP_API_URL, {
-				method: "POST",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({
-					userId,
-					effectId: effectId || null,
-					kind: slot,
-					equippedAt: Date.now(),
-				}),
-			});
-			if (response.ok) {
-				invalidateProfileEffectsRegistryCache();
-				return true;
-			}
-		} catch {}
-	}
+  if (PROFILE_EFFECTS_EQUIP_API_URL) {
+    try {
+      const response = await fetch(PROFILE_EFFECTS_EQUIP_API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userId,
+          effectId: effectId || null,
+          kind: slot,
+          equippedAt: Date.now(),
+        }),
+      });
+      if (response.ok) {
+        invalidateProfileEffectsRegistryCache();
+        return true;
+      }
+    } catch {}
+  }
 
-	return false;
+  return false;
 }
 
 export async function getEquippedEffectForProfileUser(
-	profileUserId,
-	kind,
-	localEquipped,
-	equippedByUser,
+  profileUserId,
+  kind,
+  localEquipped,
+  equippedByUser,
 ) {
-	const slot = equipSlotForKind(kind);
-	const key = String(profileUserId);
+  const slot = equipSlotForKind(kind);
+  const key = String(profileUserId);
 
-	const registry = await fetchProfileEffectsRegistry();
-	const fromRegistry = normalizeEquippedEntry(registry.equipped?.[key])[slot];
+  const registry = await fetchProfileEffectsRegistry();
+  const fromRegistry = normalizeEquippedEntry(registry.equipped?.[key])[slot];
 
-	const fromMap =
-		equippedByUser && typeof equippedByUser === "object"
-			? normalizeEquippedEntry(equippedByUser[key])[slot]
-			: "";
+  const fromMap =
+    equippedByUser && typeof equippedByUser === "object"
+      ? normalizeEquippedEntry(equippedByUser[key])[slot]
+      : "";
 
-	const fromLocal =
-		localEquipped && typeof localEquipped === "object"
-			? String(localEquipped[slot] || "").trim()
-			: "";
+  const fromLocal =
+    localEquipped && typeof localEquipped === "object"
+      ? String(localEquipped[slot] || "").trim()
+      : "";
 
-	return fromRegistry || fromMap || fromLocal || "";
+  return fromRegistry || fromMap || fromLocal || "";
 }
 
 export async function syncOwnedEffectsFromRegistry(userId, ownedList) {
-	if (!userId) return ownedList;
-	if (isPluginOwner(userId)) return getAllProfileEffectIds();
+  if (!userId) return ownedList;
+  if (isPluginOwner(userId)) return getAllProfileEffectIds();
 
-	const registry = await fetchProfileEffectsRegistry();
-	const next = new Set(
-		Array.isArray(ownedList)
-			? ownedList.filter((id) => typeof id === "string" && id.trim())
-			: [],
-	);
-	for (const effectId of Object.keys(registry.effects)) {
-		if (userOwnsOnRegistry(registry, userId, effectId)) {
-			next.add(effectId);
-		}
-	}
-	return [...next];
+  const registry = await fetchProfileEffectsRegistry();
+  const next = new Set(
+    Array.isArray(ownedList)
+      ? ownedList.filter((id) => typeof id === "string" && id.trim())
+      : [],
+  );
+  for (const effectId of Object.keys(registry.effects)) {
+    if (userOwnsOnRegistry(registry, userId, effectId)) {
+      next.add(effectId);
+    }
+  }
+  return [...next];
 }
