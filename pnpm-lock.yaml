@@ -37,8 +37,8 @@ importers:
         specifier: ^6.0.3
         version: 6.0.3(vite@8.1.2)
       adm-zip:
-        specifier: ^0.5.17
-        version: 0.5.18
+        specifier: ^0.6.0
+        version: 0.6.0
       lottie-web:
         specifier: ^5.13.0
         version: 5.13.0
@@ -560,7 +560,7 @@ snapshots:
       '@rolldown/pluginutils': 1.0.1
       vite: 8.1.2
 
-  adm-zip@0.5.18: {}
+  adm-zip@0.6.0: {}
 
   balanced-match@4.0.4: {}
 
