@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@lottiefiles/dotlottie-web':
-        specifier: ^0.75.0
-        version: 0.75.0
+        specifier: ^0.77.1
+        version: 0.77.1
       '@supabase/supabase-js':
         specifier: ^2.108.2
         version: 2.110.0
@@ -60,8 +60,8 @@ packages:
   '@emnapi/wasi-threads@1.2.2':
     resolution: {integrity: sha512-c95qOXkHdydNKhscBTebqEC1CVAZpyqOfVfBzQ1qgzyl3gfeldUjIggDbIZgDKsHLgnsM+igH7TJ/eAasaVuMA==}
 
-  '@lottiefiles/dotlottie-web@0.75.0':
-    resolution: {integrity: sha512-2IZAIK7TblPPxSsjmPsDrSDew2XYj422rWKmwjIUPH+zroUPK6/gImjkKoJhKOXzByLEo5bTPx9qW4DCZfM5/g==}
+  '@lottiefiles/dotlottie-web@0.77.1':
+    resolution: {integrity: sha512-WHRQMyACH9VFCk3MI54IuqrTu5pbTnTrvQoJoyH76P6WHhkcNH+lINn3LduhbEciqI+DRKgdM4MwtOPoN2GbDA==}
     engines: {node: '>=18.17.0', npm: '>=9.5.0'}
 
   '@napi-rs/wasm-runtime@1.1.6':
@@ -208,9 +208,9 @@ packages:
       babel-plugin-react-compiler:
         optional: true
 
-  adm-zip@0.6.0:
-    resolution: {integrity: sha512-XleryMhbuksdKtofnWZ9Sk+4CUTbms4Mb/EU32SZwToAyZ5RgVos/ki8n+yr0LWHOGKuakbXTuuYNHLQjhddgg==}
-    engines: {node: '>=14.0'}
+  adm-zip@0.5.18:
+    resolution: {integrity: sha512-ufJnssQGbxzLNS1Ho9bCtX4rQKCCvoVuDLHoJyc3F9dOGDB4BkWs2Ci0kv53lqocAEQ/Cbi+I2XCsNYGqVYqng==}
+    engines: {node: '>=12.0'}
 
   balanced-match@4.0.4:
     resolution: {integrity: sha512-BLrgEcRTwX2o6gGxGOCNyMvGSp35YofuYzw9h1IMTRmKqttAZZVU67bdb9Pr2vUHA8+j3i2tJfjO6C6+4myGTA==}
@@ -456,7 +456,7 @@ snapshots:
       tslib: 2.8.1
     optional: true
 
-  '@lottiefiles/dotlottie-web@0.75.0': {}
+  '@lottiefiles/dotlottie-web@0.77.1': {}
 
   '@napi-rs/wasm-runtime@1.1.6(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.1)':
     dependencies:

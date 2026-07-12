@@ -8,8 +8,6 @@ import {
   shouldRunRoPrimeOnCurrentPage,
 } from "../core/core.js";
 
-const RP_DROPDOWN_ITEM_CLASS = "roprime-dropdown-entry";
-
 const SETTINGS_POPOVER_MENU_ID = "settings-popover-menu";
 
 const ROPRIME_DROPDOWN_SETTINGS_LABEL = "RoPrime Settings";
@@ -46,7 +44,6 @@ function ensureRowTemplate() {
   if (!iconUrl) return;
 
   const li = document.createElement("li");
-  li.className = RP_DROPDOWN_ITEM_CLASS;
 
   const a = document.createElement("a");
   a.className = "rbx-menu-item";
