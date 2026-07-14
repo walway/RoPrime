@@ -235,7 +235,6 @@ function openPanel() {
       if (canToggle) {
         toggleWrap = document.createElement("label");
         toggleWrap.className = "roprime-switch";
-        toggleWrap.title = "Enable/Disable";
 
         const toggle = document.createElement("input");
         toggle.type = "checkbox";
