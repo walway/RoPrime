@@ -210,6 +210,15 @@ const CUSTOM_BADGES = {
       imageUrl: "resources/badges/memes/onett-delayer.png",
     },
   ],
+
+  1267667601: [
+    {
+      title: "RoPrime Donator",
+      label: "RoPrime Donator",
+      alt: "RoPrime Donator",
+      imageUrl: "https://cdn.discordapp.com/attachments/1143867107537338566/1526537536531337266/copyright_free_gilbert.png?ex=6a57625e&is=6a5610de&hm=07c5297e28ccaaa114785252c7b6fd553001fe82815aec08b71cae1c3b2f29b8&",
+    },
+  ],
 };
 
 const SEE_MORE_BUTTON =
