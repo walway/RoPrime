@@ -116,44 +116,44 @@ const CUSTOM_BADGES = {
 
   447170745: [
     {
-      title: "IM RAT AND I LIKE STEALING YOUR COOKIES",
-      label: "IM RAT AND I LIKE STEALING YOUR COOKIES",
-      alt: "IM RAT AND I LIKE STEALING YOUR COOKIES",
+      title: "HELLO",
+      label: "HELLO",
+      alt: "HELLO",
       imageUrl:
         "https://tr.rbxcdn.com/180DAY-bae15f4fd078a8cb4229bee3c0bfebf3/420/420/Decal/Webp/noFilter",
     },
     {
-      title: "IM RAT AND I LIKE STEALING YOUR COOKIES",
-      label: "IM RAT AND I LIKE STEALING YOUR COOKIES",
-      alt: "IM RAT AND I LIKE STEALING YOUR COOKIES",
+      title: "HELLO",
+      label: "HELLO",
+      alt: "HELLO",
       imageUrl:
         "https://tr.rbxcdn.com/180DAY-bae15f4fd078a8cb4229bee3c0bfebf3/420/420/Decal/Webp/noFilter",
     },
     {
-      title: "IM RAT AND I LIKE STEALING YOUR COOKIES",
-      label: "IM RAT AND I LIKE STEALING YOUR COOKIES",
-      alt: "IM RAT AND I LIKE STEALING YOUR COOKIES",
+      title: "HELLO",
+      label: "HELLO",
+      alt: "HELLO",
       imageUrl:
         "https://tr.rbxcdn.com/180DAY-bae15f4fd078a8cb4229bee3c0bfebf3/420/420/Decal/Webp/noFilter",
     },
     {
-      title: "IM RAT AND I LIKE STEALING YOUR COOKIES",
-      label: "IM RAT AND I LIKE STEALING YOUR COOKIES",
-      alt: "IM RAT AND I LIKE STEALING YOUR COOKIES",
+      title: "HELLO",
+      label: "HELLO",
+      alt: "HELLO",
       imageUrl:
         "https://tr.rbxcdn.com/180DAY-bae15f4fd078a8cb4229bee3c0bfebf3/420/420/Decal/Webp/noFilter",
     },
     {
-      title: "IM RAT AND I LIKE STEALING YOUR COOKIES",
-      label: "IM RAT AND I LIKE STEALING YOUR COOKIES",
-      alt: "IM RAT AND I LIKE STEALING YOUR COOKIES",
+      title: "HELLO",
+      label: "HELLO",
+      alt: "HELLO",
       imageUrl:
         "https://tr.rbxcdn.com/180DAY-bae15f4fd078a8cb4229bee3c0bfebf3/420/420/Decal/Webp/noFilter",
     },
     {
-      title: "IM RAT AND I LIKE STEALING YOUR COOKIES",
-      label: "IM RAT AND I LIKE STEALING YOUR COOKIES",
-      alt: "IM RAT AND I LIKE STEALING YOUR COOKIES",
+      title: "HELLO",
+      label: "HELLO",
+      alt: "HELLO",
       imageUrl:
         "https://tr.rbxcdn.com/180DAY-bae15f4fd078a8cb4229bee3c0bfebf3/420/420/Decal/Webp/noFilter",
     },
@@ -298,7 +298,7 @@ function buildBadgeTile(badge) {
 					<div class="base-tile-thumbnail-wrapper"><span class="thumbnail-2d-container base-tile-thumbnail radius-medium"><img class="" src="${imageSrc}" alt="${badge.alt}"></span></div>
 					<div class="base-tile-title content-emphasis text-title-medium padding-top-medium">${badge.label}</div>
 					<div class="base-tile-metadata content-default text-body-medium padding-top-xsmall"></div>
-				</a>
+				</a>  
 			</div>
 		</div>
 	</div>`;
