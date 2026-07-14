@@ -260,6 +260,7 @@ function ensureStyles() {
   const style = document.createElement("style");
   style.id = STYLE_ID;
   style.textContent = `
+.${ROOT_CLASS} { margin-bottom: 24px; }
 .${ROOT_CLASS} .roprime-legacy-badges-rows { display: flex; flex-direction: column; }
 .${ROOT_CLASS} .roprime-legacy-badges-row { display: grid; grid-template-columns: repeat(${BADGES_PER_ROW}, minmax(0, 1fr)); gap: 12px; }
 .${ROOT_CLASS} .roprime-legacy-badges-row-extra { display: none; }
