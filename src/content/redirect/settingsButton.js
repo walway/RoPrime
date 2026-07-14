@@ -13,6 +13,7 @@ import {
 const ROPRIME_ACCOUNT_MENU_LABEL = "RoPrime Settings";
 
 const TAB_ENTRY_ATTR = "data-roprime-account-menu-entry";
+const PLUGINS_TAB_ATTR = "data-roprime-account-plugins-entry";
 const POP_ENTRY_ATTR = "data-roprime-account-popover-entry";
 const DIVIDER_ATTR = "data-roprime-account-divider";
 
@@ -204,6 +205,9 @@ function removeVerticalAccountInjections() {
   document.querySelectorAll(`[${TAB_ENTRY_ATTR}]`).forEach((n) => {
     n.remove();
   });
+  document.querySelectorAll(`[${PLUGINS_TAB_ATTR}]`).forEach((n) => {
+    n.remove();
+  });
   document.querySelectorAll(`li[${DIVIDER_ATTR}="1"]`).forEach((n) => {
     n.remove();
   });
@@ -347,6 +351,88 @@ function placeTabAfterDividerBlock(_menuList, li, divider) {
   insertAfter.insertAdjacentElement("afterend", li);
 }
 
+function buildPluginsTabLi(menuList) {
+  const li = document.createElement("li");
+  li.classList.add("menu-option");
+  li.setAttribute("role", "tab");
+  li.setAttribute(PLUGINS_TAB_ATTR, "1");
+
+  const a = document.createElement("a");
+  a.className = "menu-option-content";
+  a.href = "#!/plugins";
+  a.style.cursor = "pointer";
+  a.addEventListener("click", (e) => {
+    e.preventDefault();
+    try {
+      menuList.querySelectorAll("a.menu-option-content").forEach((link) => {
+        if (!(link instanceof HTMLElement)) return;
+        link.classList.remove("active");
+        link.removeAttribute("aria-current");
+      });
+      a.classList.add("active");
+      a.setAttribute("aria-current", "page");
+    } catch {
+      /* ignore */
+    }
+    try {
+      history.replaceState(
+        history.state,
+        "",
+        `${window.location.pathname}${window.location.search}#!/plugins`,
+      );
+    } catch {
+      /* ignore */
+    }
+    if (window.location.hash !== "#!/plugins") {
+      window.location.hash = "#!/plugins";
+    }
+    window.dispatchEvent(new Event("roprime-open-plugins-panel"));
+  });
+
+  const iconWrap = document.createElement("span");
+  iconWrap.style.display = "inline-flex";
+  iconWrap.style.alignItems = "center";
+  iconWrap.style.justifyContent = "center";
+  iconWrap.style.width = "16px";
+  iconWrap.style.height = "16px";
+  iconWrap.style.marginRight = "8px";
+  iconWrap.style.flex = "0 0 auto";
+  iconWrap.innerHTML = `
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="30 732 24 20" aria-hidden="true" focusable="false" style="width:16px;height:16px;display:block;">
+      <g id="my-place-on">
+        <path d="M53,736h-4.4l-1.7-3.4c-0.2-0.3-0.5-0.6-0.9-0.6h-8c-0.4,0-0.7,0.2-0.9,0.6l-1.7,3.4H31c-0.6,0-1,0.4-1,1v14   c0,0.6,0.4,1,1,1h22c0.6,0,1-0.4,1-1v-14C54,736.4,53.6,736,53,736z M35,740c0,0.6-0.4,1-1,1s-1-0.4-1-1v-1c0-0.6,0.4-1,1-1   s1,0.4,1,1V740z M44.7,738h-5.4l-2-1.3l1.3-2.7h6.8l1.3,2.7L44.7,738z M51,740c0,0.6-0.4,1-1,1s-1-0.4-1-1v-1c0-0.6,0.4-1,1-1   s1,0.4,1,1V740z" fill="currentColor"></path>
+      </g>
+    </svg>
+  `.trim();
+
+  const span = document.createElement("span");
+  span.classList.add("font-caption-header");
+  span.textContent = "Plugins";
+  span.style.fontSize = "12px";
+
+  a.append(iconWrap, span);
+  li.appendChild(a);
+  return li;
+}
+
+function ensurePluginsTabEntry() {
+  const menuList = getAccountPageMenuList();
+  if (!(menuList instanceof HTMLElement)) return false;
+
+  const divider = getOrCreatePluginDivider(menuList);
+  if (!(divider instanceof HTMLElement)) return false;
+
+  let li = menuList.querySelector(`li[${PLUGINS_TAB_ATTR}]`);
+  if (!(li instanceof HTMLLIElement)) {
+    li = buildPluginsTabLi(menuList);
+  }
+
+  if (divider.nextElementSibling !== li) {
+    divider.insertAdjacentElement("afterend", li);
+  }
+  return true;
+}
+
 function ensureVerticalTabEntry() {
   const menuList = getAccountPageMenuList();
   if (!(menuList instanceof HTMLElement)) return false;
@@ -402,6 +488,7 @@ export function syncAccountSettingsMenuButton() {
 
     let tabOk = true;
     if (shouldInjectVerticalAccountTab()) {
+      ensurePluginsTabEntry();
       tabOk = ensureVerticalTabEntry();
     } else {
       removeVerticalAccountInjections();

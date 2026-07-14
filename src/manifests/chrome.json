@@ -3,14 +3,13 @@
   "name": "RoPrime - New Era of Roblox website",
   "version": "1.5.0",
   "description": "RoPrime adds useful design-focused features and more.",
-  "permissions": ["storage"],
+  "permissions": ["storage", "management"],
   "host_permissions": [
     "*://*.supabase.co/*",
     "https://users.roblox.com/*",
     "https://thumbnails.roblox.com/*",
     "https://walway.github.io/*"
   ],
-  "optional_permissions": ["management"],
   "background": {
     "service_worker": "background.js"
   },

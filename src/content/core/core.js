@@ -209,7 +209,6 @@ export const RP_DEFAULT_SETTINGS = {
   friendStylingReimagnedEnabled: false,
   hideAgeBadgeEnabled: false,
   developerPageUnlocked: false,
-  enablePluginControlPanel: false,
   sidebarSize: "full",
   sidebarCollapseMenuEnabled: false,
   hiddenSidebarItemsBySize: { full: [], small: [], icon: [] },
@@ -265,9 +264,7 @@ export function mergeStoredSettings(stored) {
   delete settingsState.renameDropdownRestore;
   delete settingsState.blockedExecutionPages;
   settingsState.developerPageUnlocked = !!stored.developerPageUnlocked;
-  if (stored.enablePluginControlPanel != null) {
-    settingsState.enablePluginControlPanel = !!stored.enablePluginControlPanel;
-  }
+  delete settingsState.enablePluginControlPanel;
   if (stored.oldNavigationBarEnabled === undefined) {
     if (stored.classicLeftNavEnabled != null) {
       settingsState.oldNavigationBarEnabled = !!stored.classicLeftNavEnabled;
@@ -337,7 +334,6 @@ export function serializeSettingsPayload() {
     friendStylingReimagnedEnabled: settingsState.friendStylingReimagnedEnabled,
     hideAgeBadgeEnabled: !!settingsState.hideAgeBadgeEnabled,
     developerPageUnlocked: !!settingsState.developerPageUnlocked,
-    enablePluginControlPanel: !!settingsState.enablePluginControlPanel,
     sidebarSize: settingsState.sidebarSize || "full",
     sidebarCollapseMenuEnabled: !!settingsState.sidebarCollapseMenuEnabled,
     hiddenSidebarItemsBySize: normalizeHiddenSidebarItemsBySize({

@@ -9,7 +9,7 @@
       "strict_min_version": "109.0"
     }
   },
-  "permissions": ["storage"],
+  "permissions": ["storage", "management"],
   "host_permissions": [
     "*://*.supabase.co/*",
     "https://users.roblox.com/*",

@@ -1,0 +1,194 @@
+#roprime-plugins-panel {
+  padding: 0 8px 24px;
+}
+
+#roprime-plugins-panel .roprime-setting-card {
+  margin-bottom: 12px;
+  border-radius: 12px;
+  border: 1px solid
+    color-mix(in srgb, var(--color-content-emphasis) 22%, transparent);
+  background: var(--color-surface-300);
+  padding: 16px;
+}
+
+.roprime-plugins-header-title {
+  margin: 0 0 6px;
+  color: var(--color-content-emphasis);
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.roprime-plugins-header-desc {
+  color: var(--color-content-default);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.roprime-plugins-permission {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.roprime-plugins-permission-copy {
+  flex: 1 1 240px;
+  min-width: 0;
+  color: var(--color-content-default);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.roprime-plugins-grant-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  padding: 8px 14px;
+  border-radius: 8px;
+  background: var(--color-action-emphasis);
+  color: var(--color-action-content);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  user-select: none;
+}
+
+.roprime-plugins-grant-btn[data-disabled="1"],
+.roprime-plugins-grant-btn[aria-disabled="true"] {
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+.roprime-plugins-tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 12px;
+}
+
+.roprime-ext-tile {
+  display: flex;
+  flex-direction: column;
+  border-radius: 12px;
+  border: 1px solid
+    color-mix(in srgb, var(--color-content-emphasis) 18%, transparent);
+  background: var(--color-surface-200, var(--color-surface-300));
+  overflow: hidden;
+}
+
+.roprime-ext-tile-top {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px;
+}
+
+.roprime-ext-icon {
+  flex: 0 0 auto;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  overflow: hidden;
+  background: color-mix(
+    in srgb,
+    var(--color-content-emphasis) 10%,
+    transparent
+  );
+}
+
+.roprime-ext-icon-fallback {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--color-action-emphasis) 35%, transparent),
+    color-mix(in srgb, var(--color-content-emphasis) 12%, transparent)
+  );
+}
+
+.roprime-ext-tile-meta {
+  min-width: 0;
+}
+
+.roprime-ext-title {
+  color: var(--color-content-emphasis);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.roprime-ext-sub {
+  margin-top: 2px;
+  color: var(--color-content-default);
+  font-size: 12px;
+  line-height: 1.35;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.roprime-ext-divider {
+  height: 1px;
+  background: color-mix(
+    in srgb,
+    var(--color-content-emphasis) 14%,
+    transparent
+  );
+}
+
+.roprime-ext-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 10px 12px;
+}
+
+.roprime-ext-actions-left,
+.roprime-ext-actions-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.roprime-ext-actions-right {
+  margin-left: auto;
+}
+
+.roprime-ext-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+  background: color-mix(
+    in srgb,
+    var(--color-content-emphasis) 10%,
+    transparent
+  );
+  color: var(--color-content-emphasis);
+  cursor: pointer;
+}
+
+.roprime-ext-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.roprime-ext-btn svg {
+  display: block;
+  width: 18px;
+  height: 18px;
+  fill: currentColor;
+}
+
+.roprime-ext-btn-ghost {
+  background: transparent;
+}
+
+#roprime-plugins-panel .roprime-switch {
+  margin: 0;
+}
