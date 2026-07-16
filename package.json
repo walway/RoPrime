@@ -14,7 +14,7 @@
     "adm-zip": "^0.6.0",
     "lottie-web": "^5.13.0",
     "prettier": "^3.9.5",
-    "vite": "^8.1.4"
+    "vite": "^8.1.5"
   },
   "dependencies": {
     "@lottiefiles/dotlottie-web": "^0.77.1",
