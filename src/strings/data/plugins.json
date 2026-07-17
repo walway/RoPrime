@@ -1,0 +1,31 @@
+[
+  {
+    "key": "rovalra",
+    "title": "RoValra",
+    "search": ["rovalra"],
+    "settingsPath": "?rovalra=info#!/info",
+    "malicious": "false"
+  },
+  {
+    "key": "roseal",
+    "title": "RoSeal",
+    "search": ["roseal"],
+    "settingsPath": "?roseal=features_home#!/info",
+    "malicious": "false"
+  },
+  {
+    "key": "roqol",
+    "title": "RoQol",
+    "search": ["roqol"],
+    "settingsPath": "?tab=roqol&option=General",
+    "malicious": "false"
+  },
+  {
+    "key": "roprime",
+    "title": "RoPrime",
+    "search": ["roprime"],
+    "settingsPath": "__roprime__",
+    "malicious": "false",
+    "noToggle": true
+  }
+]

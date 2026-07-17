@@ -9,7 +9,7 @@ import {
 } from "./core/core.js";
 import { syncCustomCss } from "./features/customCss.js";
 import { syncAccountSettingsMenuButton } from "./redirect/settingsButton.js";
-import { initPluginsPanel } from "./panel/pluginsPanel.js";
+import { initPluginsPanel } from "./panel/plugins.js";
 import "./features/legacyBadges.js";
 import "./roblox.com/info/roblox-badges.js";
 import { syncHomeWelcomeModal } from "./alerts/welcome.js";

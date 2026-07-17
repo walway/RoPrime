@@ -2,6 +2,7 @@
 @import "./account/menu-tab.css";
 @import "./settings/panel.css";
 @import "./settings/plugins-panel.css";
+@import "./settings/overlay.css";
 @import "./settings/flat-settings.css";
 @import "./components/mui-controls.css";
 @import "./components/mui-ripple.css";

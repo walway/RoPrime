@@ -1,0 +1,38 @@
+.roprime-overlay-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 20px 0;
+}
+
+.roprime-overlay-header img {
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+}
+
+.roprime-overlay-header h2 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-content-emphasis);
+}
+
+.roprime-overlay-description {
+  margin: 0;
+  color: var(--color-content-default);
+}
+
+.roprime-overlay-icon-img {
+  width: 64px;
+  height: 64px;
+  border-radius: 14px;
+  object-fit: cover;
+}
+
+.roprime-ext-icon-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}

@@ -25,26 +25,98 @@ function normalizeExtensionItem(x) {
   };
 }
 
-function findByName(items, needle) {
-  const n = String(needle).toLowerCase();
-  return (
-    items.find((x) =>
-      String(x?.name || "")
-        .toLowerCase()
-        .includes(n),
-    ) ||
-    items.find((x) =>
-      String(x?.shortName || "")
-        .toLowerCase()
-        .includes(n),
-    ) ||
-    items.find((x) =>
-      String(x?.description || "")
-        .toLowerCase()
-        .includes(n),
-    ) ||
-    null
-  );
+function findBySearchTerms(items, searchTerms) {
+  const terms = (Array.isArray(searchTerms) ? searchTerms : [searchTerms])
+    .map((entry) => String(entry || "").trim().toLowerCase())
+    .filter(Boolean);
+  if (!terms.length) return null;
+
+  for (const needle of terms) {
+    const match =
+      items.find((x) =>
+        String(x?.name || "")
+          .toLowerCase()
+          .includes(needle),
+      ) ||
+      items.find((x) =>
+        String(x?.shortName || "")
+          .toLowerCase()
+          .includes(needle),
+      ) ||
+      items.find((x) =>
+        String(x?.description || "")
+          .toLowerCase()
+          .includes(needle),
+      );
+    if (match) return match;
+  }
+  return null;
+}
+
+function pickManifestIconPath(icons) {
+  if (!icons || typeof icons !== "object") return "";
+  const sizes = Object.keys(icons)
+    .map((size) => Number.parseInt(String(size), 10))
+    .filter((size) => Number.isFinite(size))
+    .sort((a, b) => b - a);
+  if (sizes.length) return String(icons[String(sizes[0])] || "");
+  return String(icons["128"] || icons["64"] || icons["48"] || icons["32"] || "");
+}
+
+async function fetchExtensionManifestInfo(extensionId) {
+  const id = String(extensionId || "").trim();
+  if (!id) return { description: "", iconUrl: "" };
+
+  const manifestUrl = `chrome-extension://${id}/manifest.json`;
+  try {
+    const response = await fetch(manifestUrl, { cache: "no-store" });
+    if (response.ok) {
+      const manifest = await response.json();
+      const iconPath = pickManifestIconPath(manifest?.icons);
+      const iconUrl = iconPath
+        ? `chrome-extension://${id}/${String(iconPath).replace(/^\//, "")}`
+        : "";
+      return {
+        description: String(manifest?.description || "").trim(),
+        iconUrl,
+      };
+    }
+  } catch {}
+
+  return new Promise((resolve) => {
+    extensionApi.management.get(id, (item) => {
+      const lastErr = asLastErrorMessage();
+      if (lastErr || !item) return resolve({ description: "", iconUrl: "" });
+
+      const icons = Array.isArray(item.icons) ? item.icons : [];
+      const icon128 =
+        icons.find((entry) => Number(entry?.size) === 128) ||
+        icons.slice().sort((a, b) => Number(b?.size || 0) - Number(a?.size || 0))[0];
+      resolve({
+        description: String(item.description || "").trim(),
+        iconUrl: String(icon128?.url || "").trim(),
+      });
+    });
+  });
+}
+
+function normalizeRegistryEntry(entry) {
+  if (!entry || typeof entry !== "object") return null;
+  const key = String(entry.key || "").trim();
+  if (!key) return null;
+  const search = Array.isArray(entry.search)
+    ? entry.search.map((value) => String(value || "").trim()).filter(Boolean)
+    : [];
+  return {
+    key,
+    title: String(entry.title || key).trim() || key,
+    search,
+    settingsPath: String(entry.settingsPath || "").trim(),
+    malicious:
+      entry.malicious === true ||
+      String(entry.malicious || "").trim().toLowerCase() === "true",
+    noToggle: Boolean(entry.noToggle),
+  };
 }
 
 function isRobloxHost(hostname) {
@@ -121,35 +193,74 @@ extensionApi.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
   if (type === "ROPRIME_GET_WANTED_EXTENSIONS") {
     containsManagementPermission()
-      .then((granted) => {
-        if (!granted)
-          return sendResponse({
+      .then(async (granted) => {
+        if (!granted) {
+          sendResponse({
             ok: false,
             error: "missing_management_permission",
           });
-        extensionApi.management.getAll((items) => {
+          return;
+        }
+
+        const registry = (Array.isArray(message?.registry) ? message.registry : [])
+          .map(normalizeRegistryEntry)
+          .filter(Boolean);
+
+        extensionApi.management.getAll(async (items) => {
+          const lastErr = asLastErrorMessage();
+          if (lastErr) {
+            sendResponse({ ok: false, error: lastErr });
+            return;
+          }
+
+          const installed = items || [];
+          const plugins = [];
+
+          for (const entry of registry) {
+            const match = findBySearchTerms(installed, entry.search);
+            if (!match) continue;
+
+            const base = normalizeExtensionItem(match);
+            const manifestInfo = await fetchExtensionManifestInfo(base.id);
+            plugins.push({
+              ...entry,
+              item: {
+                ...base,
+                description:
+                  manifestInfo.description || String(match.description || ""),
+                iconUrl: manifestInfo.iconUrl,
+              },
+            });
+          }
+
+          sendResponse({ ok: true, plugins });
+        });
+      })
+      .catch((err) =>
+        sendResponse({ ok: false, error: String(err || "Unknown error") }),
+      );
+    return true;
+  }
+
+  if (type === "ROPRIME_UNINSTALL_EXTENSION") {
+    const id = String(message?.id || "");
+    containsManagementPermission()
+      .then((granted) => {
+        if (!granted) {
+          sendResponse({
+            ok: false,
+            error: "missing_management_permission",
+          });
+          return;
+        }
+        if (!id) {
+          sendResponse({ ok: false, error: "missing_extension_id" });
+          return;
+        }
+        extensionApi.management.uninstall(id, { showConfirmDialog: false }, () => {
           const lastErr = asLastErrorMessage();
           if (lastErr) return sendResponse({ ok: false, error: lastErr });
-          const rovalra = findByName(items || [], "rovalra");
-          const roseal = findByName(items || [], "roseal");
-          const roprime = findByName(items || [], "roprime");
-          const robloxqol =
-            findByName(items || [], "roqol") ||
-            findByName(items || [], "robloxqol") ||
-            findByName(items || [], "roblox qol");
-          const rovalraOut = rovalra ? normalizeExtensionItem(rovalra) : null;
-          const rosealOut = roseal ? normalizeExtensionItem(roseal) : null;
-          const roprimeOut = roprime ? normalizeExtensionItem(roprime) : null;
-          const robloxqolOut = robloxqol
-            ? normalizeExtensionItem(robloxqol)
-            : null;
-          sendResponse({
-            ok: true,
-            rovalra: rovalraOut,
-            roseal: rosealOut,
-            roprime: roprimeOut,
-            robloxqol: robloxqolOut,
-          });
+          sendResponse({ ok: true });
         });
       })
       .catch((err) =>

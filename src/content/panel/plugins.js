@@ -5,6 +5,8 @@ import {
   isExtensionContextAlive,
 } from "../core/core.js";
 import { runWhenIdle } from "../features/runWhenIdle.js";
+import { showMaliciousPluginOverlay } from "../ui/overlay.js";
+import { fetchPluginsRegistry } from "./registry.js";
 
 const extensionApi = globalThis.browser || globalThis.chrome;
 
@@ -41,6 +43,13 @@ function buildAccountUrl(suffixAfterMyAccount) {
   return `${window.location.origin}${prefix}/my/account${suffix}`;
 }
 
+function buildSettingsUrl(entry) {
+  if (entry.settingsPath === "__roprime__")
+    return buildRoPrimeSettingsFullUrl();
+  if (!entry.settingsPath) return "";
+  return buildAccountUrl(entry.settingsPath);
+}
+
 function getHost() {
   return document.querySelector(".tab-pane");
 }
@@ -71,6 +80,64 @@ function setPluginsMenuActive(active) {
     link.classList.remove("active");
     link.removeAttribute("aria-current");
   }
+}
+
+function setExtensionIcon(iconHost, iconUrl) {
+  const fallback = iconHost.querySelector(".roprime-ext-icon-fallback");
+  iconHost.querySelector(".roprime-ext-icon-img")?.remove();
+
+  if (!iconUrl) {
+    if (fallback instanceof HTMLElement) fallback.style.display = "";
+    return;
+  }
+
+  const img = document.createElement("img");
+  img.className = "roprime-ext-icon-img";
+  img.alt = "";
+  img.src = iconUrl;
+  img.addEventListener("error", () => {
+    img.remove();
+    if (fallback instanceof HTMLElement) fallback.style.display = "";
+  });
+  if (fallback instanceof HTMLElement) fallback.style.display = "none";
+  iconHost.prepend(img);
+}
+
+async function scanForMaliciousPlugins() {
+  const granted = await hasManagementPermission();
+  if (!granted) return;
+
+  const registry = await fetchPluginsRegistry();
+  await handleMaliciousPlugins(registry);
+}
+
+async function handleMaliciousPlugins(registry) {
+  const maliciousEntries = registry.filter((entry) => entry.malicious);
+  if (!maliciousEntries.length) return false;
+
+  const resp = await sendToBackground({
+    type: "ROPRIME_GET_WANTED_EXTENSIONS",
+    registry: maliciousEntries,
+  });
+  if (!resp?.ok || !Array.isArray(resp.plugins)) return false;
+
+  let removedAny = false;
+  for (const plugin of resp.plugins) {
+    const item = plugin?.item;
+    if (!item?.id) continue;
+
+    const pluginName = String(plugin.title || item.name || "Extension");
+    const uninstallResp = await sendToBackground({
+      type: "ROPRIME_UNINSTALL_EXTENSION",
+      id: String(item.id),
+    });
+    if (!uninstallResp?.ok) continue;
+
+    removedAny = true;
+    await showMaliciousPluginOverlay(pluginName);
+  }
+
+  return removedAny;
 }
 
 function openPanel() {
@@ -113,56 +180,44 @@ function openPanel() {
 
   panel.style.display = "block";
 
-  const btn = panel.querySelector('[data-roprime-plugins-grant="1"]');
   const tiles = panel.querySelector('[data-roprime-plugins-tiles="1"]');
-  const permissionCard = btn?.closest(".roprime-setting-card");
   const refresh = async () => {
     const seqAtCall = refreshSeq;
     if (tiles instanceof HTMLElement) tiles.textContent = "";
 
     const granted = await hasManagementPermission();
     if (seqAtCall !== refreshSeq) return;
+    if (!granted) return;
 
-    if (!granted) {
-      if (permissionCard instanceof HTMLElement)
-        permissionCard.style.display = "";
-      return;
-    }
+    const registry = await fetchPluginsRegistry();
+    if (seqAtCall !== refreshSeq) return;
 
+    await handleMaliciousPlugins(registry);
+    if (seqAtCall !== refreshSeq) return;
+
+    const safeRegistry = registry.filter((entry) => !entry.malicious);
     const resp = await sendToBackground({
       type: "ROPRIME_GET_WANTED_EXTENSIONS",
+      registry: safeRegistry,
     });
     if (seqAtCall !== refreshSeq) return;
     if (!(tiles instanceof HTMLElement)) return;
-    if (permissionCard instanceof HTMLElement)
-      permissionCard.style.display = "none";
-    if (!resp?.ok) return;
+    if (!resp?.ok || !Array.isArray(resp.plugins)) return;
 
-    const wanted = [
-      { key: "rovalra", title: "RoValra", item: resp.rovalra || null },
-      { key: "roseal", title: "RoSeal", item: resp.roseal || null },
-      { key: "robloxqol", title: "RoQol", item: resp.robloxqol || null },
-      { key: "roprime", title: "RoPrime", item: resp.roprime || null },
-    ];
-
-    const settingsUrlByKey = {
-      rovalra: buildAccountUrl("?rovalra=info#!/info"),
-      roseal: buildAccountUrl("?roseal=features_home#!/info"),
-      robloxqol: buildAccountUrl("?tab=robloxqol&option=General"),
-      roprime: buildRoPrimeSettingsFullUrl(),
-    };
-
-    for (const { key, title, item } of wanted) {
+    for (const plugin of resp.plugins) {
       if (seqAtCall !== refreshSeq) return;
-      const installed = Boolean(item);
-      if (!installed) continue;
 
-      const sub = String(item.name || title);
-      const settingsUrl = settingsUrlByKey[key] || "";
+      const item = plugin?.item;
+      if (!item) continue;
+
+      const title = String(plugin.title || item.name || "Extension");
+      const description = String(item.description || item.name || title);
+      const settingsUrl = buildSettingsUrl(plugin);
+      const iconUrl = String(item.iconUrl || "");
 
       const tile = document.createElement("div");
       tile.className = "roprime-ext-tile";
-      tile.setAttribute("data-installed", installed ? "1" : "0");
+      tile.setAttribute("data-installed", "1");
 
       const top = document.createElement("div");
       top.className = "roprime-ext-tile-top";
@@ -173,7 +228,7 @@ function openPanel() {
       const fallback = document.createElement("div");
       fallback.className = "roprime-ext-icon-fallback";
       icon.appendChild(fallback);
-      fallback.style.display = "";
+      setExtensionIcon(icon, iconUrl);
 
       const meta = document.createElement("div");
       meta.className = "roprime-ext-tile-meta";
@@ -184,7 +239,8 @@ function openPanel() {
 
       const s = document.createElement("div");
       s.className = "roprime-ext-sub";
-      s.textContent = sub;
+      s.textContent = description;
+      s.title = description;
 
       meta.append(t, s);
       top.append(icon, meta);
@@ -213,15 +269,9 @@ function openPanel() {
         </svg>
       `.trim();
       infoBtn.addEventListener("click", () => {
-        const enabledText = installed
-          ? item.enabled
-            ? "Enabled"
-            : "Disabled"
-          : "Not installed";
-        const nameText = installed ? String(item.name || title) : title;
-        const idText = installed ? String(item.id || "") : "";
+        const enabledText = item.enabled ? "Enabled" : "Disabled";
         window.alert(
-          `${nameText}\n\nStatus: ${enabledText}${idText ? `\nID: ${idText}` : ""}`,
+          `${title}\n\n${description}\n\nStatus: ${enabledText}\nID: ${String(item.id || "")}`,
         );
       });
 
@@ -230,7 +280,7 @@ function openPanel() {
       const right = document.createElement("div");
       right.className = "roprime-ext-actions-right";
 
-      const canToggle = key !== "roprime";
+      const canToggle = !plugin.noToggle;
       let toggleWrap = null;
       if (canToggle) {
         toggleWrap = document.createElement("label");
@@ -284,35 +334,6 @@ function openPanel() {
       tiles.appendChild(tile);
     }
   };
-
-  if (btn instanceof HTMLElement && !btn.hasAttribute("data-roprime-bound")) {
-    btn.setAttribute("data-roprime-bound", "1");
-
-    const activate = async () => {
-      if (btn.getAttribute("aria-disabled") === "true") return;
-      btn.setAttribute("aria-disabled", "true");
-      btn.setAttribute("data-disabled", "1");
-      const resp = await sendToBackground({
-        type: "ROPRIME_REQUEST_MANAGEMENT",
-      });
-      if (!resp?.ok || !resp?.granted) {
-        btn.setAttribute("aria-disabled", "false");
-        btn.removeAttribute("data-disabled");
-        return;
-      }
-      await refresh();
-    };
-
-    btn.addEventListener("click", (e) => {
-      e.preventDefault();
-      void activate();
-    });
-    btn.addEventListener("keydown", (e) => {
-      if (e.key !== "Enter" && e.key !== " ") return;
-      e.preventDefault();
-      void activate();
-    });
-  }
 
   refreshRequested = true;
   refreshSeq++;
@@ -420,4 +441,5 @@ export function initPluginsPanel() {
   window.addEventListener("popstate", onRoute);
   window.addEventListener("roprime-location-change", onRoute);
   onRoute();
+  void scanForMaliciousPlugins();
 }
