@@ -1,5 +1,4 @@
 @import "./main.css";
-@import "./roblox/website.css";
 @import "./account/menu-tab.css";
 @import "./settings/panel.css";
 @import "./settings/plugins-panel.css";
@@ -16,3 +15,6 @@
 @import "./profile/page-effects.css";
 @import "./profile/carousel-effects.css";
 @import "./profile/friend-list-effects.css";
+
+/* latest */
+@import "./roblox/website.css";

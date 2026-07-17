@@ -11,6 +11,7 @@ const STYLE_ID = "roprime-legacy-badges-style";
 const BADGE_DISPLAY_ORDER = [12, 2, 6, 7, 4, 3, 5, 18, 14, 8, 17];
 const BADGE_SORT_DEFAULT = "default";
 const BADGE_SORT_AZ = "a-z";
+const BADGE_SORT_ZA = "z-a"
 
 const BADGE_DISPLAY = {
   12: {
