@@ -1,4 +1,4 @@
-import { getExtensionResourceUrl } from "../core/core.js";
+import { buildExtensionIconUrl, getExtensionResourceUrl } from "../core/core.js";
 
 const OVERLAY_ROOT_ID = "roprime-overlay-root";
 
@@ -179,11 +179,11 @@ export function showRoPrimeOverlay({
   return activeOverlayPromise;
 }
 
-export function showMaliciousPluginOverlay(pluginName, iconUrl = "") {
+export function showMaliciousPluginOverlay(pluginName, extensionId = "") {
   const name = String(pluginName || "Extension").trim() || "Extension";
   return showRoPrimeOverlay({
     headerName: "RoPrime",
-    iconUrl: String(iconUrl || ""),
+    iconUrl: buildExtensionIconUrl(extensionId),
     heading: `${name} is a malicious extension`,
     description:
       "RoPrime removed this extension from your browser for your safety.",

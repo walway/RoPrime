@@ -1,5 +1,6 @@
 import {
   buildRoPrimeSettingsFullUrl,
+  buildExtensionIconUrl,
   getRobloxLocalePathPrefix,
   isAccountPage,
   isExtensionContextAlive,
@@ -12,6 +13,10 @@ const extensionApi = globalThis.browser || globalThis.chrome;
 
 const PANEL_ID = "roprime-plugins-panel";
 const OPEN_KEY = "roprimePluginsPanelOpen";
+
+const PLUGINS_LOADING_MARKUP = `
+<div class="flex width-full justify-center padding-y-small"><div class="foundation-web-progress-circle inline-flex items-center justify-center" role="progressbar" aria-label="Loading" style="width: 32px; height: 32px;"><svg width="32" height="32" viewBox="0 0 32 32" class="relative"><circle cx="16" cy="16" r="14.5" fill="none" stroke-width="3" style="stroke: var(--color-shift-200);"></circle><circle cx="16" cy="16" r="14.5" fill="none" stroke-width="3" stroke-dasharray="68.329640215578 22.776546738526" stroke-dashoffset="0" stroke-linecap="round" class="foundation-web-progress-circle-indeterminate" style="stroke: var(--fui-future-alpha-color-system-progress); transform-origin: 50% 50%;"></circle></svg></div></div>
+`.trim();
 
 let refreshSeq = 0;
 let refreshInProgress = false;
@@ -82,10 +87,21 @@ function setPluginsMenuActive(active) {
   }
 }
 
-function setExtensionIcon(iconHost, iconUrl) {
+function setPluginsLoading(tiles) {
+  if (!(tiles instanceof HTMLElement)) return;
+  tiles.innerHTML = PLUGINS_LOADING_MARKUP;
+}
+
+function clearPluginsTiles(tiles) {
+  if (!(tiles instanceof HTMLElement)) return;
+  tiles.textContent = "";
+}
+
+function setExtensionIcon(iconHost, extensionId) {
   const fallback = iconHost.querySelector(".roprime-ext-icon-fallback");
   iconHost.querySelector(".roprime-ext-icon-img")?.remove();
 
+  const iconUrl = buildExtensionIconUrl(extensionId);
   if (!iconUrl) {
     if (fallback instanceof HTMLElement) fallback.style.display = "";
     return;
@@ -133,14 +149,13 @@ async function handleMaliciousPlugins(registry) {
     if (!item?.id) continue;
 
     const pluginName = String(item.name || plugin.title || "Extension");
-    const iconUrl = String(item.iconUrl || "");
 
     const uninstallResp = await sendToBackground({
       type: "ROPRIME_UNINSTALL_EXTENSION",
       id: String(item.id),
     });
 
-    await showMaliciousPluginOverlay(pluginName, iconUrl);
+    void showMaliciousPluginOverlay(pluginName, String(item.id));
 
     if (uninstallResp?.ok) {
       removedAny = true;
@@ -192,13 +207,18 @@ function openPanel() {
   panel.style.display = "block";
 
   const tiles = panel.querySelector('[data-roprime-plugins-tiles="1"]');
+  setPluginsLoading(tiles);
+
   const refresh = async () => {
     const seqAtCall = refreshSeq;
-    if (tiles instanceof HTMLElement) tiles.textContent = "";
+    setPluginsLoading(tiles);
 
     const granted = await hasManagementPermission();
     if (seqAtCall !== refreshSeq) return;
-    if (!granted) return;
+    if (!granted) {
+      clearPluginsTiles(tiles);
+      return;
+    }
 
     const registry = await fetchPluginsRegistry();
     if (seqAtCall !== refreshSeq) return;
@@ -216,7 +236,12 @@ function openPanel() {
     });
     if (seqAtCall !== refreshSeq) return;
     if (!(tiles instanceof HTMLElement)) return;
-    if (!resp?.ok || !Array.isArray(resp.plugins)) return;
+    if (!resp?.ok || !Array.isArray(resp.plugins)) {
+      clearPluginsTiles(tiles);
+      return;
+    }
+
+    clearPluginsTiles(tiles);
 
     for (const plugin of resp.plugins) {
       if (seqAtCall !== refreshSeq) return;
@@ -227,7 +252,6 @@ function openPanel() {
       const title = String(item.name || plugin.title || "Extension");
       const description = String(item.description || "").trim();
       const settingsUrl = buildSettingsUrl(plugin);
-      const iconUrl = String(item.iconUrl || "");
 
       const tile = document.createElement("div");
       tile.className = "roprime-ext-tile";
@@ -242,7 +266,7 @@ function openPanel() {
       const fallback = document.createElement("div");
       fallback.className = "roprime-ext-icon-fallback";
       icon.appendChild(fallback);
-      setExtensionIcon(icon, iconUrl);
+      setExtensionIcon(icon, String(item.id || ""));
 
       const meta = document.createElement("div");
       meta.className = "roprime-ext-tile-meta";

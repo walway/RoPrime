@@ -130,6 +130,12 @@ export function getExtensionResourceUrl(relativePath) {
   }
 }
 
+export function buildExtensionIconUrl(extensionId) {
+  const id = String(extensionId || "").trim();
+  if (!id) return "";
+  return `chrome://extension-icon/${id}/128/0`;
+}
+
 let settingsUiStrings = {};
 
 function normalizeUiLocale(raw) {

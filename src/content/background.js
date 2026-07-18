@@ -53,73 +53,32 @@ function findBySearchTerms(items, searchTerms) {
   return null;
 }
 
-function pickManifestIconPath(icons) {
-  if (!icons || typeof icons !== "object") return "";
-  const sizes = Object.keys(icons)
-    .map((size) => Number.parseInt(String(size), 10))
-    .filter((size) => Number.isFinite(size))
-    .sort((a, b) => b - a);
-  if (sizes.length) return String(icons[String(sizes[0])] || "");
-  return String(icons["128"] || icons["64"] || icons["48"] || icons["32"] || "");
-}
-
-async function fetchImageAsDataUrl(url) {
-  const src = String(url || "").trim();
-  if (!src || src.startsWith("data:")) return src;
-  try {
-    const response = await fetch(src, { cache: "no-store" });
-    if (!response.ok) return "";
-    const blob = await response.blob();
-    if (!blob.size) return "";
-    return await new Promise((resolve) => {
-      const reader = new FileReader();
-      reader.onloadend = () => resolve(String(reader.result || ""));
-      reader.onerror = () => resolve("");
-      reader.readAsDataURL(blob);
-    });
-  } catch {
-    return "";
-  }
-}
-
 async function fetchExtensionManifestInfo(extensionId) {
   const id = String(extensionId || "").trim();
-  if (!id) return { name: "", description: "", iconUrl: "" };
+  if (!id) return { name: "", description: "" };
 
   const manifestUrl = `chrome-extension://${id}/manifest.json`;
   try {
     const response = await fetch(manifestUrl, { cache: "no-store" });
     if (response.ok) {
       const manifest = await response.json();
-      const iconPath = pickManifestIconPath(manifest?.icons);
-      const rawIconUrl = iconPath
-        ? `chrome-extension://${id}/${String(iconPath).replace(/^\//, "")}`
-        : "";
-      const iconUrl = await fetchImageAsDataUrl(rawIconUrl);
       return {
         name: String(manifest?.name || manifest?.short_name || "").trim(),
         description: String(manifest?.description || "").trim(),
-        iconUrl,
       };
     }
   } catch {}
 
   return new Promise((resolve) => {
-    extensionApi.management.get(id, async (item) => {
+    extensionApi.management.get(id, (item) => {
       const lastErr = asLastErrorMessage();
       if (lastErr || !item) {
-        return resolve({ name: "", description: "", iconUrl: "" });
+        return resolve({ name: "", description: "" });
       }
 
-      const icons = Array.isArray(item.icons) ? item.icons : [];
-      const icon128 =
-        icons.find((entry) => Number(entry?.size) === 128) ||
-        icons.slice().sort((a, b) => Number(b?.size || 0) - Number(a?.size || 0))[0];
-      const iconUrl = await fetchImageAsDataUrl(String(icon128?.url || "").trim());
       resolve({
         name: String(item.name || "").trim(),
         description: String(item.description || "").trim(),
-        iconUrl,
       });
     });
   });
@@ -254,7 +213,6 @@ extensionApi.runtime.onMessage.addListener((message, sender, sendResponse) => {
                 name: manifestInfo.name || base.name,
                 description:
                   manifestInfo.description || String(match.description || ""),
-                iconUrl: manifestInfo.iconUrl,
               },
             });
           }
