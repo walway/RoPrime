@@ -140,3 +140,4 @@ vite.config.ts.timestamp-*
 
 # Cursor workspace metadata
 .cursor/
+TASK.md
