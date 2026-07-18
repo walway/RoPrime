@@ -2,7 +2,7 @@ import { getExtensionResourceUrl } from "../core/core.js";
 
 export const PLUGINS_REGISTRY_CDN_URL =
   "https://cdn.jsdelivr.net/gh/walway/walway.github.io/cdn/plugins.json";
-const LOCAL_REGISTRY_PATH = "strings/data/plugins.json";
+const LOCAL_REGISTRY_PATH = "src/strings/data/plugins.json";
 
 let registryCache = null;
 let registryFetchPromise = null;

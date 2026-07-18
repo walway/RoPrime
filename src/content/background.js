@@ -63,9 +63,28 @@ function pickManifestIconPath(icons) {
   return String(icons["128"] || icons["64"] || icons["48"] || icons["32"] || "");
 }
 
+async function fetchImageAsDataUrl(url) {
+  const src = String(url || "").trim();
+  if (!src || src.startsWith("data:")) return src;
+  try {
+    const response = await fetch(src, { cache: "no-store" });
+    if (!response.ok) return "";
+    const blob = await response.blob();
+    if (!blob.size) return "";
+    return await new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(String(reader.result || ""));
+      reader.onerror = () => resolve("");
+      reader.readAsDataURL(blob);
+    });
+  } catch {
+    return "";
+  }
+}
+
 async function fetchExtensionManifestInfo(extensionId) {
   const id = String(extensionId || "").trim();
-  if (!id) return { description: "", iconUrl: "" };
+  if (!id) return { name: "", description: "", iconUrl: "" };
 
   const manifestUrl = `chrome-extension://${id}/manifest.json`;
   try {
@@ -73,10 +92,12 @@ async function fetchExtensionManifestInfo(extensionId) {
     if (response.ok) {
       const manifest = await response.json();
       const iconPath = pickManifestIconPath(manifest?.icons);
-      const iconUrl = iconPath
+      const rawIconUrl = iconPath
         ? `chrome-extension://${id}/${String(iconPath).replace(/^\//, "")}`
         : "";
+      const iconUrl = await fetchImageAsDataUrl(rawIconUrl);
       return {
+        name: String(manifest?.name || manifest?.short_name || "").trim(),
         description: String(manifest?.description || "").trim(),
         iconUrl,
       };
@@ -84,17 +105,21 @@ async function fetchExtensionManifestInfo(extensionId) {
   } catch {}
 
   return new Promise((resolve) => {
-    extensionApi.management.get(id, (item) => {
+    extensionApi.management.get(id, async (item) => {
       const lastErr = asLastErrorMessage();
-      if (lastErr || !item) return resolve({ description: "", iconUrl: "" });
+      if (lastErr || !item) {
+        return resolve({ name: "", description: "", iconUrl: "" });
+      }
 
       const icons = Array.isArray(item.icons) ? item.icons : [];
       const icon128 =
         icons.find((entry) => Number(entry?.size) === 128) ||
         icons.slice().sort((a, b) => Number(b?.size || 0) - Number(a?.size || 0))[0];
+      const iconUrl = await fetchImageAsDataUrl(String(icon128?.url || "").trim());
       resolve({
+        name: String(item.name || "").trim(),
         description: String(item.description || "").trim(),
-        iconUrl: String(icon128?.url || "").trim(),
+        iconUrl,
       });
     });
   });
@@ -226,6 +251,7 @@ extensionApi.runtime.onMessage.addListener((message, sender, sendResponse) => {
               ...entry,
               item: {
                 ...base,
+                name: manifestInfo.name || base.name,
                 description:
                   manifestInfo.description || String(match.description || ""),
                 iconUrl: manifestInfo.iconUrl,
@@ -255,6 +281,10 @@ extensionApi.runtime.onMessage.addListener((message, sender, sendResponse) => {
         }
         if (!id) {
           sendResponse({ ok: false, error: "missing_extension_id" });
+          return;
+        }
+        if (id === extensionApi.runtime.id) {
+          sendResponse({ ok: false, error: "cannot_uninstall_self" });
           return;
         }
         extensionApi.management.uninstall(id, { showConfirmDialog: false }, () => {

@@ -113,31 +113,42 @@ async function scanForMaliciousPlugins() {
 
 async function handleMaliciousPlugins(registry) {
   const maliciousEntries = registry.filter((entry) => entry.malicious);
-  if (!maliciousEntries.length) return false;
+  if (!maliciousEntries.length) {
+    return { removedAny: false, uninstalledKeys: new Set() };
+  }
 
   const resp = await sendToBackground({
     type: "ROPRIME_GET_WANTED_EXTENSIONS",
     registry: maliciousEntries,
   });
-  if (!resp?.ok || !Array.isArray(resp.plugins)) return false;
+  if (!resp?.ok || !Array.isArray(resp.plugins)) {
+    return { removedAny: false, uninstalledKeys: new Set() };
+  }
 
   let removedAny = false;
+  const uninstalledKeys = new Set();
+
   for (const plugin of resp.plugins) {
     const item = plugin?.item;
     if (!item?.id) continue;
 
-    const pluginName = String(plugin.title || item.name || "Extension");
+    const pluginName = String(item.name || plugin.title || "Extension");
+    const iconUrl = String(item.iconUrl || "");
+
     const uninstallResp = await sendToBackground({
       type: "ROPRIME_UNINSTALL_EXTENSION",
       id: String(item.id),
     });
-    if (!uninstallResp?.ok) continue;
 
-    removedAny = true;
-    await showMaliciousPluginOverlay(pluginName);
+    await showMaliciousPluginOverlay(pluginName, iconUrl);
+
+    if (uninstallResp?.ok) {
+      removedAny = true;
+      uninstalledKeys.add(String(plugin.key || ""));
+    }
   }
 
-  return removedAny;
+  return { removedAny, uninstalledKeys };
 }
 
 function openPanel() {
@@ -192,10 +203,13 @@ function openPanel() {
     const registry = await fetchPluginsRegistry();
     if (seqAtCall !== refreshSeq) return;
 
-    await handleMaliciousPlugins(registry);
+    const maliciousResult = await handleMaliciousPlugins(registry);
     if (seqAtCall !== refreshSeq) return;
 
-    const safeRegistry = registry.filter((entry) => !entry.malicious);
+    const safeRegistry = registry.filter((entry) => {
+      if (!entry.malicious) return true;
+      return !maliciousResult.uninstalledKeys.has(String(entry.key || ""));
+    });
     const resp = await sendToBackground({
       type: "ROPRIME_GET_WANTED_EXTENSIONS",
       registry: safeRegistry,
@@ -210,8 +224,8 @@ function openPanel() {
       const item = plugin?.item;
       if (!item) continue;
 
-      const title = String(plugin.title || item.name || "Extension");
-      const description = String(item.description || item.name || title);
+      const title = String(item.name || plugin.title || "Extension");
+      const description = String(item.description || "").trim();
       const settingsUrl = buildSettingsUrl(plugin);
       const iconUrl = String(item.iconUrl || "");
 

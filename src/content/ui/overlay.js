@@ -179,10 +179,11 @@ export function showRoPrimeOverlay({
   return activeOverlayPromise;
 }
 
-export function showMaliciousPluginOverlay(pluginName) {
+export function showMaliciousPluginOverlay(pluginName, iconUrl = "") {
   const name = String(pluginName || "Extension").trim() || "Extension";
   return showRoPrimeOverlay({
     headerName: "RoPrime",
+    iconUrl: String(iconUrl || ""),
     heading: `${name} is a malicious extension`,
     description:
       "RoPrime removed this extension from your browser for your safety.",
