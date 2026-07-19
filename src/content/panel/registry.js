@@ -2,7 +2,7 @@ import { getExtensionResourceUrl } from "../core/core.js";
 
 export const PLUGINS_REGISTRY_CDN_URL =
   "https://cdn.jsdelivr.net/gh/walway/roprime-data@latest/v1/extensions.json";
-const LOCAL_REGISTRY_PATH = "src/strings/data/plugins.json";
+const LOCAL_REGISTRY_PATH = "src/strings/data/extensions.json";
 
 let registryCache = null;
 let registryFetchPromise = null;
