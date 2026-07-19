@@ -109,6 +109,8 @@ function installHistoryListeners() {
 }
 
 function bootstrap() {
+  if (!shouldRunRoPrimeOnCurrentPage()) return;
+
   installStorageSyncListener();
   loadSettings().finally(() => {
     void (async () => {

@@ -2,6 +2,7 @@ import {
   RP_FRIEND_STYLING_REIMAGNED_STYLE_ID,
   settingsState,
 } from "../core/core.js";
+import { fetchCurrentUserFriends } from "./friendsApi.js";
 
 const FRIEND_STYLING_REIMAGNED_CSS = `
 .friend-carousel-container {
@@ -89,8 +90,99 @@ const FRIEND_STYLING_REIMAGNED_CSS = `
 }
 `.trim();
 
+const PIP_WINDOW_CSS = `
+:root {
+  color-scheme: dark;
+  font-family: "Builder Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+body {
+  margin: 0;
+  background: #111216;
+  color: #f2f4f5;
+}
+
+.roprime-pip-root {
+  padding: 16px;
+}
+
+.roprime-pip-header h1 {
+  margin: 0 0 12px;
+  font-size: 20px;
+}
+
+.roprime-pip-stats {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.roprime-pip-stat {
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.roprime-pip-section {
+  margin-bottom: 18px;
+}
+
+.roprime-pip-section h2 {
+  margin: 0 0 8px;
+  font-size: 14px;
+  color: #b8bec8;
+}
+
+.roprime-pip-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.roprime-pip-friend {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.roprime-pip-friend img {
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  object-fit: cover;
+}
+
+.roprime-pip-friend-meta {
+  min-width: 0;
+}
+
+.roprime-pip-friend-name {
+  font-size: 14px;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.roprime-pip-friend-status {
+  font-size: 12px;
+  color: #aeb4bd;
+}
+
+.roprime-pip-empty {
+  font-size: 13px;
+  color: #aeb4bd;
+}
+`.trim();
+
 const GLOW_TILE_SELECTOR = ".friends-carousel-tile";
 const FRIEND_CAROUSEL_SELECTOR = ".friend-carousel-container";
+const FRIENDS_PANEL_ID = "roprime-friends-reimagined-panel";
 const GLOW_PRESENCE_CLASSES = [
   "rologic-presence-offline",
   "rologic-presence-online",
@@ -100,6 +192,18 @@ const GLOW_PRESENCE_CLASSES = [
 
 let friendStylingObserver = null;
 let friendStylingRafId = null;
+let friendsDataCache = null;
+let friendsFetchInFlight = null;
+let pipWindowRef = null;
+
+function escapeHtml(value) {
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
 
 function getPresenceClass(tile) {
   const presenceIcon = tile.querySelector('[data-testid="presence-icon"]');
@@ -139,6 +243,167 @@ function scheduleFriendPresenceRefresh() {
   });
 }
 
+function buildFriendPreviewCard(friend) {
+  const headshot = friend.headshotUrl
+    ? `<img src="${escapeHtml(friend.headshotUrl)}" alt="" loading="lazy" />`
+    : `<img src="" alt="" />`;
+  return `
+    <div class="roprime-friends-preview-card">
+      ${headshot}
+      <div class="roprime-friends-preview-meta">
+        <div class="roprime-friends-preview-name">${escapeHtml(friend.displayName)}</div>
+        <div class="roprime-friends-preview-status">${escapeHtml(friend.statusLabel)}</div>
+      </div>
+    </div>
+  `.trim();
+}
+
+function buildPipFriendRow(friend) {
+  const headshot = friend.headshotUrl
+    ? `<img src="${escapeHtml(friend.headshotUrl)}" alt="" loading="lazy" />`
+    : `<img src="" alt="" />`;
+  return `
+    <div class="roprime-pip-friend">
+      ${headshot}
+      <div class="roprime-pip-friend-meta">
+        <div class="roprime-pip-friend-name">${escapeHtml(friend.displayName)}</div>
+        <div class="roprime-pip-friend-status">${escapeHtml(friend.statusLabel)}</div>
+      </div>
+    </div>
+  `.trim();
+}
+
+function buildPipSection(title, friends) {
+  if (!friends.length) {
+    return `
+      <section class="roprime-pip-section">
+        <h2>${escapeHtml(title)} (0)</h2>
+        <div class="roprime-pip-empty">No friends in this section.</div>
+      </section>
+    `.trim();
+  }
+
+  return `
+    <section class="roprime-pip-section">
+      <h2>${escapeHtml(title)} (${friends.length})</h2>
+      <div class="roprime-pip-list">
+        ${friends.map((friend) => buildPipFriendRow(friend)).join("")}
+      </div>
+    </section>
+  `.trim();
+}
+
+function buildPipMarkup(data) {
+  const onlineCount = data.online.length;
+  const offlineCount = data.offline.length;
+  return `
+    <div class="roprime-pip-root">
+      <div class="roprime-pip-header">
+        <h1>Friends</h1>
+      </div>
+      <div class="roprime-pip-stats">
+        <span class="roprime-pip-stat">Online (${onlineCount})</span>
+        <span class="roprime-pip-stat">Offline (${offlineCount})</span>
+      </div>
+      ${buildPipSection("Online", data.online)}
+      ${buildPipSection("Offline", data.offline)}
+    </div>
+  `.trim();
+}
+
+function renderFriendsPanel(data) {
+  const carousel = document.querySelector(FRIEND_CAROUSEL_SELECTOR);
+  if (!(carousel instanceof HTMLElement)) return;
+
+  let panel = document.getElementById(FRIENDS_PANEL_ID);
+  if (!(panel instanceof HTMLElement)) {
+    panel = document.createElement("div");
+    panel.id = FRIENDS_PANEL_ID;
+    panel.className = "roprime-friends-reimagined-panel";
+    carousel.parentElement?.insertBefore(panel, carousel);
+  }
+
+  const previewFriends = data.friends.slice(0, 8);
+  panel.innerHTML = `
+    <div class="roprime-friends-reimagined-header">
+      <h2>Friends</h2>
+      <button type="button" class="roprime-friends-pip-btn">Open Friends Window</button>
+    </div>
+    <div class="roprime-friends-reimagined-stats">
+      <span class="roprime-friends-stat roprime-friends-stat-online">Online (${data.online.length})</span>
+      <span class="roprime-friends-stat roprime-friends-stat-offline">Offline (${data.offline.length})</span>
+    </div>
+    <div class="roprime-friends-preview-list">
+      ${previewFriends.map((friend) => buildFriendPreviewCard(friend)).join("")}
+    </div>
+  `.trim();
+
+  panel
+    .querySelector(".roprime-friends-pip-btn")
+    ?.addEventListener("click", () => {
+      void openFriendsPictureInPicture(data);
+    });
+}
+
+async function openFriendsPictureInPicture(data) {
+  if (!window.documentPictureInPicture?.requestWindow) return false;
+
+  try {
+    if (pipWindowRef && !pipWindowRef.closed) {
+      pipWindowRef.close();
+      pipWindowRef = null;
+    }
+
+    const pipWindow = await window.documentPictureInPicture.requestWindow({
+      width: 360,
+      height: 560,
+    });
+    pipWindowRef = pipWindow;
+
+    const style = pipWindow.document.createElement("style");
+    style.textContent = PIP_WINDOW_CSS;
+    pipWindow.document.head.appendChild(style);
+    pipWindow.document.body.innerHTML = buildPipMarkup(data);
+
+    pipWindow.addEventListener("pagehide", () => {
+      if (pipWindowRef === pipWindow) pipWindowRef = null;
+    });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+async function refreshFriendsUi({ openPip = false } = {}) {
+  if (!settingsState.friendStylingReimagnedEnabled) return;
+
+  if (!friendsFetchInFlight) {
+    friendsFetchInFlight = fetchCurrentUserFriends().finally(() => {
+      friendsFetchInFlight = null;
+    });
+  }
+
+  const data = await friendsFetchInFlight;
+  if (!data || !settingsState.friendStylingReimagnedEnabled) return;
+
+  friendsDataCache = data;
+  renderFriendsPanel(data);
+  if (openPip) {
+    await openFriendsPictureInPicture(data);
+  }
+}
+
+function removeFriendsPanel() {
+  document.getElementById(FRIENDS_PANEL_ID)?.remove();
+}
+
+function closeFriendsPipWindow() {
+  if (pipWindowRef && !pipWindowRef.closed) {
+    pipWindowRef.close();
+  }
+  pipWindowRef = null;
+}
+
 function startFriendStylingObserver() {
   if (friendStylingObserver instanceof MutationObserver) return;
   if (!(document.body instanceof HTMLBodyElement)) return;
@@ -155,6 +420,7 @@ function startFriendStylingObserver() {
         )
       ) {
         scheduleFriendPresenceRefresh();
+        void refreshFriendsUi();
         return;
       }
     }
@@ -184,6 +450,9 @@ export function updateFriendStylingReimagnedVisibility() {
   );
   if (!settingsState.friendStylingReimagnedEnabled) {
     stopFriendStylingObserver();
+    removeFriendsPanel();
+    closeFriendsPipWindow();
+    friendsDataCache = null;
     if (existingStyle instanceof HTMLStyleElement) existingStyle.remove();
     document.querySelectorAll(GLOW_TILE_SELECTOR).forEach((tile) => {
       if (!(tile instanceof HTMLElement)) return;
@@ -207,4 +476,5 @@ export function updateFriendStylingReimagnedVisibility() {
     document.documentElement.appendChild(style);
   startFriendStylingObserver();
   scheduleFriendPresenceRefresh();
+  void refreshFriendsUi({ openPip: true });
 }

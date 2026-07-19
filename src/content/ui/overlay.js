@@ -1,7 +1,4 @@
-import {
-  buildExtensionIconUrl,
-  getExtensionResourceUrl,
-} from "../core/core.js";
+import { getExtensionResourceUrl } from "../core/core.js";
 
 const OVERLAY_ROOT_ID = "roprime-overlay-root";
 
@@ -130,6 +127,7 @@ export function showRoPrimeOverlay({
   heading = "",
   description = "",
   buttonText = "Ok",
+  onAction = null,
 } = {}) {
   if (activeOverlayPromise) return activeOverlayPromise;
 
@@ -157,8 +155,16 @@ export function showRoPrimeOverlay({
 
     root
       .querySelector(".roprime-overlay-action")
-      ?.addEventListener("click", () => {
-        close(true);
+      ?.addEventListener("click", async () => {
+        let result = true;
+        if (typeof onAction === "function") {
+          try {
+            result = await onAction();
+          } catch {
+            result = false;
+          }
+        }
+        close(result);
       });
     root
       .querySelector(".roprime-overlay-close")
@@ -182,14 +188,14 @@ export function showRoPrimeOverlay({
   return activeOverlayPromise;
 }
 
-export function showMaliciousPluginOverlay(pluginName, extensionId = "") {
+export function showMaliciousPluginOverlay(pluginName, onDelete) {
   const name = String(pluginName || "Extension").trim() || "Extension";
   return showRoPrimeOverlay({
     headerName: "RoPrime Security System",
-    iconUrl: buildExtensionIconUrl(extensionId),
     heading: `${name} is a malicious extension`,
     description:
-      "RoPrime removed this extension from your browser for your safety.",
-    buttonText: "Ok",
+      "This extension has been flagged as malicious. Click below to remove it from your browser.",
+    buttonText: "Click to delete the extension",
+    onAction: onDelete,
   });
 }

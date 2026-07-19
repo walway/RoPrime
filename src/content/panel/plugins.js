@@ -1,6 +1,6 @@
 import {
   buildRoPrimeSettingsFullUrl,
-  buildExtensionIconUrl,
+  buildManifestExtensionIconUrl,
   getRobloxLocalePathPrefix,
   isAccountPage,
   isExtensionContextAlive,
@@ -97,26 +97,21 @@ function clearPluginsTiles(tiles) {
   tiles.textContent = "";
 }
 
-function setExtensionIcon(iconHost, extensionId) {
+function setExtensionIcon(iconHost, extensionId, iconPath = "") {
   const fallback = iconHost.querySelector(".roprime-ext-icon-fallback");
-  iconHost.querySelector(".roprime-ext-icon-img")?.remove();
+  if (!(fallback instanceof HTMLElement)) return;
 
-  const iconUrl = buildExtensionIconUrl(extensionId);
-  if (!iconUrl) {
-    if (fallback instanceof HTMLElement) fallback.style.display = "";
-    return;
-  }
+  fallback.textContent = "";
+  const iconUrl = buildManifestExtensionIconUrl(extensionId, iconPath);
+  if (!iconUrl) return;
 
   const img = document.createElement("img");
-  img.className = "roprime-ext-icon-img";
   img.alt = "";
   img.src = iconUrl;
   img.addEventListener("error", () => {
     img.remove();
-    if (fallback instanceof HTMLElement) fallback.style.display = "";
   });
-  if (fallback instanceof HTMLElement) fallback.style.display = "none";
-  iconHost.prepend(img);
+  fallback.appendChild(img);
 }
 
 async function scanForMaliciousPlugins() {
@@ -149,15 +144,18 @@ async function handleMaliciousPlugins(registry) {
     if (!item?.id) continue;
 
     const pluginName = String(item.name || plugin.title || "Extension");
+    const extensionId = String(item.id);
 
-    const uninstallResp = await sendToBackground({
-      type: "ROPRIME_UNINSTALL_EXTENSION",
-      id: String(item.id),
+    const deleted = await showMaliciousPluginOverlay(pluginName, async () => {
+      const uninstallResp = await sendToBackground({
+        type: "ROPRIME_UNINSTALL_EXTENSION",
+        id: extensionId,
+        showConfirmDialog: true,
+      });
+      return Boolean(uninstallResp?.ok);
     });
 
-    void showMaliciousPluginOverlay(pluginName, String(item.id));
-
-    if (uninstallResp?.ok) {
+    if (deleted) {
       removedAny = true;
       uninstalledKeys.add(String(plugin.key || ""));
     }
@@ -266,7 +264,7 @@ function openPanel() {
       const fallback = document.createElement("div");
       fallback.className = "roprime-ext-icon-fallback";
       icon.appendChild(fallback);
-      setExtensionIcon(icon, String(item.id || ""));
+      setExtensionIcon(icon, String(item.id || ""), String(item.iconPath || ""));
 
       const meta = document.createElement("div");
       meta.className = "roprime-ext-tile-meta";

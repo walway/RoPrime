@@ -130,10 +130,11 @@ export function getExtensionResourceUrl(relativePath) {
   }
 }
 
-export function buildExtensionIconUrl(extensionId) {
+export function buildManifestExtensionIconUrl(extensionId, iconPath) {
   const id = String(extensionId || "").trim();
-  if (!id) return "";
-  return `chrome://extension-icon/${id}/128/0`;
+  const path = String(iconPath || "").trim().replace(/^\/+/, "");
+  if (!id || !path) return "";
+  return `chrome-extension://${id}/${path}`;
 }
 
 let settingsUiStrings = {};
@@ -507,7 +508,17 @@ export function isForeignAccountPluginRoute() {
 }
 
 export function shouldRunRoPrimeOnCurrentPage() {
-  return true;
+  try {
+    const contentType = String(document.contentType || "").toLowerCase();
+    if (contentType && contentType !== "text/html") {
+      return false;
+    }
+
+    const host = window.location.hostname.toLowerCase();
+    return host === "www.roblox.com" || host === "roblox.com";
+  } catch {
+    return false;
+  }
 }
 
 export function getCurrentrp() {

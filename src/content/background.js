@@ -53,9 +53,24 @@ function findBySearchTerms(items, searchTerms) {
   return null;
 }
 
+function getManifestIconPath(manifest) {
+  const icons = manifest?.icons;
+  if (!icons || typeof icons !== "object") return "";
+  if (icons["128"]) return String(icons["128"]).trim();
+  const sizes = Object.keys(icons)
+    .map((key) => Number(key))
+    .filter((size) => Number.isFinite(size))
+    .sort((a, b) => b - a);
+  for (const size of sizes) {
+    const path = String(icons[String(size)] || "").trim();
+    if (path) return path;
+  }
+  return "";
+}
+
 async function fetchExtensionManifestInfo(extensionId) {
   const id = String(extensionId || "").trim();
-  if (!id) return { name: "", description: "" };
+  if (!id) return { name: "", description: "", iconPath: "" };
 
   const manifestUrl = `chrome-extension://${id}/manifest.json`;
   try {
@@ -65,6 +80,7 @@ async function fetchExtensionManifestInfo(extensionId) {
       return {
         name: String(manifest?.name || manifest?.short_name || "").trim(),
         description: String(manifest?.description || "").trim(),
+        iconPath: getManifestIconPath(manifest),
       };
     }
   } catch {}
@@ -73,12 +89,13 @@ async function fetchExtensionManifestInfo(extensionId) {
     extensionApi.management.get(id, (item) => {
       const lastErr = asLastErrorMessage();
       if (lastErr || !item) {
-        return resolve({ name: "", description: "" });
+        return resolve({ name: "", description: "", iconPath: "" });
       }
 
       resolve({
         name: String(item.name || "").trim(),
         description: String(item.description || "").trim(),
+        iconPath: "",
       });
     });
   });
@@ -213,6 +230,7 @@ extensionApi.runtime.onMessage.addListener((message, sender, sendResponse) => {
                 name: manifestInfo.name || base.name,
                 description:
                   manifestInfo.description || String(match.description || ""),
+                iconPath: manifestInfo.iconPath || "",
               },
             });
           }
@@ -245,7 +263,8 @@ extensionApi.runtime.onMessage.addListener((message, sender, sendResponse) => {
           sendResponse({ ok: false, error: "cannot_uninstall_self" });
           return;
         }
-        extensionApi.management.uninstall(id, { showConfirmDialog: false }, () => {
+        const showConfirmDialog = message?.showConfirmDialog !== false;
+        extensionApi.management.uninstall(id, { showConfirmDialog }, () => {
           const lastErr = asLastErrorMessage();
           if (lastErr) return sendResponse({ ok: false, error: lastErr });
           sendResponse({ ok: true });
