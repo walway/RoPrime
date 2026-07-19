@@ -14,16 +14,16 @@
     "adm-zip": "^0.6.0",
     "lottie-web": "^5.13.0",
     "prettier": "^3.9.5",
-    "vite": "^8.1.4"
+    "vite": "^8.1.5"
   },
   "dependencies": {
-    "@lottiefiles/dotlottie-web": "^0.77.1",
-    "@supabase/supabase-js": "^2.110.2",
+    "@lottiefiles/dotlottie-web": "^0.78.0",
+    "@supabase/supabase-js": "^2.110.7",
     "chalk": "^5.6.2",
     "dotenv": "^17.4.2",
     "glob": "^13.0.6",
     "prism-code-editor": "^5.2.0",
-    "react": "^19.2.6",
+    "react": "^19.2.7",
     "react-dom": "^19.2.7"
   }
 }

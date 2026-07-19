@@ -19,3 +19,7 @@ html
   position: relative;
   z-index: 2;
 }
+
+.nav-minimise-button {
+  display: none !important;
+}
