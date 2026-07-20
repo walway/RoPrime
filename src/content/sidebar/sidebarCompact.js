@@ -10,6 +10,9 @@ const SIDEBAR_COMPACT_CSS = `
 body .no-gutter-ads.logged-in.left-nav-new-width {
   --left-nav-reserved-width: ${SIDEBAR_COMPACT_RAIL_PX}px !important;
 }
+.rollercoaster-background {
+  margin-left: 82px !important;
+}
 .left-nav.fixed {
   width: ${SIDEBAR_COMPACT_RAIL_PX}px !important;
   min-width: ${SIDEBAR_COMPACT_RAIL_PX}px !important;
