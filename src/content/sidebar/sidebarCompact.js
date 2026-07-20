@@ -99,6 +99,7 @@ body .no-gutter-ads.logged-in.left-nav-new-width {
   box-sizing: border-box !important;
 }
 .left-nav.fixed .width-\\[288px\\] {
+  scrollbar-width: thin !important;
   width: 100% !important;
   max-width: 250px !important;
 }
