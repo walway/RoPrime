@@ -11,7 +11,6 @@ const STYLE_ID = "roprime-legacy-badges-style";
 const BADGE_DISPLAY_ORDER = [12, 2, 6, 7, 4, 3, 5, 18, 14, 8, 17];
 const BADGE_SORT_DEFAULT = "default";
 const BADGE_SORT_AZ = "a-z";
-const BADGE_SORT_ZA = "z-a"
 
 const BADGE_DISPLAY = {
   12: {
@@ -101,23 +100,6 @@ const BADGE_DISPLAY = {
 };
 
 const CUSTOM_BADGES = {
-  2605032407: [
-    {
-      title: "We miss you so much",
-      label: "We miss you so much 😭",
-      alt: "We miss you so much",
-      imageUrl:
-        "https://tr.rbxcdn.com/180DAY-e708f75aa1ec22891113fa67899793ff/420/420/Decal/Webp/noFilter",
-    },
-    {
-      title: "And you too",
-      label: "And you too :(",
-      alt: "And you too",
-      imageUrl:
-        "https://tr.rbxcdn.com/180DAY-0b2db3d5447c28449c4fa03d6cee6f29/420/420/Decal/Webp/noFilter",
-    },
-  ],
-
   447170745: [
     {
       title: "HELLO",
