@@ -132,7 +132,9 @@ export function getExtensionResourceUrl(relativePath) {
 
 export function buildManifestExtensionIconUrl(extensionId, iconPath) {
   const id = String(extensionId || "").trim();
-  const path = String(iconPath || "").trim().replace(/^\/+/, "");
+  const path = String(iconPath || "")
+    .trim()
+    .replace(/^\/+/, "");
   if (!id || !path) return "";
   return `chrome-extension://${id}/${path}`;
 }
@@ -214,7 +216,7 @@ export const RP_DEFAULT_SETTINGS = {
   sidebarIconsOnlyEnabled: false,
   alwaysShowCloseButtonEnabled: false,
   friendStylingReimagnedEnabled: false,
-  hideAgeBadgeEnabled: false,
+  hideAgeBadgeEnabled: true,
   developerPageUnlocked: false,
   sidebarSize: "full",
   sidebarCollapseMenuEnabled: false,
