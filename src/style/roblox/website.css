@@ -4,10 +4,13 @@
 
 html
   body:has(
-    .left-nav[data-rovalra-sidebar-collapse-ready="true"][data-rovalra-sidebar-layout-active="true"][data-rovalra-sidebar-move-content="true"]
-  )
-  .container-main {
-  margin-left: 82px !important;
+    main.container-main[data-rovalra-sidebar-collapse-ready="true"][data-rovalra-sidebar-layout-active="true"]
+  ) {
+  main.container-main[data-rovalra-sidebar-collapse-ready="true"][data-rovalra-sidebar-layout-active="true"] {
+    box-sizing: inherit;
+    margin-left: var(--left-nav-reserved-width) !important;
+    width: calc(100% - var(--left-nav-reserved-width)) !important;
+  }
 }
 
 .icon-presence.icon-studio {
@@ -21,5 +24,13 @@ html
 }
 
 .nav-minimise-button {
+  display: none !important;
+}
+
+#rovalra-sidebar-collapse-button {
+  display: none !important;
+}
+
+#rovalra-sidebar-layout-button {
   display: none !important;
 }
