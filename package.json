@@ -10,7 +10,7 @@
     "build": "node tasks/build.js"
   },
   "devDependencies": {
-    "@vitejs/plugin-react": "^6.0.3",
+    "@vitejs/plugin-react": "^6.0.4",
     "adm-zip": "^0.6.0",
     "lottie-web": "^5.13.0",
     "prettier": "^3.9.5",
