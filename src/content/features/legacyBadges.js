@@ -7,7 +7,7 @@ const BADGES_PER_ROW = 6;
 const ROOT_CLASS = "roprime-legacy-badges";
 const STYLE_ID = "roprime-legacy-badges-style";
 
-const BADGE_DISPLAY_ORDER = [12, 2, 6, 7, 4, 3, 5, 18, 14, 8, 17];
+const BADGE_DISPLAY_ORDER = [18, 1, 12, 2, 8, 6, 7, 17, 3, 4, 5, 14];
 
 const BADGE_DISPLAY = {
   12: {
@@ -255,12 +255,9 @@ function ensureStyles() {
   style.textContent = `
 .${ROOT_CLASS} { margin-bottom: 24px; }
 .${ROOT_CLASS} .roprime-legacy-badges-rows { display: flex; flex-direction: column; }
-.${ROOT_CLASS} .roprime-legacy-badges-row { display: grid; grid-template-columns: repeat(${BADGES_PER_ROW}, minmax(0, 1fr)); gap: 12px; }
+.${ROOT_CLASS} .roprime-legacy-badges-row { display: grid; grid-template- columns: repeat(${BADGES_PER_ROW}, minmax(0, 1fr)); gap: 12px; }
 .${ROOT_CLASS} .roprime-legacy-badges-row-extra { display: none; }
-.${ROOT_CLASS}.is-expanded .roprime-legacy-badges-row-extra { display: grid; }
-.${ROOT_CLASS} .css-izzd58-carouselItem { min-width: 0; }
 .${ROOT_CLASS} .base-tile-thumbnail-wrapper .thumbnail-2d-container { display: grid; justify-content: center; }
-.${ROOT_CLASS} .base-tile-thumbnail-wrapper img { width: 141px; height: 150px; }
 `;
   document.head.appendChild(style);
 }

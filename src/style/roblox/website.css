@@ -42,3 +42,7 @@ html
 .currently-wearing-avatar-with-background + .profile-header-overlay {
   margin-top: 70px !important;
 }
+
+#app-bumper-main {
+  display: none !important;
+}
