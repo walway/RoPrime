@@ -1,5 +1,4 @@
 import { getExtensionResourceUrl } from "../core/core.js";
-import { attachTooltip, createPill } from "../ui/index.js";
 
 const ROBLOX_BADGES_API =
   "https://accountinformation.roblox.com/v1/users/{userId}/roblox-badges";
@@ -9,8 +8,6 @@ const ROOT_CLASS = "roprime-legacy-badges";
 const STYLE_ID = "roprime-legacy-badges-style";
 
 const BADGE_DISPLAY_ORDER = [12, 2, 6, 7, 4, 3, 5, 18, 14, 8, 17];
-const BADGE_SORT_DEFAULT = "default";
-const BADGE_SORT_AZ = "a-z";
 
 const BADGE_DISPLAY = {
   12: {
@@ -215,10 +212,7 @@ const BADGES_HTML = `<div class="profile-badges ${ROOT_CLASS}">
 <div class="css-17g81zd-collectionCarouselContainer">
 	<div class="container-header badge-list-header">
 		<h2 class="content-emphasis text-heading-small padding-none inline-block roprime-legacy-badges-title">Roblox Badges</h2>
-		<div class="roprime-legacy-badges-controls">
-			{$SEE_MORE_BUTTON}
-			<div class="roprime-legacy-badges-sort" data-roprime-badge-sort></div>
-		</div>
+  		{$SEE_MORE_BUTTON}
 	</div>
 	<div class="roprime-legacy-badges-rows">{$BADGE_ROWS}</div>
 </div>
@@ -260,9 +254,6 @@ function ensureStyles() {
   style.id = STYLE_ID;
   style.textContent = `
 .${ROOT_CLASS} { margin-bottom: 24px; }
-.${ROOT_CLASS} .roprime-legacy-badges-title { margin-top: 8px; }
-.${ROOT_CLASS} .roprime-legacy-badges-controls { display: flex; gap: 12px; margin-left: 698px; }
-.${ROOT_CLASS} .roprime-legacy-badges-sort .MuiGrid-root { margin-top: 0 !important; }
 .${ROOT_CLASS} .roprime-legacy-badges-rows { display: flex; flex-direction: column; }
 .${ROOT_CLASS} .roprime-legacy-badges-row { display: grid; grid-template-columns: repeat(${BADGES_PER_ROW}, minmax(0, 1fr)); gap: 12px; }
 .${ROOT_CLASS} .roprime-legacy-badges-row-extra { display: none; }
@@ -320,35 +311,23 @@ function buildBadgeRows(badges) {
   return rows.join("");
 }
 
-function sortBadges(badges, sortMode) {
-  if (sortMode === BADGE_SORT_AZ) {
-    return [...badges].sort((a, b) =>
-      String(a.label || "").localeCompare(String(b.label || ""), undefined, {
-        sensitivity: "base",
-      }),
-    );
-  }
-  return badges;
-}
-
-function buildBadgesHtml(badges, sortMode = BADGE_SORT_DEFAULT) {
+function buildBadgesHtml(badges) {
   const hasMore = badges.length > BADGES_PER_ROW;
   return BADGES_HTML.replace(
     "{$SEE_MORE_BUTTON}",
     hasMore ? SEE_MORE_BUTTON : "",
-  ).replace("{$BADGE_ROWS}", buildBadgeRows(sortBadges(badges, sortMode)));
+  ).replace("{$BADGE_ROWS}", buildBadgeRows(badges));
 }
 
-function renderBadgeRows(root, badges, sortMode = BADGE_SORT_DEFAULT) {
+function renderBadgeRows(root, badges) {
   const rowsContainer = root.querySelector(".roprime-legacy-badges-rows");
   if (!(rowsContainer instanceof HTMLElement)) return;
 
-  const sorted = sortBadges(badges, sortMode);
-  rowsContainer.innerHTML = buildBadgeRows(sorted);
+  rowsContainer.innerHTML = buildBadgeRows(badges);
 
   const button = root.querySelector("[data-roprime-see-more]");
   if (button instanceof HTMLButtonElement) {
-    const hasMore = sorted.length > BADGES_PER_ROW;
+    const hasMore = badges.length > BADGES_PER_ROW;
     button.hidden = !hasMore;
     button.style.display = hasMore ? "" : "none";
     if (!hasMore) root.classList.remove("is-expanded");
@@ -356,26 +335,6 @@ function renderBadgeRows(root, badges, sortMode = BADGE_SORT_DEFAULT) {
       ? "See Less"
       : "See More";
   }
-}
-
-function wireBadgeSortPill(root, badges) {
-  const mount = root.querySelector("[data-roprime-badge-sort]");
-  if (!(mount instanceof HTMLElement)) return;
-
-  mount.replaceChildren();
-  const sortPill = createPill({
-    ariaLabel: "Badge sort order",
-    options: [
-      { value: BADGE_SORT_DEFAULT, label: "Default" },
-      { value: BADGE_SORT_AZ, label: "A-Z" },
-    ],
-    value: BADGE_SORT_DEFAULT,
-    onChange: (sortMode) => {
-      renderBadgeRows(root, badges, sortMode);
-    },
-  });
-
-  mount.appendChild(sortPill);
 }
 
 function wireSeeMoreToggle(root) {
@@ -506,7 +465,6 @@ async function applyLegacyBadgesNow() {
 
   root.dataset.roprimeUserId = String(userId);
   wireSeeMoreToggle(root);
-  wireBadgeSortPill(root, badges);
   stopProfileWatch();
   return true;
 }

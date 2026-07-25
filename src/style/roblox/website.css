@@ -34,3 +34,11 @@ html
 #rovalra-sidebar-layout-button {
   display: none !important;
 }
+
+.currently-wearing-avatar-with-background {
+  display: none !important;
+}
+
+.currently-wearing-avatar-with-background + .profile-header-overlay {
+  margin-top: 70px !important;
+}
