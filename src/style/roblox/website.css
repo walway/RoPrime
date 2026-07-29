@@ -46,3 +46,13 @@ html
 #app-bumper-main {
   display: none !important;
 }
+
+/* roblox plus free themes */
+
+[data-testid="app-theme-upsell"] {
+  display: none !important;
+}
+
+[data-testid="app-theme-card"] .icon-regular-roblox-plus {
+  display: none !important;
+}
