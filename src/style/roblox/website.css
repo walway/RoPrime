@@ -43,28 +43,6 @@ html
   display: none !important;
 }
 
-/* profile redesign test */
-
-.currently-wearing-avatar-with-background {
-  display: none !important;
-}
-
-.currently-wearing-avatar-with-background + .profile-header-overlay {
-  margin-top: calc(70px + (var(--rovalra-bubble-length) * 1px)) !important;
-}
-
-.profile-tabs {
-  display: none !important;
-}
-
-.profile-tab-content {
-  display: block !important;
-}
-
-.tab-pane {
-  display: block !important;
-}
-
 /* android layout */
 
 #app-bumper-main {
