@@ -1,14 +1,17 @@
 import {
   buildRoPrimeSettingsFullUrl,
+  buildPluginUrl,
   getExtensionResourceUrl,
   isExtensionContextAlive,
   isExtensionContextInvalidatedError,
   isMyAccountPath,
   isNativeMyAccountHashRoute,
   isOnRoPrimeSettingsPage,
-  RP_PARAM_KEY_NEW,
+  RP_DEFAULT_PAGE,
+  RP_PARAM_KEY,
   shouldRunRoPrimeOnCurrentPage,
 } from "../core/core.js";
+import { openRoPrimeSettingsOnAccountPage } from "../settings/settingsPage.js";
 
 const ROPRIME_ACCOUNT_MENU_LABEL = "RoPrime Settings";
 
@@ -152,7 +155,7 @@ function injectSettingsPopoverRow() {
 
   let li = ul.querySelector(`li[${POP_ENTRY_ATTR}="1"]`);
   if (!(li instanceof HTMLLIElement)) {
-    const hrefNeedle = `?${RP_PARAM_KEY_NEW}=`;
+    const hrefNeedle = `?${RP_PARAM_KEY}=`;
     const foreignPrime = [
       ...ul.querySelectorAll(`a.rbx-menu-item[href*="${hrefNeedle}"]`),
     ].find((node) => {
@@ -171,10 +174,10 @@ function injectSettingsPopoverRow() {
 
     a.addEventListener("click", (e) => {
       e.preventDefault();
-      if (isOnRoPrimeSettingsPage()) {
-        window.location.reload();
+      if (isMyAccountPath()) {
+        openRoPrimeSettingsOnAccountPage(RP_DEFAULT_PAGE);
       } else {
-        window.location.href = buildRoPrimeSettingsFullUrl();
+        window.location.assign(buildRoPrimeSettingsFullUrl());
       }
     });
 
@@ -220,12 +223,11 @@ function removeInjectedEntries() {
 
 function navigateToRoPrimeSettings(e) {
   e.preventDefault();
-  const targetUrl = buildRoPrimeSettingsFullUrl();
-  if (isOnRoPrimeSettingsPage()) {
-    window.location.reload();
+  if (isMyAccountPath()) {
+    openRoPrimeSettingsOnAccountPage(RP_DEFAULT_PAGE);
     return;
   }
-  window.location.assign(targetUrl);
+  window.location.assign(buildRoPrimeSettingsFullUrl());
 }
 
 function buildVerticalTabLi() {

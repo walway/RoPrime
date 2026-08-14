@@ -23,23 +23,7 @@ export function updateAccountHeader(showPanel) {
   if (!(pageRoot instanceof HTMLElement)) return;
   const header = pageRoot.querySelector("h1");
   if (!(header instanceof HTMLElement)) return;
-
-  if (!header.hasAttribute("data-roprime-original-display")) {
-    header.setAttribute(
-      "data-roprime-original-display",
-      header.style.display || "",
-    );
-  }
-
-  if (showPanel) {
-    header.style.display = "none";
-    return;
-  }
-
-  if (header.hasAttribute("data-roprime-original-display")) {
-    header.style.display =
-      header.getAttribute("data-roprime-original-display") || "";
-  }
+  header.style.display = showPanel ? "none" : "";
 }
 
 export function updateDocumentTitle(showPanel) {

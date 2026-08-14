@@ -36,7 +36,7 @@ import {
   installProfileRedesignObserver,
   syncProfileRedesign,
 } from "./profile/profileRedesign.js";
-import { normalizeEquippedProfileEffects } from "./settings/other.js";
+import { normalizeEquippedProfileEffects } from "./settings/profileSettings.js";
 import { syncProfileSettingsRoute } from "./settings/profileSettings.js";
 import { syncSidebarContent } from "./sidebar/sidebarContent.js";
 

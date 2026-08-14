@@ -1,12 +1,29 @@
-html.roprime-account-settings-open #react-user-account-base .content-container,
-html.roprime-account-settings-open #react-user-account-base #content-container,
-html.roprime-account-settings-open #react-user-account-base .menu-vertical,
 html.roprime-account-settings-open
-  #react-user-account-base
+  #user-account
+  > #react-user-account-base
+  .content-container,
+html.roprime-account-settings-open
+  #user-account
+  > #react-user-account-base
+  #content-container,
+html.roprime-account-settings-open
+  #user-account
+  > #react-user-account-base
+  .menu-vertical,
+html.roprime-account-settings-open
+  #user-account
+  > #react-user-account-base
   .menu-vertical-container {
   visibility: hidden !important;
   opacity: 0 !important;
   pointer-events: none !important;
+}
+
+#roprime-settings-host .menu-vertical,
+#roprime-settings-host .menu-vertical-container {
+  visibility: visible !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
 }
 
 #react-user-account-base > #rp-settings-flat-inner.roprime-settings-flat {

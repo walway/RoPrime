@@ -471,7 +471,7 @@ export function buildRoPrimeSettingsFullUrl(
 ) {
   const slug =
     typeof page === "string" && page.trim() ? page.trim() : RP_DEFAULT_PAGE;
-  const base = `${window.location.origin}${getRobloxLocalePathPrefix()}/my/account?${RP_PARAM_KEY_NEW}=${encodeURIComponent(slug)}`;
+  const base = `${window.location.origin}${getRobloxLocalePathPrefix()}/my/account?${RP_PARAM_KEY}=${encodeURIComponent(slug)}`;
   const h =
     typeof hashFragment === "string" && hashFragment.trim()
       ? hashFragment.trim().startsWith("#")
@@ -482,10 +482,7 @@ export function buildRoPrimeSettingsFullUrl(
 }
 
 export function isPluginRoute() {
-  if (!isMyAccountPath()) return false;
-  const params = new URLSearchParams(window.location.search);
-  const route = (params.get(RP_PARAM_KEY_NEW) || "").toLowerCase();
-  return RP_SUPPORTED_PAGES.has(route);
+  return getCurrentrp() !== null;
 }
 
 export function isOnRoPrimeSettingsPage() {
@@ -528,15 +525,19 @@ export function shouldRunRoPrimeOnCurrentPage() {
 export function getCurrentrp() {
   if (!isMyAccountPath()) return null;
   const params = new URLSearchParams(window.location.search);
-  const route = (params.get(RP_PARAM_KEY_NEW) || "").toLowerCase();
+  const route = (
+    params.get(RP_PARAM_KEY) ||
+    params.get(RP_PARAM_KEY_NEW) ||
+    ""
+  ).toLowerCase();
   if (RP_SUPPORTED_PAGES.has(route)) return route;
   return null;
 }
 
 export function buildPluginUrl(page = RP_DEFAULT_PAGE) {
   const url = new URL(window.location.href);
-  url.searchParams.delete(RP_PARAM_KEY);
-  url.searchParams.set(RP_PARAM_KEY_NEW, page);
+  url.searchParams.delete(RP_PARAM_KEY_NEW);
+  url.searchParams.set(RP_PARAM_KEY, page);
   return `${url.pathname}${url.search}${url.hash || ""}`;
 }
 
