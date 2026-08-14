@@ -32,6 +32,10 @@ import {
   installProfilePageEffectObserver,
   syncProfilePageEffect,
 } from "./profile/profileEffectsDisplay.js";
+import {
+  installProfileRedesignObserver,
+  syncProfileRedesign,
+} from "./profile/profileRedesign.js";
 import { normalizeEquippedProfileEffects } from "./settings/other.js";
 import { syncProfileSettingsRoute } from "./settings/profileSettings.js";
 import { syncSidebarContent } from "./sidebar/sidebarContent.js";
@@ -56,6 +60,7 @@ function installStorageSyncListener() {
             syncProfileSettingsRoute();
             syncAccountSettingsMenuButton();
             void syncProfilePageEffect();
+            syncProfileRedesign();
             syncFriendCarouselEffects();
             syncCustomCss();
             syncAccountSettingsLayoutInset();
@@ -95,6 +100,7 @@ function installHistoryListeners() {
       syncProfileSettingsRoute();
       syncAccountSettingsMenuButton();
       void syncProfilePageEffect();
+      syncProfileRedesign();
       syncFriendCarouselEffects();
       syncCustomCss();
       syncAccountSettingsLayoutInset();
@@ -123,6 +129,7 @@ function bootstrap() {
         installHistoryListeners();
         installSearchBanObserver();
         installProfilePageEffectObserver();
+        installProfileRedesignObserver();
         installFriendCarouselEffects();
         installDomSyncScheduler();
         initPluginsPanel();
@@ -133,6 +140,7 @@ function bootstrap() {
         syncProfileSettingsRoute();
         syncAccountSettingsMenuButton();
         void syncProfilePageEffect();
+        syncProfileRedesign();
         syncFriendCarouselEffects();
         syncCustomCss();
         syncAccountSettingsLayoutInset();

@@ -20,6 +20,7 @@ import {
   updateDocumentTitle,
 } from "../panel/pageChrome.js";
 import { syncRoEliteView } from "../panel/panel.js";
+import { syncProfileRedesign } from "../profile/profileRedesign.js";
 import { syncSidebarContent } from "../sidebar/sidebarContent.js";
 import {
   bindSidebarContentList,
@@ -547,6 +548,15 @@ function bindOnce(root) {
     });
   }
 
+  const profileRedesign = inner.querySelector("#roprime-toggle-profile-redesign");
+  if (profileRedesign instanceof HTMLInputElement) {
+    profileRedesign.addEventListener("change", () => {
+      settingsState.profileRedesignEnabled = profileRedesign.checked;
+      saveSettings();
+      syncProfileRedesign();
+    });
+  }
+
   const sidebarCollapse = inner.querySelector(
     "#roprime-toggle-sidebar-collapse-menu",
   );
@@ -796,6 +806,11 @@ function refreshProfileSettingsUi(root) {
     hideAgeBadge.checked = !!settingsState.hideAgeBadgeEnabled;
   }
 
+  const profileRedesign = inner.querySelector("#roprime-toggle-profile-redesign");
+  if (profileRedesign instanceof HTMLInputElement) {
+    profileRedesign.checked = !!settingsState.profileRedesignEnabled;
+  }
+
   const sidebarCollapse = inner.querySelector(
     "#roprime-toggle-sidebar-collapse-menu",
   );
@@ -864,7 +879,8 @@ function buildMarkup() {
                 <div class="roprime-toggle-row"><div class="roprime-toggle-copy"><div class="roprime-toggle-title" data-i18n="Sidebar collapse menu title"></div><div class="roprime-toggle-desc" data-i18n="Sidebar collapse menu description"></div></div><label class="roprime-switch" for="roprime-toggle-sidebar-collapse-menu"><input id="roprime-toggle-sidebar-collapse-menu" type="checkbox" /><span class="roprime-switch-slider" aria-hidden="true"></span></label></div>
                 <div class="roprime-toggle-row"><div class="roprime-toggle-copy"><div class="roprime-toggle-title" data-i18n="Always show close title"></div><div class="roprime-toggle-desc" data-i18n="Always show close description"></div></div><label class="roprime-switch" for="roprime-toggle-always-show-close"><input id="roprime-toggle-always-show-close" type="checkbox" /><span class="roprime-switch-slider" aria-hidden="true"></span></label></div>
                 <div class="roprime-toggle-row"><div class="roprime-toggle-copy"><div class="roprime-toggle-title" data-i18n="Friend styling title"></div><div class="roprime-toggle-desc" data-i18n="Friend styling description"></div></div><label class="roprime-switch" for="roprime-toggle-friend-styling-reimagned"><input id="roprime-toggle-friend-styling-reimagned" type="checkbox" /><span class="roprime-switch-slider" aria-hidden="true"></span></label></div>
-                <div class="roprime-toggle-row"><div class="roprime-toggle-copy"><div class="roprime-toggle-title" data-i18n="Hide age badge title"></div><div class="roprime-toggle-desc" data-i18n="Hide age badge description"></div></div><label class="roprime-switch" for="roprime-toggle-hide-age-badge"><input id="roprime-toggle-hide-age-badge" type="checkbox" /><span class="roprime-switch-slider" aria-hidden="true"></span></label></div>`;
+                <div class="roprime-toggle-row"><div class="roprime-toggle-copy"><div class="roprime-toggle-title" data-i18n="Hide age badge title"></div><div class="roprime-toggle-desc" data-i18n="Hide age badge description"></div></div><label class="roprime-switch" for="roprime-toggle-hide-age-badge"><input id="roprime-toggle-hide-age-badge" type="checkbox" /><span class="roprime-switch-slider" aria-hidden="true"></span></label></div>
+                <div class="roprime-toggle-row"><div class="roprime-toggle-copy"><div class="roprime-toggle-title" data-i18n="Profile redesign title"></div><div class="roprime-toggle-desc" data-i18n="Profile redesign description"></div></div><label class="roprime-switch" for="roprime-toggle-profile-redesign"><input id="roprime-toggle-profile-redesign" type="checkbox" /><span class="roprime-switch-slider" aria-hidden="true"></span></label></div>`;
 
   const sidebarContentBody = `
                 <button type="button" class="roprime-sidebar-content-back" data-roprime-sidebar-content-back data-i18n="Sidebar content back"></button>
