@@ -2,6 +2,14 @@
   background-color: transparent;
 }
 
+.thumbnail-2d-container,
+.video-preview-wrapper video,
+.carousel-item iframe,
+.thumbnail-shimmer-overlay,
+.game-details-carousel-container .shimmer {
+  border-radius: 12px;
+}
+
 html
   body:has(
     main.container-main[data-rovalra-sidebar-collapse-ready="true"][data-rovalra-sidebar-layout-active="true"]
@@ -42,7 +50,7 @@ html
 }
 
 .currently-wearing-avatar-with-background + .profile-header-overlay {
-  margin-top: 70px !important;
+  margin-top: calc(70px + (var(--rovalra-bubble-length) * 1px)) !important;
 }
 
 .profile-tabs {

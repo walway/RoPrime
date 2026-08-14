@@ -185,45 +185,12 @@
   margin: 0 0 12px;
 }
 
-.game-details-carousel-container .carousel-item,
-#game-details-carousel-container .carousel-item {
-  border-radius: 12px;
-}
-
 #roprime-settings-tree,
 .roprime-settings-nav-btn {
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
-}
-
-.game-details-carousel-container
-  .carousel-item.carousel-video.game-preview-video-container
-  .video-preview-wrapper.is-ready
-  video,
-.game-details-carousel-container
-  .carousel-item.carousel-video.game-preview-video-container
-  .video-preview-wrapper
-  video,
-#game-details-carousel-container
-  .carousel-item.carousel-video.game-preview-video-container
-  .video-preview-wrapper.is-ready
-  video,
-#game-details-carousel-container
-  .carousel-item.carousel-video.game-preview-video-container
-  .video-preview-wrapper
-  video {
-  border-radius: 12px;
-}
-
-.carousel-item.carousel-video.game-preview-video-container
-  .video-preview-wrapper.is-ready
-  video,
-.carousel-item.carousel-video.game-preview-video-container
-  .video-preview-wrapper
-  video {
-  border-radius: 12px;
 }
 
 .game-details-carousel-container
@@ -241,6 +208,7 @@
   z-index: 6 !important;
   position: relative !important;
 }
+
 .roprime-setting-copy {
   min-width: 0;
   display: flex;
