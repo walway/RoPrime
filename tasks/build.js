@@ -177,7 +177,7 @@ rmSync(distDir, { recursive: true, force: true });
 
 const viteCli = join(root, "node_modules", "vite", "bin", "vite.js");
 if (!existsSync(viteCli)) {
-  console.error("Missing Vite CLI. Run `npm install` first.");
+  console.error("Missing Vite CLI. Run `pnpm install` first.");
   process.exit(1);
 }
 await runNode(viteCli, ["build", "--config", "configs/vite.content.config.js"]);
