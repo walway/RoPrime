@@ -1,1126 +1,1071 @@
 .roprime-settings-wrapper {
-  margin-top: 8px;
+    margin-top: 8px;
 }
 
 .roprime-settings-layout {
-  display: block;
+    display: block;
 }
 
 .roprime-settings-sidebar {
-  margin-bottom: 12px;
+    margin-bottom: 12px;
 }
 
 .roprime-settings-nav-alert {
-  display: block;
-  position: relative;
-  margin: 10px 0 14px;
-  flex-shrink: 0;
-  padding: 12px 14px 12px 44px;
-  border-radius: 12px;
-  border: 1px solid
-    color-mix(in srgb, var(--color-content-emphasis) 22%, transparent);
-  background: var(--color-surface-300);
-  color: var(--color-content-emphasis);
-  text-decoration: none;
-  font-size: 14px;
-  font-weight: 600;
-  line-height: 1.35;
-  transition:
-    border-color 0.15s ease,
-    background 0.15s ease;
+    display: block;
+    position: relative;
+    margin: 10px 0 14px;
+    flex-shrink: 0;
+    padding: 12px 14px 12px 44px;
+    border-radius: 12px;
+    border: 1px solid color-mix(in srgb, var(--color-content-emphasis) 22%, transparent);
+    background: var(--color-surface-300);
+    color: var(--color-content-emphasis);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.35;
+    transition: border-color 0.15s ease, background 0.15s ease;
 }
 
 .roprime-settings-nav-alert:hover {
-  border-color: color-mix(
-    in srgb,
-    var(--color-content-emphasis) 35%,
-    transparent
-  );
-  color: var(--color-content-emphasis);
-  text-decoration: none;
+    border-color: color-mix(
+        in srgb,
+        var(--color-content-emphasis) 35%,
+        transparent
+    );
+    color: var(--color-content-emphasis);
+    text-decoration: none;
 }
 
 .roprime-settings-nav-alert.is-active {
-  border-color: color-mix(
-    in srgb,
-    var(--color-content-emphasis) 40%,
-    transparent
-  );
-  background: var(--color-surface-300);
+    border-color: color-mix(
+        in srgb,
+        var(--color-content-emphasis) 40%,
+        transparent
+    );
+    background: var(--color-surface-300);
 }
 
 .roprime-settings-nav-alert-icon {
-  position: absolute;
-  top: 12px;
-  left: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 22px;
-  height: 22px;
-  color: var(--color-content-emphasis);
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    color: var(--color-content-emphasis);
 }
 
 .roprime-settings-nav-alert-icon svg {
-  display: block;
+    display: block;
 }
 
 .roprime-settings-nav-alert-text {
-  display: block;
+    display: block;
 }
 
 .roprime-settings-main,
 .roprime-settings-content-pane {
-  min-width: 0;
+    min-width: 0;
 }
 
 .roprime-settings-search-wrap {
-  margin-bottom: 12px;
+    margin-bottom: 12px;
 }
 
 .roprime-settings-search {
-  width: 100%;
-  border: 1px solid
-    color-mix(in srgb, var(--color-content-emphasis) 22%, transparent);
-  border-radius: 12px;
-  background: var(--color-surface-300);
-  color: var(--color-content-emphasis);
-  padding: 10px 12px;
-  outline: none;
+    width: 100%;
+    border: 1px solid color-mix(in srgb, var(--color-content-emphasis) 22%, transparent);
+    border-radius: 12px;
+    background: var(--color-surface-300);
+    color: var(--color-content-emphasis);
+    padding: 10px 12px;
+    outline: none;
 }
 
 .roprime-settings-search:focus {
-  border-color: color-mix(
-    in srgb,
-    var(--color-content-emphasis) 40%,
-    transparent
-  );
+    border-color: color-mix(
+        in srgb,
+        var(--color-content-emphasis) 40%,
+        transparent
+    );
 }
 
 .roprime-settings-section {
-  display: none;
+    display: none;
 }
 
 .roprime-search-hint {
-  display: none;
-  margin-bottom: 10px;
-  padding: 10px 12px;
-  border-radius: 10px;
-  border: 1px solid rgba(255, 220, 64, 0.4);
-  background: rgba(255, 220, 64, 0.12);
-  color: #ffd84a;
-  font-size: 12px;
-  font-weight: 600;
+    display: none;
+    margin-bottom: 10px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 220, 64, 0.4);
+    background: rgba(255, 220, 64, 0.12);
+    color: #ffd84a;
+    font-size: 12px;
+    font-weight: 600;
 }
 
 .roprime-settings-wrapper.is-search-mode .roprime-settings-main {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
 .roprime-settings-wrapper.is-search-mode .roprime-settings-section {
-  margin: 0;
+    margin: 0;
 }
 
 .roprime-search-mark {
-  background: rgba(255, 220, 64, 0.25);
-  color: #ffd84a;
-  font-weight: 700;
-  border-radius: 3px;
-  padding: 0 1px;
+    background: rgba(255, 220, 64, 0.25);
+    color: #ffd84a;
+    font-weight: 700;
+    border-radius: 3px;
+    padding: 0 1px;
 }
 
 .roprime-setting-control-wrap {
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  gap: 10px;
-  border-radius: 12px;
-  border: 1px solid
-    color-mix(in srgb, var(--color-content-emphasis) 22%, transparent);
-  background: var(--color-surface-300);
-  padding: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    border-radius: 12px;
+    border: 1px solid color-mix(in srgb, var(--color-content-emphasis) 22%, transparent);
+    background: var(--color-surface-300);
+    padding: 12px;
 }
 
 .roprime-setting-field {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px 16px;
-  padding: 14px 0;
-  border-bottom: 1px solid
-    color-mix(in srgb, var(--color-content-emphasis) 14%, transparent);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px 16px;
+    padding: 14px 0;
+    border-bottom: 1px solid color-mix(in srgb, var(--color-content-emphasis) 14%, transparent);
 }
 
 .roprime-setting-field-copy {
-  flex: 1 1 200px;
-  min-width: 0;
+    flex: 1 1 200px;
+    min-width: 0;
 }
 
 .roprime-settings-section > :last-child {
-  border-bottom: 0;
+    border-bottom: 0;
 }
 
 .roprime-info-block {
-  padding: 14px 0;
-  border-bottom: 1px solid
-    color-mix(in srgb, var(--color-content-emphasis) 14%, transparent);
+    padding: 14px 0;
+    border-bottom: 1px solid color-mix(in srgb, var(--color-content-emphasis) 14%, transparent);
 }
 
 .roprime-settings-section-title {
-  margin: 20px 0 6px;
-  font-size: 16px;
-  font-weight: 600;
-  line-height: 1.3;
-  color: var(--color-content-emphasis);
+    margin: 20px 0 6px;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.3;
+    color: var(--color-content-emphasis);
 }
 
 .roprime-settings-section-title:first-child {
-  margin-top: 0;
+    margin-top: 0;
 }
 
 .roprime-cosmetics-shop-section > .roprime-setting-desc {
-  margin: 0 0 12px;
+    margin: 0 0 12px;
 }
 
 #roprime-settings-tree,
 .roprime-settings-nav-btn {
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
 .game-details-carousel-container
-  .carousel-item.carousel-video.game-preview-video-container
-  [class*="web-blox-css-tss"][class*="controlsWrapper"],
+    .carousel-item.carousel-video.game-preview-video-container
+    [class*='web-blox-css-tss'][class*='controlsWrapper'],
 #game-details-carousel-container
-  .carousel-item.carousel-video.game-preview-video-container
-  [class*="web-blox-css-tss"][class*="controlsWrapper"],
-.carousel-item.carousel-video.game-preview-video-container
-  [class*="web-blox-css-tss"][class*="controlsWrapper"] {
-  border-radius: 12px;
+    .carousel-item.carousel-video.game-preview-video-container
+    [class*='web-blox-css-tss'][class*='controlsWrapper'],
+.carousel-item.carousel-video.game-preview-video-container [class*='web-blox-css-tss'][class*='controlsWrapper'] {
+    border-radius: 12px;
 }
 
 .game-thumbnail {
-  z-index: 6 !important;
-  position: relative !important;
+    z-index: 6 !important;
+    position: relative !important;
 }
 
 .roprime-setting-copy {
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: flex-start;
-  text-align: left;
-  height: 100%;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    text-align: left;
+    height: 100%;
 }
 
 .roprime-setting-title,
 .roprime-info-title {
-  color: var(--color-content-emphasis);
-  font-weight: 600;
-  line-height: 1.3;
+    color: var(--color-content-emphasis);
+    font-weight: 600;
+    line-height: 1.3;
 }
 
 .roprime-setting-desc,
 .roprime-info-text {
-  margin-top: 4px;
-  color: var(--color-content-default);
-  font-size: 12px;
-  line-height: 1.35;
+    margin-top: 4px;
+    color: var(--color-content-default);
+    font-size: 12px;
+    line-height: 1.35;
 }
 
 .roprime-accordion {
-  display: block;
-  border-bottom: 1px solid
-    color-mix(in srgb, var(--color-content-emphasis) 14%, transparent);
+    display: block;
+    border-bottom: 1px solid color-mix(in srgb, var(--color-content-emphasis) 14%, transparent);
 }
 
 .roprime-accordion-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  padding: 14px 0;
-  min-height: 0;
-  background: transparent;
-  border: 0;
-  text-align: left;
-  cursor: pointer;
-  color: inherit;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 14px 0;
+    min-height: 0;
+    background: transparent;
+    border: 0;
+    text-align: left;
+    cursor: pointer;
+    color: inherit;
 }
 
 .roprime-accordion.is-renames-disabled .roprime-accordion-body {
-  opacity: 0.55;
+    opacity: 0.55;
 }
 
 .roprime-accordion.is-renames-disabled .roprime-toggle-row {
-  opacity: 0.7;
+    opacity: 0.7;
 }
 
 .roprime-accordion-chevron {
-  width: 10px;
-  height: 10px;
-  border-right: 2px solid
-    color-mix(in srgb, var(--color-content-emphasis) 70%, transparent);
-  border-bottom: 2px solid
-    color-mix(in srgb, var(--color-content-emphasis) 70%, transparent);
-  transform: rotate(45deg);
-  transition: transform 140ms ease;
-  flex: 0 0 auto;
-  margin-right: 2px;
+    width: 10px;
+    height: 10px;
+    border-right: 2px solid color-mix(in srgb, var(--color-content-emphasis) 70%, transparent);
+    border-bottom: 2px solid color-mix(in srgb, var(--color-content-emphasis) 70%, transparent);
+    transform: rotate(45deg);
+    transition: transform 140ms ease;
+    flex: 0 0 auto;
+    margin-right: 2px;
 }
 
 .roprime-accordion.is-open .roprime-accordion-chevron {
-  transform: rotate(-135deg);
+    transform: rotate(-135deg);
 }
 
 .roprime-accordion-body {
-  padding: 0;
-  max-height: 0;
-  opacity: 0;
-  transform: translateY(-4px);
-  overflow: hidden;
-  transition:
-    max-height 240ms cubic-bezier(0.22, 1, 0.36, 1),
-    opacity 180ms ease,
-    transform 240ms ease;
+    padding: 0;
+    max-height: 0;
+    opacity: 0;
+    transform: translateY(-4px);
+    overflow: hidden;
+    transition: max-height 240ms cubic-bezier(0.22, 1, 0.36, 1), opacity 180ms ease, transform 240ms ease;
 }
 
 .roprime-accordion.is-open .roprime-accordion-body {
-  opacity: 1;
-  transform: translateY(0);
-  padding-bottom: 4px;
+    opacity: 1;
+    transform: translateY(0);
+    padding-bottom: 4px;
 }
 
 .roprime-toggle-row {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px 16px;
-  border: 0;
-  border-radius: 0;
-  background: transparent;
-  padding: 12px 0;
-  border-bottom: 1px solid
-    color-mix(in srgb, var(--color-content-emphasis) 14%, transparent);
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px 16px;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    padding: 12px 0;
+    border-bottom: 1px solid color-mix(in srgb, var(--color-content-emphasis) 14%, transparent);
 }
 
 .roprime-toggle-row.roprime-sidebar-size-row {
-  align-items: flex-start;
+    align-items: flex-start;
 }
 
 .roprime-toggle-row.is-disabled {
-  opacity: 0.55;
+    opacity: 0.55;
 }
 
 .roprime-toggle-row.is-disabled .roprime-switch {
-  pointer-events: none;
+    pointer-events: none;
 }
 
 .roprime-accordion .roprime-toggle-row:last-child {
-  border-bottom: 0;
+    border-bottom: 0;
 }
 
 .roprime-sidebar-size-row {
-  align-items: stretch;
-  flex-wrap: wrap;
+    align-items: stretch;
+    flex-wrap: wrap;
 }
 
 .roprime-sidebar-size-row .roprime-setting-control {
-  flex: 0 0 250px;
-  max-width: 100%;
+    flex: 0 0 250px;
+    max-width: 100%;
 }
 
 .roprime-sidebar-size-footer {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 8px;
-  width: calc(100% - var(--roprime-sidebar-thumb-size, 14px));
-  margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    width: calc(100% - var(--roprime-sidebar-thumb-size, 14px));
+    margin: 0 auto;
 }
 
 .roprime-sidebar-size-footer .roprime-sidebar-size-ticks {
-  width: 100%;
-  margin: 0;
-  justify-content: flex-start;
+    width: 100%;
+    margin: 0;
+    justify-content: flex-start;
 }
 
 .roprime-sidebar-size-warning {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: 10px;
-  color: var(--color-content-default);
-  font-size: 12px;
-  line-height: 1.3;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 10px;
+    color: var(--color-content-default);
+    font-size: 12px;
+    line-height: 1.3;
 }
 
 .roprime-sidebar-size-warning-text {
-  flex: 1 1 auto;
-  min-width: 0;
+    flex: 1 1 auto;
+    min-width: 0;
 }
 
 .roprime-sidebar-reset-btn {
-  flex: 0 0 auto;
+    flex: 0 0 auto;
 }
 
 .roprime-sidebar-reset-btn--big {
-  width: 48px;
-  height: 48px;
-  border-radius: 10px;
+    width: 48px;
+    height: 48px;
+    border-radius: 10px;
 }
 
 .roprime-sidebar-configure-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  align-self: flex-start;
-  max-width: 100%;
-  padding: 5px 10px;
-  border-radius: 8px;
-  border: 1px solid
-    color-mix(in srgb, var(--color-content-emphasis) 22%, transparent);
-  background: var(--color-surface-300);
-  color: var(--color-content-emphasis);
-  font-size: 11px;
-  font-weight: 600;
-  line-height: 1.2;
-  cursor: pointer;
-  white-space: nowrap;
-  text-align: left;
-  transition:
-    border-color 120ms ease,
-    background 120ms ease,
-    color 120ms ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    align-self: flex-start;
+    max-width: 100%;
+    padding: 5px 10px;
+    border-radius: 8px;
+    border: 1px solid color-mix(in srgb, var(--color-content-emphasis) 22%, transparent);
+    background: var(--color-surface-300);
+    color: var(--color-content-emphasis);
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 1.2;
+    cursor: pointer;
+    white-space: nowrap;
+    text-align: left;
+    transition: border-color 120ms ease, background 120ms ease, color 120ms ease;
 }
 
 .roprime-sidebar-configure-btn:hover {
-  border-color: color-mix(
-    in srgb,
-    var(--color-content-emphasis) 35%,
-    transparent
-  );
-  background: var(--color-surface-300);
-  color: var(--color-content-emphasis);
+    border-color: color-mix(
+        in srgb,
+        var(--color-content-emphasis) 35%,
+        transparent
+    );
+    background: var(--color-surface-300);
+    color: var(--color-content-emphasis);
 }
 
 .roprime-sidebar-content-back {
-  display: inline-flex;
-  align-items: center;
-  margin-bottom: 12px;
-  padding: 8px 12px;
-  border-radius: 10px;
-  border: 1px solid
-    color-mix(in srgb, var(--color-content-emphasis) 22%, transparent);
-  background: var(--color-surface-300);
-  color: var(--color-content-emphasis);
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    margin-bottom: 12px;
+    padding: 8px 12px;
+    border-radius: 10px;
+    border: 1px solid color-mix(in srgb, var(--color-content-emphasis) 22%, transparent);
+    background: var(--color-surface-300);
+    color: var(--color-content-emphasis);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
 }
 
 .roprime-sidebar-content-back:hover {
-  border-color: color-mix(
-    in srgb,
-    var(--color-content-emphasis) 35%,
-    transparent
-  );
+    border-color: color-mix(
+        in srgb,
+        var(--color-content-emphasis) 35%,
+        transparent
+    );
 }
 
 .roprime-sidebar-content-panel {
-  margin-top: 8px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid
-    color-mix(in srgb, var(--color-content-emphasis) 14%, transparent);
+    margin-top: 8px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid color-mix(in srgb, var(--color-content-emphasis) 14%, transparent);
 }
 
 .roprime-sidebar-content-panel-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 12px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
 }
 
 .roprime-sidebar-content-panel-copy .roprime-setting-desc,
 .roprime-sidebar-size-warning-text {
-  color: var(--color-content-default);
+    color: var(--color-content-default);
 }
 
 .roprime-sidebar-content-panel-actions {
-  display: flex;
-  align-items: flex-start;
-  justify-content: flex-end;
-  flex: 0 0 auto;
-  padding-top: 2px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-end;
+    flex: 0 0 auto;
+    padding-top: 2px;
 }
 
 .roprime-sidebar-content-panel-actions .roprime-sidebar-reset-btn--big svg {
-  width: 24px;
-  height: 24px;
+    width: 24px;
+    height: 24px;
 }
 
 .roprime-sidebar-content-list {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  margin-top: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-top: 12px;
 }
 
 .roprime-sidebar-content-size-section {
-  display: flex;
-  flex-direction: column;
-  gap: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
 }
 
 .roprime-sidebar-content-size-title {
-  margin: 0 0 8px;
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--color-content-emphasis);
+    margin: 0 0 8px;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--color-content-emphasis);
 }
 
 .roprime-sidebar-content-size-rows {
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-  padding-bottom: 4px;
-  border-bottom: 1px solid
-    color-mix(in srgb, var(--color-content-emphasis) 14%, transparent);
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    padding-bottom: 4px;
+    border-bottom: 1px solid color-mix(in srgb, var(--color-content-emphasis) 14%, transparent);
 }
 
-.roprime-sidebar-content-size-section:last-child
-  .roprime-sidebar-content-size-rows {
-  border-bottom: 0;
+.roprime-sidebar-content-size-section:last-child .roprime-sidebar-content-size-rows {
+    border-bottom: 0;
 }
 
 .roprime-sidebar-content-divider {
-  height: 1px;
-  margin: 4px 0;
-  background: color-mix(
-    in srgb,
-    var(--color-content-emphasis) 22%,
-    transparent
-  );
+    height: 1px;
+    margin: 4px 0;
+    background: color-mix(
+        in srgb,
+        var(--color-content-emphasis) 22%,
+        transparent
+    );
 }
 
 .roprime-sidebar-content-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  padding: 10px 0;
-  border: 0;
-  border-radius: 0;
-  background: transparent;
-  border-bottom: 1px solid
-    color-mix(in srgb, var(--color-content-emphasis) 14%, transparent);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 10px 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    border-bottom: 1px solid color-mix(in srgb, var(--color-content-emphasis) 14%, transparent);
 }
 
 .roprime-sidebar-content-list .roprime-sidebar-content-row:last-child {
-  border-bottom: 0;
+    border-bottom: 0;
 }
 
-.roprime-sidebar-content-row.is-removed-item
-  .roprime-sidebar-content-row-label {
-  opacity: 0.72;
+.roprime-sidebar-content-row.is-removed-item .roprime-sidebar-content-row-label {
+    opacity: 0.72;
 }
 
 .roprime-sidebar-content-row-label {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--color-content-default);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--color-content-default);
 }
 
 .roprime-sidebar-content-delete {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  padding: 0;
-  border: 0;
-  border-radius: 8px;
-  background: transparent;
-  color: #ef4444;
-  cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: #ef4444;
+    cursor: pointer;
 }
 
 .roprime-sidebar-content-delete:hover {
-  background: color-mix(in srgb, #ef4444 16%, transparent);
+    background: color-mix(in srgb, #ef4444 16%, transparent);
 }
 
 .roprime-sidebar-content-add {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  padding: 0;
-  border: 0;
-  border-radius: 8px;
-  background: transparent;
-  color: #22c55e;
-  cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: #22c55e;
+    cursor: pointer;
 }
 
 .roprime-sidebar-content-add:hover {
-  background: color-mix(in srgb, #22c55e 16%, transparent);
+    background: color-mix(in srgb, #22c55e 16%, transparent);
 }
 
 .roprime-sidebar-content-add .roprime-sidebar-add-icon,
 .roprime-sidebar-content-add svg {
-  width: 18px;
-  height: 18px;
+    width: 18px;
+    height: 18px;
 }
 
 .roprime-sidebar-content-empty {
-  margin: 12px 0 0;
-  font-size: 12px;
-  line-height: 1.4;
-  color: var(--color-content-default);
+    margin: 12px 0 0;
+    font-size: 12px;
+    line-height: 1.4;
+    color: var(--color-content-default);
 }
 
 #roprime-sidebar-collapse-button {
-  display: none !important;
+    display: none !important;
 }
 
 #rovalra-sidebar-collapse-icon {
-  display: none !important;
+    display: none !important;
 }
 
 .rovalra-sidebar-collapse-icon-overlay {
-  display: none !important;
+    display: none !important;
 }
 
 #header-menu-icon .roprime-nav-menu-button.menu-button,
-.container-fluid
-  .rbx-navbar-header
-  #header-menu-icon
-  .roprime-nav-menu-button.menu-button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  flex: 0 0 auto;
-  width: 40px;
-  height: 40px;
-  min-width: 40px;
-  padding: 8px;
-  margin: 0;
-  border: 0;
-  border-radius: 50%;
-  background-color: transparent;
-  color: var(--color-content-emphasis, currentColor);
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-  vertical-align: middle;
-  -webkit-tap-highlight-color: transparent;
-  transition: background-color 150ms cubic-bezier(0.4, 0, 0.2, 1);
+.container-fluid .rbx-navbar-header #header-menu-icon .roprime-nav-menu-button.menu-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    padding: 8px;
+    margin: 0;
+    border: 0;
+    border-radius: 50%;
+    background-color: transparent;
+    color: var(--color-content-emphasis, currentColor);
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    vertical-align: middle;
+    -webkit-tap-highlight-color: transparent;
+    transition: background-color 150ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 #header-menu-icon .roprime-nav-menu-button.menu-button:hover,
-.container-fluid
-  .rbx-navbar-header
-  #header-menu-icon
-  .roprime-nav-menu-button.menu-button:hover {
-  background-color: color-mix(
-    in srgb,
-    var(--color-content-emphasis, currentColor) 8%,
-    transparent
-  );
+.container-fluid .rbx-navbar-header #header-menu-icon .roprime-nav-menu-button.menu-button:hover {
+    background-color: color-mix(
+        in srgb,
+        var(--color-content-emphasis, currentColor) 8%,
+        transparent
+    );
 }
 
 #header-menu-icon .roprime-nav-menu-button .roprime-nav-menu-button-icon,
 #header-menu-icon .roprime-nav-menu-button .MuiSvgIcon-root,
-.container-fluid
-  .rbx-navbar-header
-  #header-menu-icon
-  .roprime-nav-menu-button
-  .MuiSvgIcon-root {
-  width: 24px;
-  height: 24px;
-  fill: currentColor;
-  flex-shrink: 0;
+.container-fluid .rbx-navbar-header #header-menu-icon .roprime-nav-menu-button .MuiSvgIcon-root {
+    width: 24px;
+    height: 24px;
+    fill: currentColor;
+    flex-shrink: 0;
 }
 
 #header-menu-icon .roprime-nav-menu-button .roprime-nav-menu-button-label,
-.container-fluid
-  .rbx-navbar-header
-  #header-menu-icon
-  .roprime-nav-menu-button
-  .roprime-nav-menu-button-label {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.container-fluid .rbx-navbar-header #header-menu-icon .roprime-nav-menu-button .roprime-nav-menu-button-label {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 #header-menu-icon .roprime-nav-menu-button .icon-nav-menu,
-.container-fluid
-  .rbx-navbar-header
-  #header-menu-icon
-  .roprime-nav-menu-button
-  .icon-nav-menu {
-  display: none;
+.container-fluid .rbx-navbar-header #header-menu-icon .roprime-nav-menu-button .icon-nav-menu {
+    display: none;
 }
 
 html.roprime-sidebar-collapse-menu-enabled div.rbx-navbar-header,
 body.roprime-sidebar-collapse-menu-enabled div.rbx-navbar-header {
-  justify-content: center !important;
-  display: flex !important;
+    justify-content: center !important;
+    display: flex !important;
 }
 
 .roprime-sidebar-size-control {
-  flex: 0 0 250px;
-  max-width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+    flex: 0 0 250px;
+    max-width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .roprime-sidebar-size-box {
-  width: 100%;
+    width: 100%;
 }
 
 .roprime-sidebar-size-rail {
-  width: 100%;
-  --roprime-sidebar-thumb-size: 14px;
+    width: 100%;
+    --roprime-sidebar-thumb-size: 14px;
 }
 
 .roprime-sidebar-size-slider {
-  width: calc(100% - var(--roprime-sidebar-thumb-size));
-  display: block;
-  appearance: none;
-  -webkit-appearance: none;
-  height: 6px;
-  border-radius: 999px;
-  background: color-mix(
-    in srgb,
-    var(--color-content-emphasis) 22%,
-    transparent
-  );
-  outline: none;
-  margin: 4px auto 10px;
+    width: calc(100% - var(--roprime-sidebar-thumb-size));
+    display: block;
+    appearance: none;
+    -webkit-appearance: none;
+    height: 6px;
+    border-radius: 999px;
+    background: color-mix(
+        in srgb,
+        var(--color-content-emphasis) 22%,
+        transparent
+    );
+    outline: none;
+    margin: 4px auto 10px;
 }
 
 .roprime-sidebar-size-slider::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  background: var(--color-content-emphasis);
-  border: 2px solid var(--color-surface-300);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.22);
-  cursor: pointer;
-  transition: transform 130ms ease;
+    -webkit-appearance: none;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--color-content-emphasis);
+    border: 2px solid var(--color-surface-300);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.22);
+    cursor: pointer;
+    transition: transform 130ms ease;
 }
 
 .roprime-sidebar-size-slider::-moz-range-thumb {
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  background: var(--color-content-emphasis);
-  border: 2px solid var(--color-surface-300);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.22);
-  cursor: pointer;
-  transition: transform 130ms ease;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--color-content-emphasis);
+    border: 2px solid var(--color-surface-300);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.22);
+    cursor: pointer;
+    transition: transform 130ms ease;
 }
 
 .roprime-sidebar-size-slider:active::-webkit-slider-thumb,
 .roprime-sidebar-size-slider:active::-moz-range-thumb {
-  transform: scale(1.08);
+    transform: scale(1.08);
 }
 
 .roprime-sidebar-size-ticks {
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
 }
 
 .roprime-sidebar-size-tick {
-  border: 1px solid
-    color-mix(in srgb, var(--color-content-emphasis) 22%, transparent);
-  border-radius: 999px;
-  background: var(--color-surface-300);
-  color: var(--color-content-emphasis);
-  font-size: 11px;
-  font-weight: 600;
-  line-height: 1;
-  padding: 6px 10px;
-  min-width: 64px;
-  text-align: center;
-  cursor: pointer;
-  transition:
-    border-color 120ms ease,
-    background 120ms ease,
-    color 120ms ease;
+    border: 1px solid color-mix(in srgb, var(--color-content-emphasis) 22%, transparent);
+    border-radius: 999px;
+    background: var(--color-surface-300);
+    color: var(--color-content-emphasis);
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 1;
+    padding: 6px 10px;
+    min-width: 64px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 120ms ease, background 120ms ease, color 120ms ease;
 }
 
 .roprime-sidebar-size-tick.is-active {
-  border-color: color-mix(
-    in srgb,
-    var(--color-content-emphasis) 40%,
-    transparent
-  );
-  background: var(--color-surface-300);
-  color: var(--color-content-emphasis);
+    border-color: color-mix(
+        in srgb,
+        var(--color-content-emphasis) 40%,
+        transparent
+    );
+    background: var(--color-surface-300);
+    color: var(--color-content-emphasis);
 }
 
 .roprime-language-dropdown {
-  position: relative;
-  flex: 0 0 190px;
-  width: 190px;
-  max-width: 190px;
-  min-width: 0;
-  box-sizing: border-box;
+    position: relative;
+    flex: 0 0 190px;
+    width: 190px;
+    max-width: 190px;
+    min-width: 0;
+    box-sizing: border-box;
 }
 
 .roprime-language-trigger {
-  box-sizing: border-box;
-  width: 100%;
-  min-width: 0 !important;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  border: 1px solid
-    color-mix(in srgb, var(--color-content-emphasis) 22%, transparent);
-  border-radius: 10px;
-  background: var(--color-surface-300);
-  color: var(--color-content-emphasis);
-  padding: 9px 11px;
-  cursor: pointer;
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 0 !important;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    border: 1px solid color-mix(in srgb, var(--color-content-emphasis) 22%, transparent);
+    border-radius: 10px;
+    background: var(--color-surface-300);
+    color: var(--color-content-emphasis);
+    padding: 9px 11px;
+    cursor: pointer;
 }
 
 .roprime-language-trigger [data-roprime-lang-current] {
-  min-width: 0;
-  flex: 1 1 auto;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  text-align: left;
+    min-width: 0;
+    flex: 1 1 auto;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-align: left;
 }
 
 .roprime-language-chevron {
-  width: 8px;
-  height: 8px;
-  border-right: 2px solid currentColor;
-  border-bottom: 2px solid currentColor;
-  transform: rotate(45deg);
-  transition: transform 120ms ease;
+    width: 8px;
+    height: 8px;
+    border-right: 2px solid currentColor;
+    border-bottom: 2px solid currentColor;
+    transform: rotate(45deg);
+    transition: transform 120ms ease;
 }
 
 .roprime-language-dropdown.is-open .roprime-language-chevron {
-  transform: rotate(-135deg);
+    transform: rotate(-135deg);
 }
 
 .roprime-language-menu {
-  position: absolute;
-  top: calc(100% + 6px);
-  left: 0;
-  right: 0;
-  z-index: 5;
-  border: 1px solid
-    color-mix(in srgb, var(--color-content-emphasis) 22%, transparent);
-  border-radius: 10px;
-  overflow: hidden;
-  background: var(--color-surface-300);
-  display: flex;
-  flex-direction: column;
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    right: 0;
+    z-index: 5;
+    border: 1px solid color-mix(in srgb, var(--color-content-emphasis) 22%, transparent);
+    border-radius: 10px;
+    overflow: hidden;
+    background: var(--color-surface-300);
+    display: flex;
+    flex-direction: column;
 }
 
 .roprime-language-menu[hidden] {
-  display: none !important;
+    display: none !important;
 }
 
 .roprime-language-option {
-  border: 0;
-  background: transparent;
-  color: var(--color-content-emphasis);
-  text-align: left;
-  padding: 9px 11px;
-  cursor: pointer;
+    border: 0;
+    background: transparent;
+    color: var(--color-content-emphasis);
+    text-align: left;
+    padding: 9px 11px;
+    cursor: pointer;
 }
 
 .roprime-language-option:hover {
-  background: color-mix(in srgb, var(--color-content-emphasis) 8%, transparent);
+    background: color-mix(in srgb, var(--color-content-emphasis) 8%, transparent);
 }
 
 #react-user-account-base:has(
-    #roprime-standalone-settings[style*="display: block"]
-  )
-  .content-container,
+    #roprime-standalone-settings[style*='display: block']
+)
+    .content-container,
 #react-user-account-base:has(
-    #roprime-standalone-settings[style*="display: block"]
-  )
-  #content-container,
+    #roprime-standalone-settings[style*='display: block']
+)
+    #content-container,
 #react-user-account-base:has(> #rp-settings-inner) .content-container,
 #react-user-account-base:has(> #rp-settings-inner) #content-container {
-  width: auto !important;
-  max-width: none !important;
-  flex-shrink: 1 !important;
-  min-width: 0 !important;
+    width: auto !important;
+    max-width: none !important;
+    flex-shrink: 1 !important;
+    min-width: 0 !important;
 }
 
 .roprime-accordion-master-switch {
-  margin-left: auto;
-  flex: 0 0 auto;
+    margin-left: auto;
+    flex: 0 0 auto;
 }
 
 .roprime-toggle-row .roprime-switch,
 .roprime-accordion-header .roprime-switch {
-  margin-right: 14px;
+    margin-right: 14px;
 }
 
 .roprime-toggle-copy {
-  min-width: 0;
-  padding-left: 4px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: flex-start;
-  text-align: left;
+    min-width: 0;
+    padding-left: 4px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    text-align: left;
 }
 
 .roprime-toggle-title {
-  color: var(--color-content-emphasis);
-  font-weight: 400;
-  font-size: 14px;
-  line-height: 1.35;
+    color: var(--color-content-emphasis);
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 1.35;
 }
 
 .roprime-toggle-desc {
-  margin-top: 6px;
-  color: var(--color-content-default);
-  font-size: 12px;
-  line-height: 1.4;
+    margin-top: 6px;
+    color: var(--color-content-default);
+    font-size: 12px;
+    line-height: 1.4;
 }
 
 .roprime-corner {
-  display: none;
+    display: none;
 }
 
 .roprime-corner-top-left {
-  top: 8px;
-  left: 8px;
-  border-right: 0;
-  border-bottom: 0;
+    top: 8px;
+    left: 8px;
+    border-right: 0;
+    border-bottom: 0;
 }
 
 .roprime-corner-top-right {
-  top: 8px;
-  right: 8px;
-  border-left: 0;
-  border-bottom: 0;
+    top: 8px;
+    right: 8px;
+    border-left: 0;
+    border-bottom: 0;
 }
 
 .roprime-corner-bottom-left {
-  bottom: 8px;
-  left: 8px;
-  border-top: 0;
-  border-right: 0;
+    bottom: 8px;
+    left: 8px;
+    border-top: 0;
+    border-right: 0;
 }
 
 .roprime-corner-bottom-right {
-  right: 8px;
-  bottom: 8px;
-  border-top: 0;
-  border-left: 0;
+    right: 8px;
+    bottom: 8px;
+    border-top: 0;
+    border-left: 0;
 }
 
 .roprime-groups-setting-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  border-radius: 12px;
-  border: 1px solid
-    color-mix(in srgb, var(--color-content-emphasis) 22%, transparent);
-  background: var(--color-surface-300);
-  padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    border-radius: 12px;
+    border: 1px solid color-mix(in srgb, var(--color-content-emphasis) 22%, transparent);
+    background: var(--color-surface-300);
+    padding: 14px 16px;
 }
 
 .roprime-experiences-setting-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  border-radius: 12px;
-  border: 1px solid
-    color-mix(in srgb, var(--color-content-emphasis) 22%, transparent);
-  background: var(--color-surface-300);
-  padding: 14px 16px;
-  margin-top: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    border-radius: 12px;
+    border: 1px solid color-mix(in srgb, var(--color-content-emphasis) 22%, transparent);
+    background: var(--color-surface-300);
+    padding: 14px 16px;
+    margin-top: 12px;
 }
 
 .roprime-groups-setting-copy {
-  min-width: 0;
+    min-width: 0;
 }
 
 .roprime-experiences-setting-copy {
-  min-width: 0;
+    min-width: 0;
 }
 
 .roprime-groups-setting-title {
-  color: var(--color-content-emphasis);
-  font-weight: 600;
-  line-height: 1.3;
+    color: var(--color-content-emphasis);
+    font-weight: 600;
+    line-height: 1.3;
 }
 
 .roprime-experiences-setting-title {
-  color: var(--color-content-emphasis);
-  font-weight: 600;
-  line-height: 1.3;
+    color: var(--color-content-emphasis);
+    font-weight: 600;
+    line-height: 1.3;
 }
 
 .roprime-groups-setting-desc {
-  margin-top: 4px;
-  color: var(--color-content-default);
-  font-size: 12px;
+    margin-top: 4px;
+    color: var(--color-content-default);
+    font-size: 12px;
 }
 
 .roprime-experiences-setting-desc {
-  margin-top: 4px;
-  color: var(--color-content-default);
-  font-size: 12px;
+    margin-top: 4px;
+    color: var(--color-content-default);
+    font-size: 12px;
 }
 
 .roprime-switch {
-  position: relative;
-  width: 44px;
-  height: 24px;
-  flex: 0 0 auto;
-  display: inline-block;
+    position: relative;
+    width: 44px;
+    height: 24px;
+    flex: 0 0 auto;
+    display: inline-block;
 }
 
 .roprime-switch input {
-  opacity: 0;
-  width: 0;
-  height: 0;
+    opacity: 0;
+    width: 0;
+    height: 0;
 }
 
 .roprime-switch-slider {
-  position: absolute;
-  inset: 0;
-  border-radius: 999px;
-  border: 1px solid
-    color-mix(in srgb, var(--color-content-emphasis) 22%, transparent);
-  background: var(--color-surface-300);
-  transition:
-    background-color 120ms ease,
-    border-color 120ms ease;
+    position: absolute;
+    inset: 0;
+    border-radius: 999px;
+    border: 1px solid color-mix(in srgb, var(--color-content-emphasis) 22%, transparent);
+    background: var(--color-surface-300);
+    transition: background-color 120ms ease, border-color 120ms ease;
 }
 
 .roprime-switch-slider::before {
-  content: "";
-  position: absolute;
-  width: 18px;
-  height: 18px;
-  left: 2px;
-  top: 2px;
-  border-radius: 50%;
-  background: var(--color-content-emphasis);
-  transition: transform 120ms ease;
+    content: '';
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    left: 2px;
+    top: 2px;
+    border-radius: 50%;
+    background: var(--color-content-emphasis);
+    transition: transform 120ms ease;
 }
 
 .roprime-switch input:checked + .roprime-switch-slider {
-  background: var(--color-surface-300);
-  border-color: color-mix(
-    in srgb,
-    var(--color-content-emphasis) 40%,
-    transparent
-  );
+    background: var(--color-surface-300);
+    border-color: color-mix(
+        in srgb,
+        var(--color-content-emphasis) 40%,
+        transparent
+    );
 }
 
 .roprime-switch input:checked + .roprime-switch-slider::before {
-  transform: translateX(20px);
+    transform: translateX(20px);
 }
 
 #roprime-standalone-settings {
-  display: none;
-  margin-top: 8px;
+    display: none;
+    margin-top: 8px;
 }
 
 @media (max-width: 992px) {
-  .roprime-settings-wrapper {
-    overflow-x: hidden !important;
-    max-width: 100% !important;
-    box-sizing: border-box !important;
-  }
+    .roprime-settings-wrapper {
+        overflow-x: hidden !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+    }
 
-  .roprime-settings-nav {
-    justify-content: center !important;
-    row-gap: 10px !important;
-  }
+    .roprime-settings-nav {
+        justify-content: center !important;
+        row-gap: 10px !important;
+    }
 
-  .roprime-settings-main {
-    max-width: 100% !important;
-    overflow-x: hidden !important;
-  }
+    .roprime-settings-main {
+        max-width: 100% !important;
+        overflow-x: hidden !important;
+    }
 }
 
 @media (max-width: 991px) {
-  html.roprime-classic-left-nav-on .rbx-header .rbx-navbar-header,
-  body.roprime-classic-left-nav-on .rbx-header .rbx-navbar-header {
-    margin: 0 5px;
-  }
+    html.roprime-classic-left-nav-on .rbx-header .rbx-navbar-header,
+    body.roprime-classic-left-nav-on .rbx-header .rbx-navbar-header {
+        margin: 0 5px;
+    }
 }
 
 @media (max-width: 1199px) {
-  html.roprime-classic-left-nav-on .rbx-header .rbx-navbar-header,
-  body.roprime-classic-left-nav-on .rbx-header .rbx-navbar-header {
-    margin: 0;
-  }
+    html.roprime-classic-left-nav-on .rbx-header .rbx-navbar-header,
+    body.roprime-classic-left-nav-on .rbx-header .rbx-navbar-header {
+        margin: 0;
+    }
 }
 
 html.roprime-classic-left-nav-on .rbx-header .rbx-navbar-header,
 body.roprime-classic-left-nav-on .rbx-header .rbx-navbar-header {
-  z-index: 100;
-  float: left;
-  max-width: 76px;
-  margin: 0 5px;
-  position: relative;
+    z-index: 100;
+    float: left;
+    max-width: 76px;
+    margin: 0 5px;
+    position: relative;
 }
 
 .roprime-search-ban-field {
-  align-items: flex-start;
+    align-items: flex-start;
 }
 
 .roprime-search-ban-controls {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  width: min(100%, 420px);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    width: min(100%, 420px);
 }
 
 .roprime-search-ban-input {
-  flex: 1 1 180px;
-  min-width: 0;
-  height: 40px;
-  padding: 0 12px;
-  border: 1px solid
-    color-mix(in srgb, var(--color-content-emphasis) 18%, transparent);
-  border-radius: 10px;
-  background: var(--color-surface-100, #fff);
-  color: var(--color-content-default);
-  font: inherit;
+    flex: 1 1 180px;
+    min-width: 0;
+    height: 40px;
+    padding: 0 12px;
+    border: 1px solid color-mix(in srgb, var(--color-content-emphasis) 18%, transparent);
+    border-radius: 10px;
+    background: var(--color-surface-100, #fff);
+    color: var(--color-content-default);
+    font: inherit;
 }
 
 .roprime-search-ban-input:focus-visible {
-  outline: 2px solid var(--color-focus, #005cc8);
-  outline-offset: 1px;
+    outline: 2px solid var(--color-focus, #005cc8);
+    outline-offset: 1px;
 }
 
 .roprime-search-ban-add-btn {
-  flex: 0 0 auto;
-  min-width: 96px;
+    flex: 0 0 auto;
+    min-width: 96px;
 }

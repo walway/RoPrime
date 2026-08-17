@@ -2,105 +2,105 @@
 :root.dark-theme,
 html.dark-theme,
 body.dark-theme,
-:root:has(meta[name="theme-color"][content="#111216"]),
-:root[color-scheme="dark"] {
-  --rp-ui-text-primary: #f4f4f6;
-  --rp-ui-text-secondary: #d2d4dc;
-  --rp-ui-text-muted: #b8bbc6;
-  --rp-ui-panel-bg: #2a2d34;
-  --rp-ui-accent: #3d6bff;
-  --rp-ui-page-bg: #141418;
-  --rp-ui-control-bg: rgba(210, 220, 248, 0.11);
-  --rp-ui-border: rgba(255, 255, 255, 0.18);
-  --rp-ui-icon-muted: #b8bbc6;
-  --rp-ui-profile-header: #1a1c22;
-  --rp-ui-profile-gradient:
-    linear-gradient(
-      91deg,
-      rgba(20, 20, 24, 0.22) 6%,
-      rgba(255, 255, 255, 0.14) 48%,
-      rgba(20, 20, 24, 0.22) 94%
+:root:has(meta[name='theme-color'][content='#111216']),
+:root[color-scheme='dark'] {
+    --rp-ui-text-primary: #f4f4f6;
+    --rp-ui-text-secondary: #d2d4dc;
+    --rp-ui-text-muted: #b8bbc6;
+    --rp-ui-panel-bg: #2a2d34;
+    --rp-ui-accent: #3d6bff;
+    --rp-ui-page-bg: #141418;
+    --rp-ui-control-bg: rgba(210, 220, 248, 0.11);
+    --rp-ui-border: rgba(255, 255, 255, 0.18);
+    --rp-ui-icon-muted: #b8bbc6;
+    --rp-ui-profile-header: #1a1c22;
+    --rp-ui-profile-gradient:
+        linear-gradient(
+        91deg,
+        rgba(20, 20, 24, 0.22) 6%,
+        rgba(255, 255, 255, 0.14) 48%,
+        rgba(20, 20, 24, 0.22) 94%
     ),
-    var(--rp-ui-profile-header);
-  --rp-ui-profile-fade: linear-gradient(
-    rgba(20, 20, 24, 0) 0%,
-    rgba(20, 20, 24, 0.48) 45%,
-    rgba(20, 20, 24, 0.82) 70%,
-    var(--rp-ui-page-bg) 90%,
-    var(--rp-ui-page-bg) 100%
-  );
-  --rp-ui-icon-blocked: #65676b;
+        var(--rp-ui-profile-header);
+    --rp-ui-profile-fade: linear-gradient(
+        rgba(20, 20, 24, 0) 0%,
+        rgba(20, 20, 24, 0.48) 45%,
+        rgba(20, 20, 24, 0.82) 70%,
+        var(--rp-ui-page-bg) 90%,
+        var(--rp-ui-page-bg) 100%
+    );
+    --rp-ui-icon-blocked: #65676b;
 }
 
 :root:has(.light-theme),
 :root.light-theme,
 html.light-theme,
 body.light-theme,
-:root:has(meta[name="theme-color"][content="#F9F9F9"]),
-:root[color-scheme="light"] {
-  --rp-ui-text-primary: #1e2229;
-  --rp-ui-text-secondary: #4a5060;
-  --rp-ui-text-muted: #6c7183;
-  --rp-ui-panel-bg: #f5f6f8;
-  --rp-ui-accent: #3d6bff;
-  --rp-ui-page-bg: #ffffff;
-  --rp-ui-control-bg: rgba(28, 38, 78, 0.1);
-  --rp-ui-border: rgba(0, 0, 0, 0.18);
-  --rp-ui-icon-muted: #6c7183;
-  --rp-ui-profile-header: #f5f6f8;
-  --rp-ui-profile-gradient:
-    linear-gradient(
-      91deg,
-      rgba(24, 24, 28, 0.04) 6%,
-      rgba(255, 255, 255, 0.12) 48%,
-      rgba(24, 24, 28, 0.04) 94%
+:root:has(meta[name='theme-color'][content='#F9F9F9']),
+:root[color-scheme='light'] {
+    --rp-ui-text-primary: #1e2229;
+    --rp-ui-text-secondary: #4a5060;
+    --rp-ui-text-muted: #6c7183;
+    --rp-ui-panel-bg: #f5f6f8;
+    --rp-ui-accent: #3d6bff;
+    --rp-ui-page-bg: #ffffff;
+    --rp-ui-control-bg: rgba(28, 38, 78, 0.1);
+    --rp-ui-border: rgba(0, 0, 0, 0.18);
+    --rp-ui-icon-muted: #6c7183;
+    --rp-ui-profile-header: #f5f6f8;
+    --rp-ui-profile-gradient:
+        linear-gradient(
+        91deg,
+        rgba(24, 24, 28, 0.04) 6%,
+        rgba(255, 255, 255, 0.12) 48%,
+        rgba(24, 24, 28, 0.04) 94%
     ),
-    var(--rp-ui-profile-header);
-  --rp-ui-profile-fade: linear-gradient(
-    rgba(255, 255, 255, 0) 0%,
-    rgba(255, 255, 255, 0.48) 45%,
-    rgba(255, 255, 255, 0.84) 70%,
-    var(--rp-ui-page-bg) 90%,
-    var(--rp-ui-page-bg) 100%
-  );
-  --rp-ui-icon-blocked: #ffffff;
+        var(--rp-ui-profile-header);
+    --rp-ui-profile-fade: linear-gradient(
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 0.48) 45%,
+        rgba(255, 255, 255, 0.84) 70%,
+        var(--rp-ui-page-bg) 90%,
+        var(--rp-ui-page-bg) 100%
+    );
+    --rp-ui-icon-blocked: #ffffff;
 }
 
 :root:is(.dark-theme.age-kids-theme, .dark-theme.age-kids-variant1-theme),
 html:is(.dark-theme.age-kids-theme, .dark-theme.age-kids-variant1-theme),
 body:is(.dark-theme.age-kids-theme, .dark-theme.age-kids-variant1-theme),
 :root:has(:is(.dark-theme.age-kids-theme, .dark-theme.age-kids-variant1-theme)),
-:root:has(meta[name="theme-color"][content="#00176b"]),
-:root[color-scheme="dark"] {
-  /* empty */
+:root:has(meta[name='theme-color'][content='#00176b']),
+:root[color-scheme='dark'] {
+    /* empty */
 }
 
 :root:is(.light-theme.age-kids-theme, .light-theme.age-kids-variant1-theme),
 html:is(.light-theme.age-kids-theme, .light-theme.age-kids-variant1-theme),
 body:is(.light-theme.age-kids-theme, .light-theme.age-kids-variant1-theme),
 :root:has(
-  :is(.light-theme.age-kids-theme, .light-theme.age-kids-variant1-theme)
+    :is(.light-theme.age-kids-theme, .light-theme.age-kids-variant1-theme)
 ) {
-  /* empty */
+    /* empty */
 }
 
 :root:has(.light-theme):has(.age-13-plus-theme),
 html.light-theme.age-13-plus-theme,
 body.light-theme.age-13-plus-theme {
-  /* empty */
+    /* empty */
 }
 
 :root:has(.dark-theme):has(.age-13-plus-theme),
 html.dark-theme.age-13-plus-theme,
 body.dark-theme.age-13-plus-theme {
-  /* empty */
+    /* empty */
 }
 
 .roprime-settings-wrapper,
 #react-user-account-base > #rp-settings-inner.roprime-settings-wrapper {
-  color: var(--color-content-emphasis);
+    color: var(--color-content-emphasis);
 }
 
 .roprime-custom-css-editor-host {
-  color: #adbac7;
+    color: #adbac7;
 }

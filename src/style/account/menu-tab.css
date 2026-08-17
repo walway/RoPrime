@@ -1,23 +1,23 @@
 #roprime-settings-tab .menu-option-content {
-  display: flex !important;
-  align-items: center !important;
-  justify-content: flex-start !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
 
-  width: 160px !important;
-  height: 33px !important;
-  padding: 9px 5px 9px 9px !important;
-  box-sizing: border-box !important;
+    width: 160px !important;
+    height: 33px !important;
+    padding: 9px 5px 9px 9px !important;
+    box-sizing: border-box !important;
 }
 
 #roprime-settings-tab .menu-option-content .menu-text {
-  font-size: 12px;
+    font-size: 12px;
 }
 
 #roprime-settings-tab .menu-option-content .roprime-menu-icon {
-  width: 15px;
-  height: 15px;
-  min-width: 15px;
-  min-height: 15px;
-  margin-right: 6px;
-  object-fit: contain;
+    width: 15px;
+    height: 15px;
+    min-width: 15px;
+    min-height: 15px;
+    margin-right: 6px;
+    object-fit: contain;
 }

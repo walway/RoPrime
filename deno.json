@@ -1,0 +1,26 @@
+{
+  "tasks": {
+    "build": "deno run -A tasks/build.js"
+  },
+  "imports": {
+    "@lottiefiles/dotlottie-web": "npm:@lottiefiles/dotlottie-web@^0.79.0",
+    "@supabase/supabase-js": "npm:@supabase/supabase-js@^2.112.3",
+    "adm-zip": "npm:adm-zip@^0.6.0",
+    "chalk": "npm:chalk@^6.0.0",
+    "dotenv": "npm:dotenv@^17.4.2",
+    "glob": "npm:glob@^13.0.6",
+    "lottie-web": "npm:lottie-web@^5.13.0",
+    "prettier": "npm:prettier@^3.9.6",
+    "prism-code-editor": "npm:prism-code-editor@^5.3.0",
+    "react": "npm:react@^19.2.8",
+    "react-dom": "npm:react-dom@^19.2.8"
+  },
+  "fmt": {
+    "indentWidth": 4,
+    "lineWidth": 120,
+    "useTabs": false,
+    "semiColons": false,
+    "singleQuote": true,
+    "include": ["src", "tasks"]
+  }
+}

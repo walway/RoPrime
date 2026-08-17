@@ -1,10 +1,10 @@
-import { RP_SIDEBAR_COMPACT_STYLE_ID, settingsState } from "../core/core.js";
+import { RP_SIDEBAR_COMPACT_STYLE_ID, settingsState } from '../core/core.js'
 
-const RP_LEFTNAV_OFFICIAL_STORE_BTN_CLASS = "roprime-leftnav-official-store";
-const RP_LEFTNAV_PROFILE_LI_CLASS = "roprime-leftnav-profile";
+const RP_LEFTNAV_OFFICIAL_STORE_BTN_CLASS = 'roprime-leftnav-official-store'
+const RP_LEFTNAV_PROFILE_LI_CLASS = 'roprime-leftnav-profile'
 
-const SIDEBAR_COMPACT_RAIL_PX = 82;
-const SIDEBAR_COMPACT_ICON_PX = 48;
+const SIDEBAR_COMPACT_RAIL_PX = 82
+const SIDEBAR_COMPACT_ICON_PX = 48
 
 const SIDEBAR_COMPACT_CSS = `
 body .no-gutter-ads.logged-in.left-nav-new-width {
@@ -359,87 +359,87 @@ body.roprime-sidebar-collapse-menu-enabled div.rbx-navbar-header {
   display: flex !important;
 }
 
-`.trim();
+`.trim()
 
-let lastOfficialStoreBtn = null;
-let lastOfficialStoreIconOnly = null;
+let lastOfficialStoreBtn = null
+let lastOfficialStoreIconOnly = null
 
 function tagOfficialStoreLeftNavButton() {
-  const iconOnly = settingsState.sidebarIconsOnlyEnabled;
-  const nav = document.querySelector(".left-nav.fixed");
-  if (!(nav instanceof HTMLElement)) return;
-  const icon = nav.querySelector("button .icon-regular-building-store");
-  const btn = icon instanceof Element ? icon.closest("button") : null;
-  if (!(btn instanceof HTMLButtonElement)) return;
-  if (btn === lastOfficialStoreBtn && iconOnly === lastOfficialStoreIconOnly)
-    return;
-  lastOfficialStoreBtn = btn;
-  lastOfficialStoreIconOnly = iconOnly;
-  if (iconOnly) btn.classList.add(RP_LEFTNAV_OFFICIAL_STORE_BTN_CLASS);
-  else btn.classList.remove(RP_LEFTNAV_OFFICIAL_STORE_BTN_CLASS);
+    const iconOnly = settingsState.sidebarIconsOnlyEnabled
+    const nav = document.querySelector('.left-nav.fixed')
+    if (!(nav instanceof HTMLElement)) return
+    const icon = nav.querySelector('button .icon-regular-building-store')
+    const btn = icon instanceof Element ? icon.closest('button') : null
+    if (!(btn instanceof HTMLButtonElement)) return
+    if (btn === lastOfficialStoreBtn && iconOnly === lastOfficialStoreIconOnly) {
+        return
+    }
+    lastOfficialStoreBtn = btn
+    lastOfficialStoreIconOnly = iconOnly
+    if (iconOnly) btn.classList.add(RP_LEFTNAV_OFFICIAL_STORE_BTN_CLASS)
+    else btn.classList.remove(RP_LEFTNAV_OFFICIAL_STORE_BTN_CLASS)
 }
 
-let lastProfileNavLi = null;
-let lastProfileTagIconOnly = null;
+let lastProfileNavLi = null
+let lastProfileTagIconOnly = null
 
 function tagProfileLeftNavItem() {
-  const iconOnly = settingsState.sidebarIconsOnlyEnabled;
-  if (!iconOnly) {
-    if (lastProfileTagIconOnly === false && !lastProfileNavLi) return;
-    document
-      .querySelectorAll(`.left-nav.fixed li.${RP_LEFTNAV_PROFILE_LI_CLASS}`)
-      .forEach((el) => {
-        el.classList.remove(RP_LEFTNAV_PROFILE_LI_CLASS);
-      });
-    lastProfileNavLi = null;
-    lastProfileTagIconOnly = false;
-    return;
-  }
-  const nav = document.querySelector(".left-nav.fixed");
-  if (!(nav instanceof HTMLElement)) return;
+    const iconOnly = settingsState.sidebarIconsOnlyEnabled
+    if (!iconOnly) {
+        if (lastProfileTagIconOnly === false && !lastProfileNavLi) return
+        document
+            .querySelectorAll(`.left-nav.fixed li.${RP_LEFTNAV_PROFILE_LI_CLASS}`)
+            .forEach((el) => {
+                el.classList.remove(RP_LEFTNAV_PROFILE_LI_CLASS)
+            })
+        lastProfileNavLi = null
+        lastProfileTagIconOnly = false
+        return
+    }
+    const nav = document.querySelector('.left-nav.fixed')
+    if (!(nav instanceof HTMLElement)) return
 
-  let matched = null;
-  for (const li of nav.querySelectorAll("li")) {
-    const a = li.querySelector("a[href]");
-    if (!(a instanceof HTMLAnchorElement)) continue;
-    const href = a.getAttribute("href") || "";
-    const pathOnly = href.replace(/^https?:\/\/[^/]+/i, "");
-    const looksLikeProfile =
-      /\/users\/\d+/i.test(pathOnly) ||
-      /\/my\/account\b/i.test(pathOnly) ||
-      /\/my\/profile\b/i.test(pathOnly);
-    if (!looksLikeProfile) continue;
-    if (!a.querySelector("img")) continue;
-    matched = li;
-    break;
-  }
+    let matched = null
+    for (const li of nav.querySelectorAll('li')) {
+        const a = li.querySelector('a[href]')
+        if (!(a instanceof HTMLAnchorElement)) continue
+        const href = a.getAttribute('href') || ''
+        const pathOnly = href.replace(/^https?:\/\/[^/]+/i, '')
+        const looksLikeProfile = /\/users\/\d+/i.test(pathOnly) ||
+            /\/my\/account\b/i.test(pathOnly) ||
+            /\/my\/profile\b/i.test(pathOnly)
+        if (!looksLikeProfile) continue
+        if (!a.querySelector('img')) continue
+        matched = li
+        break
+    }
 
-  if (matched === lastProfileNavLi && lastProfileTagIconOnly === true) return;
-  lastProfileNavLi = matched;
-  lastProfileTagIconOnly = true;
+    if (matched === lastProfileNavLi && lastProfileTagIconOnly === true) return
+    lastProfileNavLi = matched
+    lastProfileTagIconOnly = true
 
-  for (const li of nav.querySelectorAll("li")) {
-    if (li === matched) li.classList.add(RP_LEFTNAV_PROFILE_LI_CLASS);
-    else li.classList.remove(RP_LEFTNAV_PROFILE_LI_CLASS);
-  }
+    for (const li of nav.querySelectorAll('li')) {
+        if (li === matched) li.classList.add(RP_LEFTNAV_PROFILE_LI_CLASS)
+        else li.classList.remove(RP_LEFTNAV_PROFILE_LI_CLASS)
+    }
 }
 
 export function updateSidebarCompactVisibility() {
-  const existingStyle = document.getElementById(RP_SIDEBAR_COMPACT_STYLE_ID);
-  if (!settingsState.sidebarIconsOnlyEnabled) {
-    if (existingStyle instanceof HTMLStyleElement) existingStyle.remove();
-    return;
-  }
-  let style = existingStyle;
-  if (!(style instanceof HTMLStyleElement)) {
-    style = document.createElement("style");
-    style.id = RP_SIDEBAR_COMPACT_STYLE_ID;
-  }
-  style.textContent = SIDEBAR_COMPACT_CSS;
-  document.documentElement.appendChild(style);
+    const existingStyle = document.getElementById(RP_SIDEBAR_COMPACT_STYLE_ID)
+    if (!settingsState.sidebarIconsOnlyEnabled) {
+        if (existingStyle instanceof HTMLStyleElement) existingStyle.remove()
+        return
+    }
+    let style = existingStyle
+    if (!(style instanceof HTMLStyleElement)) {
+        style = document.createElement('style')
+        style.id = RP_SIDEBAR_COMPACT_STYLE_ID
+    }
+    style.textContent = SIDEBAR_COMPACT_CSS
+    document.documentElement.appendChild(style)
 }
 
 export function syncSidebarCompactDecorations() {
-  tagOfficialStoreLeftNavButton();
-  tagProfileLeftNavItem();
+    tagOfficialStoreLeftNavButton()
+    tagProfileLeftNavItem()
 }

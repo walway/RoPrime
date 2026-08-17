@@ -1,55 +1,55 @@
 {
-  "manifest_version": 3,
-  "name": "RoPrime - New Era of Roblox website",
-  "version": "1.5.0",
-  "description": "RoPrime adds useful design-focused features and more.",
-  "browser_specific_settings": {
-    "gecko": {
-      "id": "roprime.contact@proton.me",
-      "strict_min_version": "109.0"
-    }
-  },
-  "permissions": ["storage", "management"],
-  "host_permissions": [
-    "*://*.supabase.co/*",
-    "https://users.roblox.com/*",
-    "https://thumbnails.roblox.com/*",
-    "https://friends.roblox.com/*",
-    "https://presence.roblox.com/*",
-    "https://walway.github.io/*"
-  ],
-  "background": {
-    "scripts": ["background.js"]
-  },
-  "action": {
-    "default_title": "RoPrime"
-  },
-  "icons": {
-    "16": "resources/icons/icon16.png",
-    "32": "resources/icons/icon32.png",
-    "48": "resources/icons/icon48.png",
-    "64": "resources/icons/icon64.png",
-    "128": "resources/icons/icon128.png"
-  },
-  "web_accessible_resources": [
-    {
-      "resources": [
-        "resources/roprime-icon.png",
-        "resources/RblxPlusLogo.webp",
-        "resources/logo.svg",
-        "src/strings/**/*",
-        "resources/data/*",
-        "resources/badges/*"
-      ],
-      "matches": ["*://www.roblox.com/*", "*://roblox.com/*"]
-    }
-  ],
-  "content_scripts": [
-    {
-      "matches": ["*://www.roblox.com/*", "*://roblox.com/*"],
-      "js": ["content.js"],
-      "css": ["src/style/index.css"],
-      "run_at": "document_start"
-    }
-  ]
+    "manifest_version": 3,
+    "name": "RoPrime - New Era of Roblox website",
+    "version": "1.5.0",
+    "description": "RoPrime adds useful design-focused features and more.",
+    "browser_specific_settings": {
+        "gecko": {
+            "id": "roprime.contact@proton.me",
+            "strict_min_version": "109.0"
+        }
+    },
+    "permissions": ["storage", "management"],
+    "host_permissions": [
+        "*://*.supabase.co/*",
+        "https://users.roblox.com/*",
+        "https://thumbnails.roblox.com/*",
+        "https://friends.roblox.com/*",
+        "https://presence.roblox.com/*",
+        "https://walway.github.io/*"
+    ],
+    "background": {
+        "scripts": ["background.js"]
+    },
+    "action": {
+        "default_title": "RoPrime"
+    },
+    "icons": {
+        "16": "resources/icons/icon16.png",
+        "32": "resources/icons/icon32.png",
+        "48": "resources/icons/icon48.png",
+        "64": "resources/icons/icon64.png",
+        "128": "resources/icons/icon128.png"
+    },
+    "web_accessible_resources": [
+        {
+            "resources": [
+                "resources/roprime-icon.png",
+                "resources/RblxPlusLogo.webp",
+                "resources/logo.svg",
+                "src/strings/**/*",
+                "resources/data/*",
+                "resources/badges/*"
+            ],
+            "matches": ["*://www.roblox.com/*", "*://roblox.com/*"]
+        }
+    ],
+    "content_scripts": [
+        {
+            "matches": ["*://www.roblox.com/*", "*://roblox.com/*"],
+            "js": ["content.js"],
+            "css": ["src/style/index.css"],
+            "run_at": "document_start"
+        }
+    ]
 }

@@ -1,17 +1,17 @@
-@import "./main.css";
-@import "./account/menu-tab.css";
-@import "./settings/plugins-panel.css";
-@import "./settings/overlay.css";
-@import "./layout/chrome.css";
-@import "./welcome/welcome.css";
-@import "./navigation/old-nav.css";
-@import "./settings/light-overrides.css";
-@import "./settings/custom-css.css";
-@import "./profile/cosmetics-shop.css";
-@import "./profile/page-effects.css";
-@import "./profile/carousel-effects.css";
-@import "./profile/friend-list-effects.css";
-@import "./profile/friends-reimagined.css";
+@import './main.css';
+@import './account/menu-tab.css';
+@import './settings/plugins-panel.css';
+@import './settings/overlay.css';
+@import './layout/chrome.css';
+@import './welcome/welcome.css';
+@import './navigation/old-nav.css';
+@import './settings/light-overrides.css';
+@import './settings/custom-css.css';
+@import './profile/cosmetics-shop.css';
+@import './profile/page-effects.css';
+@import './profile/carousel-effects.css';
+@import './profile/friend-list-effects.css';
+@import './profile/friends-reimagined.css';
 
 /* latest */
-@import "./roblox/website.css";
+@import './roblox/website.css';
