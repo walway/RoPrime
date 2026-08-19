@@ -1,75 +1,93 @@
-html.roprime-account-settings-open #user-account > #react-user-account-base .content-container,
-html.roprime-account-settings-open #user-account > #react-user-account-base #content-container,
-html.roprime-account-settings-open #user-account > #react-user-account-base .menu-vertical,
-html.roprime-account-settings-open #user-account > #react-user-account-base .menu-vertical-container {
-    visibility: hidden !important;
-    opacity: 0 !important;
-    pointer-events: none !important;
+html.roprime-account-settings-open
+  #user-account
+  > #react-user-account-base
+  .content-container,
+html.roprime-account-settings-open
+  #user-account
+  > #react-user-account-base
+  #content-container,
+html.roprime-account-settings-open
+  #user-account
+  > #react-user-account-base
+  .menu-vertical,
+html.roprime-account-settings-open
+  #user-account
+  > #react-user-account-base
+  .menu-vertical-container {
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
 }
 
 #roprime-settings-host .menu-vertical,
 #roprime-settings-host .menu-vertical-container {
-    visibility: visible !important;
-    opacity: 1 !important;
-    pointer-events: auto !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
 }
 
 #react-user-account-base > #rp-settings-flat-inner.roprime-settings-flat {
-    max-width: none;
+  max-width: none;
 }
 
-#react-user-account-base > #rp-settings-flat-inner .roprime-accordion.is-open .roprime-accordion-body {
-    max-height: 520px;
+#react-user-account-base
+  > #rp-settings-flat-inner
+  .roprime-accordion.is-open
+  .roprime-accordion-body {
+  max-height: 520px;
 }
 
 .roprime-settings-select {
-    min-width: 140px;
-    border-radius: 10px;
-    border: 1px solid color-mix(in srgb, var(--color-content-emphasis) 22%, transparent);
-    background: var(--color-surface-300);
-    color: var(--color-content-emphasis);
-    padding: 8px 10px;
-    font-size: 13px;
-    font-weight: 600;
+  min-width: 140px;
+  border-radius: 10px;
+  border: 1px solid
+    color-mix(in srgb, var(--color-content-emphasis) 22%, transparent);
+  background: var(--color-surface-300);
+  color: var(--color-content-emphasis);
+  padding: 8px 10px;
+  font-size: 13px;
+  font-weight: 600;
 }
 
 .roprime-settings-textarea {
-    width: 100%;
-    resize: vertical;
-    min-height: 100px;
-    border-radius: 12px;
-    border: 1px solid color-mix(in srgb, var(--color-content-emphasis) 22%, transparent);
-    background: var(--color-surface-300);
-    color: var(--color-content-emphasis);
-    padding: 10px 12px;
-    font-size: 13px;
-    line-height: 1.4;
-    font-family: ui-monospace, 'Cascadia Mono', 'Segoe UI Mono', monospace;
+  width: 100%;
+  resize: vertical;
+  min-height: 100px;
+  border-radius: 12px;
+  border: 1px solid
+    color-mix(in srgb, var(--color-content-emphasis) 22%, transparent);
+  background: var(--color-surface-300);
+  color: var(--color-content-emphasis);
+  padding: 10px 12px;
+  font-size: 13px;
+  line-height: 1.4;
+  font-family: ui-monospace, "Cascadia Mono", "Segoe UI Mono", monospace;
 }
 
 .roprime-settings-primary-btn {
-    position: relative;
-    overflow: hidden;
-    align-self: flex-start;
-    border: 1px solid color-mix(in srgb, var(--color-content-emphasis) 22%, transparent);
-    border-radius: 12px;
-    padding: 10px 16px;
-    font-size: 14px;
-    font-weight: 700;
-    cursor: pointer;
-    color: var(--color-content-emphasis);
-    background: var(--color-surface-300);
+  position: relative;
+  overflow: hidden;
+  align-self: flex-start;
+  border: 1px solid
+    color-mix(in srgb, var(--color-content-emphasis) 22%, transparent);
+  border-radius: 12px;
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  color: var(--color-content-emphasis);
+  background: var(--color-surface-300);
 }
 
 .roprime-settings-primary-btn:hover:not(:disabled) {
-    border-color: color-mix(
-        in srgb,
-        var(--color-content-emphasis) 35%,
-        transparent
-    );
+  border-color: color-mix(
+    in srgb,
+    var(--color-content-emphasis) 35%,
+    transparent
+  );
 }
 
 .roprime-settings-primary-btn:disabled {
-    opacity: 0.45;
-    cursor: default;
+  opacity: 0.45;
+  cursor: default;
 }

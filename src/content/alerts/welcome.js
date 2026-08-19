@@ -1,80 +1,83 @@
-import { getStorageApi, isExtensionContextInvalidatedError } from '../core/core.js'
+import {
+  getStorageApi,
+  isExtensionContextInvalidatedError,
+} from "../core/core.js";
 
-export const RP_HOME_WELCOME_DISMISSED_KEY = 'rpHomeWelcomeDismissed'
+export const RP_HOME_WELCOME_DISMISSED_KEY = "rpHomeWelcomeDismissed";
 
-const WELCOME_ROOT_ID = 'roprime-home-welcome-root'
-const extensionApi = globalThis.browser || globalThis.chrome
+const WELCOME_ROOT_ID = "roprime-home-welcome-root";
+const extensionApi = globalThis.browser || globalThis.chrome;
 
-let welcomeKeydownHandler = null
-let storageDismissListenerAttached = false
-let welcomeDismissedCache = null
+let welcomeKeydownHandler = null;
+let storageDismissListenerAttached = false;
+let welcomeDismissedCache = null;
 
 function attachDismissStorageListener() {
-    if (storageDismissListenerAttached) return
-    if (!extensionApi?.storage?.onChanged) return
-    storageDismissListenerAttached = true
-    extensionApi.storage.onChanged.addListener((changes, area) => {
-        try {
-            if (area !== 'local') return
-            if (changes[RP_HOME_WELCOME_DISMISSED_KEY]?.newValue === true) {
-                welcomeDismissedCache = true
-                removeWelcomeIfPresent()
-            }
-        } catch (error) {
-            if (!isExtensionContextInvalidatedError(error)) throw error
-        }
-    })
+  if (storageDismissListenerAttached) return;
+  if (!extensionApi?.storage?.onChanged) return;
+  storageDismissListenerAttached = true;
+  extensionApi.storage.onChanged.addListener((changes, area) => {
+    try {
+      if (area !== "local") return;
+      if (changes[RP_HOME_WELCOME_DISMISSED_KEY]?.newValue === true) {
+        welcomeDismissedCache = true;
+        removeWelcomeIfPresent();
+      }
+    } catch (error) {
+      if (!isExtensionContextInvalidatedError(error)) throw error;
+    }
+  });
 }
 
 export function isRobloxHomePage() {
-    const raw = window.location.pathname || '/'
-    const normalized = raw.replace(/\/+$/, '') || '/'
-    if (normalized === '/home') return true
-    const parts = normalized.split('/').filter(Boolean)
-    return parts.length > 0 && parts[parts.length - 1].toLowerCase() === 'home'
+  const raw = window.location.pathname || "/";
+  const normalized = raw.replace(/\/+$/, "") || "/";
+  if (normalized === "/home") return true;
+  const parts = normalized.split("/").filter(Boolean);
+  return parts.length > 0 && parts[parts.length - 1].toLowerCase() === "home";
 }
 
 function removeWelcomeIfPresent() {
-    if (welcomeKeydownHandler) {
-        document.removeEventListener('keydown', welcomeKeydownHandler, true)
-        welcomeKeydownHandler = null
-    }
-    document.getElementById(WELCOME_ROOT_ID)?.remove()
+  if (welcomeKeydownHandler) {
+    document.removeEventListener("keydown", welcomeKeydownHandler, true);
+    welcomeKeydownHandler = null;
+  }
+  document.getElementById(WELCOME_ROOT_ID)?.remove();
 }
 
 function appendWelcomeWhenBodyReady(root) {
-    const mount = () => {
-        if (!document.body) return false
-        document.body.appendChild(root)
-        return true
-    }
-    if (mount()) return
+  const mount = () => {
+    if (!document.body) return false;
+    document.body.appendChild(root);
+    return true;
+  };
+  if (mount()) return;
 
-    const observer = new MutationObserver(() => {
-        if (!isRobloxHomePage()) {
-            observer.disconnect()
-            return
-        }
-        if (mount()) observer.disconnect()
-    })
-    observer.observe(document.documentElement, {
-        childList: true,
-        subtree: true,
-    })
+  const observer = new MutationObserver(() => {
+    if (!isRobloxHomePage()) {
+      observer.disconnect();
+      return;
+    }
+    if (mount()) observer.disconnect();
+  });
+  observer.observe(document.documentElement, {
+    childList: true,
+    subtree: true,
+  });
 }
 
 function persistWelcomeDismissed() {
-    welcomeDismissedCache = true
-    try {
-        const storage = getStorageApi()
-        if (storage) storage.set({ [RP_HOME_WELCOME_DISMISSED_KEY]: true })
-    } catch {
-        /* ignore */
-    }
+  welcomeDismissedCache = true;
+  try {
+    const storage = getStorageApi();
+    if (storage) storage.set({ [RP_HOME_WELCOME_DISMISSED_KEY]: true });
+  } catch {
+    /* ignore */
+  }
 }
 
 function buildWelcomeMarkup() {
-    return `
+  return `
 <div data-state="open" class="foundation-web-dialog-overlay padding-medium foundation-web-portal-zindex bg-common-backdrop" style="pointer-events: auto;" data-roprime-welcome-dismiss="backdrop">
   <div role="dialog" data-state="open" class="relative radius-large bg-surface-100 stroke-muted stroke-standard foundation-web-dialog-content shadow-transient-high" data-size="Medium" tabindex="-1" style="pointer-events: auto;">
     <div class="absolute foundation-web-dialog-close-container">
@@ -98,85 +101,85 @@ function buildWelcomeMarkup() {
     </div>
   </div>
 </div>
-`
+`;
 }
 
 function showWelcomeModal() {
-    if (document.getElementById(WELCOME_ROOT_ID)) return
+  if (document.getElementById(WELCOME_ROOT_ID)) return;
 
-    const root = document.createElement('div')
-    root.id = WELCOME_ROOT_ID
-    root.setAttribute('role', 'dialog')
-    root.setAttribute('aria-modal', 'true')
-    root.setAttribute('aria-labelledby', 'roprime-welcome-title')
-    root.innerHTML = buildWelcomeMarkup()
+  const root = document.createElement("div");
+  root.id = WELCOME_ROOT_ID;
+  root.setAttribute("role", "dialog");
+  root.setAttribute("aria-modal", "true");
+  root.setAttribute("aria-labelledby", "roprime-welcome-title");
+  root.innerHTML = buildWelcomeMarkup();
 
-    const dismiss = () => {
-        persistWelcomeDismissed()
-        removeWelcomeIfPresent()
-    }
+  const dismiss = () => {
+    persistWelcomeDismissed();
+    removeWelcomeIfPresent();
+  };
 
-    root.querySelector('.roprime-welcome-ok')?.addEventListener('click', dismiss)
-    root
-        .querySelector('.roprime-welcome-close')
-        ?.addEventListener('click', dismiss)
-    root
-        .querySelector("[data-roprime-welcome-dismiss='backdrop']")
-        ?.addEventListener('click', (event) => {
-            if (event.target === event.currentTarget) dismiss()
-        })
+  root.querySelector(".roprime-welcome-ok")?.addEventListener("click", dismiss);
+  root
+    .querySelector(".roprime-welcome-close")
+    ?.addEventListener("click", dismiss);
+  root
+    .querySelector("[data-roprime-welcome-dismiss='backdrop']")
+    ?.addEventListener("click", (event) => {
+      if (event.target === event.currentTarget) dismiss();
+    });
 
-    welcomeKeydownHandler = (event) => {
-        if (event.key === 'Escape') dismiss()
-    }
-    document.addEventListener('keydown', welcomeKeydownHandler, true)
+  welcomeKeydownHandler = (event) => {
+    if (event.key === "Escape") dismiss();
+  };
+  document.addEventListener("keydown", welcomeKeydownHandler, true);
 
-    appendWelcomeWhenBodyReady(root)
+  appendWelcomeWhenBodyReady(root);
 }
 
 export function syncHomeWelcomeModal() {
-    attachDismissStorageListener()
-    if (!isRobloxHomePage()) {
-        removeWelcomeIfPresent()
-        return
-    }
+  attachDismissStorageListener();
+  if (!isRobloxHomePage()) {
+    removeWelcomeIfPresent();
+    return;
+  }
 
-    if (welcomeDismissedCache === true) {
-        removeWelcomeIfPresent()
-        return
-    }
-    if (welcomeDismissedCache === false) {
-        showWelcomeModal()
-        return
-    }
+  if (welcomeDismissedCache === true) {
+    removeWelcomeIfPresent();
+    return;
+  }
+  if (welcomeDismissedCache === false) {
+    showWelcomeModal();
+    return;
+  }
 
-    const storage = getStorageApi()
-    if (!storage) {
-        welcomeDismissedCache = false
-        showWelcomeModal()
-        return
-    }
+  const storage = getStorageApi();
+  if (!storage) {
+    welcomeDismissedCache = false;
+    showWelcomeModal();
+    return;
+  }
 
-    try {
-        storage.get([RP_HOME_WELCOME_DISMISSED_KEY], (result) => {
-            try {
-                if (extensionApi?.runtime?.lastError) {
-                    if (isRobloxHomePage()) showWelcomeModal()
-                    return
-                }
-                if (!isRobloxHomePage()) return
-                if (result?.[RP_HOME_WELCOME_DISMISSED_KEY] === true) {
-                    welcomeDismissedCache = true
-                    removeWelcomeIfPresent()
-                    return
-                }
-                welcomeDismissedCache = false
-                showWelcomeModal()
-            } catch {
-                /* ignore */
-            }
-        })
-    } catch {
-        if (isRobloxHomePage()) showWelcomeModal()
-    }
+  try {
+    storage.get([RP_HOME_WELCOME_DISMISSED_KEY], (result) => {
+      try {
+        if (extensionApi?.runtime?.lastError) {
+          if (isRobloxHomePage()) showWelcomeModal();
+          return;
+        }
+        if (!isRobloxHomePage()) return;
+        if (result?.[RP_HOME_WELCOME_DISMISSED_KEY] === true) {
+          welcomeDismissedCache = true;
+          removeWelcomeIfPresent();
+          return;
+        }
+        welcomeDismissedCache = false;
+        showWelcomeModal();
+      } catch {
+        /* ignore */
+      }
+    });
+  } catch {
+    if (isRobloxHomePage()) showWelcomeModal();
+  }
 }

@@ -1,6 +1,6 @@
 export {
-    normalizeEquippedProfileEffects,
-    openRoPrimeSettingsOnAccountPage,
-    showRoPrimeSettingsPanel,
-    syncProfileSettingsRoute,
-} from './settingsPage.js'
+  normalizeEquippedProfileEffects,
+  openRoPrimeSettingsOnAccountPage,
+  showRoPrimeSettingsPanel,
+  syncProfileSettingsRoute,
+} from "./settingsPage.js";

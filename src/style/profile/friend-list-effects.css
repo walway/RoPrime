@@ -1,76 +1,97 @@
 li.list-item.avatar-card div.avatar.avatar-card-fullbody,
 .avatar-card-container div.avatar.avatar-card-fullbody,
 .user-item-clickable div.avatar.avatar-card-fullbody {
-    position: relative !important;
-    overflow: visible !important;
+  position: relative !important;
+  overflow: visible !important;
 }
 
-li.list-item.avatar-card div.avatar.avatar-card-fullbody > .roprime-friends-list-picture-effect,
-.avatar-card-container div.avatar.avatar-card-fullbody > .roprime-friends-list-picture-effect,
-.user-item-clickable div.avatar.avatar-card-fullbody > .roprime-friends-list-picture-effect {
-    position: absolute;
-    inset: 0;
-    z-index: 5;
-    width: 100%;
-    height: 100%;
-    margin: 0;
-    transform: none;
-    pointer-events: none;
-    overflow: hidden;
-    background: transparent !important;
-    background-color: transparent !important;
+li.list-item.avatar-card
+  div.avatar.avatar-card-fullbody
+  > .roprime-friends-list-picture-effect,
+.avatar-card-container
+  div.avatar.avatar-card-fullbody
+  > .roprime-friends-list-picture-effect,
+.user-item-clickable
+  div.avatar.avatar-card-fullbody
+  > .roprime-friends-list-picture-effect {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  transform: none;
+  pointer-events: none;
+  overflow: hidden;
+  background: transparent !important;
+  background-color: transparent !important;
 }
 
-li.list-item.avatar-card .roprime-friends-list-picture-effect .roprime-profile-effect-lottie,
-.avatar-card-container .roprime-friends-list-picture-effect .roprime-profile-effect-lottie,
-.user-item-clickable .roprime-friends-list-picture-effect .roprime-profile-effect-lottie {
-    position: relative;
-    z-index: 2;
-    width: 100%;
-    height: 100%;
-    min-width: 0;
-    min-height: 0;
-    aspect-ratio: 1;
-    overflow: hidden;
-    background: transparent !important;
-    background-color: transparent !important;
-    border-radius: inherit;
-    pointer-events: none;
+li.list-item.avatar-card
+  .roprime-friends-list-picture-effect
+  .roprime-profile-effect-lottie,
+.avatar-card-container
+  .roprime-friends-list-picture-effect
+  .roprime-profile-effect-lottie,
+.user-item-clickable
+  .roprime-friends-list-picture-effect
+  .roprime-profile-effect-lottie {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  aspect-ratio: 1;
+  overflow: hidden;
+  background: transparent !important;
+  background-color: transparent !important;
+  border-radius: inherit;
+  pointer-events: none;
 }
 
-li.list-item.avatar-card .roprime-friends-list-picture-effect .roprime-profile-effect-lottie iframe,
-.avatar-card-container .roprime-friends-list-picture-effect .roprime-profile-effect-lottie iframe,
-.user-item-clickable .roprime-friends-list-picture-effect .roprime-profile-effect-lottie iframe {
-    position: absolute;
-    inset: 0;
-    display: block;
-    width: 100%;
-    height: 100%;
-    border: 0;
-    background: transparent !important;
-    background-color: transparent !important;
-    color-scheme: normal;
-    transform: none;
-    transform-origin: center center;
-    pointer-events: none;
-    -webkit-user-select: none;
-    user-select: none;
+li.list-item.avatar-card
+  .roprime-friends-list-picture-effect
+  .roprime-profile-effect-lottie
+  iframe,
+.avatar-card-container
+  .roprime-friends-list-picture-effect
+  .roprime-profile-effect-lottie
+  iframe,
+.user-item-clickable
+  .roprime-friends-list-picture-effect
+  .roprime-profile-effect-lottie
+  iframe {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: transparent !important;
+  background-color: transparent !important;
+  color-scheme: normal;
+  transform: none;
+  transform-origin: center center;
+  pointer-events: none;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 li.list-item.avatar-card a.avatar-card-link,
 .avatar-card-container a.avatar-card-link,
 .user-item-clickable a.avatar-card-link {
-    position: relative;
-    z-index: 1;
+  position: relative;
+  z-index: 1;
 }
 
 li.list-item.avatar-card .thumbnail-2d-container.avatar-card-image img,
 .avatar-card-container .thumbnail-2d-container.avatar-card-image img,
 .user-item-clickable .thumbnail-2d-container.avatar-card-image img {
-    position: relative;
-    z-index: 2;
+  position: relative;
+  z-index: 2;
 }
 
-img[src*='AvatarHeadshot'] {
-    border-radius: 999px;
+img[src*="AvatarHeadshot"] {
+  border-radius: 999px;
 }

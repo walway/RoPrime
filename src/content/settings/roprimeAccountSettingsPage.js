@@ -1,6 +1,6 @@
-import { settingsT } from '../core/core.js'
+import { settingsT } from "../core/core.js";
 
 export function t(key) {
-    if (typeof key !== 'string' || !key) return ''
-    return settingsT(key)
+  if (typeof key !== "string" || !key) return "";
+  return settingsT(key);
 }

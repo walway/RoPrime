@@ -45,7 +45,7 @@ import {
 } from "./account/freeThemes.js";
 import { syncRickRollEasterEgg } from "./memes/rickRoll.js";
 
-const extensionApi = globalThis.browser || globalThis.chrome
+const extensionApi = globalThis.browser || globalThis.chrome;
 
 function installStorageSyncListener() {
   if (!extensionApi?.storage?.onChanged) return;
@@ -85,20 +85,20 @@ function installStorageSyncListener() {
 }
 
 function installHistoryListeners() {
-    const originalPushState = window.history.pushState
-    const originalReplaceState = window.history.replaceState
+  const originalPushState = window.history.pushState;
+  const originalReplaceState = window.history.replaceState;
 
-    window.history.pushState = function (...args) {
-        const result = originalPushState.apply(this, args)
-        window.dispatchEvent(new Event('roprime-location-change'))
-        return result
-    }
+  window.history.pushState = function (...args) {
+    const result = originalPushState.apply(this, args);
+    window.dispatchEvent(new Event("roprime-location-change"));
+    return result;
+  };
 
-    window.history.replaceState = function (...args) {
-        const result = originalReplaceState.apply(this, args)
-        window.dispatchEvent(new Event('roprime-location-change'))
-        return result
-    }
+  window.history.replaceState = function (...args) {
+    const result = originalReplaceState.apply(this, args);
+    window.dispatchEvent(new Event("roprime-location-change"));
+    return result;
+  };
 
   const handleRouteChange = () => {
     try {
@@ -117,6 +117,7 @@ function installHistoryListeners() {
     } catch (e) {
       if (!isExtensionContextInvalidatedError(e)) throw e;
     }
+  };
 
   window.addEventListener("popstate", handleRouteChange);
   window.addEventListener("hashchange", handleRouteChange);
@@ -124,7 +125,7 @@ function installHistoryListeners() {
 }
 
 function bootstrap() {
-    if (!shouldRunRoPrimeOnCurrentPage()) return
+  if (!shouldRunRoPrimeOnCurrentPage()) return;
 
   installStorageSyncListener();
   loadSettings().finally(() => {
@@ -169,8 +170,8 @@ function bootstrap() {
   });
 }
 
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', bootstrap, { once: true })
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", bootstrap, { once: true });
 } else {
-    bootstrap()
+  bootstrap();
 }

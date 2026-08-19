@@ -1,13 +1,13 @@
 import {
-    isExtensionContextAlive,
-    isExtensionContextInvalidatedError,
-    normalizeSearchBannedWords,
-    settingsState,
-    shouldRunRoPrimeOnCurrentPage,
-} from '../core/core.js'
+  isExtensionContextAlive,
+  isExtensionContextInvalidatedError,
+  normalizeSearchBannedWords,
+  settingsState,
+  shouldRunRoPrimeOnCurrentPage,
+} from "../core/core.js";
 
-export const RP_SEARCH_BAN_ERROR_ID = 'roprime-search-ban-error'
-export const RP_SEARCH_BAN_HIDE_STYLE_ID = 'roprime-search-ban-hide-style'
+export const RP_SEARCH_BAN_ERROR_ID = "roprime-search-ban-error";
+export const RP_SEARCH_BAN_HIDE_STYLE_ID = "roprime-search-ban-hide-style";
 
 const DISCOVER_ERROR_HTML = `
 <div data-testid="error-container" class="discovery-error-container" data-roprime-search-ban-error="1">
@@ -36,204 +36,204 @@ const DISCOVER_ERROR_HTML = `
     </span>
   </button>
 </div>
-`
+`;
 
-let domObserver = null
+let domObserver = null;
 
 export function isDiscoverSearchPage() {
-    const path = window.location.pathname || ''
-    return /\/discover\/?$/i.test(path)
+  const path = window.location.pathname || "";
+  return /\/discover\/?$/i.test(path);
 }
 
 export function getDiscoverSearchKeyword() {
-    const params = new URLSearchParams(window.location.search)
-    for (const key of ['Keyword', 'keyword']) {
-        const value = params.get(key)
-        if (value == null || value === '') continue
-        try {
-            return decodeURIComponent(String(value).replace(/\+/g, ' ')).trim()
-        } catch {
-            return String(value).replace(/\+/g, ' ').trim()
-        }
+  const params = new URLSearchParams(window.location.search);
+  for (const key of ["Keyword", "keyword"]) {
+    const value = params.get(key);
+    if (value == null || value === "") continue;
+    try {
+      return decodeURIComponent(String(value).replace(/\+/g, " ")).trim();
+    } catch {
+      return String(value).replace(/\+/g, " ").trim();
     }
-    return ''
+  }
+  return "";
 }
 
 export function isSearchBanActive() {
-    if (!settingsState.searchBanEnabled) return false
-    return normalizeSearchBannedWords(settingsState.searchBannedWords).length > 0
+  if (!settingsState.searchBanEnabled) return false;
+  return normalizeSearchBannedWords(settingsState.searchBannedWords).length > 0;
 }
 
 export function normalizeSearchKeyword(keyword) {
-    let normalized = String(keyword || '').trim()
-    if (
-        normalized.length >= 2 &&
-        ((normalized.startsWith('"') && normalized.endsWith('"')) ||
-            (normalized.startsWith("'") && normalized.endsWith("'")))
-    ) {
-        normalized = normalized.slice(1, -1).trim()
-    }
-    return normalized.toLowerCase()
+  let normalized = String(keyword || "").trim();
+  if (
+    normalized.length >= 2 &&
+    ((normalized.startsWith('"') && normalized.endsWith('"')) ||
+      (normalized.startsWith("'") && normalized.endsWith("'")))
+  ) {
+    normalized = normalized.slice(1, -1).trim();
+  }
+  return normalized.toLowerCase();
 }
 
 export function isKeywordSearchBanned(keyword) {
-    if (!isSearchBanActive()) return false
-    const normalizedKeyword = normalizeSearchKeyword(keyword)
-    if (!normalizedKeyword) return false
+  if (!isSearchBanActive()) return false;
+  const normalizedKeyword = normalizeSearchKeyword(keyword);
+  if (!normalizedKeyword) return false;
 
-    return normalizeSearchBannedWords(settingsState.searchBannedWords).some(
-        (word) => {
-            const bannedWord = normalizeSearchKeyword(word)
-            if (!bannedWord) return false
-            return normalizedKeyword.includes(bannedWord)
-        },
-    )
+  return normalizeSearchBannedWords(settingsState.searchBannedWords).some(
+    (word) => {
+      const bannedWord = normalizeSearchKeyword(word);
+      if (!bannedWord) return false;
+      return normalizedKeyword.includes(bannedWord);
+    },
+  );
 }
 
 function getDiscoverContentRoot() {
-    const content = document.querySelector('#content.content')
-    return content instanceof HTMLElement ? content : null
+  const content = document.querySelector("#content.content");
+  return content instanceof HTMLElement ? content : null;
 }
 
 function ensureSearchBanHideStyle(active) {
-    document.getElementById(RP_SEARCH_BAN_HIDE_STYLE_ID)?.remove()
-    if (!active) return
+  document.getElementById(RP_SEARCH_BAN_HIDE_STYLE_ID)?.remove();
+  if (!active) return;
 
-    const style = document.createElement('style')
-    style.id = RP_SEARCH_BAN_HIDE_STYLE_ID
-    style.textContent = '#game-search-web-app{display:none!important;}'
-    document.documentElement.appendChild(style)
+  const style = document.createElement("style");
+  style.id = RP_SEARCH_BAN_HIDE_STYLE_ID;
+  style.textContent = "#game-search-web-app{display:none!important;}";
+  document.documentElement.appendChild(style);
 }
 
 function removeSearchBanError() {
-    document.getElementById(RP_SEARCH_BAN_ERROR_ID)?.remove()
-    document.querySelector('[data-roprime-search-ban-error="1"]')?.remove()
+  document.getElementById(RP_SEARCH_BAN_ERROR_ID)?.remove();
+  document.querySelector('[data-roprime-search-ban-error="1"]')?.remove();
 }
 
 function applySearchBanBlock() {
-    const gameSearch = document.getElementById('game-search-web-app')
-    if (gameSearch instanceof HTMLElement) {
-        gameSearch.hidden = true
-        gameSearch.style.display = 'none'
-    }
-    ensureSearchBanHideStyle(true)
+  const gameSearch = document.getElementById("game-search-web-app");
+  if (gameSearch instanceof HTMLElement) {
+    gameSearch.hidden = true;
+    gameSearch.style.display = "none";
+  }
+  ensureSearchBanHideStyle(true);
 
-    const contentRoot = getDiscoverContentRoot()
-    if (!(contentRoot instanceof HTMLElement)) return
+  const contentRoot = getDiscoverContentRoot();
+  if (!(contentRoot instanceof HTMLElement)) return;
 
-    let error = document.getElementById(RP_SEARCH_BAN_ERROR_ID)
-    if (!(error instanceof HTMLElement)) {
-        error = contentRoot.querySelector('[data-roprime-search-ban-error="1"]')
-    }
-    if (error instanceof HTMLElement) return
+  let error = document.getElementById(RP_SEARCH_BAN_ERROR_ID);
+  if (!(error instanceof HTMLElement)) {
+    error = contentRoot.querySelector('[data-roprime-search-ban-error="1"]');
+  }
+  if (error instanceof HTMLElement) return;
 
-    contentRoot.insertAdjacentHTML('beforeend', DISCOVER_ERROR_HTML)
-    const injected = contentRoot.querySelector(
-        '[data-roprime-search-ban-error="1"]',
-    )
-    if (injected instanceof HTMLElement) {
-        injected.id = RP_SEARCH_BAN_ERROR_ID
-    }
+  contentRoot.insertAdjacentHTML("beforeend", DISCOVER_ERROR_HTML);
+  const injected = contentRoot.querySelector(
+    '[data-roprime-search-ban-error="1"]',
+  );
+  if (injected instanceof HTMLElement) {
+    injected.id = RP_SEARCH_BAN_ERROR_ID;
+  }
 }
 
 function clearSearchBanBlock() {
-    ensureSearchBanHideStyle(false)
+  ensureSearchBanHideStyle(false);
 
-    const gameSearch = document.getElementById('game-search-web-app')
-    if (gameSearch instanceof HTMLElement) {
-        gameSearch.hidden = false
-        gameSearch.style.removeProperty('display')
-    }
+  const gameSearch = document.getElementById("game-search-web-app");
+  if (gameSearch instanceof HTMLElement) {
+    gameSearch.hidden = false;
+    gameSearch.style.removeProperty("display");
+  }
 
-    removeSearchBanError()
+  removeSearchBanError();
 }
 
 function shouldBlockCurrentDiscoverSearch() {
-    return (
-        isDiscoverSearchPage() && isKeywordSearchBanned(getDiscoverSearchKeyword())
-    )
+  return (
+    isDiscoverSearchPage() && isKeywordSearchBanned(getDiscoverSearchKeyword())
+  );
 }
 
 export function syncSearchBan() {
-    if (
-        !shouldRunRoPrimeOnCurrentPage() ||
-        !isExtensionContextAlive() ||
-        !isDiscoverSearchPage()
-    ) {
-        stopSearchBanDomObserver()
-        clearSearchBanBlock()
-        return
-    }
+  if (
+    !shouldRunRoPrimeOnCurrentPage() ||
+    !isExtensionContextAlive() ||
+    !isDiscoverSearchPage()
+  ) {
+    stopSearchBanDomObserver();
+    clearSearchBanBlock();
+    return;
+  }
 
-    if (shouldBlockCurrentDiscoverSearch()) {
-        applySearchBanBlock()
-        return
-    }
+  if (shouldBlockCurrentDiscoverSearch()) {
+    applySearchBanBlock();
+    return;
+  }
 
-    clearSearchBanBlock()
+  clearSearchBanBlock();
 }
 
 function ensureSearchBanDomObserver() {
-    if (domObserver || !isExtensionContextAlive()) return
+  if (domObserver || !isExtensionContextAlive()) return;
 
-    try {
-        domObserver = new MutationObserver(() => {
-            try {
-                if (!isDiscoverSearchPage()) {
-                    stopSearchBanDomObserver()
-                    clearSearchBanBlock()
-                    return
-                }
-                syncSearchBan()
-            } catch (e) {
-                if (!isExtensionContextInvalidatedError(e)) throw e
-            }
-        })
-        domObserver.observe(document.documentElement, {
-            childList: true,
-            subtree: true,
-        })
-    } catch {
-        domObserver = null
-    }
+  try {
+    domObserver = new MutationObserver(() => {
+      try {
+        if (!isDiscoverSearchPage()) {
+          stopSearchBanDomObserver();
+          clearSearchBanBlock();
+          return;
+        }
+        syncSearchBan();
+      } catch (e) {
+        if (!isExtensionContextInvalidatedError(e)) throw e;
+      }
+    });
+    domObserver.observe(document.documentElement, {
+      childList: true,
+      subtree: true,
+    });
+  } catch {
+    domObserver = null;
+  }
 }
 
 function stopSearchBanDomObserver() {
-    if (!domObserver) return
-    try {
-        domObserver.disconnect()
-    } catch {
-        /* ignore */
-    }
-    domObserver = null
+  if (!domObserver) return;
+  try {
+    domObserver.disconnect();
+  } catch {
+    /* ignore */
+  }
+  domObserver = null;
 }
 
 export function stopSearchBan() {
-    stopSearchBanDomObserver()
-    clearSearchBanBlock()
+  stopSearchBanDomObserver();
+  clearSearchBanBlock();
 }
 
 export function installSearchBanObserver() {
-    if (!isExtensionContextAlive()) return
+  if (!isExtensionContextAlive()) return;
 
-    const onRoute = () => {
-        try {
-            if (!shouldRunRoPrimeOnCurrentPage()) {
-                stopSearchBan()
-                return
-            }
-            if (isDiscoverSearchPage()) {
-                ensureSearchBanDomObserver()
-                syncSearchBan()
-                return
-            }
-            stopSearchBanDomObserver()
-            clearSearchBanBlock()
-        } catch (e) {
-            if (!isExtensionContextInvalidatedError(e)) throw e
-        }
+  const onRoute = () => {
+    try {
+      if (!shouldRunRoPrimeOnCurrentPage()) {
+        stopSearchBan();
+        return;
+      }
+      if (isDiscoverSearchPage()) {
+        ensureSearchBanDomObserver();
+        syncSearchBan();
+        return;
+      }
+      stopSearchBanDomObserver();
+      clearSearchBanBlock();
+    } catch (e) {
+      if (!isExtensionContextInvalidatedError(e)) throw e;
     }
+  };
 
-    window.addEventListener('roprime-location-change', onRoute)
-    window.addEventListener('popstate', onRoute)
+  window.addEventListener("roprime-location-change", onRoute);
+  window.addEventListener("popstate", onRoute);
 }

@@ -1,22 +1,22 @@
 import {
-    buildManifestExtensionIconUrl,
-    buildRoPrimeSettingsFullUrl,
-    getRobloxLocalePathPrefix,
-    isAccountPage,
-    isExtensionContextAlive,
-} from '../core/core.js'
-import { runWhenIdle } from '../features/runWhenIdle.js'
-import { showMaliciousPluginOverlay } from '../ui/overlay.js'
-import { fetchPluginsRegistry } from './registry.js'
+  buildRoPrimeSettingsFullUrl,
+  buildManifestExtensionIconUrl,
+  getRobloxLocalePathPrefix,
+  isAccountPage,
+  isExtensionContextAlive,
+} from "../core/core.js";
+import { runWhenIdle } from "../features/runWhenIdle.js";
+import { showMaliciousPluginOverlay } from "../ui/overlay.js";
+import { fetchPluginsRegistry } from "./registry.js";
 
-const extensionApi = globalThis.browser || globalThis.chrome
+const extensionApi = globalThis.browser || globalThis.chrome;
 
-const PANEL_ID = 'roprime-plugins-panel'
-const OPEN_KEY = 'roprimePluginsPanelOpen'
+const PANEL_ID = "roprime-plugins-panel";
+const OPEN_KEY = "roprimePluginsPanelOpen";
 
 const PLUGINS_LOADING_MARKUP = `
 <div class="flex width-full justify-center padding-y-small"><div class="foundation-web-progress-circle inline-flex items-center justify-center" role="progressbar" aria-label="Loading" style="width: 32px; height: 32px;"><svg width="32" height="32" viewBox="0 0 32 32" class="relative"><circle cx="16" cy="16" r="14.5" fill="none" stroke-width="3" style="stroke: var(--color-shift-200);"></circle><circle cx="16" cy="16" r="14.5" fill="none" stroke-width="3" stroke-dasharray="68.329640215578 22.776546738526" stroke-dashoffset="0" stroke-linecap="round" class="foundation-web-progress-circle-indeterminate" style="stroke: var(--fui-future-alpha-color-system-progress); transform-origin: 50% 50%;"></circle></svg></div></div>
-`.trim()
+`.trim();
 
 let refreshSeq = 0;
 let refreshInProgress = false;
@@ -25,37 +25,36 @@ let menuHighlightObserver = null;
 let menuHighlightIdlePending = false;
 
 async function sendToBackground(message) {
-    return await new Promise((resolve) => {
-        try {
-            if (!isExtensionContextAlive() || !extensionApi.runtime?.sendMessage) {
-                return resolve(null)
-            }
-            extensionApi.runtime.sendMessage(message, (resp) => {
-                resolve(resp ?? null)
-            })
-        } catch {
-            resolve(null)
-        }
-    })
+  return await new Promise((resolve) => {
+    try {
+      if (!isExtensionContextAlive() || !extensionApi.runtime?.sendMessage) {
+        return resolve(null);
+      }
+      extensionApi.runtime.sendMessage(message, (resp) => {
+        resolve(resp ?? null);
+      });
+    } catch {
+      resolve(null);
+    }
+  });
 }
 
 async function hasManagementPermission() {
-    const resp = await sendToBackground({ type: 'ROPRIME_MANAGEMENT_STATUS' })
-    return Boolean(resp?.ok && resp?.granted)
+  const resp = await sendToBackground({ type: "ROPRIME_MANAGEMENT_STATUS" });
+  return Boolean(resp?.ok && resp?.granted);
 }
 
 function buildAccountUrl(suffixAfterMyAccount) {
-    const prefix = getRobloxLocalePathPrefix()
-    const suffix = String(suffixAfterMyAccount || '')
-    return `${window.location.origin}${prefix}/my/account${suffix}`
+  const prefix = getRobloxLocalePathPrefix();
+  const suffix = String(suffixAfterMyAccount || "");
+  return `${window.location.origin}${prefix}/my/account${suffix}`;
 }
 
 function buildSettingsUrl(entry) {
-    if (entry.settingsPath === '__roprime__') {
-        return buildRoPrimeSettingsFullUrl()
-    }
-    if (!entry.settingsPath) return ''
-    return buildAccountUrl(entry.settingsPath)
+  if (entry.settingsPath === "__roprime__")
+    return buildRoPrimeSettingsFullUrl();
+  if (!entry.settingsPath) return "";
+  return buildAccountUrl(entry.settingsPath);
 }
 
 function getHost() {
@@ -94,13 +93,13 @@ function setPluginsMenuActive(active) {
 }
 
 function setPluginsLoading(tiles) {
-    if (!(tiles instanceof HTMLElement)) return
-    tiles.innerHTML = PLUGINS_LOADING_MARKUP
+  if (!(tiles instanceof HTMLElement)) return;
+  tiles.innerHTML = PLUGINS_LOADING_MARKUP;
 }
 
 function clearPluginsTiles(tiles) {
-    if (!(tiles instanceof HTMLElement)) return
-    tiles.textContent = ''
+  if (!(tiles instanceof HTMLElement)) return;
+  tiles.textContent = "";
 }
 
 function setExtensionIcon(iconHost, extensionId, iconPath = "") {
@@ -155,53 +154,53 @@ function stopMenuHighlightObserver() {
 }
 
 async function scanForMaliciousPlugins() {
-    const granted = await hasManagementPermission()
-    if (!granted) return
+  const granted = await hasManagementPermission();
+  if (!granted) return;
 
-    const registry = await fetchPluginsRegistry()
-    await handleMaliciousPlugins(registry)
+  const registry = await fetchPluginsRegistry();
+  await handleMaliciousPlugins(registry);
 }
 
 async function handleMaliciousPlugins(registry) {
-    const maliciousEntries = registry.filter((entry) => entry.malicious)
-    if (!maliciousEntries.length) {
-        return { removedAny: false, uninstalledKeys: new Set() }
+  const maliciousEntries = registry.filter((entry) => entry.malicious);
+  if (!maliciousEntries.length) {
+    return { removedAny: false, uninstalledKeys: new Set() };
+  }
+
+  const resp = await sendToBackground({
+    type: "ROPRIME_GET_WANTED_EXTENSIONS",
+    registry: maliciousEntries,
+  });
+  if (!resp?.ok || !Array.isArray(resp.plugins)) {
+    return { removedAny: false, uninstalledKeys: new Set() };
+  }
+
+  let removedAny = false;
+  const uninstalledKeys = new Set();
+
+  for (const plugin of resp.plugins) {
+    const item = plugin?.item;
+    if (!item?.id) continue;
+
+    const pluginName = String(item.name || plugin.title || "Extension");
+    const extensionId = String(item.id);
+
+    const deleted = await showMaliciousPluginOverlay(pluginName, async () => {
+      const uninstallResp = await sendToBackground({
+        type: "ROPRIME_UNINSTALL_EXTENSION",
+        id: extensionId,
+        showConfirmDialog: true,
+      });
+      return Boolean(uninstallResp?.ok);
+    });
+
+    if (deleted) {
+      removedAny = true;
+      uninstalledKeys.add(String(plugin.key || ""));
     }
+  }
 
-    const resp = await sendToBackground({
-        type: 'ROPRIME_GET_WANTED_EXTENSIONS',
-        registry: maliciousEntries,
-    })
-    if (!resp?.ok || !Array.isArray(resp.plugins)) {
-        return { removedAny: false, uninstalledKeys: new Set() }
-    }
-
-    let removedAny = false
-    const uninstalledKeys = new Set()
-
-    for (const plugin of resp.plugins) {
-        const item = plugin?.item
-        if (!item?.id) continue
-
-        const pluginName = String(item.name || plugin.title || 'Extension')
-        const extensionId = String(item.id)
-
-        const deleted = await showMaliciousPluginOverlay(pluginName, async () => {
-            const uninstallResp = await sendToBackground({
-                type: 'ROPRIME_UNINSTALL_EXTENSION',
-                id: extensionId,
-                showConfirmDialog: true,
-            })
-            return Boolean(uninstallResp?.ok)
-        })
-
-        if (deleted) {
-            removedAny = true
-            uninstalledKeys.add(String(plugin.key || ''))
-        }
-    }
-
-    return { removedAny, uninstalledKeys }
+  return { removedAny, uninstalledKeys };
 }
 
 function hideHostChildren(host, panel) {
@@ -468,36 +467,35 @@ function closePanel() {
 }
 
 function isOpen() {
-    return sessionStorage.getItem(OPEN_KEY) === '1'
+  return sessionStorage.getItem(OPEN_KEY) === "1";
 }
 
 function isPluginsHashRoute() {
-    return (window.location.hash || '').toLowerCase() === '#!/plugins'
+  return (window.location.hash || "").toLowerCase() === "#!/plugins";
 }
 
-let bound = false
+let bound = false;
 export function initPluginsPanel() {
-    if (bound) return
-    bound = true
+  if (bound) return;
+  bound = true;
 
   window.addEventListener("roprime-open-plugins-panel", () => openPanel());
 
-    document.addEventListener(
-        'click',
-        (event) => {
-            if (!(event.target instanceof Element)) return
-            if (event.target.closest('[data-roprime-account-plugins-entry="1"]')) {
-                return
-            }
-            const menuLink = event.target.closest(
-                'ul[role="tablist"] a.menu-option-content',
-            )
-            if (!menuLink) return
-            if (!isOpen()) return
-            closePanel()
-        },
-        true,
-    )
+  document.addEventListener(
+    "click",
+    (event) => {
+      if (!(event.target instanceof Element)) return;
+      if (event.target.closest('[data-roprime-account-plugins-entry="1"]'))
+        return;
+      const menuLink = event.target.closest(
+        'ul[role="tablist"] a.menu-option-content',
+      );
+      if (!menuLink) return;
+      if (!isOpen()) return;
+      closePanel();
+    },
+    true,
+  );
 
   const onRoute = () => {
     if (!isAccountPage()) {

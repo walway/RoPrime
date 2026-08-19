@@ -1,100 +1,104 @@
 .react-friends-carousel-container .thumbnail-2d-container.avatar-card-image,
 .friend-carousel-container .thumbnail-2d-container.avatar-card-image {
-    position: relative;
-    display: block;
+  position: relative;
+  display: block;
 }
 
 span.thumbnail-2d-container.avatar-card-image img {
-    border-radius: 999px;
+  border-radius: 999px;
 }
 
 .react-friends-carousel-container div.avatar.avatar-card-fullbody,
 .friend-carousel-container div.avatar.avatar-card-fullbody {
-    position: relative !important;
-    overflow: visible !important;
-}
-
-.react-friends-carousel-container div.avatar.avatar-card-fullbody > .roprime-friends-carousel-picture-effect,
-.friend-carousel-container div.avatar.avatar-card-fullbody > .roprime-friends-carousel-picture-effect {
-    position: absolute;
-    inset: 0;
-    z-index: 5;
-    width: 100%;
-    height: 100%;
-    margin: 0;
-    transform: none;
-    pointer-events: none;
-    overflow: hidden;
-    background: transparent !important;
-    background-color: transparent !important;
+  position: relative !important;
+  overflow: visible !important;
 }
 
 .react-friends-carousel-container
-    div.avatar.avatar-card-fullbody
-    .roprime-friends-carousel-picture-effect
-    .roprime-profile-effect-lottie,
+  div.avatar.avatar-card-fullbody
+  > .roprime-friends-carousel-picture-effect,
 .friend-carousel-container
-    div.avatar.avatar-card-fullbody
-    .roprime-friends-carousel-picture-effect
-    .roprime-profile-effect-lottie {
-    position: relative;
-    z-index: 2;
-    width: 100%;
-    height: 100%;
-    min-width: 0;
-    min-height: 0;
-    aspect-ratio: 1;
-    overflow: hidden;
-    background: transparent !important;
-    background-color: transparent !important;
-    border-radius: inherit;
-    pointer-events: none;
+  div.avatar.avatar-card-fullbody
+  > .roprime-friends-carousel-picture-effect {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  transform: none;
+  pointer-events: none;
+  overflow: hidden;
+  background: transparent !important;
+  background-color: transparent !important;
 }
 
 .react-friends-carousel-container
-    div.avatar.avatar-card-fullbody
-    .roprime-friends-carousel-picture-effect
-    .roprime-profile-effect-lottie
-    iframe,
+  div.avatar.avatar-card-fullbody
+  .roprime-friends-carousel-picture-effect
+  .roprime-profile-effect-lottie,
 .friend-carousel-container
-    div.avatar.avatar-card-fullbody
-    .roprime-friends-carousel-picture-effect
-    .roprime-profile-effect-lottie
-    iframe {
-    position: absolute;
-    inset: 0;
-    display: block;
-    width: 100%;
-    height: 100%;
-    border: 0;
-    background: transparent !important;
-    background-color: transparent !important;
-    color-scheme: normal;
-    transform: none;
-    transform-origin: center center;
-    -webkit-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-    pointer-events: none;
+  div.avatar.avatar-card-fullbody
+  .roprime-friends-carousel-picture-effect
+  .roprime-profile-effect-lottie {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  aspect-ratio: 1;
+  overflow: hidden;
+  background: transparent !important;
+  background-color: transparent !important;
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+.react-friends-carousel-container
+  div.avatar.avatar-card-fullbody
+  .roprime-friends-carousel-picture-effect
+  .roprime-profile-effect-lottie
+  iframe,
+.friend-carousel-container
+  div.avatar.avatar-card-fullbody
+  .roprime-friends-carousel-picture-effect
+  .roprime-profile-effect-lottie
+  iframe {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: transparent !important;
+  background-color: transparent !important;
+  color-scheme: normal;
+  transform: none;
+  transform-origin: center center;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  pointer-events: none;
 }
 
 .friend-carousel-container a.avatar-card-link {
-    position: relative;
-    z-index: 1;
+  position: relative;
+  z-index: 1;
 }
 
 .friend-carousel-container .avatar-card-image,
 .friend-carousel-container .avatar.avatar-card-fullbody {
-    position: relative;
-    overflow: visible;
+  position: relative;
+  overflow: visible;
 }
 
 .friend-carousel-container .avatar-card-image img {
-    position: relative;
-    z-index: 2;
+  position: relative;
+  z-index: 2;
 }
 
 .friend-carousel-container .user-card,
 .friend-carousel-container .friends-carousel-tile {
-    position: relative;
+  position: relative;
 }
