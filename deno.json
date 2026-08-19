@@ -1,8 +1,18 @@
 {
-  "nodeModulesDir": "auto",
+  "nodeModulesDir": "none",
   "lock": true,
   "tasks": {
     "build": "deno run -A tasks/build.js"
+  },
+  "imports": {
+    "@supabase/supabase-js": "npm:@supabase/supabase-js@2.112.3",
+    "prism-code-editor/setups": "npm:prism-code-editor@5.3.0/setups",
+    "prism-code-editor/languages/css": "npm:prism-code-editor@5.3.0/languages/css",
+    "prism-code-editor/prism/languages/css": "npm:prism-code-editor@5.3.0/prism/languages/css",
+    "roavatar-renderer": "npm:roavatar-renderer@1.6.0",
+    "esbuild": "npm:esbuild@0.25.12",
+    "adm-zip": "npm:adm-zip@0.6.0",
+    "dotenv": "npm:dotenv@17.4.2"
   },
   "exclude": ["dist", "node_modules"]
 }

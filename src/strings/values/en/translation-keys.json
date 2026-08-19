@@ -1,7 +1,7 @@
 {
   "Settings hero title": "RoPrime Settings",
   "Search settings placeholder": "Search settings...",
-  "Nav tab design": "Design",
+  "Nav tab design": "Appearance",
   "Nav tab settings": "Settings",
   "Nav tab privacy": "Privacy & content restrictions",
   "Nav tab other": "Other",
@@ -22,7 +22,7 @@
   "Sidebar collapse menu title": "Full to icon only collapse button",
   "Sidebar collapse menu description": "Adds a button for the the sidebar to switch between full and icon-only size.",
   "Configure sidebar content": "Configure sidebar content",
-  "Sidebar content back": "Back to Design",
+  "Sidebar content back": "Back to Appearance",
   "Sidebar content list title": "Sidebar items",
   "Sidebar content list description": "Remove items you do not want from the sidebar.",
   "Sidebar content remove item": "Remove from sidebar",

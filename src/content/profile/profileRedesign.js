@@ -1,6 +1,11 @@
 import { settingsState, shouldRunRoPrimeOnCurrentPage } from "../core/core.js";
 import { debounce } from "../core/debounce.js";
 import { isUserProfilePage } from "./profileEffectsDisplay.js";
+import {
+  ensureRoPrimeProfileTabContent,
+  removeRoPrimeProfileTabContent,
+  syncProfileAvatarRenderer,
+} from "./profileAvatarRenderer.js";
 
 export const RP_PROFILE_REDESIGN_STYLE_ID = "roprime-profile-redesign-style";
 
@@ -19,14 +24,27 @@ const PROFILE_REDESIGN_CSS = `
 .profile-tabs {
   display: none !important;
 }
-  
-.profile-tab-content, .tab-pane {
+
+.profile-tab-content:not([data-roprime-profile-tab-content]) {
   display: none !important;
+}
+
+.roprime-profile-avatar-preview {
+  width: 100%;
+  min-height: 420px;
+  margin-bottom: 24px;
+  border-radius: 12px;
+  overflow: hidden;
 }
 `;
 
 let observer = null;
 const scheduleBubbleSync = debounce(syncBubbleLength, 100);
+const scheduleProfileShellSync = debounce(() => {
+  ensureRoPrimeProfileTabContent();
+  void syncProfileAvatarRenderer();
+  syncBubbleLength();
+}, 120);
 
 function countBubbleLines(element) {
   const view = element.ownerDocument?.defaultView;
@@ -67,6 +85,7 @@ function syncBubbleLength() {
 function removeProfileRedesignStyle() {
   document.getElementById(RP_PROFILE_REDESIGN_STYLE_ID)?.remove();
   document.documentElement.style.removeProperty(BUBBLE_LENGTH_VAR);
+  removeRoPrimeProfileTabContent();
 }
 
 function injectProfileRedesignStyle() {
@@ -91,7 +110,7 @@ export function syncProfileRedesign() {
 
   if (observer) {
     injectProfileRedesignStyle();
-    syncBubbleLength();
+    scheduleProfileShellSync();
     return;
   }
 
@@ -100,6 +119,7 @@ export function syncProfileRedesign() {
 
 function disconnectObserver() {
   scheduleBubbleSync.cancel();
+  scheduleProfileShellSync.cancel();
   observer?.disconnect();
   observer = null;
   removeProfileRedesignStyle();
@@ -109,7 +129,7 @@ function connectObserver() {
   if (observer) return;
 
   observer = new MutationObserver(() => {
-    scheduleBubbleSync();
+    scheduleProfileShellSync();
   });
 
   if (!document.body) return;
@@ -120,7 +140,7 @@ function connectObserver() {
     characterData: true,
   });
   injectProfileRedesignStyle();
-  syncBubbleLength();
+  scheduleProfileShellSync();
 }
 
 function syncObserverForRoute() {

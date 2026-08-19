@@ -16,6 +16,13 @@
     "https://thumbnails.roblox.com/*",
     "https://friends.roblox.com/*",
     "https://presence.roblox.com/*",
+    "https://assetdelivery.roblox.com/*",
+    "https://avatar.roblox.com/*",
+    "https://catalog.roblox.com/*",
+    "https://economy.roblox.com/*",
+    "https://inventory.roblox.com/*",
+    "https://apis.roblox.com/*",
+    "https://develop.roblox.com/*",
     "https://walway.github.io/*"
   ],
   "background": {
@@ -34,6 +41,8 @@
   "web_accessible_resources": [
     {
       "resources": [
+        "resources/vendor/draco_decoder.js",
+        "avatar-preview.js",
         "resources/roprime-icon.png",
         "resources/RblxPlusLogo.webp",
         "resources/logo.svg",

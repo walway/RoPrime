@@ -1,5 +1,14 @@
 const extensionApi = globalThis.browser || globalThis.chrome;
 
+function arrayBufferToBase64(buffer) {
+  const bytes = new Uint8Array(buffer);
+  let binary = "";
+  for (let i = 0; i < bytes.length; i += 1) {
+    binary += String.fromCharCode(bytes[i]);
+  }
+  return btoa(binary);
+}
+
 function asLastErrorMessage() {
   try {
     const msg = extensionApi?.runtime?.lastError?.message;
@@ -296,6 +305,42 @@ extensionApi.runtime.onMessage.addListener((message, sender, sendResponse) => {
       })
       .catch((err) =>
         sendResponse({ ok: false, error: String(err || "Unknown error") }),
+      );
+    return true;
+  }
+
+  if (type === "ROPRIME_FETCH") {
+    const url = String(message?.url || "");
+    const method = String(message?.method || "GET").toUpperCase();
+    const headers =
+      message?.headers && typeof message.headers === "object" ? message.headers : {};
+
+    if (!url) {
+      sendResponse({ ok: false, error: "missing_url" });
+      return false;
+    }
+
+    fetch(url, {
+      method,
+      headers,
+      credentials: message?.credentials === "omit" ? "omit" : "include",
+    })
+      .then(async (response) => {
+        const buffer = await response.arrayBuffer();
+        const responseHeaders = {};
+        for (const [key, value] of response.headers.entries()) {
+          responseHeaders[key] = value;
+        }
+        sendResponse({
+          ok: true,
+          status: response.status,
+          statusText: response.statusText,
+          headers: responseHeaders,
+          bodyBase64: arrayBufferToBase64(buffer),
+        });
+      })
+      .catch((err) =>
+        sendResponse({ ok: false, error: String(err || "fetch_failed") }),
       );
     return true;
   }

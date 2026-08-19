@@ -232,6 +232,9 @@ function parseUserIdFromUrl(loc = window.location) {
 }
 
 function findTabContent() {
+  const custom = document.querySelector("[data-roprime-profile-tab-content]");
+  if (custom instanceof HTMLElement) return custom;
+
   const platform = document.querySelector(".profile-platform-container");
   if (!(platform instanceof HTMLElement)) return null;
 
@@ -256,6 +259,7 @@ function ensureStyles() {
 .${ROOT_CLASS} { margin-bottom: 24px; }
 .${ROOT_CLASS} .roprime-legacy-badges-row { display: flex; gap: 12px; }
 .${ROOT_CLASS} .roprime-legacy-badges-row-extra { display: none; }
+.${ROOT_CLASS}.is-expanded .roprime-legacy-badges-row-extra { display: flex; }
 .${ROOT_CLASS} .base-tile-thumbnail-wrapper .thumbnail-2d-container { display: grid; justify-content: center; }
 `;
   document.head.appendChild(style);

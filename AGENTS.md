@@ -5,7 +5,7 @@ RoPrime is a browser extension for roblox.com that provides design-change featur
 ## Dev environment tips
 
 - Always use `deno task build` to build the project. If the build fails, stop and request human intervention.
-- Run `deno install` after changing dependencies in package.json.
+- Dependencies are managed in `deno.json` (npm: and JSR imports). Do not add or rely on `node_modules`.
 - Run `deno run -A npm:prettier --write path/to/file` to format the code and automatically fix safe linting errors.
 
 ## PR instructions
@@ -18,8 +18,9 @@ RoPrime is a browser extension for roblox.com that provides design-change featur
 - /resources: Contains images and resources for the browser extension.
 - /.locales: Contains folders with translation keys.
 - biome.json: Defines the linting and formatting rules for the codebase.
-- manifest.json: The extension entry point configuration defining permissions, scripts, and assets.
-- vite.content.config.js: The Vite configuration file used specifically for bundling the content scripts.
+- deno.json: Deno config, npm/JSR import map, and build task definitions.
+- tasks/build.js: esbuild bundler for content scripts and platform dist assembly.
+- src/manifests/: Chrome and Firefox extension manifests (copied into dist on build).
 
 ## Agent Constraints & Behavior
 

@@ -8,20 +8,38 @@ import {
   writeFileSync,
 } from "node:fs";
 import { dirname, join } from "node:path";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import AdmZip from "adm-zip";
-import chalk from "chalk";
 import dotenv from "dotenv";
-import { globSync } from "glob";
-import { build as viteBuild } from "vite";
+import * as esbuild from "esbuild";
+import { denoPlugins } from "jsr:@luca/esbuild-deno-loader@0.11.1";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
+const configPath = join(root, "deno.json");
 dotenv.config({ path: join(root, ".env") });
+
 const distDir = join(root, "dist");
 const bundleDir = join(distDir, "_build");
 const platforms = ["chrome", "firefox"];
-const error = chalk.bold.red;
-const warning = chalk.hex("#FFA500");
+
+const supabaseUrl = String(process.env.SUPABASE_URL || "").trim();
+const supabaseAnonKey = String(
+  process.env.SUPABASE_KEY || process.env.SUPABASE_ANON_KEY || "",
+).trim();
+
+const define = {
+  __ROPrime_SUPABASE_URL__: JSON.stringify(supabaseUrl),
+  __ROPrime_SUPABASE_ANON_KEY__: JSON.stringify(supabaseAnonKey),
+};
+
+function walkFiles(absDir, relPrefix, out) {
+  for (const entry of Deno.readDirSync(absDir)) {
+    const rel = relPrefix ? `${relPrefix}/${entry.name}` : entry.name;
+    const abs = join(absDir, entry.name);
+    if (entry.isDirectory) walkFiles(abs, rel, out);
+    else if (entry.isFile) out.push(rel.replace(/\\/g, "/"));
+  }
+}
 
 function copyPathsToDist(relativePaths, targetBase) {
   for (const file of relativePaths) {
@@ -31,42 +49,6 @@ function copyPathsToDist(relativePaths, targetBase) {
     mkdirSync(dirname(dst), { recursive: true });
     cpSync(src, dst);
   }
-}
-
-function prepareLottieVendorAssets() {
-  const lottieMinSrc = join(
-    root,
-    "node_modules/lottie-web/build/player/lottie.min.js",
-  );
-  const lottieMinDst = join(root, "resources/vendor/lottie.min.js");
-  if (!existsSync(lottieMinSrc)) {
-    throw new Error("Missing lottie-web. Run `deno install` first.");
-  }
-  cpSync(lottieMinSrc, lottieMinDst);
-
-  const clockworkLottie = join(root, "resources/lottie/Clockwork.lottie");
-  const clockworkJson = join(root, "resources/lottie/Clockwork.animation.json");
-  if (!existsSync(clockworkLottie)) return;
-
-  const zip = new AdmZip(clockworkLottie);
-  const manifest = JSON.parse(zip.readAsText("manifest.json"));
-  const animationId = manifest?.animations?.[0]?.id;
-  if (!animationId) {
-    throw new Error("Clockwork.lottie: manifest has no animations");
-  }
-  const entryPath = `a/${animationId}.json`;
-  if (!zip.getEntry(entryPath)) {
-    throw new Error(`Clockwork.lottie: missing ${entryPath}`);
-  }
-  writeFileSync(clockworkJson, zip.readAsText(entryPath));
-}
-
-function copyStyleTreeToDist(targetBase) {
-  const styleFiles = globSync("src/style/**/*.css", { nodir: true, cwd: root });
-  if (styleFiles.length === 0) {
-    throw new Error("No stylesheets under src/style/");
-  }
-  copyPathsToDist(styleFiles, targetBase);
 }
 
 function getStyleCssOrderFromIndex() {
@@ -87,13 +69,70 @@ function getStyleCssOrderFromIndex() {
   return order;
 }
 
+async function copyDracoDecoder() {
+  const dst = join(root, "resources/vendor/draco_decoder.js");
+  if (existsSync(dst) && readFileSync(dst, "utf8").length > 1000) return;
+
+  const res = await fetch(
+    "https://unpkg.com/roavatar-renderer@1.6.0/dist/draco_decoder.js",
+  );
+  if (!res.ok) {
+    throw new Error(`Failed to download draco_decoder.js (${res.status})`);
+  }
+  mkdirSync(dirname(dst), { recursive: true });
+  writeFileSync(dst, await res.text());
+}
+
+function getDracoDecoderBanner() {
+  const src = join(root, "resources/vendor/draco_decoder.js");
+  if (!existsSync(src)) {
+    throw new Error("Missing resources/vendor/draco_decoder.js");
+  }
+  return `${readFileSync(src, "utf8")}\n`;
+}
+
+function prepareLottieAssets() {
+  const lottieMinDst = join(root, "resources/vendor/lottie.min.js");
+  if (!existsSync(lottieMinDst)) {
+    throw new Error("Missing resources/vendor/lottie.min.js");
+  }
+
+  const clockworkLottie = join(root, "resources/lottie/Clockwork.lottie");
+  const clockworkJson = join(root, "resources/lottie/Clockwork.animation.json");
+  if (!existsSync(clockworkLottie)) return;
+
+  const zip = new AdmZip(clockworkLottie);
+  const manifest = JSON.parse(zip.readAsText("manifest.json"));
+  const animationId = manifest?.animations?.[0]?.id;
+  if (!animationId) {
+    throw new Error("Clockwork.lottie: manifest has no animations");
+  }
+  const entryPath = `a/${animationId}.json`;
+  if (!zip.getEntry(entryPath)) {
+    throw new Error(`Clockwork.lottie: missing ${entryPath}`);
+  }
+  writeFileSync(clockworkJson, zip.readAsText(entryPath));
+}
+
+async function bundleEntry(entryRelative, outfile, format, esbuildExtra = {}) {
+  const entryAbs = join(root, entryRelative);
+  await esbuild.build({
+    plugins: [...denoPlugins({ configPath })],
+    absWorkingDir: root,
+    entryPoints: [pathToFileURL(entryAbs).href],
+    outfile,
+    bundle: true,
+    format,
+    platform: "browser",
+    sourcemap: true,
+    define,
+    logLevel: "info",
+    ...esbuildExtra,
+  });
+}
+
 function writeDistManifest(platform, platformDistDir) {
   const manifestPath = join(root, "src/manifests", `${platform}.json`);
-  if (!existsSync(manifestPath)) {
-    throw new Error(
-      `Missing platform manifest: src/manifests/${platform}.json`,
-    );
-  }
   const manifest = JSON.parse(readFileSync(manifestPath, "utf8"));
   const styleCssOrder = getStyleCssOrderFromIndex();
   for (const entry of manifest.content_scripts || []) {
@@ -112,22 +151,35 @@ function writeDistManifest(platform, platformDistDir) {
 }
 
 function copyBundleToPlatform(platformDistDir) {
-  for (const file of ["content.js", "content.js.map"]) {
+  for (const file of [
+    "content.js",
+    "content.js.map",
+    "avatar-preview.js",
+    "avatar-preview.js.map",
+  ]) {
     const src = join(bundleDir, file);
     if (!existsSync(src)) continue;
     cpSync(src, join(platformDistDir, file));
   }
   if (!existsSync(join(platformDistDir, "content.js"))) {
-    throw new Error("Missing bundled content.js after Vite build.");
+    throw new Error("Missing bundled content.js after esbuild.");
+  }
+  if (!existsSync(join(platformDistDir, "avatar-preview.js"))) {
+    throw new Error("Missing bundled avatar-preview.js after esbuild.");
   }
 }
 
 function copyBackgroundToPlatform(platformDistDir) {
-  const src = join(root, "src/content/background.js");
-  if (!existsSync(src)) {
-    throw new Error("Missing src/content/background.js.");
-  }
-  cpSync(src, join(platformDistDir, "background.js"));
+  cpSync(
+    join(root, "src/content/background.js"),
+    join(platformDistDir, "background.js"),
+  );
+}
+
+function copyStyleTreeToDist(targetBase) {
+  const styleFiles = [];
+  walkFiles(join(root, "src/style"), "src/style", styleFiles);
+  copyPathsToDist(styleFiles.filter((f) => f.endsWith(".css")), targetBase);
 }
 
 function assemblePlatformDist(platform) {
@@ -136,34 +188,48 @@ function assemblePlatformDist(platform) {
   copyBundleToPlatform(platformDistDir);
   copyBackgroundToPlatform(platformDistDir);
   copyStyleTreeToDist(platformDistDir);
-  copyPathsToDist(
-    [
-      ...globSync("resources/**/*", { nodir: true, cwd: root }),
-      ...globSync("src/strings/**/*", { nodir: true, cwd: root }),
-      ...globSync(".locales/lang-config.js", { nodir: true, cwd: root }),
-    ],
-    platformDistDir,
-  );
+
+  const resourceFiles = [];
+  walkFiles(join(root, "resources"), "resources", resourceFiles);
+  copyPathsToDist(resourceFiles, platformDistDir);
+
+  const stringFiles = [];
+  walkFiles(join(root, "src/strings"), "src/strings", stringFiles);
+  copyPathsToDist(stringFiles, platformDistDir);
+
   writeDistManifest(platform, platformDistDir);
 }
 
-prepareLottieVendorAssets();
-
-console.log("Building RoPrime with Vite...");
-if (process.env.SUPABASE_URL?.trim()) {
+console.log("Building RoPrime with esbuild...");
+if (supabaseUrl) {
   console.log("Supabase profile effects: enabled for this build.");
 } else {
-  console.log(
-    warning(
-      "No SUPABASE_URL in .env — purchases will not sync to Supabase. See supabase/README.md.",
-    ),
+  console.warn(
+    "No SUPABASE_URL in .env — purchases will not sync to Supabase. See supabase/README.md.",
   );
 }
-rmSync(distDir, { recursive: true, force: true });
 
-await viteBuild({
-  configFile: join(root, "configs/vite.content.config.js"),
-});
+rmSync(distDir, { recursive: true, force: true });
+mkdirSync(bundleDir, { recursive: true });
+
+prepareLottieAssets();
+await copyDracoDecoder();
+
+await bundleEntry(
+  "src/content/content.entry.js",
+  join(bundleDir, "content.js"),
+  "iife",
+);
+await bundleEntry(
+  "src/content/profile/avatarPreview.js",
+  join(bundleDir, "avatar-preview.js"),
+  "esm",
+  {
+    banner: {
+      js: getDracoDecoderBanner(),
+    },
+  },
+);
 
 for (const platform of platforms) {
   assemblePlatformDist(platform);
@@ -172,25 +238,7 @@ for (const platform of platforms) {
 rmSync(bundleDir, { recursive: true, force: true });
 
 console.log("Build complete.");
-console.log(
-  "Successfully generated dist/chrome (Chromium) and dist/firefox (Gecko) builds.",
-);
-console.log();
-console.log(
-  error(
-    "WARNING!!! MAKE SURE TO UPDATE THE VERSION IN src/manifests/chrome.json AND src/manifests/firefox.json",
-  ),
-);
-console.log(
-  warning("USE THIS PATTERN MAP TO DONT FORGET MAKE NEW VERSION NUMBER - "),
-);
-console.log();
-console.log(warning("The version map should be Major.Minor.Patch"));
-console.log();
-console.log(chalk.bold("Fix something - bump version as Patch (1.1.2) !!!"));
-console.log(chalk.bold("New feature - bump version as Minor (1.2.0) !!!"));
-console.log(
-  chalk.bold(
-    "Massive changes and a lot of features - bump version as Major (2.0.0) !!!",
-  ),
+console.log("Successfully generated dist/chrome and dist/firefox builds.");
+console.warn(
+  "WARNING!!! DON'T FORGET TO UPDATE VERSION IN chrome.json AND firefox.json BEFORE RELEASE.",
 );

@@ -1,5 +1,4 @@
 import {
-  getSidebarMainMarginPx,
   isUserProfilePage,
   RP_ALWAYS_SHOW_CLOSE_STYLE_ID,
   settingsState,
@@ -7,10 +6,6 @@ import {
 } from "../core/core.js";
 
 const RP_ALWAYS_CLOSE_COLLAPSED_CLASS = "roprime-always-close-collapsed";
-const RP_ALWAYS_CLOSE_PROFILE_ICON_CLASS = "roprime-always-close-profile-icon";
-const RP_ALWAYS_CLOSE_PROFILE_SMALL_CLASS =
-  "roprime-always-close-profile-small";
-const RP_ALWAYS_CLOSE_PROFILE_FULL_CLASS = "roprime-always-close-profile-full";
 
 const LEFT_NAV_UNUSED_CLASSES = ["large:visible", "large:[transform:unset]"];
 const LEFT_NAV_VISIBLE_CLASS = "visible";
@@ -30,36 +25,16 @@ function getLeftNavigationPanel() {
   return panel instanceof HTMLElement ? panel : null;
 }
 
-function desiredProfileMarginClass() {
-  if (!isUserProfilePage()) return "";
-  if (settingsState.sidebarIconsOnlyEnabled) {
-    return RP_ALWAYS_CLOSE_PROFILE_ICON_CLASS;
-  }
-  if (settingsState.smallNewNavigationBarEnabled) {
-    return RP_ALWAYS_CLOSE_PROFILE_SMALL_CLASS;
-  }
-  return RP_ALWAYS_CLOSE_PROFILE_FULL_CLASS;
-}
-
-function syncProfileMarginClasses() {
-  const root = document.documentElement;
-  if (!root) return;
-
-  const next = desiredProfileMarginClass();
-  const classes = [
-    RP_ALWAYS_CLOSE_PROFILE_ICON_CLASS,
-    RP_ALWAYS_CLOSE_PROFILE_SMALL_CLASS,
-    RP_ALWAYS_CLOSE_PROFILE_FULL_CLASS,
-  ];
-  for (const cls of classes) {
-    root.classList.toggle(cls, cls === next);
-    document.body?.classList.toggle(cls, cls === next);
-  }
-}
-
 function getAlwaysShowCloseCss() {
-  const iconMargin = getSidebarMainMarginPx();
-  const smallMargin = 200;
+  const reservedWidthBlock = isUserProfilePage()
+    ? ""
+    : `
+html:root body#rbx-body .no-gutter-ads.logged-in.left-nav-new-width,
+html:root body#rbx-body .left-nav-new-width,
+html:root .left-nav-new-width {
+  --left-nav-reserved-width: 0px !important;
+}
+`;
 
   return `
 button.menu-button.btn-navigation-nav-menu-md {
@@ -100,13 +75,7 @@ a.navbar-brand,
   order: 3 !important;
   margin-left: 0 !important;
 }
-
-html:root body#rbx-body .no-gutter-ads.logged-in.left-nav-new-width,
-html:root body#rbx-body .left-nav-new-width,
-html:root .left-nav-new-width {
-  --left-nav-reserved-width: 0px !important;
-}
-
+${reservedWidthBlock}
 a.nav-logo-link.navbar-brand span.icon-logo,
 a.navbar-brand span.icon-logo,
 .navbar-brand span.icon-logo {
@@ -273,18 +242,8 @@ function ensureObserver() {
 function clearAlwaysShowCloseState() {
   sidebarCollapsed = false;
   stopLeftNavPanelObserver();
-  document.documentElement.classList.remove(
-    RP_ALWAYS_CLOSE_COLLAPSED_CLASS,
-    RP_ALWAYS_CLOSE_PROFILE_ICON_CLASS,
-    RP_ALWAYS_CLOSE_PROFILE_SMALL_CLASS,
-    RP_ALWAYS_CLOSE_PROFILE_FULL_CLASS,
-  );
-  document.body?.classList.remove(
-    RP_ALWAYS_CLOSE_COLLAPSED_CLASS,
-    RP_ALWAYS_CLOSE_PROFILE_ICON_CLASS,
-    RP_ALWAYS_CLOSE_PROFILE_SMALL_CLASS,
-    RP_ALWAYS_CLOSE_PROFILE_FULL_CLASS,
-  );
+  document.documentElement.classList.remove(RP_ALWAYS_CLOSE_COLLAPSED_CLASS);
+  document.body?.classList.remove(RP_ALWAYS_CLOSE_COLLAPSED_CLASS);
 }
 
 export function syncAlwaysShowCloseButton() {
@@ -298,7 +257,6 @@ export function syncAlwaysShowCloseButton() {
     return;
   }
 
-  syncProfileMarginClasses();
   ensureObserver();
   const css = getAlwaysShowCloseCss();
   if (existingStyle instanceof HTMLStyleElement) {

@@ -1,4 +1,4 @@
-import { langList } from "../../i18n/i18n-config";
+import { langList } from "../../i18n/i18n-config.js";
 
 const extensionApi = globalThis.browser || globalThis.chrome;
 
