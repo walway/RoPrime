@@ -19,14 +19,6 @@ const PROFILE_REDESIGN_CSS = `
 .profile-tabs {
   display: none !important;
 }
-
-.profile-tab-content {
-  display: block !important;
-}
-
-.tab-pane {
-  display: block !important;
-}
 `;
 
 let observer = null;

@@ -23,17 +23,59 @@ const DIVIDER_ATTR = "data-roprime-account-divider";
 let accountMenuRetries = 0;
 
 let accountMenuListObserver = null;
+let observedAccountMenuList = null;
+let reconcilingAccountMenu = false;
+let accountMenuReconcileTimer = 0;
+
+function disconnectAccountMenuListObserver() {
+  if (accountMenuListObserver) {
+    try {
+      accountMenuListObserver.disconnect();
+    } catch {
+      /* ignore */
+    }
+  }
+  observedAccountMenuList = null;
+}
+
+function queueAccountMenuReconcile() {
+  if (reconcilingAccountMenu) return;
+  window.clearTimeout(accountMenuReconcileTimer);
+  accountMenuReconcileTimer = window.setTimeout(() => {
+    accountMenuReconcileTimer = 0;
+    reconcileAccountMenuTabs();
+  }, 32);
+}
+
+function reconcileAccountMenuTabs() {
+  if (reconcilingAccountMenu) return;
+  if (!shouldInjectVerticalAccountTab()) return;
+  reconcilingAccountMenu = true;
+  disconnectAccountMenuListObserver();
+  try {
+    ensurePluginsTabEntry();
+    ensureVerticalTabEntry();
+  } finally {
+    reconcilingAccountMenu = false;
+  }
+}
 
 function ensureAccountMenuListObserver(menuList) {
-  if (accountMenuListObserver || !(menuList instanceof HTMLElement)) return;
-  try {
+  if (!(menuList instanceof HTMLElement)) return;
+  if (!accountMenuListObserver) {
     accountMenuListObserver = new MutationObserver(() => {
+      if (reconcilingAccountMenu) return;
       if (!shouldInjectVerticalAccountTab()) return;
-      ensureVerticalTabEntry();
+      queueAccountMenuReconcile();
     });
+  }
+  if (observedAccountMenuList === menuList) return;
+  try {
     accountMenuListObserver.observe(menuList, { childList: true });
+    observedAccountMenuList = menuList;
   } catch {
     accountMenuListObserver = null;
+    observedAccountMenuList = null;
   }
 }
 
@@ -197,14 +239,10 @@ function injectSettingsPopoverRow() {
 }
 
 function removeVerticalAccountInjections() {
-  if (accountMenuListObserver) {
-    try {
-      accountMenuListObserver.disconnect();
-    } catch {
-      /* ignore */
-    }
-    accountMenuListObserver = null;
-  }
+  window.clearTimeout(accountMenuReconcileTimer);
+  accountMenuReconcileTimer = 0;
+  disconnectAccountMenuListObserver();
+  accountMenuListObserver = null;
   document.querySelectorAll(`[${TAB_ENTRY_ATTR}]`).forEach((n) => {
     n.remove();
   });
@@ -287,16 +325,28 @@ function getBrowserPreferencesMenuTab(menuList) {
 }
 
 function getOrCreatePluginDivider(menuList) {
-  menuList.querySelector(`li[${DIVIDER_ATTR}="1"]`)?.remove();
-
   const natives = [
     ...menuList.querySelectorAll("li.menu-option[role='tab']"),
-  ].filter((li) => !li.hasAttribute(TAB_ENTRY_ATTR));
+  ].filter(
+    (li) =>
+      !li.hasAttribute(TAB_ENTRY_ATTR) && !li.hasAttribute(PLUGINS_TAB_ATTR),
+  );
   const anchor =
     getBrowserPreferencesMenuTab(menuList) ||
     (natives.length ? natives[natives.length - 1] : null) ||
     menuList.querySelector("li.menu-option[role='tab']");
-  if (!(anchor instanceof HTMLElement)) return null;
+  if (!(anchor instanceof HTMLElement)) {
+    const existing = menuList.querySelector(`li[${DIVIDER_ATTR}="1"]`);
+    return existing instanceof HTMLElement ? existing : null;
+  }
+
+  const existing = menuList.querySelector(`li[${DIVIDER_ATTR}="1"]`);
+  if (existing instanceof HTMLElement) {
+    if (anchor.nextElementSibling !== existing) {
+      anchor.insertAdjacentElement("afterend", existing);
+    }
+    return existing;
+  }
 
   const next = anchor.nextElementSibling;
   if (isThickRbxDividerLi(next)) {
@@ -490,8 +540,8 @@ export function syncAccountSettingsMenuButton() {
 
     let tabOk = true;
     if (shouldInjectVerticalAccountTab()) {
-      ensurePluginsTabEntry();
-      tabOk = ensureVerticalTabEntry();
+      reconcileAccountMenuTabs();
+      tabOk = !!getAccountPageMenuList()?.querySelector(`li[${TAB_ENTRY_ATTR}]`);
     } else {
       removeVerticalAccountInjections();
     }

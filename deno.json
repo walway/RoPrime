@@ -1,0 +1,8 @@
+{
+  "nodeModulesDir": "auto",
+  "lock": true,
+  "tasks": {
+    "build": "deno run -A tasks/build.js"
+  },
+  "exclude": ["dist", "node_modules"]
+}

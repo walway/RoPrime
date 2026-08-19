@@ -1,0 +1,12 @@
+#react-user-account-base
+  .setting-section:has(.app-theme-section):not(:has([data-roprime-app-theme="1"])) {
+  display: none !important;
+}
+
+#react-user-account-base .app-theme-section:not([data-roprime-app-theme="1"]) {
+  display: none !important;
+}
+
+#roprime-app-theme-section {
+  display: block;
+}

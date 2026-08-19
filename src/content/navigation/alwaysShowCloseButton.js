@@ -1,18 +1,73 @@
-import { RP_ALWAYS_SHOW_CLOSE_STYLE_ID, settingsState } from "../core/core.js";
+import {
+  getSidebarMainMarginPx,
+  isUserProfilePage,
+  RP_ALWAYS_SHOW_CLOSE_STYLE_ID,
+  settingsState,
+  shouldApplySidebarModifications,
+} from "../core/core.js";
 
 const RP_ALWAYS_CLOSE_COLLAPSED_CLASS = "roprime-always-close-collapsed";
+const RP_ALWAYS_CLOSE_PROFILE_ICON_CLASS = "roprime-always-close-profile-icon";
+const RP_ALWAYS_CLOSE_PROFILE_SMALL_CLASS =
+  "roprime-always-close-profile-small";
+const RP_ALWAYS_CLOSE_PROFILE_FULL_CLASS = "roprime-always-close-profile-full";
+
+const LEFT_NAV_UNUSED_CLASSES = ["large:visible", "large:[transform:unset]"];
+const LEFT_NAV_VISIBLE_CLASS = "visible";
+const LEFT_NAV_INVISIBLE_CLASS = "invisible";
+const LEFT_NAV_HIDE_TRANSFORM_CLASS = "[transform:translateX(-100%)]";
+
 const boundCloseButtons = new WeakSet();
+let sidebarCollapsed = false;
+let applyingLeftNavPanel = false;
+let leftNavPanelObserver = null;
+let observedLeftNavPanel = null;
+
+function getLeftNavigationPanel() {
+  const host = document.querySelector("#left-navigation-container");
+  if (!(host instanceof HTMLElement)) return null;
+  const panel = host.querySelector(":scope > div");
+  return panel instanceof HTMLElement ? panel : null;
+}
+
+function desiredProfileMarginClass() {
+  if (!isUserProfilePage()) return "";
+  if (settingsState.sidebarIconsOnlyEnabled) {
+    return RP_ALWAYS_CLOSE_PROFILE_ICON_CLASS;
+  }
+  if (settingsState.smallNewNavigationBarEnabled) {
+    return RP_ALWAYS_CLOSE_PROFILE_SMALL_CLASS;
+  }
+  return RP_ALWAYS_CLOSE_PROFILE_FULL_CLASS;
+}
+
+function syncProfileMarginClasses() {
+  const root = document.documentElement;
+  if (!root) return;
+
+  const next = desiredProfileMarginClass();
+  const classes = [
+    RP_ALWAYS_CLOSE_PROFILE_ICON_CLASS,
+    RP_ALWAYS_CLOSE_PROFILE_SMALL_CLASS,
+    RP_ALWAYS_CLOSE_PROFILE_FULL_CLASS,
+  ];
+  for (const cls of classes) {
+    root.classList.toggle(cls, cls === next);
+    document.body?.classList.toggle(cls, cls === next);
+  }
+}
 
 function getAlwaysShowCloseCss() {
-  const base = `
+  const iconMargin = getSidebarMainMarginPx();
+  const smallMargin = 200;
 
+  return `
 button.menu-button.btn-navigation-nav-menu-md {
   display: inline-flex !important;
   visibility: visible !important;
   opacity: 1 !important;
   pointer-events: auto !important;
 }
-
 
 .navbar-header,
 .rbx-header .rbx-navbar-header {
@@ -46,39 +101,11 @@ a.navbar-brand,
   margin-left: 0 !important;
 }
 
-
-#roprime-classic-left-nav-host.roprime-classic-left-nav-host {
-  top: 0 !important;
-  margin-top: 0 !important;
-  transition-property: transform, visibility !important;
-  transition-duration: 100ms !important;
-  transition-timing-function: var(--ease-standard-out, cubic-bezier(0.2, 0, 0, 1)) !important;
-  transform: translateX(0) !important;
-  visibility: visible !important;
-  pointer-events: auto !important;
-  will-change: transform;
+html:root body#rbx-body .no-gutter-ads.logged-in.left-nav-new-width,
+html:root body#rbx-body .left-nav-new-width,
+html:root .left-nav-new-width {
+  --left-nav-reserved-width: 0px !important;
 }
-
-html.${RP_ALWAYS_CLOSE_COLLAPSED_CLASS} #roprime-classic-left-nav-host,
-body.${RP_ALWAYS_CLOSE_COLLAPSED_CLASS} #roprime-classic-left-nav-host,
-html.roprime-old-navigation-bar-collapsed #roprime-classic-left-nav-host,
-body.roprime-old-navigation-bar-collapsed #roprime-classic-left-nav-host {
-  display: block !important;
-  transform: translateX(-100%) !important;
-  visibility: hidden !important;
-  pointer-events: none !important;
-}
-
-.content {
-  padding-left: 2% !important;
-}
-
-@media (min-width: 1141px) {
-  .no-gutter-ads.logged-in.left-nav-new-width {
-    --left-nav-reserved-width: 0px !important;
-  }
-}
-
 
 a.nav-logo-link.navbar-brand span.icon-logo,
 a.navbar-brand span.icon-logo,
@@ -91,15 +118,91 @@ a.navbar-brand span.icon-logo,
   vertical-align: middle !important;
 }
 
-
 a.nav-logo-link.navbar-brand span.icon-logo-r,
 a.navbar-brand span.icon-logo-r,
 .navbar-brand span.icon-logo-r {
   display: none !important;
 }
-
 `.trim();
-  return base;
+}
+
+function leftNavMatchesDesiredState(panel, collapsed) {
+  if (
+    LEFT_NAV_UNUSED_CLASSES.some((token) => panel.classList.contains(token))
+  ) {
+    return false;
+  }
+  if (collapsed) {
+    return (
+      panel.classList.contains(LEFT_NAV_INVISIBLE_CLASS) &&
+      !panel.classList.contains(LEFT_NAV_VISIBLE_CLASS) &&
+      panel.classList.contains(LEFT_NAV_HIDE_TRANSFORM_CLASS)
+    );
+  }
+  return (
+    panel.classList.contains(LEFT_NAV_VISIBLE_CLASS) &&
+    !panel.classList.contains(LEFT_NAV_INVISIBLE_CLASS) &&
+    !panel.classList.contains(LEFT_NAV_HIDE_TRANSFORM_CLASS)
+  );
+}
+
+function swapLeftNavVisibility(panel, collapsed) {
+  panel.classList.remove(...LEFT_NAV_UNUSED_CLASSES);
+  if (collapsed) {
+    panel.classList.remove(LEFT_NAV_VISIBLE_CLASS);
+    panel.classList.add(
+      LEFT_NAV_INVISIBLE_CLASS,
+      LEFT_NAV_HIDE_TRANSFORM_CLASS,
+    );
+    return;
+  }
+  panel.classList.remove(
+    LEFT_NAV_INVISIBLE_CLASS,
+    LEFT_NAV_HIDE_TRANSFORM_CLASS,
+  );
+  panel.classList.add(LEFT_NAV_VISIBLE_CLASS);
+}
+
+function applyLeftNavPanelState(collapsed) {
+  const panel = getLeftNavigationPanel();
+  if (!panel) return;
+  if (leftNavMatchesDesiredState(panel, collapsed)) {
+    observeLeftNavPanel(panel);
+    return;
+  }
+  applyingLeftNavPanel = true;
+  try {
+    swapLeftNavVisibility(panel, collapsed);
+  } finally {
+    applyingLeftNavPanel = false;
+  }
+  observeLeftNavPanel(panel);
+}
+
+function observeLeftNavPanel(panel) {
+  if (observedLeftNavPanel === panel && leftNavPanelObserver) return;
+  leftNavPanelObserver?.disconnect();
+  observedLeftNavPanel = panel;
+  leftNavPanelObserver = new MutationObserver(() => {
+    if (applyingLeftNavPanel) return;
+    if (
+      !settingsState.alwaysShowCloseButtonEnabled ||
+      !shouldApplySidebarModifications()
+    ) {
+      return;
+    }
+    applyLeftNavPanelState(sidebarCollapsed);
+  });
+  leftNavPanelObserver.observe(panel, {
+    attributes: true,
+    attributeFilter: ["class"],
+  });
+}
+
+function stopLeftNavPanelObserver() {
+  leftNavPanelObserver?.disconnect();
+  leftNavPanelObserver = null;
+  observedLeftNavPanel = null;
 }
 
 function forceCloseButtonInline() {
@@ -109,40 +212,39 @@ function forceCloseButtonInline() {
   if (!(btn instanceof HTMLButtonElement)) return;
 
   if (btn.style.display === "none") btn.style.display = "inline-flex";
-  btn.style.visibility = "visible";
-  btn.style.opacity = "1";
-  btn.style.pointerEvents = "auto";
+  if (btn.style.visibility !== "visible") btn.style.visibility = "visible";
+  if (btn.style.opacity !== "1") btn.style.opacity = "1";
+  if (btn.style.pointerEvents !== "auto") btn.style.pointerEvents = "auto";
   bindCloseButtonClick(btn);
 }
 
-function toggleOldNavHostCollapsed() {
-  const root = document.documentElement;
-  if (!root) return;
-  const host = document.getElementById("roprime-classic-left-nav-host");
-  if (host) root.classList.toggle(RP_ALWAYS_CLOSE_COLLAPSED_CLASS);
+function toggleLeftNavCollapsed() {
+  sidebarCollapsed = !sidebarCollapsed;
+  document.documentElement.classList.toggle(
+    RP_ALWAYS_CLOSE_COLLAPSED_CLASS,
+    sidebarCollapsed,
+  );
+  document.body?.classList.toggle(
+    RP_ALWAYS_CLOSE_COLLAPSED_CLASS,
+    sidebarCollapsed,
+  );
+  applyLeftNavPanelState(sidebarCollapsed);
+  requestAnimationFrame(() => applyLeftNavPanelState(sidebarCollapsed));
+}
 
-  const rails289 = Array.from(
-    document.querySelectorAll(".width-\\[289px\\], [class~='width-[289px]']"),
-  ).filter((el) => el instanceof HTMLElement);
-  rails289.forEach((el) => {
-    if (!(el instanceof HTMLElement)) return;
-    const hidden = getComputedStyle(el).display === "none";
-    if (hidden) {
-      el.style.display = el.dataset.rpPrevDisplay || "";
-      delete el.dataset.rpPrevDisplay;
-      return;
-    }
-    if (!el.dataset.rpPrevDisplay)
-      el.dataset.rpPrevDisplay = el.style.display || "";
-    el.style.display = "none";
-  });
+function onCloseButtonClick(event) {
+  if (!settingsState.alwaysShowCloseButtonEnabled) return;
+  if (settingsState.sidebarCollapseMenuEnabled) return;
+  event.preventDefault();
+  event.stopImmediatePropagation();
+  toggleLeftNavCollapsed();
 }
 
 function bindCloseButtonClick(btn) {
   if (!(btn instanceof HTMLButtonElement)) return;
   if (boundCloseButtons.has(btn)) return;
   boundCloseButtons.add(btn);
-  btn.addEventListener("click", toggleOldNavHostCollapsed, true);
+  btn.addEventListener("click", onCloseButtonClick, true);
 }
 
 function ensureObserver() {
@@ -152,47 +254,57 @@ function ensureObserver() {
   root.setAttribute("data-roprime-always-close-observer", "1");
 
   const obs = new MutationObserver(() => {
-    if (!settingsState.alwaysShowCloseButtonEnabled) return;
+    if (applyingLeftNavPanel) return;
+    if (
+      !settingsState.alwaysShowCloseButtonEnabled ||
+      !shouldApplySidebarModifications()
+    ) {
+      return;
+    }
     forceCloseButtonInline();
+    applyLeftNavPanelState(sidebarCollapsed);
   });
   obs.observe(document.documentElement, {
     subtree: true,
     childList: true,
-    attributes: true,
-    attributeFilter: ["style", "class"],
-  });
-}
-
-function restoreSidebarRailsDisplay() {
-  const rails289 = Array.from(
-    document.querySelectorAll(".width-\\[289px\\], [class~='width-[289px]']"),
-  ).filter((el) => el instanceof HTMLElement);
-  rails289.forEach((el) => {
-    if (!(el instanceof HTMLElement)) return;
-    if (!("rpPrevDisplay" in el.dataset)) return;
-    el.style.display = el.dataset.rpPrevDisplay || "";
-    delete el.dataset.rpPrevDisplay;
   });
 }
 
 function clearAlwaysShowCloseState() {
-  document.documentElement.classList.remove(RP_ALWAYS_CLOSE_COLLAPSED_CLASS);
-  document.body?.classList.remove(RP_ALWAYS_CLOSE_COLLAPSED_CLASS);
-  restoreSidebarRailsDisplay();
+  sidebarCollapsed = false;
+  stopLeftNavPanelObserver();
+  document.documentElement.classList.remove(
+    RP_ALWAYS_CLOSE_COLLAPSED_CLASS,
+    RP_ALWAYS_CLOSE_PROFILE_ICON_CLASS,
+    RP_ALWAYS_CLOSE_PROFILE_SMALL_CLASS,
+    RP_ALWAYS_CLOSE_PROFILE_FULL_CLASS,
+  );
+  document.body?.classList.remove(
+    RP_ALWAYS_CLOSE_COLLAPSED_CLASS,
+    RP_ALWAYS_CLOSE_PROFILE_ICON_CLASS,
+    RP_ALWAYS_CLOSE_PROFILE_SMALL_CLASS,
+    RP_ALWAYS_CLOSE_PROFILE_FULL_CLASS,
+  );
 }
 
 export function syncAlwaysShowCloseButton() {
   const existingStyle = document.getElementById(RP_ALWAYS_SHOW_CLOSE_STYLE_ID);
-  if (!settingsState.alwaysShowCloseButtonEnabled) {
+  if (
+    !settingsState.alwaysShowCloseButtonEnabled ||
+    !shouldApplySidebarModifications()
+  ) {
     if (existingStyle instanceof HTMLStyleElement) existingStyle.remove();
     clearAlwaysShowCloseState();
     return;
   }
+
+  syncProfileMarginClasses();
   ensureObserver();
   const css = getAlwaysShowCloseCss();
   if (existingStyle instanceof HTMLStyleElement) {
     if (existingStyle.textContent !== css) existingStyle.textContent = css;
     forceCloseButtonInline();
+    applyLeftNavPanelState(sidebarCollapsed);
     return;
   }
   const style = document.createElement("style");
@@ -200,4 +312,5 @@ export function syncAlwaysShowCloseButton() {
   style.textContent = css;
   document.documentElement.appendChild(style);
   forceCloseButtonInline();
+  applyLeftNavPanelState(sidebarCollapsed);
 }

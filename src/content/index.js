@@ -39,6 +39,11 @@ import {
 import { normalizeEquippedProfileEffects } from "./settings/profileSettings.js";
 import { syncProfileSettingsRoute } from "./settings/profileSettings.js";
 import { syncSidebarContent } from "./sidebar/sidebarContent.js";
+import {
+  initFreeRobloxThemes,
+  syncFreeRobloxTheme,
+} from "./account/freeThemes.js";
+import { syncRickRollEasterEgg } from "./memes/rickRoll.js";
 
 const extensionApi = globalThis.browser || globalThis.chrome;
 
@@ -66,6 +71,8 @@ function installStorageSyncListener() {
             syncAccountSettingsLayoutInset();
             syncSidebarContent({ force: true });
             syncSearchBan();
+            syncFreeRobloxTheme();
+            syncRickRollEasterEgg();
           } catch (e) {
             if (!isExtensionContextInvalidatedError(e)) throw e;
           }
@@ -105,12 +112,15 @@ function installHistoryListeners() {
       syncCustomCss();
       syncAccountSettingsLayoutInset();
       syncSearchBan();
+      syncFreeRobloxTheme();
+      syncRickRollEasterEgg();
     } catch (e) {
       if (!isExtensionContextInvalidatedError(e)) throw e;
     }
   };
 
   window.addEventListener("popstate", handleRouteChange);
+  window.addEventListener("hashchange", handleRouteChange);
   window.addEventListener("roprime-location-change", handleRouteChange);
 }
 
@@ -146,6 +156,8 @@ function bootstrap() {
         syncAccountSettingsLayoutInset();
         syncSidebarContent({ force: true });
         syncSearchBan();
+        void initFreeRobloxThemes();
+        syncRickRollEasterEgg();
         if (shouldRunRoPrimeOnCurrentPage()) {
           applyCommunityRename(document.body);
           applyMarketplaceRename(document.body);

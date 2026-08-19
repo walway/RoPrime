@@ -1,4 +1,4 @@
-import { spawn } from "node:child_process";
+import process from "node:process";
 import {
   cpSync,
   existsSync,
@@ -13,6 +13,7 @@ import AdmZip from "adm-zip";
 import chalk from "chalk";
 import dotenv from "dotenv";
 import { globSync } from "glob";
+import { build as viteBuild } from "vite";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 dotenv.config({ path: join(root, ".env") });
@@ -39,7 +40,7 @@ function prepareLottieVendorAssets() {
   );
   const lottieMinDst = join(root, "resources/vendor/lottie.min.js");
   if (!existsSync(lottieMinSrc)) {
-    throw new Error("Missing lottie-web. Run `npm install` first.");
+    throw new Error("Missing lottie-web. Run `deno install` first.");
   }
   cpSync(lottieMinSrc, lottieMinDst);
 
@@ -60,23 +61,8 @@ function prepareLottieVendorAssets() {
   writeFileSync(clockworkJson, zip.readAsText(entryPath));
 }
 
-function runNode(scriptPath, args, opts) {
-  return new Promise((resolve, reject) => {
-    const child = spawn(process.execPath, [scriptPath, ...args], {
-      stdio: "inherit",
-      cwd: root,
-      ...opts,
-    });
-    child.on("error", reject);
-    child.on("close", (code) => {
-      if (code === 0) resolve();
-      else reject(new Error(`process exited with code ${code}`));
-    });
-  });
-}
-
 function copyStyleTreeToDist(targetBase) {
-  const styleFiles = globSync("src/style/**/*.css", { nodir: true });
+  const styleFiles = globSync("src/style/**/*.css", { nodir: true, cwd: root });
   if (styleFiles.length === 0) {
     throw new Error("No stylesheets under src/style/");
   }
@@ -152,9 +138,9 @@ function assemblePlatformDist(platform) {
   copyStyleTreeToDist(platformDistDir);
   copyPathsToDist(
     [
-      ...globSync("resources/**/*", { nodir: true }),
-      ...globSync("src/strings/**/*", { nodir: true }),
-      ...globSync(".locales/lang-config.js", { nodir: true }),
+      ...globSync("resources/**/*", { nodir: true, cwd: root }),
+      ...globSync("src/strings/**/*", { nodir: true, cwd: root }),
+      ...globSync(".locales/lang-config.js", { nodir: true, cwd: root }),
     ],
     platformDistDir,
   );
@@ -175,12 +161,9 @@ if (process.env.SUPABASE_URL?.trim()) {
 }
 rmSync(distDir, { recursive: true, force: true });
 
-const viteCli = join(root, "node_modules", "vite", "bin", "vite.js");
-if (!existsSync(viteCli)) {
-  console.error("Missing Vite CLI. Run `pnpm install` first.");
-  process.exit(1);
-}
-await runNode(viteCli, ["build", "--config", "configs/vite.content.config.js"]);
+await viteBuild({
+  configFile: join(root, "configs/vite.content.config.js"),
+});
 
 for (const platform of platforms) {
   assemblePlatformDist(platform);

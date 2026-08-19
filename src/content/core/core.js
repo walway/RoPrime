@@ -235,6 +235,7 @@ export const RP_DEFAULT_SETTINGS = {
   profileEffectsSupportNoticeAccepted: false,
   searchBanEnabled: false,
   searchBannedWords: [],
+  robloxFreeThemeClass: "",
 };
 
 export let isSyncing = false;
@@ -385,6 +386,10 @@ export function serializeSettingsPayload() {
     searchBannedWords: normalizeSearchBannedWords(
       settingsState.searchBannedWords,
     ),
+    robloxFreeThemeClass:
+      typeof settingsState.robloxFreeThemeClass === "string"
+        ? settingsState.robloxFreeThemeClass.trim()
+        : "",
   };
 }
 
@@ -456,7 +461,7 @@ export function isNativeMyAccountHashRoute() {
   const search = window.location.search || "";
   if (search.length > 1) return false;
   const hash = window.location.hash || "";
-  return hash.startsWith("#!/");
+  return hash === "" || hash === "#" || hash.startsWith("#!/");
 }
 
 export function getRobloxLocalePathPrefix() {
@@ -520,6 +525,35 @@ export function shouldRunRoPrimeOnCurrentPage() {
   } catch {
     return false;
   }
+}
+
+export function isSupportPage(loc = window.location) {
+  const path = loc.pathname || "";
+  return /^\/(?:[a-z]{2,3}(?:-[a-z0-9]{2,8})?\/)?support(?:\/|$)/i.test(path);
+}
+
+export function isUserProfilePage(loc = window.location) {
+  return parseUserProfileIdFromLocation(loc) != null;
+}
+
+export function parseUserProfileIdFromLocation(loc = window.location) {
+  const path = loc.pathname || "";
+  const match = path.match(
+    /^\/(?:[a-z]{2,3}(?:-[a-z0-9]{2,8})?\/)?users\/(\d+)\/profile(?:\/|$)/i,
+  );
+  if (!match) return null;
+  const userId = Number(match[1]);
+  return Number.isFinite(userId) && userId > 0 ? userId : null;
+}
+
+export function shouldApplySidebarModifications(loc = window.location) {
+  return shouldRunRoPrimeOnCurrentPage() && !isSupportPage(loc);
+}
+
+export function getSidebarMainMarginPx() {
+  if (settingsState.sidebarIconsOnlyEnabled) return 82;
+  if (settingsState.smallNewNavigationBarEnabled) return 200;
+  return 289;
 }
 
 export function getCurrentrp() {

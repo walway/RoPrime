@@ -257,18 +257,20 @@ function buildSettingsHostContent(host) {
   settingsContainer.id = "settings-container";
 
   const leftNav = el("div", "settings-left-navigation");
-  const searchWrap = el("div", "roprime-settings-search-wrap");
-  searchWrap.setAttribute("data-roprime-shared-search-wrap", "1");
+
+  const navList = el("ul", "menu-vertical");
+  navList.setAttribute("role", "tablist");
+
+  const searchItem = el("li", "menu-option");
+  searchItem.setAttribute("role", "tab");
+  searchItem.setAttribute("data-roprime-settings-search-item", "1");
   const search = el("input");
   search.id = "roprime-settings-search";
   search.type = "search";
   search.className = "roprime-settings-search";
   setDataI18nPlaceholder(search, "Search settings placeholder");
   search.autocomplete = "off";
-  searchWrap.appendChild(search);
-
-  const navList = el("ul", "menu-vertical");
-  navList.setAttribute("role", "tablist");
+  searchItem.appendChild(search);
 
   for (const [pageKey, pageCfg] of Object.entries(SETTINGS_CONFIG)) {
     if (!pageCfg.labelKey) continue;
@@ -286,12 +288,7 @@ function buildSettingsHostContent(host) {
     navList.appendChild(li);
   }
 
-  const profileAlert = el("a", "roprime-settings-nav-alert");
-  profileAlert.setAttribute("data-roprime-profile-effects-alert", "1");
-  profileAlert.href = buildPluginUrl("other");
-  const alertText = el("span", "roprime-settings-nav-alert-text");
-  setDataI18n(alertText, "Try out new profile animations");
-  profileAlert.appendChild(alertText);
+  navList.insertBefore(searchItem, navList.firstChild);
 
   const tabContent = el("div", "tab-content rbx-tab-content");
   const tabPane = el("div", "tab-pane active");
@@ -325,7 +322,7 @@ function buildSettingsHostContent(host) {
   tabPane.appendChild(containerV2);
   tabContent.appendChild(tabPane);
 
-  leftNav.append(searchWrap, navList, profileAlert, tabContent);
+  leftNav.append(navList, tabContent);
   settingsContainer.appendChild(leftNav);
   host.appendChild(settingsContainer);
 }
@@ -338,22 +335,35 @@ function createSettingSection(innerContent) {
   return section;
 }
 
-function createToggleCopy(titleKey, descKey) {
-  const copy = el("div", "roprime-toggle-copy");
-  const title = el("div", "roprime-toggle-title");
+function getElementNameSlug(item) {
+  if (item?.id) return String(item.id).replace(/^roprime-toggle-/, "");
+  if (item?.key) return String(item.key);
+  return "setting";
+}
+
+function createSettingCopy(titleKey, descKey) {
+  const copy = el("div", "roprime-setting-field-copy");
+  const title = el("div", "roprime-setting-title");
   setDataI18n(title, titleKey);
   copy.appendChild(title);
   if (descKey) {
-    const desc = el("div", "roprime-toggle-desc");
+    const desc = el("div", "roprime-setting-desc");
     setDataI18n(desc, descKey);
     copy.appendChild(desc);
   }
   return copy;
 }
 
+function createToggleCopy(titleKey, descKey) {
+  return createSettingCopy(titleKey, descKey);
+}
+
 function createToggleSection(item) {
-  const row = el("div");
-  row.appendChild(createToggleCopy(item.titleKey, item.descKey));
+  const slug = getElementNameSlug(item);
+  const row = el("div", "roprime-toggle-row");
+  row.setAttribute("data-roprime-element-name", slug);
+  row.classList.add(`roprime-element-${slug}`);
+  row.appendChild(createSettingCopy(item.titleKey, item.descKey));
   const toggle = createToggle({
     id: item.id,
     checked: !!settingsState[item.key],
@@ -370,14 +380,17 @@ function createToggleSection(item) {
 }
 
 function createAccordionSection(item) {
+  const slug = getElementNameSlug({ id: item.masterId, key: item.masterKey });
   const accordion = el("div", "roprime-accordion");
   accordion.setAttribute("data-roprime-accordion", item.id);
+  accordion.setAttribute("data-roprime-element-name", slug);
+  accordion.classList.add(`roprime-element-${slug}`);
 
   const headerRow = el("div", "roprime-accordion-header");
   headerRow.setAttribute("role", "button");
   headerRow.tabIndex = 0;
   headerRow.setAttribute("aria-expanded", "false");
-  headerRow.appendChild(createToggleCopy(item.titleKey));
+  headerRow.appendChild(createSettingCopy(item.titleKey));
 
   const masterToggle = createToggle({
     id: item.masterId,
@@ -474,6 +487,8 @@ function renderPageContent(container, pageKey) {
 
 function buildSidebarSizeControl(sliderId) {
   const control = el("div", "roprime-sidebar-size-control");
+  control.setAttribute("data-roprime-element-name", "sidebar-size");
+  control.classList.add("roprime-element-sidebar-size");
   const box = el("div", "roprime-sidebar-size-box");
   const rail = el("div", "roprime-sidebar-size-rail");
   const slider = el("input", "roprime-sidebar-size-slider");
@@ -1771,11 +1786,13 @@ function bindOnce(root) {
     refreshLayoutAndNav(root);
   };
 
-  const searchWrap = root.querySelector("[data-roprime-shared-search-wrap]");
   const search = root.querySelector("#roprime-settings-search");
   if (search instanceof HTMLInputElement) {
     search.addEventListener("focus", enterSearchMode);
-    search.addEventListener("click", enterSearchMode);
+    search.addEventListener("click", (event) => {
+      event.stopPropagation();
+      enterSearchMode();
+    });
     search.addEventListener("input", () => {
       if (root.getAttribute("data-roprime-search-mode") !== "1") return;
       if (search.value.trim().toLowerCase() === RP_DEBUG_UNLOCK)
@@ -1783,8 +1800,13 @@ function bindOnce(root) {
       refreshLayoutAndNav(root);
     });
   }
-  if (searchWrap instanceof HTMLElement) {
-    searchWrap.addEventListener("pointerdown", () => enterSearchMode(), true);
+
+  const searchItem = root.querySelector("[data-roprime-settings-search-item]");
+  if (searchItem instanceof HTMLElement) {
+    searchItem.addEventListener("pointerdown", (event) => {
+      if (event.target instanceof HTMLInputElement) return;
+      enterSearchMode();
+    });
   }
 
   const navigateToPage = (nextPage) => {
@@ -1809,16 +1831,6 @@ function bindOnce(root) {
       navigateToPage(page);
     });
   });
-
-  const profileEffectsAlert = root.querySelector(
-    "[data-roprime-profile-effects-alert]",
-  );
-  if (profileEffectsAlert instanceof HTMLAnchorElement) {
-    profileEffectsAlert.addEventListener("click", (event) => {
-      event.preventDefault();
-      navigateToPage("other");
-    });
-  }
 
   wireToggleElements(root);
 
@@ -2170,16 +2182,6 @@ function refreshLayoutAndNav(root) {
       }
     }
   });
-
-  const profileEffectsAlert = root.querySelector(
-    "[data-roprime-profile-effects-alert]",
-  );
-  if (profileEffectsAlert instanceof HTMLElement) {
-    profileEffectsAlert.classList.toggle(
-      "is-active",
-      !isSearchMode && activePage === "other",
-    );
-  }
 
   const devHint = root.querySelector("[data-roprime-developer-unlock-message]");
   if (devHint instanceof HTMLElement) {

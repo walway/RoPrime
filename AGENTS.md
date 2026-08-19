@@ -4,13 +4,13 @@ RoPrime is a browser extension for roblox.com that provides design-change featur
 
 ## Dev environment tips
 
-- Always use `pnpm build` to build the project. If the build fails, stop and request human intervention.
-- Run `pnpm install --filter <package_name>` to add a package to workspace so npm, Biome and JavaScript can see it.
-- Run `pnpm prettier --write path/to/file` to format the code and automatically fix safe linting errors.
+- Always use `deno task build` to build the project. If the build fails, stop and request human intervention.
+- Run `deno install` after changing dependencies in package.json.
+- Run `deno run -A npm:prettier --write path/to/file` to format the code and automatically fix safe linting errors.
 
 ## PR instructions
 
-- Always run `npm run build` locally to verify the compilation before finishing a task or opening a Pull Request.
+- Always run `deno task build` locally to verify the compilation before finishing a task or opening a Pull Request.
 
 ## Repository Architecture
 

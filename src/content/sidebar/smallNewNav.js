@@ -1,4 +1,8 @@
-import { RP_SMALL_NEW_NAV_STYLE_ID, settingsState } from "../core/core.js";
+import {
+  RP_SMALL_NEW_NAV_STYLE_ID,
+  settingsState,
+  shouldApplySidebarModifications,
+} from "../core/core.js";
 
 export const SMALL_NEW_NAV_CUSTOM_CSS = `
 .gap-large .roseal-events-nav .event-list .event-item .thumbnail-2d-container {
@@ -130,7 +134,10 @@ export const syncOfficialStoreSidebarRename = syncSmallNavSidebarRenames;
 
 export function updateSmallNewNavVisibility() {
   const existingStyle = document.getElementById(RP_SMALL_NEW_NAV_STYLE_ID);
-  if (!settingsState.smallNewNavigationBarEnabled) {
+  if (
+    !settingsState.smallNewNavigationBarEnabled ||
+    !shouldApplySidebarModifications()
+  ) {
     if (existingStyle instanceof HTMLStyleElement) existingStyle.remove();
     restoreSmallNavSidebarLabels();
     return;

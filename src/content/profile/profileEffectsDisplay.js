@@ -1,4 +1,8 @@
-import { shouldRunRoPrimeOnCurrentPage } from "../core/core.js";
+import {
+  isUserProfilePage,
+  parseUserProfileIdFromLocation,
+  shouldRunRoPrimeOnCurrentPage,
+} from "../core/core.js";
 import { debounce } from "../core/debounce.js";
 import {
   layerIsCurrent,
@@ -7,6 +11,11 @@ import {
   resolveEquippedEffectId,
 } from "./effectMount.js";
 import { getProfileEffectById } from "./profileEffectsCatalog.js";
+
+export {
+  isUserProfilePage,
+  parseUserProfileIdFromLocation,
+} from "../core/core.js";
 
 const PICTURE_LAYER_ATTR = "data-roprime-profile-picture-effect-layer";
 const PICTURE_LAYER_ID = "roprime-profile-page-effect-layer";
@@ -19,20 +28,6 @@ const PROFILE_SYNC_DEBOUNCE_MS = 400;
 const scheduleProfileSync = debounce(() => {
   void syncProfilePageEffect();
 }, PROFILE_SYNC_DEBOUNCE_MS);
-
-export function parseUserProfileIdFromLocation(loc = window.location) {
-  const path = loc.pathname || "";
-  const match = path.match(
-    /^\/(?:[a-z]{2,3}(?:-[a-z0-9]{2,8})?\/)?users\/(\d+)\/profile(?:\/|$)/i,
-  );
-  if (!match) return null;
-  const userId = Number(match[1]);
-  return Number.isFinite(userId) && userId > 0 ? userId : null;
-}
-
-export function isUserProfilePage(loc = window.location) {
-  return parseUserProfileIdFromLocation(loc) != null;
-}
 
 function removeProfileEffectLayers() {
   document.getElementById(PICTURE_LAYER_ID)?.remove();

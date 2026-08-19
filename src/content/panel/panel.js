@@ -32,6 +32,7 @@ import {
   RP_HIDE_AGE_BADGE_STYLE_ID,
 } from "../sidebar/hideAgeBadge.js";
 import { updateSmallNewNavVisibility } from "../sidebar/smallNewNav.js";
+import { syncRickRollEasterEgg } from "../memes/rickRoll.js";
 
 export function updateOldNavigationBarVisibility() {
   syncOldNavigationBar();
@@ -86,6 +87,7 @@ export function syncRoEliteView() {
     syncRobloxNavDropdownButton();
     syncRobloxFoundationWebMenuButton();
     syncSearchBan();
+    syncRickRollEasterEgg();
   } catch (e) {
     if (isExtensionContextInvalidatedError(e)) return;
     throw e;
