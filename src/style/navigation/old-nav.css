@@ -1,46 +1,45 @@
 #roprime-classic-left-nav-host.roprime-classic-left-nav-host {
-  position: fixed;
-  left: 0;
-  top: 0;
-  width: 288px;
-  height: 100vh;
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 288px;
+    height: 100vh;
 
-  z-index: 55;
-  box-sizing: border-box;
-  overflow: hidden;
-  pointer-events: auto;
-  font-family: "Builder Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
+    z-index: 55;
+    box-sizing: border-box;
+    overflow: hidden;
+    pointer-events: auto;
+    font-family: 'Builder Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
 }
 
 html.roprime-old-navigation-bar-collapsed #roprime-classic-left-nav-host,
 body.roprime-old-navigation-bar-collapsed #roprime-classic-left-nav-host {
-  display: none !important;
+    display: none !important;
 }
 
 html.roprime-classic-left-nav-on .container-fluid,
 body.roprime-classic-left-nav-on .container-fluid {
-  position: relative !important;
-  z-index: 60 !important;
+    position: relative !important;
+    z-index: 60 !important;
 }
 
 html.roprime-classic-left-nav-on .width-\[288px\],
 body.roprime-classic-left-nav-on .width-\[288px\],
-html.roprime-classic-left-nav-on [class~="width-[288px]"],
-body.roprime-classic-left-nav-on [class~="width-[288px]"],
+html.roprime-classic-left-nav-on [class~='width-[288px]'],
+body.roprime-classic-left-nav-on [class~='width-[288px]'],
 html.roprime-classic-left-nav-on .left-nav.fixed,
 body.roprime-classic-left-nav-on .left-nav.fixed,
 html.roprime-classic-left-nav-on .stroke-default.self-stretch,
 body.roprime-classic-left-nav-on .stroke-default.self-stretch {
-  display: none !important;
+    display: none !important;
 }
 
 html.roprime-classic-left-nav-on .flex.width-\[288px\].h-full.overflow-y-auto,
 body.roprime-classic-left-nav-on .flex.width-\[288px\].h-full.overflow-y-auto,
-html.roprime-classic-left-nav-on .flex[class~="width-[288px]"][class~="h-full"],
-body.roprime-classic-left-nav-on
-  .flex[class~="width-[288px]"][class~="h-full"] {
-  display: none !important;
+html.roprime-classic-left-nav-on .flex[class~='width-[288px]'][class~='h-full'],
+body.roprime-classic-left-nav-on .flex[class~='width-[288px]'][class~='h-full'] {
+    display: none !important;
 }
 
 html.roprime-classic-left-nav-on button.menu-button.btn-navigation-nav-menu-md,
@@ -51,291 +50,279 @@ html.roprime-classic-left-nav-on .navbar-header,
 body.roprime-classic-left-nav-on .navbar-header,
 html.roprime-classic-left-nav-on a.navbar-brand,
 body.roprime-classic-left-nav-on a.navbar-brand {
-  display: flex !important;
-  visibility: visible !important;
-  opacity: 1 !important;
-  pointer-events: auto !important;
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
 }
 
 html.roprime-classic-left-nav-on .navbar-header,
 body.roprime-classic-left-nav-on .navbar-header,
 html.roprime-classic-left-nav-on .rbx-header .rbx-navbar-header,
 body.roprime-classic-left-nav-on .rbx-header .rbx-navbar-header {
-  align-items: center;
+    align-items: center;
 }
 
 html.roprime-classic-left-nav-on button.menu-button.btn-navigation-nav-menu-md,
 body.roprime-classic-left-nav-on button.menu-button.btn-navigation-nav-menu-md {
-  background: transparent !important;
-  box-shadow: none !important;
-  filter: none !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    filter: none !important;
 }
 
-html.roprime-classic-left-nav-on
-  button.menu-button.btn-navigation-nav-menu-md:hover,
-body.roprime-classic-left-nav-on
-  button.menu-button.btn-navigation-nav-menu-md:hover {
-  background: rgba(255, 255, 255, 0.12) !important;
+html.roprime-classic-left-nav-on button.menu-button.btn-navigation-nav-menu-md:hover,
+body.roprime-classic-left-nav-on button.menu-button.btn-navigation-nav-menu-md:hover {
+    background: rgba(255, 255, 255, 0.12) !important;
 }
 
+html.roprime-classic-left-nav-on button.menu-button.btn-navigation-nav-menu-md:focus:not(:hover):not(:active),
+body.roprime-classic-left-nav-on button.menu-button.btn-navigation-nav-menu-md:focus:not(:hover):not(:active),
 html.roprime-classic-left-nav-on
-  button.menu-button.btn-navigation-nav-menu-md:focus:not(:hover):not(:active),
+    button.menu-button.btn-navigation-nav-menu-md:focus-visible:not(:hover):not(
+        :active
+    ),
 body.roprime-classic-left-nav-on
-  button.menu-button.btn-navigation-nav-menu-md:focus:not(:hover):not(:active),
-html.roprime-classic-left-nav-on
-  button.menu-button.btn-navigation-nav-menu-md:focus-visible:not(:hover):not(
-    :active
-  ),
-body.roprime-classic-left-nav-on
-  button.menu-button.btn-navigation-nav-menu-md:focus-visible:not(:hover):not(
-    :active
-  ) {
-  background: transparent !important;
+    button.menu-button.btn-navigation-nav-menu-md:focus-visible:not(:hover):not(
+        :active
+    ) {
+    background: transparent !important;
 }
 
-html.roprime-classic-left-nav-on
-  button.menu-button.btn-navigation-nav-menu-md:active,
-body.roprime-classic-left-nav-on
-  button.menu-button.btn-navigation-nav-menu-md:active,
-html.roprime-classic-left-nav-on
-  button.menu-button.btn-navigation-nav-menu-md:active:focus,
-body.roprime-classic-left-nav-on
-  button.menu-button.btn-navigation-nav-menu-md:active:focus,
-html.roprime-classic-left-nav-on
-  button.menu-button.btn-navigation-nav-menu-md:active:focus-visible,
-body.roprime-classic-left-nav-on
-  button.menu-button.btn-navigation-nav-menu-md:active:focus-visible {
-  background: rgba(255, 255, 255, 0.18) !important;
+html.roprime-classic-left-nav-on button.menu-button.btn-navigation-nav-menu-md:active,
+body.roprime-classic-left-nav-on button.menu-button.btn-navigation-nav-menu-md:active,
+html.roprime-classic-left-nav-on button.menu-button.btn-navigation-nav-menu-md:active:focus,
+body.roprime-classic-left-nav-on button.menu-button.btn-navigation-nav-menu-md:active:focus,
+html.roprime-classic-left-nav-on button.menu-button.btn-navigation-nav-menu-md:active:focus-visible,
+body.roprime-classic-left-nav-on button.menu-button.btn-navigation-nav-menu-md:active:focus-visible {
+    background: rgba(255, 255, 255, 0.18) !important;
 }
 
-html.roprime-classic-left-nav-on
-  button.menu-button.btn-navigation-nav-menu-md:not(:hover):not(:active),
-body.roprime-classic-left-nav-on
-  button.menu-button.btn-navigation-nav-menu-md:not(:hover):not(:active) {
-  background: transparent !important;
+html.roprime-classic-left-nav-on button.menu-button.btn-navigation-nav-menu-md:not(:hover):not(:active),
+body.roprime-classic-left-nav-on button.menu-button.btn-navigation-nav-menu-md:not(:hover):not(:active) {
+    background: transparent !important;
 }
 
 .roprime-classic-left-nav {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  width: 100%;
-  margin: 0;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+    margin: 0;
 
-  padding: 56px 0 0;
-  box-sizing: border-box;
-  background: #f2f4f5;
-  color: #272930;
-  border-right: 1px solid #e1e4e8;
-  box-shadow: 1px 0 0 rgba(0, 0, 0, 0.04);
+    padding: 56px 0 0;
+    box-sizing: border-box;
+    background: #f2f4f5;
+    color: #272930;
+    border-right: 1px solid #e1e4e8;
+    box-shadow: 1px 0 0 rgba(0, 0, 0, 0.04);
 }
 
 .roprime-cln-top {
-  flex-shrink: 0;
-  padding: 12px 14px 0;
+    flex-shrink: 0;
+    padding: 12px 14px 0;
 }
 
 .roprime-cln-profile {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 6px 8px 10px;
-  margin: 0 -4px;
-  text-decoration: none;
-  color: inherit;
-  border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 6px 8px 10px;
+    margin: 0 -4px;
+    text-decoration: none;
+    color: inherit;
+    border-radius: 8px;
 }
 
 .roprime-cln-profile:hover {
-  background: rgba(0, 0, 0, 0.04);
+    background: rgba(0, 0, 0, 0.04);
 }
 
 .roprime-cln-avatar {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  object-fit: cover;
-  flex-shrink: 0;
-  background: #dde1e6;
-  border: 1px solid #cfd4da;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+    background: #dde1e6;
+    border: 1px solid #cfd4da;
 }
 
 .roprime-cln-avatar--ph {
-  display: inline-block;
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background: #dde1e6;
-  border: 1px solid #cfd4da;
+    display: inline-block;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #dde1e6;
+    border: 1px solid #cfd4da;
 }
 
 .roprime-cln-name {
-  font-size: 0.9375rem;
-  font-weight: 600;
-  letter-spacing: 0.01em;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  color: #272930;
-  text-align: left;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: #272930;
+    text-align: left;
 }
 
 .roprime-cln-divider {
-  height: 1px;
-  margin: 4px 0 6px;
-  background: #dde1e6;
-  border: none;
+    height: 1px;
+    margin: 4px 0 6px;
+    background: #dde1e6;
+    border: none;
 }
 
 .roprime-cln-scroll {
-  flex: 1 1 auto;
-  min-height: 0;
-  overflow-x: hidden;
-  overflow-y: auto;
-  padding: 2px 10px 14px;
-  scrollbar-width: thin;
-  scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    padding: 2px 10px 14px;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
 }
 
 .roprime-cln-list {
-  list-style: none;
-  margin: 0;
-  padding: 0 0 8px;
+    list-style: none;
+    margin: 0;
+    padding: 0 0 8px;
 }
 
 .roprime-cln-link {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 7px 8px;
-  margin: 1px 0;
-  border-radius: 6px;
-  text-decoration: none;
-  color: #272930;
-  font-size: 0.9375rem;
-  font-weight: 500;
-  line-height: 1.3;
-  position: relative;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 7px 8px;
+    margin: 1px 0;
+    border-radius: 6px;
+    text-decoration: none;
+    color: #272930;
+    font-size: 0.9375rem;
+    font-weight: 500;
+    line-height: 1.3;
+    position: relative;
 }
 
 .roprime-cln-link:hover {
-  background: rgba(0, 0, 0, 0.05);
+    background: rgba(0, 0, 0, 0.05);
 }
 
 .roprime-cln-icon-wrap {
-  position: relative;
-  flex-shrink: 0;
-  width: 22px;
-  height: 22px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #3a3f47;
+    position: relative;
+    flex-shrink: 0;
+    width: 22px;
+    height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #3a3f47;
 }
 
 .roprime-cln-icon-wrap--external::after {
-  content: "";
-  position: absolute;
-  right: 0;
-  bottom: 1px;
-  width: 5px;
-  height: 5px;
-  border-right: 1.5px solid currentColor;
-  border-bottom: 1.5px solid currentColor;
-  opacity: 0.8;
-  box-sizing: border-box;
+    content: '';
+    position: absolute;
+    right: 0;
+    bottom: 1px;
+    width: 5px;
+    height: 5px;
+    border-right: 1.5px solid currentColor;
+    border-bottom: 1.5px solid currentColor;
+    opacity: 0.8;
+    box-sizing: border-box;
 }
 
 .roprime-cln-svg {
-  display: block;
-  color: inherit;
+    display: block;
+    color: inherit;
 }
 
 .roprime-cln-label {
-  flex: 1;
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  text-align: left;
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-align: left;
 }
 
 .roprime-cln-badge {
-  flex-shrink: 0;
-  min-width: 18px;
-  height: 18px;
-  padding: 0 5px;
-  margin-left: 0;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.65rem;
-  font-weight: 700;
-  line-height: 1;
-  color: #f5d24a;
-  background: #111;
-  border-radius: 999px;
-  box-sizing: border-box;
-  position: absolute;
-  right: 10px;
+    flex-shrink: 0;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    margin-left: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.65rem;
+    font-weight: 700;
+    line-height: 1;
+    color: #f5d24a;
+    background: #111;
+    border-radius: 999px;
+    box-sizing: border-box;
+    position: absolute;
+    right: 10px;
 }
 
 .roprime-cln-premium {
-  display: block;
-  margin: 4px 4px 0;
-  padding: 11px 14px;
-  text-align: center;
-  text-decoration: none;
-  font-weight: 700;
-  font-size: 0.9375rem;
-  letter-spacing: 0.02em;
-  color: #fff;
-  background: #1f1f1f;
-  border-radius: 999px;
-  box-sizing: border-box;
-  border: 1px solid rgba(0, 0, 0, 0.15);
+    display: block;
+    margin: 4px 4px 0;
+    padding: 11px 14px;
+    text-align: center;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 0.9375rem;
+    letter-spacing: 0.02em;
+    color: #fff;
+    background: #1f1f1f;
+    border-radius: 999px;
+    box-sizing: border-box;
+    border: 1px solid rgba(0, 0, 0, 0.15);
 }
 
 .roprime-cln-premium:hover {
-  background: #2a2a2a;
-  color: #fff;
+    background: #2a2a2a;
+    color: #fff;
 }
 
 html.dark-theme #roprime-classic-left-nav-host .roprime-classic-left-nav,
 body.dark-theme #roprime-classic-left-nav-host .roprime-classic-left-nav {
-  background: #2b2d31;
-  color: #f2f4f5;
-  border-right-color: rgba(255, 255, 255, 0.08);
+    background: #2b2d31;
+    color: #f2f4f5;
+    border-right-color: rgba(255, 255, 255, 0.08);
 }
 
 html.dark-theme #roprime-classic-left-nav-host .roprime-cln-name,
 body.dark-theme #roprime-classic-left-nav-host .roprime-cln-name,
 html.dark-theme #roprime-classic-left-nav-host .roprime-cln-link,
 body.dark-theme #roprime-classic-left-nav-host .roprime-cln-link {
-  color: #f2f4f5;
+    color: #f2f4f5;
 }
 
 html.dark-theme #roprime-classic-left-nav-host .roprime-cln-icon-wrap,
 body.dark-theme #roprime-classic-left-nav-host .roprime-cln-icon-wrap {
-  color: #e3e5e8;
+    color: #e3e5e8;
 }
 
 html.dark-theme #roprime-classic-left-nav-host .roprime-cln-divider,
 body.dark-theme #roprime-classic-left-nav-host .roprime-cln-divider {
-  background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.1);
 }
 
 html.dark-theme #roprime-classic-left-nav-host .roprime-cln-profile:hover,
 body.dark-theme #roprime-classic-left-nav-host .roprime-cln-profile:hover,
 html.dark-theme #roprime-classic-left-nav-host .roprime-cln-link:hover,
 body.dark-theme #roprime-classic-left-nav-host .roprime-cln-link:hover {
-  background: rgba(255, 255, 255, 0.06);
+    background: rgba(255, 255, 255, 0.06);
 }
 
 html.dark-theme #roprime-classic-left-nav-host .roprime-cln-avatar,
 body.dark-theme #roprime-classic-left-nav-host .roprime-cln-avatar,
 html.dark-theme #roprime-classic-left-nav-host .roprime-cln-avatar--ph,
 body.dark-theme #roprime-classic-left-nav-host .roprime-cln-avatar--ph {
-  border-color: rgba(255, 255, 255, 0.12);
-  background: #3a3d42;
+    border-color: rgba(255, 255, 255, 0.12);
+    background: #3a3d42;
 }

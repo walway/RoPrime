@@ -15,22 +15,22 @@ import dotenv from "dotenv";
 import { globSync } from "glob";
 import { build as viteBuild } from "vite";
 
-const root = join(dirname(fileURLToPath(import.meta.url)), "..");
-dotenv.config({ path: join(root, ".env") });
-const distDir = join(root, "dist");
-const bundleDir = join(distDir, "_build");
-const platforms = ["chrome", "firefox"];
-const error = chalk.bold.red;
-const warning = chalk.hex("#FFA500");
+const root = join(dirname(fileURLToPath(import.meta.url)), '..')
+dotenv.config({ path: join(root, '.env') })
+const distDir = join(root, 'dist')
+const bundleDir = join(distDir, '_build')
+const platforms = ['chrome', 'firefox']
+const error = chalk.bold.red
+const warning = chalk.hex('#FFA500')
 
 function copyPathsToDist(relativePaths, targetBase) {
-  for (const file of relativePaths) {
-    const src = join(root, file);
-    if (!existsSync(src)) continue;
-    const dst = join(targetBase, file);
-    mkdirSync(dirname(dst), { recursive: true });
-    cpSync(src, dst);
-  }
+    for (const file of relativePaths) {
+        const src = join(root, file)
+        if (!existsSync(src)) continue
+        const dst = join(targetBase, file)
+        mkdirSync(dirname(dst), { recursive: true })
+        cpSync(src, dst)
+    }
 }
 
 function prepareLottieVendorAssets() {
@@ -70,64 +70,71 @@ function copyStyleTreeToDist(targetBase) {
 }
 
 function getStyleCssOrderFromIndex() {
-  const indexPath = join(root, "src/style/index.css");
-  const text = readFileSync(indexPath, "utf8").replace(/\/\*[\s\S]*?\*\//g, "");
-  const order = [];
-  for (const match of text.matchAll(/@import\s+["']\.\/([^"']+)["']/g)) {
-    order.push(`src/style/${match[1]}`);
-  }
-  if (order.length === 0) {
-    throw new Error("src/style/index.css has no @import rules");
-  }
-  for (const rel of order) {
-    if (!existsSync(join(root, rel))) {
-      throw new Error(`Missing stylesheet: ${rel}`);
+    const indexPath = join(root, 'src/style/index.css')
+    const text = readFileSync(indexPath, 'utf8').replace(/\/\*[\s\S]*?\*\//g, '')
+    const order = []
+    for (const match of text.matchAll(/@import\s+["']\.\/([^"']+)["']/g)) {
+        order.push(`src/style/${match[1]}`)
     }
-  }
-  return order;
+    if (order.length === 0) {
+        throw new Error('src/style/index.css has no @import rules')
+    }
+    for (const rel of order) {
+        if (!existsSync(join(root, rel))) {
+            throw new Error(`Missing stylesheet: ${rel}`)
+        }
+    }
+    return order
 }
 
 function writeDistManifest(platform, platformDistDir) {
-  const manifestPath = join(root, "src/manifests", `${platform}.json`);
-  if (!existsSync(manifestPath)) {
-    throw new Error(
-      `Missing platform manifest: src/manifests/${platform}.json`,
-    );
-  }
-  const manifest = JSON.parse(readFileSync(manifestPath, "utf8"));
-  const styleCssOrder = getStyleCssOrderFromIndex();
-  for (const entry of manifest.content_scripts || []) {
-    if (Array.isArray(entry.js)) {
-      entry.js = entry.js.map((p) =>
-        typeof p === "string" ? p.replace(/^\/?dist\//, "") : p,
-      );
+    const manifestPath = join(root, 'src/manifests', `${platform}.json`)
+    if (!existsSync(manifestPath)) {
+        throw new Error(
+            `Missing platform manifest: src/manifests/${platform}.json`,
+        )
     }
-    entry.css = [...styleCssOrder];
-  }
-  writeFileSync(
-    join(platformDistDir, "manifest.json"),
-    `${JSON.stringify(manifest, null, 2)}\n`,
-    "utf8",
-  );
+    const manifest = JSON.parse(readFileSync(manifestPath, 'utf8'))
+    const styleCssOrder = getStyleCssOrderFromIndex()
+    for (const entry of manifest.content_scripts || []) {
+        if (Array.isArray(entry.js)) {
+            entry.js = entry.js.map((p) => typeof p === 'string' ? p.replace(/^\/?dist\//, '') : p)
+        }
+        entry.css = [...styleCssOrder]
+    }
+    writeFileSync(
+        join(platformDistDir, 'manifest.json'),
+        `${JSON.stringify(manifest, null, 2)}\n`,
+        'utf8',
+    )
 }
 
 function copyBundleToPlatform(platformDistDir) {
-  for (const file of ["content.js", "content.js.map"]) {
-    const src = join(bundleDir, file);
-    if (!existsSync(src)) continue;
-    cpSync(src, join(platformDistDir, file));
-  }
-  if (!existsSync(join(platformDistDir, "content.js"))) {
-    throw new Error("Missing bundled content.js after Vite build.");
-  }
+    for (const file of ['content.js', 'content.js.map']) {
+        const src = join(bundleDir, file)
+        if (!existsSync(src)) continue
+        cpSync(src, join(platformDistDir, file))
+    }
+}
+
+// Fallback logic added here to directly grab the unbundled file if Vite bundling is stopped
+function copyRawContentToPlatform(platformDistDir) {
+    const rawSrc = join(root, 'src/content/content.js')
+    if (existsSync(rawSrc)) {
+        cpSync(rawSrc, join(platformDistDir, 'content.js'))
+    }
+
+    if (!existsSync(join(platformDistDir, 'content.js'))) {
+        throw new Error('Missing content.js build artifacts.')
+    }
 }
 
 function copyBackgroundToPlatform(platformDistDir) {
-  const src = join(root, "src/content/background.js");
-  if (!existsSync(src)) {
-    throw new Error("Missing src/content/background.js.");
-  }
-  cpSync(src, join(platformDistDir, "background.js"));
+    const src = join(root, 'src/content/background.js')
+    if (!existsSync(src)) {
+        throw new Error('Missing src/content/background.js.')
+    }
+    cpSync(src, join(platformDistDir, 'background.js'))
 }
 
 function assemblePlatformDist(platform) {
@@ -147,17 +154,15 @@ function assemblePlatformDist(platform) {
   writeDistManifest(platform, platformDistDir);
 }
 
-prepareLottieVendorAssets();
+prepareLottieVendorAssets()
 
-console.log("Building RoPrime with Vite...");
+console.log('Building RoPrime...')
 if (process.env.SUPABASE_URL?.trim()) {
-  console.log("Supabase profile effects: enabled for this build.");
+    console.log('Supabase profile effects: enabled for this build.')
 } else {
-  console.log(
-    warning(
-      "No SUPABASE_URL in .env — purchases will not sync to Supabase. See supabase/README.md.",
-    ),
-  );
+    console.log(
+        warning('No SUPABASE_URL in .env — purchases would not sync to Supabase.'),
+    )
 }
 rmSync(distDir, { recursive: true, force: true });
 
@@ -166,31 +171,31 @@ await viteBuild({
 });
 
 for (const platform of platforms) {
-  assemblePlatformDist(platform);
+    assemblePlatformDist(platform)
 }
 
-rmSync(bundleDir, { recursive: true, force: true });
+rmSync(bundleDir, { recursive: true, force: true })
 
-console.log("Build complete.");
+console.log('Build complete.')
 console.log(
-  "Successfully generated dist/chrome (Chromium) and dist/firefox (Gecko) builds.",
-);
-console.log();
+    'Successfully generated dist/chrome (Chromium) and dist/firefox (Gecko) builds.',
+)
+console.log()
 console.log(
-  error(
-    "WARNING!!! MAKE SURE TO UPDATE THE VERSION IN src/manifests/chrome.json AND src/manifests/firefox.json",
-  ),
-);
+    error(
+        'WARNING!!! MAKE SURE TO UPDATE THE VERSION IN src/manifests/chrome.json AND src/manifests/firefox.json',
+    ),
+)
 console.log(
-  warning("USE THIS PATTERN MAP TO DONT FORGET MAKE NEW VERSION NUMBER - "),
-);
-console.log();
-console.log(warning("The version map should be Major.Minor.Patch"));
-console.log();
-console.log(chalk.bold("Fix something - bump version as Patch (1.1.2) !!!"));
-console.log(chalk.bold("New feature - bump version as Minor (1.2.0) !!!"));
+    warning('USE THIS PATTERN MAP TO DONT FORGET MAKE NEW VERSION NUMBER - '),
+)
+console.log()
+console.log(warning('The version map should be Major.Minor.Patch'))
+console.log()
+console.log(chalk.bold('Fix something - bump version as Patch (1.1.2) !!!'))
+console.log(chalk.bold('New feature - bump version as Minor (1.2.0) !!!'))
 console.log(
-  chalk.bold(
-    "Massive changes and a lot of features - bump version as Major (2.0.0) !!!",
-  ),
-);
+    chalk.bold(
+        'Massive changes and a lot of features - bump version as Major (2.0.0) !!!',
+    ),
+)

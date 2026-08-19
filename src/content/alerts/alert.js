@@ -1,56 +1,56 @@
-const SUPPORT_ALERT_ROOT_ID = "roprime-support-alert-root";
+const SUPPORT_ALERT_ROOT_ID = 'roprime-support-alert-root'
 
-let activeAlertPromise = null;
-let activeAlertKeydownHandler = null;
+let activeAlertPromise = null
+let activeAlertKeydownHandler = null
 
 function removeAlertIfPresent() {
-  if (activeAlertKeydownHandler) {
-    document.removeEventListener("keydown", activeAlertKeydownHandler, true);
-    activeAlertKeydownHandler = null;
-  }
-  document.getElementById(SUPPORT_ALERT_ROOT_ID)?.remove();
+    if (activeAlertKeydownHandler) {
+        document.removeEventListener('keydown', activeAlertKeydownHandler, true)
+        activeAlertKeydownHandler = null
+    }
+    document.getElementById(SUPPORT_ALERT_ROOT_ID)?.remove()
 }
 
 function appendAlertWhenBodyReady(root) {
-  const mount = () => {
-    const parent = document.body;
-    if (parent) {
-      parent.appendChild(root);
-      return true;
+    const mount = () => {
+        const parent = document.body
+        if (parent) {
+            parent.appendChild(root)
+            return true
+        }
+        return false
     }
-    return false;
-  };
-  if (mount()) return;
+    if (mount()) return
 
-  const tryMount = () => {
-    if (mount()) {
-      mo.disconnect();
-      document.removeEventListener("DOMContentLoaded", onDomReady);
+    const tryMount = () => {
+        if (mount()) {
+            mo.disconnect()
+            document.removeEventListener('DOMContentLoaded', onDomReady)
+        }
     }
-  };
 
-  const mo = new MutationObserver(() => tryMount());
-  mo.observe(document.documentElement, { childList: true });
+    const mo = new MutationObserver(() => tryMount())
+    mo.observe(document.documentElement, { childList: true })
 
-  function onDomReady() {
-    tryMount();
-  }
-  document.addEventListener("DOMContentLoaded", onDomReady, { once: true });
+    function onDomReady() {
+        tryMount()
+    }
+    document.addEventListener('DOMContentLoaded', onDomReady, { once: true })
 }
 
-function showAlertModal({ title, bodyHtml, okLabel = "Ok" }) {
-  if (activeAlertPromise) return activeAlertPromise;
+function showAlertModal({ title, bodyHtml, okLabel = 'Ok' }) {
+    if (activeAlertPromise) return activeAlertPromise
 
-  activeAlertPromise = new Promise((resolve) => {
-    removeAlertIfPresent();
+    activeAlertPromise = new Promise((resolve) => {
+        removeAlertIfPresent()
 
-    const root = document.createElement("div");
-    root.id = SUPPORT_ALERT_ROOT_ID;
-    root.setAttribute("role", "dialog");
-    root.setAttribute("aria-modal", "true");
-    root.setAttribute("aria-labelledby", "roprime-alert-title");
+        const root = document.createElement('div')
+        root.id = SUPPORT_ALERT_ROOT_ID
+        root.setAttribute('role', 'dialog')
+        root.setAttribute('aria-modal', 'true')
+        root.setAttribute('aria-labelledby', 'roprime-alert-title')
 
-    root.innerHTML = `
+        root.innerHTML = `
 <div data-state="open" class="foundation-web-dialog-overlay padding-medium foundation-web-portal-zindex bg-common-backdrop" style="pointer-events: auto;" data-roprime-alert-overlay>
   <div role="dialog" data-state="open" class="relative radius-large bg-surface-100 stroke-muted stroke-standard foundation-web-dialog-content shadow-transient-high" data-size="Medium" tabindex="-1" style="pointer-events: auto;">
     <div class="absolute foundation-web-dialog-close-container">
@@ -73,53 +73,53 @@ function showAlertModal({ title, bodyHtml, okLabel = "Ok" }) {
     </div>
   </div>
 </div>
-`;
+`
 
-    const close = (accepted) => {
-      removeAlertIfPresent();
-      activeAlertPromise = null;
-      resolve(accepted);
-    };
+        const close = (accepted) => {
+            removeAlertIfPresent()
+            activeAlertPromise = null
+            resolve(accepted)
+        }
 
-    root.querySelector(".roprime-alert-ok")?.addEventListener("click", () => {
-      close(true);
-    });
-    root
-      .querySelector(".roprime-alert-close")
-      ?.addEventListener("click", () => {
-        close(false);
-      });
-    root
-      .querySelector("[data-roprime-alert-overlay]")
-      ?.addEventListener("click", (event) => {
-        if (event.target === event.currentTarget) close(false);
-      });
+        root.querySelector('.roprime-alert-ok')?.addEventListener('click', () => {
+            close(true)
+        })
+        root
+            .querySelector('.roprime-alert-close')
+            ?.addEventListener('click', () => {
+                close(false)
+            })
+        root
+            .querySelector('[data-roprime-alert-overlay]')
+            ?.addEventListener('click', (event) => {
+                if (event.target === event.currentTarget) close(false)
+            })
 
-    activeAlertKeydownHandler = (event) => {
-      if (event.key === "Escape") close(false);
-    };
-    document.addEventListener("keydown", activeAlertKeydownHandler, true);
+        activeAlertKeydownHandler = (event) => {
+            if (event.key === 'Escape') close(false)
+        }
+        document.addEventListener('keydown', activeAlertKeydownHandler, true)
 
-    appendAlertWhenBodyReady(root);
-  });
+        appendAlertWhenBodyReady(root)
+    })
 
-  return activeAlertPromise;
+    return activeAlertPromise
 }
 
 export function promptProfileEffectsSupportNotice() {
-  return showAlertModal({
-    title: "Please support RoPrime",
-    bodyHtml: `
+    return showAlertModal({
+        title: 'Please support RoPrime',
+        bodyHtml: `
       <p>Profile animations are free, but we will need to keep them up. So, if you like our extension please support it by donating</p>
 	  <p>Donation link will be added in the settings soon</p>`,
-  });
+    })
 }
 
 export function promptCustomCssCautionNotice() {
-  return showAlertModal({
-    title: "Custom CSS caution",
-    bodyHtml: `
+    return showAlertModal({
+        title: 'Custom CSS caution',
+        bodyHtml: `
       <p>Custom CSS is executed as third-party code on every Roblox page while RoPrime is enabled.</p>
       <p>Only paste CSS from sources you trust. Malicious CSS could change what you see or interact with on Roblox.</p>`,
-  });
+    })
 }

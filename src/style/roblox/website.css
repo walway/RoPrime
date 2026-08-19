@@ -1,5 +1,5 @@
 .verify-email-container {
-  background-color: transparent;
+    background-color: transparent;
 }
 
 .thumbnail-2d-container,
@@ -7,60 +7,59 @@
 .carousel-item iframe,
 .thumbnail-shimmer-overlay,
 .game-details-carousel-container .shimmer {
-  border-radius: 12px;
+    border-radius: 12px;
 }
 
-html
-  body:has(
-    main.container-main[data-rovalra-sidebar-collapse-ready="true"][data-rovalra-sidebar-layout-active="true"]
-  ) {
-  main.container-main[data-rovalra-sidebar-collapse-ready="true"][data-rovalra-sidebar-layout-active="true"] {
-    box-sizing: inherit;
-    margin-left: var(--left-nav-reserved-width) !important;
-    width: calc(100% - var(--left-nav-reserved-width)) !important;
-  }
+html body:has(
+        main.container-main[data-rovalra-sidebar-collapse-ready='true'][data-rovalra-sidebar-layout-active='true']
+    ) {
+    main.container-main[data-rovalra-sidebar-collapse-ready='true'][data-rovalra-sidebar-layout-active='true'] {
+        box-sizing: inherit;
+        margin-left: var(--left-nav-reserved-width) !important;
+        width: calc(100% - var(--left-nav-reserved-width)) !important;
+    }
 }
 
 .icon-presence.icon-studio {
-  position: relative;
-  z-index: 2;
+    position: relative;
+    z-index: 2;
 }
 
 .icon-presence.roseal-offline-icon {
-  position: relative;
-  z-index: 2;
+    position: relative;
+    z-index: 2;
 }
 
 .nav-minimise-button {
-  display: none !important;
+    display: none !important;
 }
 
 #rovalra-sidebar-collapse-button {
-  display: none !important;
+    display: none !important;
 }
 
 #rovalra-sidebar-layout-button {
-  display: none !important;
+    display: none !important;
 }
 
 /* android layout */
 
 #app-bumper-main {
-  display: none !important;
+    display: none !important;
 }
 
 /* roblox plus free themes */
 
-[data-testid="app-theme-upsell"] {
-  display: none !important;
+[data-testid='app-theme-upsell'] {
+    display: none !important;
 }
 
-[data-testid="app-theme-card"] .icon-regular-roblox-plus {
-  display: none !important;
+[data-testid='app-theme-card'] .icon-regular-roblox-plus {
+    display: none !important;
 }
 
 /* groups viewer fixes */
 
 .groups-list-sidebar {
-  border-left: none !important;
+    border-left: none !important;
 }

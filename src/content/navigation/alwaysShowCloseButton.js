@@ -248,10 +248,11 @@ function bindCloseButtonClick(btn) {
 }
 
 function ensureObserver() {
-  const root = document.documentElement;
-  if (!root || root.getAttribute("data-roprime-always-close-observer") === "1")
-    return;
-  root.setAttribute("data-roprime-always-close-observer", "1");
+    const root = document.documentElement
+    if (!root || root.getAttribute('data-roprime-always-close-observer') === '1') {
+        return
+    }
+    root.setAttribute('data-roprime-always-close-observer', '1')
 
   const obs = new MutationObserver(() => {
     if (applyingLeftNavPanel) return;
