@@ -10,6 +10,7 @@
     "npm:adm-zip@0.6.0": "0.6.0",
     "npm:dotenv@17.4.2": "17.4.2",
     "npm:esbuild@0.25.12": "0.25.12",
+    "npm:prettier@*": "3.9.6",
     "npm:prism-code-editor@5.3.0": "5.3.0",
     "npm:roavatar-renderer@1.6.0": "1.6.0_esbuild@0.25.12"
   },
@@ -461,6 +462,10 @@
       "dependencies": [
         "three"
       ]
+    },
+    "prettier@3.9.6": {
+      "integrity": "sha512-OpN0zzVdiaiAhxpuuj5efpIS4sY9j7bY6uR5mnj5yPzGkdkjNKSJeUThPb60Jw29QuAZgA4o+/iB49kFiaBX6g==",
+      "bin": true
     },
     "prism-code-editor@5.3.0": {
       "integrity": "sha512-ET80c+zFx1QXsA+XejqRt1LNoZ2O/N9P1JIuPc1L2AVRSANHKhag0cQTdV0DF2eHjWrccdvRwLD9kp9IvDDBYg=="

@@ -30,11 +30,30 @@ const PROFILE_REDESIGN_CSS = `
 }
 
 .roprime-profile-avatar-preview {
-  width: 100%;
+  width: 50%;
+  max-width: 50%;
+  height: 420px;
   min-height: 420px;
   margin-bottom: 24px;
   border-radius: 12px;
   overflow: hidden;
+  position: relative;
+}
+
+.roprime-profile-avatar-preview .thumbnail-loader {
+  margin-top: 0;
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+}
+
+.roprime-profile-avatar-preview .thumbnail-span {
+  display: block;
+  width: 100%;
+  height: 100%;
 }
 `;
 
