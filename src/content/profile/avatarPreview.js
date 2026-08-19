@@ -14,6 +14,7 @@ let rendererReady = false;
 let currentOutfitRenderer = null;
 let mountSeq = 0;
 let activeMountSeq = 0;
+let spinFrameRequestId = null;
 
 const AVATAR_DETAILS_URL = "https://avatar.roblox.com/v2/avatar/users";
 const AVATAR_MODEL_URL = "https://avatar.roblox.com/v4/avatar/users";
@@ -120,7 +121,31 @@ function enableAvatarSpin() {
   if (!controls) return;
   controls.autoRotate = true;
   controls.autoRotateSpeed = AVATAR_ROTATION_SPEED;
+  controls.enableRotate = true;
   controls.enablePan = false;
+}
+
+function startAvatarSpinSync() {
+  stopAvatarSpinSync();
+  const tick = () => {
+    if (!rendererReady) {
+      spinFrameRequestId = null;
+      return;
+    }
+
+    enableAvatarSpin();
+    RBXRenderer.firstScene?.controls?.update?.();
+    spinFrameRequestId = globalThis.requestAnimationFrame(tick);
+  };
+
+  spinFrameRequestId = globalThis.requestAnimationFrame(tick);
+}
+
+function stopAvatarSpinSync() {
+  if (spinFrameRequestId !== null) {
+    globalThis.cancelAnimationFrame(spinFrameRequestId);
+    spinFrameRequestId = null;
+  }
 }
 
 function normalizeAvatarType(playerAvatarType) {
@@ -279,8 +304,8 @@ async function ensureRenderer(host) {
   RBXRenderer.setBackgroundColor(0xbbbbbb);
   RBXRenderer.setRendererSize(width, 420);
   RBXRenderer.setBackgroundTransparent(true);
-  enableAvatarSpin();
   host.appendChild(RBXRenderer.getRendererElement());
+  startAvatarSpinSync();
   rendererReady = true;
   return true;
 }
@@ -291,6 +316,7 @@ async function resetRenderer() {
   } catch {
   }
   currentOutfitRenderer = null;
+  stopAvatarSpinSync();
 
   rendererReady = false;
   RBXRenderer.getRendererElement()?.remove();
@@ -345,6 +371,7 @@ export async function mountAvatarPreview(host, userId) {
   outfitRenderer.startAnimating();
   try {
     await outfitRenderer.setMainAnimation("idle");
+    enableAvatarSpin();
     if (!isActive()) {
       await resetRenderer();
       return false;
