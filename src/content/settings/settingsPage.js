@@ -503,9 +503,14 @@ function renderPageContent(container, pageKey) {
 }
 
 function buildSidebarSizeControl(sliderId) {
+  const field = el("div", "roprime-setting-field roprime-sidebar-size-row");
+  field.setAttribute("data-roprime-element-name", "sidebar-size");
+  field.classList.add("roprime-element-sidebar-size");
+  field.appendChild(
+    createSettingCopy("Sidebar size title", "Sidebar size description"),
+  );
+
   const control = el("div", "roprime-sidebar-size-control");
-  control.setAttribute("data-roprime-element-name", "sidebar-size");
-  control.classList.add("roprime-element-sidebar-size");
   const box = el("div", "roprime-sidebar-size-box");
   const rail = el("div", "roprime-sidebar-size-rail");
   const slider = el("input", "roprime-sidebar-size-slider");
@@ -544,7 +549,8 @@ function buildSidebarSizeControl(sliderId) {
 
   box.append(rail, footer, warning);
   control.appendChild(box);
-  return control;
+  field.appendChild(control);
+  return field;
 }
 
 function buildLanguageControl() {
