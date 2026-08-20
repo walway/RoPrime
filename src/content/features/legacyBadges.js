@@ -287,7 +287,7 @@ function buildBadgeTile(badge) {
   return `<div class="css-izzd58-carouselItem">
 		<div>
 			<div class="base-tile">
-				<a class="flex flex-col" href="${ROBLOX_BADGES_URL}#${badge.hash}" title="${badge.title}">
+				<a class="flex flex-col" href="${ROBLOX_BADGES_URL}#${badge.hash}" title="${badge.title}" style="width: 150px;">
 					<div class="base-tile-thumbnail-wrapper"><span class="thumbnail-2d-container base-tile-thumbnail radius-medium"><img class="" src="${imageSrc}" alt="${badge.alt}"></span></div>
 					<div class="base-tile-title content-emphasis text-title-medium padding-top-medium">${badge.label}</div>
 					<div class="base-tile-metadata content-default text-body-medium padding-top-xsmall"></div>

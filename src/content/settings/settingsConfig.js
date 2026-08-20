@@ -78,6 +78,19 @@ export const SETTINGS_CONFIG = {
       },
     ],
   },
+  home: {
+    labelKey: "Nav tab home",
+    titleKey: "Nav tab home",
+    items: [
+      {
+        type: "toggle",
+        id: "roprime-toggle-hide-experiences-ads",
+        key: "hideExperiencesAdsEnabled",
+        titleKey: "Hide experiences ads title",
+        onChange: ["syncHideExperiencesAds"],
+      },
+    ],
+  },
   "sidebar-content": {
     titleKey: "Sidebar content list title",
     items: [

@@ -44,6 +44,7 @@ import {
   syncFreeRobloxTheme,
 } from "./account/freeThemes.js";
 import { syncRickRollEasterEgg } from "./memes/rickRoll.js";
+import { syncHideExperiencesAds } from "./home/hideExperiencesAds.js";
 
 const extensionApi = globalThis.browser || globalThis.chrome;
 
@@ -71,6 +72,7 @@ function installStorageSyncListener() {
             syncAccountSettingsLayoutInset();
             syncSidebarContent({ force: true });
             syncSearchBan();
+            syncHideExperiencesAds();
             syncFreeRobloxTheme();
             syncRickRollEasterEgg();
           } catch (e) {
@@ -112,6 +114,7 @@ function installHistoryListeners() {
       syncCustomCss();
       syncAccountSettingsLayoutInset();
       syncSearchBan();
+      syncHideExperiencesAds();
       syncFreeRobloxTheme();
       syncRickRollEasterEgg();
     } catch (e) {
@@ -156,6 +159,7 @@ function bootstrap() {
         syncAccountSettingsLayoutInset();
         syncSidebarContent({ force: true });
         syncSearchBan();
+        syncHideExperiencesAds();
         void initFreeRobloxThemes();
         syncRickRollEasterEgg();
         if (shouldRunRoPrimeOnCurrentPage()) {

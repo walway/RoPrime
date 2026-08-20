@@ -31,6 +31,10 @@ import {
   syncHideAgeBadge,
   RP_HIDE_AGE_BADGE_STYLE_ID,
 } from "../sidebar/hideAgeBadge.js";
+import {
+  syncHideExperiencesAds,
+  HIDE_EXPERIENCES_ADS_ID,
+} from "../home/hideExperiencesAds.js";
 import { updateSmallNewNavVisibility } from "../sidebar/smallNewNav.js";
 import { syncRickRollEasterEgg } from "../memes/rickRoll.js";
 
@@ -50,6 +54,7 @@ function cleanupBlockedRouteUi() {
   document.getElementById(RP_CUSTOM_CSS_STYLE_ID)?.remove();
   document.getElementById(RP_FRIEND_STYLING_REIMAGNED_STYLE_ID)?.remove();
   document.getElementById(RP_HIDE_AGE_BADGE_STYLE_ID)?.remove();
+  document.getElementById(HIDE_EXPERIENCES_ADS_ID)?.remove();
   document.getElementById("roprime-sidebar-content-hide-style")?.remove();
   document.getElementById("roprime-classic-left-nav-host")?.remove();
   document.getElementById("roprime-old-navbar-style")?.remove();
@@ -84,6 +89,7 @@ export function syncRoEliteView() {
     syncSidebarCollapseMenuIcon();
     syncCustomCss();
     syncHideAgeBadge();
+    syncHideExperiencesAds();
     syncRobloxNavDropdownButton();
     syncRobloxFoundationWebMenuButton();
     syncSearchBan();

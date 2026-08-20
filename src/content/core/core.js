@@ -13,6 +13,7 @@ export const RP_PARAM_KEY_NEW = "roprime-new";
 export const RP_DEFAULT_PAGE = "design";
 export const RP_SUPPORTED_PAGES = new Set([
   "design",
+  "home",
   "settings",
   "other",
   "info",
@@ -217,6 +218,7 @@ export const RP_DEFAULT_SETTINGS = {
   alwaysShowCloseButtonEnabled: false,
   friendStylingReimagnedEnabled: false,
   hideAgeBadgeEnabled: true,
+  hideExperiencesAdsEnabled: false,
   profileRedesignEnabled: false,
   developerPageUnlocked: false,
   sidebarSize: "full",
@@ -344,6 +346,7 @@ export function serializeSettingsPayload() {
     alwaysShowCloseButtonEnabled: settingsState.alwaysShowCloseButtonEnabled,
     friendStylingReimagnedEnabled: settingsState.friendStylingReimagnedEnabled,
     hideAgeBadgeEnabled: !!settingsState.hideAgeBadgeEnabled,
+    hideExperiencesAdsEnabled: !!settingsState.hideExperiencesAdsEnabled,
     profileRedesignEnabled: !!settingsState.profileRedesignEnabled,
     developerPageUnlocked: !!settingsState.developerPageUnlocked,
     sidebarSize: settingsState.sidebarSize || "full",

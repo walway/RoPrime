@@ -175,7 +175,6 @@ function createButton(label) {
   button.type = "button";
   button.className = BUTTON_CLASS;
   button.style.textDecoration = "none";
-  button.style.backgroundColor = "var(--rovalra-container-background-color)";
 
   const stateLayer = document.createElement("div");
   stateLayer.setAttribute("aria-hidden", "true");
