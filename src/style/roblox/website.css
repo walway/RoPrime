@@ -64,3 +64,9 @@ html
 .groups-list-sidebar {
   border-left: none !important;
 }
+
+/* fix avatar headshots images with background */
+
+.thumbnail-2d-container img {
+  margin-bottom: 3px;
+}
