@@ -6,17 +6,8 @@
   "permissions": ["storage", "management"],
   "host_permissions": [
     "*://*.supabase.co/*",
-    "https://users.roblox.com/*",
-    "https://thumbnails.roblox.com/*",
-    "https://friends.roblox.com/*",
-    "https://presence.roblox.com/*",
-    "https://assetdelivery.roblox.com/*",
-    "https://avatar.roblox.com/*",
-    "https://catalog.roblox.com/*",
-    "https://economy.roblox.com/*",
-    "https://inventory.roblox.com/*",
-    "https://apis.roblox.com/*",
-    "https://develop.roblox.com/*",
+    "*://*.roblox.com/*",
+    "*://*.rbxcdn.com/*",
     "https://walway.github.io/*",
     "https://chromewebstore.googleapis.com/*",
     "https://lh3.googleusercontent.com/*"
@@ -43,6 +34,7 @@
         "resources/roprime-icon.png",
         "resources/RblxPlusLogo.webp",
         "resources/logo.svg",
+        "resources/icons/*",
         "src/strings/**/*",
         "resources/data/*",
         "resources/badges/*"
