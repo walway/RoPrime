@@ -5,6 +5,7 @@ import {
   isAccountPage,
   isExtensionContextAlive,
 } from "../core/core.js";
+import { fetchExtensionIconUrl } from "../lib/cws-images.js";
 import { runWhenIdle } from "../features/runWhenIdle.js";
 import { showMaliciousPluginOverlay } from "../ui/overlay.js";
 import { fetchPluginsRegistry } from "./registry.js";
@@ -23,6 +24,8 @@ let refreshInProgress = false;
 let refreshRequested = false;
 let menuHighlightObserver = null;
 let menuHighlightIdlePending = false;
+const cwsIconUrlCache = new Map();
+const cwsIconFetchPromises = new Map();
 
 async function sendToBackground(message) {
   return await new Promise((resolve) => {
@@ -102,21 +105,68 @@ function clearPluginsTiles(tiles) {
   tiles.textContent = "";
 }
 
-function setExtensionIcon(iconHost, extensionId, iconPath = "") {
-  const fallback = iconHost.querySelector(".roprime-ext-icon-fallback");
-  if (!(fallback instanceof HTMLElement)) return;
-
-  fallback.textContent = "";
-  const iconUrl = buildManifestExtensionIconUrl(extensionId, iconPath);
-  if (!iconUrl) return;
+function appendExtensionIconImg(fallback, iconUrl) {
+  if (!(fallback instanceof HTMLElement) || !iconUrl) return false;
 
   const img = document.createElement("img");
   img.alt = "";
   img.src = iconUrl;
-  img.addEventListener("error", () => {
-    img.remove();
-  });
+  img.referrerPolicy = "no-referrer";
+  img.addEventListener(
+    "error",
+    () => {
+      img.remove();
+    },
+    { once: true },
+  );
   fallback.appendChild(img);
+  return true;
+}
+
+async function resolveCwsIconUrl(extensionId) {
+  const id = String(extensionId || "").trim().toLowerCase();
+  if (!id) return "";
+
+  if (cwsIconUrlCache.has(id)) {
+    return cwsIconUrlCache.get(id);
+  }
+
+  let pending = cwsIconFetchPromises.get(id);
+  if (!pending) {
+    pending = fetchExtensionIconUrl(id, "s48")
+      .then((url) => {
+        const iconUrl = String(url || "");
+        cwsIconUrlCache.set(id, iconUrl);
+        return iconUrl;
+      })
+      .catch(() => {
+        cwsIconUrlCache.set(id, "");
+        return "";
+      })
+      .finally(() => {
+        cwsIconFetchPromises.delete(id);
+      });
+    cwsIconFetchPromises.set(id, pending);
+  }
+
+  return await pending;
+}
+
+async function setExtensionIcon(iconHost, extensionId, iconPath = "") {
+  const fallback = iconHost.querySelector(".roprime-ext-icon-fallback");
+  if (!(fallback instanceof HTMLElement)) return;
+
+  fallback.textContent = "";
+  const id = String(extensionId || "").trim();
+  if (!id) return;
+
+  const cwsIconUrl = await resolveCwsIconUrl(id);
+  if (appendExtensionIconImg(fallback, cwsIconUrl)) return;
+
+  appendExtensionIconImg(
+    fallback,
+    buildManifestExtensionIconUrl(id, iconPath),
+  );
 }
 
 function startMenuHighlightObserver() {
@@ -316,7 +366,11 @@ async function refreshPluginsTiles(tiles) {
     const fallback = document.createElement("div");
     fallback.className = "roprime-ext-icon-fallback";
     icon.appendChild(fallback);
-    setExtensionIcon(icon, String(item.id || ""), String(item.iconPath || ""));
+    void setExtensionIcon(
+      icon,
+      String(item.id || ""),
+      String(item.iconPath || ""),
+    );
 
     const meta = document.createElement("div");
     meta.className = "roprime-ext-tile-meta";

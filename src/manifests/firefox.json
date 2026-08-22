@@ -23,7 +23,9 @@
     "https://inventory.roblox.com/*",
     "https://apis.roblox.com/*",
     "https://develop.roblox.com/*",
-    "https://walway.github.io/*"
+    "https://walway.github.io/*",
+    "https://chromewebstore.googleapis.com/*",
+    "https://lh3.googleusercontent.com/*"
   ],
   "background": {
     "scripts": ["background.js"]
