@@ -37,6 +37,12 @@ html:root .left-nav-new-width {
 `;
 
   return `
+@media (min-width: 1141px) {
+    .no-gutter-ads.logged-in.left-nav-new-width, body.left-nav-new-width {
+        --left-nav-reserved-width: 0px !important;
+    }
+}
+
 button.menu-button.btn-navigation-nav-menu-md {
   display: inline-flex !important;
   visibility: visible !important;
