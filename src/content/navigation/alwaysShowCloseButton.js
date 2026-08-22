@@ -55,43 +55,12 @@ button.menu-button.btn-navigation-nav-menu-md {
   flex: 0 0 auto !important;
 }
 
-a.nav-logo-link.navbar-brand,
-a.navbar-brand,
-.navbar-brand {
-  order: 2 !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  position: static !important;
-  top: auto !important;
-  left: auto !important;
-  transform: none !important;
-  margin: 0 8px !important;
-  flex: 0 0 auto !important;
-}
-
 .font-header-2.nav-menu-title.text-header,
 .nav-menu-title.font-header-2.text-header {
   order: 3 !important;
   margin-left: 0 !important;
 }
 ${reservedWidthBlock}
-a.nav-logo-link.navbar-brand span.icon-logo,
-a.navbar-brand span.icon-logo,
-.navbar-brand span.icon-logo {
-  display: inline-block !important;
-  position: static !important;
-  top: auto !important;
-  left: auto !important;
-  transform: none !important;
-  vertical-align: middle !important;
-}
-
-a.nav-logo-link.navbar-brand span.icon-logo-r,
-a.navbar-brand span.icon-logo-r,
-.navbar-brand span.icon-logo-r {
-  display: none !important;
-}
 `.trim();
 }
 
