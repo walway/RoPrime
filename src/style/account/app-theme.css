@@ -1,5 +1,7 @@
 #react-user-account-base
-  .setting-section:has(.app-theme-section):not(:has([data-roprime-app-theme="1"])) {
+  [data-roprime-settings-card]:has(.app-theme-section):not(
+    :has([data-roprime-app-theme="1"])
+  ) {
   display: none !important;
 }
 

@@ -9,6 +9,11 @@ import { fetchExtensionIconUrl } from "../lib/cws-images.js";
 import { runWhenIdle } from "../features/runWhenIdle.js";
 import { showMaliciousPluginOverlay } from "../ui/overlay.js";
 import { fetchExtensionsRegistry } from "./registry.js";
+import {
+  createToggle,
+  getToggleChecked,
+  setToggleChecked,
+} from "../ui/toggle.js";
 
 const extensionApi = globalThis.browser || globalThis.chrome;
 
@@ -442,35 +447,34 @@ async function refreshExtensionsTiles(tiles) {
     right.className = "roprime-ext-actions-right";
 
     const canToggle = !plugin.noToggle;
-    let toggleWrap = null;
     if (canToggle) {
-      toggleWrap = document.createElement("label");
-      toggleWrap.className = "roprime-switch";
-
-      const toggle = document.createElement("input");
-      toggle.type = "checkbox";
-      toggle.checked = Boolean(item.enabled);
-
-      const slider = document.createElement("span");
-      slider.className = "roprime-switch-slider";
-
-      toggleWrap.append(toggle, slider);
-
-      toggle.addEventListener("change", async () => {
-        toggle.disabled = true;
-        const desired = Boolean(toggle.checked);
-        const resp2 = await sendToBackground({
-          type: "ROPRIME_SET_EXTENSION_ENABLED",
-          id: String(item.id || ""),
-          enabled: desired,
-        });
-        if (!resp2?.ok) {
-          toggle.checked = !desired;
-        } else {
-          item.enabled = desired;
-        }
-        toggle.disabled = false;
+      const toggleWrap = createToggle({
+        checked: Boolean(item.enabled),
+        ariaLabel: `Toggle ${title}`,
       });
+
+      const toggleButton = toggleWrap.querySelector("button.btn-toggle");
+      if (toggleButton instanceof HTMLButtonElement) {
+        toggleButton.addEventListener("click", async () => {
+          if (toggleButton.disabled) return;
+          const desired = toggleButton.getAttribute("aria-checked") !== "true";
+          setToggleChecked(toggleWrap, desired);
+          toggleButton.disabled = true;
+          const resp2 = await sendToBackground({
+            type: "ROPRIME_SET_EXTENSION_ENABLED",
+            id: String(item.id || ""),
+            enabled: desired,
+          });
+          if (!resp2?.ok) {
+            setToggleChecked(toggleWrap, !desired);
+          } else {
+            item.enabled = desired;
+          }
+          toggleButton.disabled = false;
+        });
+      }
+
+      right.appendChild(toggleWrap);
     }
 
     const settingsBtn = document.createElement("button");
@@ -494,7 +498,6 @@ async function refreshExtensionsTiles(tiles) {
       });
     }
 
-    if (toggleWrap) right.appendChild(toggleWrap);
     right.appendChild(settingsBtn);
     actions.append(left, right);
 

@@ -1,0 +1,12 @@
+.btn-toggle:disabled {
+  opacity: 0.45;
+}
+
+.btn-toggle .toggle-flip {
+  left: 2px !important;
+  transition: transform 180ms ease;
+}
+
+.btn-toggle.on .toggle-flip {
+  transform: translateX(16px);
+}

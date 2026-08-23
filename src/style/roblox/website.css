@@ -12,10 +12,15 @@
   border-radius: 12px;
 }
 
-#horizontal-tabs,
+#horizontal-tabs {
+  white-space: nowrap;
+  scroll-behavior: smooth;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
 #vertical-menu,
 .menu-vertical {
-  white-space: nowrap;
   scroll-behavior: smooth;
   border-radius: 8px;
   overflow: hidden;

@@ -62,6 +62,11 @@ import {
 import { syncSidebarContent } from "../sidebar/sidebarContent.js";
 import { ADD_ICON_SVG, DELETE_ICON_SVG } from "../sidebar/sidebarIcons.js";
 import { createToggle, setToggleChecked } from "../ui/toggle.js";
+import {
+  createMarkedSlider,
+  setSliderDisabled,
+  setSliderValue,
+} from "../ui/slider.js";
 import { t as accountSettingsPaneT } from "./roprimeAccountSettingsPage.js";
 import {
   clearSettingsPageLayout,
@@ -194,16 +199,30 @@ function isDeveloperPageUnlocked() {
   return !!settingsState.developerPageUnlocked;
 }
 
+function createControlButton(textKey, attrs = {}) {
+  const btn = el("button", "btn-control-md");
+  btn.type = "button";
+  setDataI18n(btn, textKey);
+  for (const [key, value] of Object.entries(attrs)) {
+    btn.setAttribute(key, value);
+  }
+  return btn;
+}
+
 function sidebarModeValues() {
   return { full: 0, small: 50, icon: 100 };
 }
 
-function nearestSidebarMode(raw) {
+function sidebarModeForValue(raw) {
   const value = Number(raw);
   if (Number.isNaN(value)) return "full";
   if (value < 25) return "full";
   if (value < 75) return "small";
   return "icon";
+}
+
+function sidebarValueForMode(mode) {
+  return sidebarModeValues()[mode] ?? sidebarModeValues().full;
 }
 
 function currentUiLanguageCode() {
@@ -340,46 +359,98 @@ function buildSettingsHostContent(host) {
   host.appendChild(settingsContainer);
 }
 
-function createSettingSection(innerContent) {
-  const section = el("div", "setting-section");
-  const wrap = el("div");
-  if (innerContent) wrap.appendChild(innerContent);
-  section.appendChild(wrap);
-  return section;
+const SETTINGS_CARD_CLASS =
+  "bg-surface-300 padding-large flex flex-col gap-medium";
+
+function createSettingsCardShell() {
+  const card = el("div", SETTINGS_CARD_CLASS);
+  card.setAttribute("data-roprime-settings-card", "1");
+  return card;
 }
 
-function getElementNameSlug(item) {
-  if (item?.id) return String(item.id).replace(/^roprime-toggle-/, "");
-  if (item?.key) return String(item.key);
-  return "setting";
+function createSettingsCardHeaderSeparator() {
+  const separator = el("div");
+  separator.setAttribute("role", "separator");
+  separator.setAttribute("data-orientation", "horizontal");
+  separator.setAttribute("aria-orientation", "horizontal");
+  separator.className = "stroke-default self-stretch";
+  separator.style.cssText =
+    "border-right-width: 0px; border-bottom-width: 0px; box-sizing: border-box; border-style: solid; height: 0px; border-top-width: var(--stroke-standard); border-left-width: 0px;";
+  return separator;
 }
 
-function createSettingCopy(titleKey, descKey) {
-  const copy = el("div", "roprime-setting-field-copy");
-  const title = el("div", "roprime-setting-title");
+function createSettingsCardHeaderRow(titleKey, trailing = null) {
+  const headerRow = el("div", "flex justify-between items-center");
+  const title = el("span", "text-title-large content-emphasis");
   setDataI18n(title, titleKey);
-  copy.appendChild(title);
-  if (descKey) {
-    const desc = el("div", "roprime-setting-desc");
-    setDataI18n(desc, descKey);
-    copy.appendChild(desc);
-  }
-  return copy;
+  headerRow.appendChild(title);
+  if (trailing) headerRow.appendChild(trailing);
+  return headerRow;
 }
 
-function createToggleCopy(titleKey, descKey) {
-  return createSettingCopy(titleKey, descKey);
+function createSettingsCardDescription(descKey) {
+  const desc = el("p", "text-body-large content-default");
+  if (descKey) setDataI18n(desc, descKey);
+  return desc;
+}
+
+function createSettingsCard({ titleKey, descKey, trailing, extraContent }) {
+  const card = createSettingsCardShell();
+  card.append(
+    createSettingsCardHeaderRow(titleKey, trailing),
+    createSettingsCardHeaderSeparator(),
+  );
+  if (descKey) card.appendChild(createSettingsCardDescription(descKey));
+  if (extraContent) card.appendChild(extraContent);
+  return card;
+}
+
+function createSettingSection(innerContent) {
+  const card = createSettingsCardShell();
+  if (innerContent) card.appendChild(innerContent);
+  return card;
 }
 
 function createToggleSection(item) {
-  const slug = getElementNameSlug(item);
-  const row = el("div", "roprime-toggle-row");
-  row.setAttribute("data-roprime-element-name", slug);
-  row.classList.add(`roprime-element-${slug}`);
-  row.appendChild(createSettingCopy(item.titleKey, item.descKey));
   const toggle = createToggle({
     id: item.id,
     checked: !!settingsState[item.key],
+    ariaLabel: accountSettingsPaneT(item.titleKey),
+  });
+  toggle.setAttribute("data-roprime-settings-key", item.key);
+  if (item.renameChild) toggle.setAttribute("data-roprime-rename-child", "1");
+  if (item.onChange) {
+    toggle.setAttribute(
+      "data-roprime-on-change",
+      JSON.stringify(item.onChange),
+    );
+  }
+
+  return createSettingsCard({
+    titleKey: item.titleKey,
+    descKey: item.descKey,
+    trailing: toggle,
+  });
+}
+
+function createSidebarInlineToggleRow(item) {
+  const row = el("div", "flex justify-between items-center");
+  row.setAttribute("data-roprime-sidebar-inline-toggle", item.key);
+
+  const copy = el("div", "flex flex-col gap-xsmall");
+  const title = el("span", "text-title-large content-emphasis");
+  setDataI18n(title, item.titleKey);
+  copy.appendChild(title);
+  if (item.descKey) {
+    const desc = el("p", "text-body-large content-default");
+    setDataI18n(desc, item.descKey);
+    copy.appendChild(desc);
+  }
+
+  const toggle = createToggle({
+    id: item.id,
+    checked: !!settingsState[item.key],
+    ariaLabel: accountSettingsPaneT(item.titleKey),
   });
   toggle.setAttribute("data-roprime-settings-key", item.key);
   if (item.onChange) {
@@ -388,67 +459,17 @@ function createToggleSection(item) {
       JSON.stringify(item.onChange),
     );
   }
-  row.appendChild(toggle);
-  return createSettingSection(row);
-}
 
-function createAccordionSection(item) {
-  const slug = getElementNameSlug({ id: item.masterId, key: item.masterKey });
-  const accordion = el("div", "roprime-accordion");
-  accordion.setAttribute("data-roprime-accordion", item.id);
-  accordion.setAttribute("data-roprime-element-name", slug);
-  accordion.classList.add(`roprime-element-${slug}`);
-
-  const headerRow = el("div", "roprime-accordion-header");
-  headerRow.setAttribute("role", "button");
-  headerRow.tabIndex = 0;
-  headerRow.setAttribute("aria-expanded", "false");
-  headerRow.appendChild(createSettingCopy(item.titleKey));
-
-  const masterToggle = createToggle({
-    id: item.masterId,
-    checked: !!settingsState[item.masterKey],
-  });
-  masterToggle.classList.add("roprime-accordion-master-switch");
-  masterToggle.setAttribute("data-roprime-settings-key", item.masterKey);
-  if (item.onChange) {
-    masterToggle.setAttribute(
-      "data-roprime-on-change",
-      JSON.stringify(item.onChange),
-    );
-  }
-  headerRow.appendChild(masterToggle);
-
-  const chevron = el("span", "roprime-accordion-chevron");
-  chevron.setAttribute("aria-hidden", "true");
-  headerRow.appendChild(chevron);
-
-  const body = el("div", "roprime-accordion-body");
-  body.hidden = true;
-  body.setAttribute("aria-hidden", "true");
-
-  for (const child of item.children || []) {
-    if (child.type === "toggle") body.appendChild(createToggleSection(child));
-  }
-
-  accordion.append(headerRow, body);
-  return createSettingSection(accordion);
+  row.append(copy, toggle);
+  return row;
 }
 
 const CUSTOM_BUILDERS = {
-  sidebarSize: () =>
-    createSettingSection(
-      buildSidebarSizeControl("roprime-sidebar-size-slider"),
-    ),
-  sidebarSizeConfig: () =>
-    createSettingSection(
-      buildSidebarSizeControl("roprime-sidebar-size-slider-config"),
-    ),
+  sidebarPanel: () => buildSidebarPanel(),
   sidebarContentBack: () => {
-    const btn = el("button", "roprime-sidebar-content-back");
-    btn.type = "button";
-    btn.setAttribute("data-roprime-sidebar-content-back", "1");
-    setDataI18n(btn, "Sidebar content back");
+    const btn = createControlButton("Sidebar content back", {
+      "data-roprime-sidebar-content-back": "1",
+    });
     return createSettingSection(btn);
   },
   sidebarContentList: () => {
@@ -458,9 +479,9 @@ const CUSTOM_BUILDERS = {
     panel.appendChild(list);
     return createSettingSection(panel);
   },
-  language: () => createSettingSection(buildLanguageControl()),
-  settingsSync: () => createSettingSection(buildSettingsSyncPanel()),
-  customCss: () => createSettingSection(buildCustomCssBlock()),
+  language: () => buildLanguageControl(),
+  settingsSync: () => buildSettingsSyncPanel(),
+  customCss: () => buildCustomCssBlock(),
   cosmeticsShop: () => {
     const shop = el("div", "roprime-cosmetics-shop");
     shop.setAttribute("data-roprime-cosmetics-shop", "1");
@@ -468,40 +489,30 @@ const CUSTOM_BUILDERS = {
     buildCosmeticsShopInto(shop);
     return createSettingSection(shop);
   },
-  searchBan: () => createSettingSection(buildSearchBanPanel()),
-  infoBlock: () => {
-    const block = el("div", "roprime-info-block");
-    const title = el("div", "roprime-info-title");
-    setDataI18n(title, "Info card title");
-    const text = el("div", "roprime-info-text");
-    setDataI18n(text, "Info card body");
-    block.append(title, text);
-    return createSettingSection(block);
-  },
+  searchBan: () => buildSearchBanPanel(),
+  infoBlock: () =>
+    createSettingsCard({
+      titleKey: "Info card title",
+      descKey: "Info card body",
+    }),
   developerBlock: () => {
-    const copy = el("div", "roprime-setting-field-copy");
-    const title = el("div", "roprime-setting-title");
+    const wrap = el("div", "flex flex-col gap-medium");
+    wrap.setAttribute("data-roprime-developer-block", "1");
+    const title = el("span", "text-title-large content-emphasis");
     setDataI18n(title, "Developer section title");
-    const desc = el("div", "roprime-setting-desc");
+    const desc = el("p", "text-body-large content-default");
     setDataI18n(desc, "Developer section description");
-    copy.append(title, desc);
-
-    const actions = el("div", "roprime-settings-sync-actions");
-    const forceAlertBtn = el("button", "roprime-settings-primary-btn");
-    forceAlertBtn.type = "button";
-    forceAlertBtn.setAttribute(
-      "data-roprime-force-malicious-extension-alert",
-      "1",
+    const actions = el("div", "flex flex-wrap gap-small");
+    const forceAlertBtn = createControlButton(
+      "Force malicious extension alert",
+      { "data-roprime-force-malicious-extension-alert": "1" },
     );
-    setDataI18n(forceAlertBtn, "Force malicious extension alert");
     forceAlertBtn.addEventListener("click", () => {
-      void showMaliciousPluginOverlay("Example Extension", async () => true);
+      void showMaliciousPluginOverlay("{$Extension}", async () => true);
     });
     actions.appendChild(forceAlertBtn);
-
-    const wrap = el("div");
-    wrap.append(copy, actions);
-    return createSettingSection(wrap);
+    wrap.append(title, desc, actions);
+    return wrap;
   },
 };
 
@@ -509,123 +520,162 @@ function renderPageContent(container, pageKey) {
   const page = SETTINGS_CONFIG[pageKey];
   if (!page) return;
   for (const item of page.items || []) {
+    let node = null;
     if (item.type === "toggle") {
-      container.appendChild(createToggleSection(item));
-    } else if (item.type === "accordion") {
-      container.appendChild(createAccordionSection(item));
+      node = createToggleSection(item);
     } else if (item.type === "custom" && CUSTOM_BUILDERS[item.builder]) {
-      container.appendChild(CUSTOM_BUILDERS[item.builder]());
+      node = CUSTOM_BUILDERS[item.builder]();
     }
+    if (!(node instanceof HTMLElement)) continue;
+    if (item.hidden) {
+      node.hidden = true;
+      node.style.display = "none";
+      node.setAttribute("data-roprime-settings-item-hidden", "1");
+    }
+    container.appendChild(node);
   }
 }
 
-function buildSidebarSizeControl(sliderId) {
-  const field = el("div", "roprime-setting-field roprime-sidebar-size-row");
-  field.setAttribute("data-roprime-element-name", "sidebar-size");
-  field.classList.add("roprime-element-sidebar-size");
-  field.appendChild(
-    createSettingCopy("Sidebar size title", "Sidebar size description"),
+function buildSidebarPanel() {
+  const card = createSettingsCardShell();
+  card.setAttribute("data-roprime-sidebar-panel", "1");
+  card.append(
+    createSettingsCardHeaderRow("Sidebar title"),
+    createSettingsCardHeaderSeparator(),
   );
 
-  const control = el("div", "roprime-sidebar-size-control");
-  const box = el("div", "roprime-sidebar-size-box");
-  const rail = el("div", "roprime-sidebar-size-rail");
-  const slider = el("input", "roprime-sidebar-size-slider");
-  slider.type = "range";
-  slider.id = sliderId;
-  slider.min = "0";
-  slider.max = "100";
-  slider.step = "0.1";
-  slider.value = "0";
-  setDataI18nAria(slider, "Sidebar size title");
-  rail.appendChild(slider);
+  const sizeRow = el("div", "flex justify-between items-center gap-medium");
+  const sizeCopy = el("div", "flex flex-col gap-xsmall");
+  const sizeTitle = el("span", "text-title-large content-emphasis");
+  setDataI18n(sizeTitle, "Sidebar size title");
+  const sizeDesc = el("p", "text-body-large content-default");
+  setDataI18n(sizeDesc, "Sidebar size description");
+  sizeCopy.append(sizeTitle, sizeDesc);
 
-  const footer = el("div", "roprime-sidebar-size-footer");
-  const ticks = el("div", "roprime-sidebar-size-ticks");
-  for (const mode of ["full", "small", "icon"]) {
-    const tick = el("button", "roprime-sidebar-size-tick");
-    tick.type = "button";
-    tick.dataset.sizeMode = mode;
-    const span = el("span");
-    setDataI18n(span, SIDEBAR_SIZE_TITLE_KEYS[mode]);
-    tick.appendChild(span);
-    ticks.appendChild(tick);
-  }
-  const configureBtn = el("button", "roprime-sidebar-configure-btn");
-  configureBtn.type = "button";
-  configureBtn.setAttribute("data-roprime-open-sidebar-content", "1");
-  setDataI18n(configureBtn, "Configure sidebar content");
-  footer.append(ticks, configureBtn);
+  const mv = sidebarModeValues();
+  const slider = createMarkedSlider({
+    id: "roprime-sidebar-size-slider",
+    min: mv.full,
+    max: mv.icon,
+    step: 1,
+    value: sidebarValueForMode(settingsState.sidebarSize || "full"),
+    marks: [
+      {
+        value: mv.full,
+        label: accountSettingsPaneT("Sidebar size full"),
+      },
+      {
+        value: mv.small,
+        label: accountSettingsPaneT("Sidebar size small"),
+      },
+      {
+        value: mv.icon,
+        label: accountSettingsPaneT("Sidebar size icon only"),
+      },
+    ],
+    ariaLabel: accountSettingsPaneT("Sidebar size title"),
+  });
+  slider.setAttribute("data-roprime-sidebar-size-slider", "1");
 
-  const warning = el("div", "roprime-sidebar-size-warning");
+  const sliderWrap = el("div", "roprime-sidebar-size-slider-wrap");
+  sliderWrap.appendChild(slider);
+  sizeRow.append(sizeCopy, sliderWrap);
+
+  const contentRow = el("div", "flex justify-between items-center gap-medium");
+  const contentLabel = el("span", "text-title-large content-emphasis");
+  setDataI18n(contentLabel, "Sidebar content title");
+  const configureBtn = createControlButton("Configure sidebar content", {
+    "data-roprime-open-sidebar-content": "1",
+  });
+  configureBtn.classList.add("roprime-sidebar-configure-btn");
+  contentRow.append(contentLabel, configureBtn);
+
+  const warning = el("div");
   warning.setAttribute("data-roprime-sidebar-empty-warning", "1");
   warning.hidden = true;
-  const warningText = el("span", "roprime-sidebar-size-warning-text");
+  const warningText = el("span", "text-body-medium content-default");
   warningText.textContent = "No sidebar items visible.";
   warning.appendChild(warningText);
 
-  box.append(rail, footer, warning);
-  control.appendChild(box);
-  field.appendChild(control);
-  return field;
+  card.append(
+    sizeRow,
+    createSettingsCardHeaderSeparator(),
+    contentRow,
+    createSettingsCardHeaderSeparator(),
+    createSidebarInlineToggleRow({
+      id: "roprime-toggle-sidebar-collapse-menu",
+      key: "sidebarCollapseMenuEnabled",
+      titleKey: "Sidebar collapse menu title",
+      descKey: "Sidebar collapse menu description",
+      onChange: ["syncSidebarContent"],
+    }),
+    createSidebarInlineToggleRow({
+      id: "roprime-toggle-always-show-close",
+      key: "alwaysShowCloseButtonEnabled",
+      titleKey: "Always show close title",
+      descKey: "Always show close description",
+      onChange: ["syncRoEliteView"],
+    }),
+    createSidebarInlineToggleRow({
+      id: "roprime-toggle-old-navigation-bar",
+      key: "oldNavigationBarEnabled",
+      titleKey: "Old navigation title",
+      descKey: "Old navigation description",
+      onChange: ["syncRoEliteView"],
+    }),
+    warning,
+  );
+
+  return card;
 }
 
 function buildLanguageControl() {
-  const field = el("div", "roprime-setting-field");
-  const copy = el("div", "roprime-setting-field-copy");
-  const title = el("div", "roprime-setting-title");
-  setDataI18n(title, "Language section title");
-  const desc = el("div", "roprime-setting-desc");
-  setDataI18n(desc, "Language section description");
-  copy.append(title, desc);
-
-  const dropdown = el("div", "roprime-language-dropdown");
+  const dropdown = el("div");
   dropdown.setAttribute("data-roprime-language-dropdown", "1");
-  const trigger = el("button", "roprime-language-trigger");
-  trigger.type = "button";
+  const trigger = createControlButton("", {
+    "data-roprime-language-trigger": "1",
+    role: "combobox",
+  });
   const current = el("span");
   current.setAttribute("data-roprime-lang-current", "1");
-  const chevron = el("span", "roprime-language-chevron");
+  const chevron = el("span");
+  chevron.setAttribute("data-roprime-language-chevron", "1");
   chevron.setAttribute("aria-hidden", "true");
   trigger.append(current, chevron);
 
-  const menu = el("div", "roprime-language-menu");
+  const menu = el("div");
+  menu.setAttribute("data-roprime-language-menu", "1");
   menu.hidden = true;
   for (const code of Object.keys(langList)) {
-    const option = el("button", "roprime-language-option");
-    option.type = "button";
-    option.dataset.lang = code;
+    const option = createControlButton("", {
+      "data-roprime-language-option": "1",
+      "data-lang": code,
+    });
     menu.appendChild(option);
   }
   dropdown.append(trigger, menu);
-  field.append(copy, dropdown);
-  return field;
+
+  return createSettingsCard({
+    titleKey: "Language section title",
+    descKey: "Language section description",
+    trailing: dropdown,
+  });
 }
 
 function buildSettingsSyncPanel() {
-  const panel = el("div", "roprime-settings-sync-panel");
-  panel.setAttribute("data-roprime-settings-sync-panel", "1");
+  const body = el("div", "flex flex-col gap-medium");
+  body.setAttribute("data-roprime-settings-sync-panel", "1");
 
-  const copy = el("div", "roprime-setting-field-copy");
-  const title = el("div", "roprime-setting-title");
-  setDataI18n(title, "Settings sync title");
-  const desc = el("div", "roprime-setting-desc");
-  setDataI18n(desc, "Settings sync description");
-  copy.append(title, desc);
-
-  const actions = el("div", "roprime-settings-sync-actions");
-  const copyBtn = el("button", "roprime-settings-primary-btn");
-  copyBtn.type = "button";
-  copyBtn.setAttribute("data-roprime-settings-copy", "1");
-  setDataI18n(copyBtn, "Settings sync copy");
-  const exportBtn = el("button", "roprime-settings-primary-btn");
-  exportBtn.type = "button";
-  exportBtn.setAttribute("data-roprime-settings-export", "1");
-  setDataI18n(exportBtn, "Settings sync export");
-  const importBtn = el("button", "roprime-settings-primary-btn");
-  importBtn.type = "button";
-  importBtn.setAttribute("data-roprime-settings-import", "1");
-  setDataI18n(importBtn, "Settings sync import");
+  const actions = el("div", "flex flex-wrap gap-small");
+  const copyBtn = createControlButton("Settings sync copy", {
+    "data-roprime-settings-copy": "1",
+  });
+  const exportBtn = createControlButton("Settings sync export", {
+    "data-roprime-settings-export": "1",
+  });
+  const importBtn = createControlButton("Settings sync import", {
+    "data-roprime-settings-import": "1",
+  });
   const importInput = el("input");
   importInput.type = "file";
   importInput.accept = ".json,application/json,text/plain";
@@ -633,92 +683,77 @@ function buildSettingsSyncPanel() {
   importInput.setAttribute("data-roprime-settings-import-input", "1");
   actions.append(copyBtn, exportBtn, importBtn, importInput);
 
-  const previewWrap = el("div", "roprime-settings-sync-preview-wrap");
+  const previewWrap = el("div");
   previewWrap.setAttribute("data-roprime-settings-preview-wrap", "1");
-  const preview = el("textarea", "roprime-settings-sync-preview");
+  const preview = el("textarea");
   preview.setAttribute("data-roprime-settings-preview", "1");
   preview.spellcheck = false;
   previewWrap.appendChild(preview);
 
-  const resetRow = el(
-    "div",
-    "roprime-toggle-row roprime-settings-sync-reset-row",
-  );
-  const resetCopy = el("div", "roprime-toggle-copy");
-  const resetTitle = el("div", "roprime-toggle-title");
+  const resetRow = el("div", "flex justify-between items-center gap-medium");
+  const resetTitle = el("span", "text-title-large content-emphasis");
   setDataI18n(resetTitle, "Settings sync reset title");
-  resetCopy.appendChild(resetTitle);
-  const resetBtn = el("button", "roprime-settings-primary-btn");
-  resetBtn.type = "button";
-  resetBtn.setAttribute("data-roprime-settings-reset", "1");
-  setDataI18n(resetBtn, "Settings sync reset button");
-  resetRow.append(resetCopy, resetBtn);
+  const resetBtn = createControlButton("Settings sync reset button", {
+    "data-roprime-settings-reset": "1",
+  });
+  resetRow.append(resetTitle, resetBtn);
 
-  const status = el("p", "roprime-settings-sync-status");
+  const status = el("p", "text-body-large content-default");
   status.setAttribute("data-roprime-settings-sync-status", "1");
   status.hidden = true;
 
-  panel.append(copy, actions, previewWrap, resetRow, status);
-  return panel;
+  body.append(actions, previewWrap, resetRow, status);
+
+  return createSettingsCard({
+    titleKey: "Settings sync title",
+    descKey: "Settings sync description",
+    extraContent: body,
+  });
 }
 
 function buildCustomCssBlock() {
-  const block = el("div", "roprime-custom-css-block");
-  const heading = el("div", "roprime-custom-css-heading");
-  const title = el("div", "roprime-toggle-title");
-  setDataI18n(title, "Custom CSS title");
-  const desc = el("div", "roprime-toggle-desc");
-  setDataI18n(desc, "Custom CSS description");
-  heading.append(title, desc);
-
-  const wrap = el("div", "roprime-custom-css-editor-wrap");
+  const wrap = el("div");
   wrap.setAttribute("data-roprime-custom-css-editor-wrap", "1");
-  const placeholder = el("div", "roprime-custom-css-placeholder");
+  const placeholder = el("div");
   placeholder.setAttribute("data-roprime-custom-css-placeholder", "1");
   setDataI18n(placeholder, "Custom CSS placeholder");
   placeholder.setAttribute("aria-hidden", "true");
-  const host = el("div", "roprime-custom-css-editor-host");
+  const host = el("div");
   host.setAttribute("data-roprime-custom-css-editor-host", "1");
   wrap.append(placeholder, host);
-  block.append(heading, wrap);
-  return block;
+
+  return createSettingsCard({
+    titleKey: "Custom CSS title",
+    descKey: "Custom CSS description",
+    extraContent: wrap,
+  });
 }
 
 function buildSearchBanPanel() {
-  const field = el("div", "roprime-setting-field roprime-search-ban-field");
-  const copy = el("div", "roprime-setting-field-copy");
-  const title = el("div", "roprime-setting-title");
-  setDataI18n(title, "Search ban title");
-  const desc = el("div", "roprime-setting-desc");
-  setDataI18n(desc, "Search ban description");
-  copy.append(title, desc);
+  const body = el("div", "flex flex-col gap-medium");
 
-  const controls = el("div", "roprime-search-ban-controls");
-  const input = el("input", "roprime-search-ban-input");
+  const controls = el("div", "flex flex-wrap gap-small");
+  const input = el("input");
   input.type = "text";
   input.setAttribute("data-roprime-search-ban-input", "1");
   setDataI18nPlaceholder(input, "Search ban input placeholder");
   input.autocomplete = "off";
   input.spellcheck = false;
-  const addBtn = el(
-    "button",
-    "roprime-settings-primary-btn roprime-search-ban-add-btn",
-  );
-  addBtn.type = "button";
-  addBtn.setAttribute("data-roprime-search-ban-add", "1");
-  setDataI18n(addBtn, "Search ban add word");
+  const addBtn = createControlButton("Search ban add word", {
+    "data-roprime-search-ban-add": "1",
+  });
   controls.append(input, addBtn);
-  field.append(copy, controls);
 
-  const panel = el("div", "roprime-sidebar-content-panel");
-  panel.setAttribute("data-roprime-search-ban-panel", "1");
-  const list = el("div", "roprime-sidebar-content-list");
+  const list = el("div");
   list.setAttribute("data-roprime-search-ban-list", "1");
-  panel.appendChild(list);
+  body.setAttribute("data-roprime-search-ban-body", "1");
+  body.append(controls, list);
 
-  const wrap = el("div");
-  wrap.append(field, panel);
-  return wrap;
+  return createSettingsCard({
+    titleKey: "Search ban title",
+    descKey: "Search ban description",
+    extraContent: body,
+  });
 }
 
 function buildCosmeticsShopInto(shop) {
@@ -814,10 +849,7 @@ function buildProfileEffectCard(effect) {
   const footer = el("div", "roprime-profile-effect-footer");
   const title = el("div", "roprime-profile-effect-title");
   setDataI18n(title, effect.titleKey);
-  const action = el(
-    "button",
-    "roprime-settings-primary-btn roprime-profile-effect-action",
-  );
+  const action = el("button", "btn-control-md roprime-profile-effect-action");
   action.type = "button";
   action.setAttribute("data-roprime-effect-id", effect.id);
   action.setAttribute("data-roprime-effect-action", "equip");
@@ -827,14 +859,6 @@ function buildProfileEffectCard(effect) {
   return card;
 }
 
-function setSidebarModeVisual(root, mode) {
-  root.setAttribute("data-roprime-sidebar-size-mode", mode);
-  root.querySelectorAll(".roprime-sidebar-size-tick").forEach((tick) => {
-    if (!(tick instanceof HTMLButtonElement)) return;
-    tick.classList.toggle("is-active", tick.dataset.sizeMode === mode);
-  });
-}
-
 function applySidebarMode(root, mode) {
   if (settingsState.sidebarCollapseMenuEnabled && mode !== "full")
     mode = "full";
@@ -842,31 +866,29 @@ function applySidebarMode(root, mode) {
   settingsState.smallNewNavigationBarEnabled = mode === "small";
   settingsState.sidebarIconsOnlyEnabled = mode === "icon";
   saveSettings();
-  setSidebarModeVisual(root, mode);
+  root.setAttribute("data-roprime-sidebar-size-mode", mode);
   syncAccountSettingsLayoutInset();
   syncRoEliteView();
   syncSidebarContent({ force: true });
   refreshSidebarSizeWarnings(root);
+  syncSidebarSliderFromState(root);
   if (getCurrentrp() === "sidebar-content") refreshSidebarContentList(root);
 }
 
 function syncSidebarSliderFromState(root) {
   const mode = settingsState.sidebarSize || "full";
-  const mv = sidebarModeValues();
-  root.querySelectorAll(".roprime-sidebar-size-slider").forEach((slider) => {
-    if (!(slider instanceof HTMLInputElement)) return;
-    slider.value = String(mv[mode] ?? mv.full);
-    const locked = !!settingsState.sidebarCollapseMenuEnabled;
-    slider.disabled = locked;
-    slider.setAttribute("aria-disabled", locked ? "true" : "false");
-  });
-  setSidebarModeVisual(root, mode);
   const locked = !!settingsState.sidebarCollapseMenuEnabled;
-  root.querySelectorAll(".roprime-sidebar-size-tick").forEach((tick) => {
-    if (!(tick instanceof HTMLButtonElement)) return;
-    tick.disabled = locked;
-    tick.setAttribute("aria-disabled", locked ? "true" : "false");
-  });
+  const effectiveMode = locked ? "full" : mode;
+
+  root
+    .querySelectorAll("[data-roprime-sidebar-size-slider]")
+    .forEach((slider) => {
+      if (!(slider instanceof HTMLElement)) return;
+      setSliderValue(slider, sidebarValueForMode(effectiveMode));
+      setSliderDisabled(slider, locked);
+    });
+
+  root.setAttribute("data-roprime-sidebar-size-mode", effectiveMode);
   refreshSidebarSizeWarnings(root);
 }
 
@@ -1157,7 +1179,7 @@ function ensureCssEditor(root) {
       },
     },
     () => {
-      host.classList.add("roprime-custom-css-editor-host--ready");
+      host.setAttribute("data-roprime-custom-css-editor-ready", "1");
       if (!cssEditor) return;
       configureEditorShadow(host);
       applyEditorHeight(cssEditor);
@@ -1538,15 +1560,10 @@ function removeSearchBannedWord(rawWord) {
 
 function syncSearchBanSettingsUi(root) {
   const enabled = !!settingsState.searchBanEnabled;
-  const field = root.querySelector(".roprime-search-ban-field");
-  if (field instanceof HTMLElement) {
-    field.hidden = !enabled;
-    field.setAttribute("aria-hidden", enabled ? "false" : "true");
-  }
-  const panel = root.querySelector("[data-roprime-search-ban-panel]");
-  if (panel instanceof HTMLElement) {
-    panel.hidden = !enabled;
-    panel.setAttribute("aria-hidden", enabled ? "false" : "true");
+  const body = root.querySelector("[data-roprime-search-ban-body]");
+  if (body instanceof HTMLElement) {
+    body.hidden = !enabled;
+    body.setAttribute("aria-hidden", enabled ? "false" : "true");
   }
 }
 
@@ -1790,7 +1807,7 @@ async function resetAllSettingsFromSync(root) {
 
 function syncLanguageMenuLabels(root) {
   root
-    .querySelectorAll(".roprime-language-option[data-lang]")
+    .querySelectorAll("[data-roprime-language-option][data-lang]")
     .forEach((node) => {
       if (!(node instanceof HTMLButtonElement)) return;
       const code = node.getAttribute("data-lang");
@@ -1812,10 +1829,13 @@ function wireToggleElements(root) {
     toggleEl.setAttribute("data-roprime-toggle-bound", "1");
     const key = toggleEl.getAttribute("data-roprime-settings-key");
     if (!key) return;
-    const input = toggleEl.querySelector("input[type='checkbox']");
-    if (!(input instanceof HTMLInputElement)) return;
-    input.addEventListener("change", () => {
-      settingsState[key] = input.checked;
+    const button = toggleEl.querySelector("button.btn-toggle");
+    if (!(button instanceof HTMLButtonElement)) return;
+    button.addEventListener("click", () => {
+      if (button.disabled) return;
+      const checked = button.getAttribute("aria-checked") !== "true";
+      setToggleChecked(toggleEl, checked);
+      settingsState[key] = checked;
       saveSettings();
       const onChangeRaw = toggleEl.getAttribute("data-roprime-on-change");
       if (onChangeRaw) {
@@ -1826,9 +1846,16 @@ function wireToggleElements(root) {
         }
       }
       if (key === "renameDropdownEnabled") refreshSettingsUi(root);
+      if (key === "sidebarCollapseMenuEnabled") {
+        if (checked && settingsState.sidebarSize !== "full") {
+          applySidebarMode(root, "full");
+        } else {
+          syncSidebarSliderFromState(root);
+        }
+      }
       if (key === "cosmeticsEnabled") {
         void (async () => {
-          if (input.checked) await grantAllProfileEffectsToCurrentUser();
+          if (checked) await grantAllProfileEffectsToCurrentUser();
           syncCosmeticsUi(root);
         })();
       }
@@ -1913,77 +1940,24 @@ function bindOnce(root) {
 
   wireToggleElements(root);
 
-  root.querySelectorAll("[data-roprime-accordion]").forEach((accordion) => {
-    if (!(accordion instanceof HTMLElement)) return;
-    const accHeader = accordion.querySelector(".roprime-accordion-header");
-    const accBody = accordion.querySelector(".roprime-accordion-body");
-    if (
-      !(accHeader instanceof HTMLElement) ||
-      !(accBody instanceof HTMLElement)
-    )
-      return;
-    const syncA11y = () => {
-      const isOpen = accordion.classList.contains("is-open");
-      accHeader.setAttribute("aria-expanded", String(isOpen));
-      accBody.setAttribute("aria-hidden", String(!isOpen));
-      accBody.toggleAttribute("hidden", !isOpen);
-    };
-    accHeader.addEventListener("click", (event) => {
-      if (
-        event.target instanceof Element &&
-        event.target.closest(".roprime-accordion-master-switch")
-      )
-        return;
-      accordion.classList.toggle("is-open");
-      syncA11y();
-    });
-    accHeader.addEventListener("keydown", (event) => {
-      if (event.key !== "Enter" && event.key !== " ") return;
-      if (
-        event.target instanceof Element &&
-        event.target.closest(".roprime-accordion-master-switch")
-      )
-        return;
-      event.preventDefault();
-      accordion.classList.toggle("is-open");
-      syncA11y();
-    });
-    syncA11y();
-  });
+  root.querySelectorAll("[data-roprime-marked-slider]").forEach((slider) => {
+    if (!(slider instanceof HTMLElement)) return;
+    if (slider.getAttribute("data-roprime-sidebar-slider-bound") === "1") return;
+    slider.setAttribute("data-roprime-sidebar-slider-bound", "1");
 
-  const mv = sidebarModeValues();
-  root.querySelectorAll(".roprime-sidebar-size-slider").forEach((slider) => {
-    if (!(slider instanceof HTMLInputElement)) return;
+    const input = slider.querySelector("input[type='range']");
+    if (!(input instanceof HTMLInputElement)) return;
+
     const commitNearest = () => {
-      const mode = nearestSidebarMode(slider.value);
-      slider.value = String(mv[mode] ?? mv.full);
-      slider.removeAttribute("data-roprime-dragging");
+      const mode = sidebarModeForValue(input.value);
       applySidebarMode(root, mode);
     };
-    slider.addEventListener("input", () => {
-      slider.setAttribute("data-roprime-dragging", "1");
-      setSidebarModeVisual(root, nearestSidebarMode(slider.value));
-    });
-    slider.addEventListener("change", commitNearest);
-    slider.addEventListener("pointerup", commitNearest);
-    slider.addEventListener("pointercancel", commitNearest);
-    slider.addEventListener("blur", () => {
-      if (slider.getAttribute("data-roprime-dragging") === "1") commitNearest();
-    });
-    root.querySelectorAll(".roprime-sidebar-size-tick").forEach((tick) => {
-      if (!(tick instanceof HTMLButtonElement)) return;
-      if (tick.getAttribute("data-roprime-sidebar-tick-bound") === "1") return;
-      tick.setAttribute("data-roprime-sidebar-tick-bound", "1");
-      tick.addEventListener("click", () => {
-        const mode = tick.dataset.sizeMode || "full";
-        root.querySelectorAll(".roprime-sidebar-size-slider").forEach((s) => {
-          if (s instanceof HTMLInputElement) {
-            s.value = String(mv[mode] ?? mv.full);
-            s.removeAttribute("data-roprime-dragging");
-          }
-        });
-        applySidebarMode(root, mode);
-      });
+
+    input.addEventListener("change", commitNearest);
+    input.addEventListener("pointerup", commitNearest);
+    input.addEventListener("pointercancel", commitNearest);
+    input.addEventListener("blur", () => {
+      if (document.activeElement !== input) commitNearest();
     });
   });
 
@@ -1995,6 +1969,7 @@ function bindOnce(root) {
       navigateToPage("sidebar-content"),
     );
   }
+
   const backSidebarContent = root.querySelector(
     "[data-roprime-sidebar-content-back]",
   );
@@ -2010,10 +1985,10 @@ function bindOnce(root) {
     "[data-roprime-language-dropdown]",
   );
   const languageMenu = languageDropdown?.querySelector(
-    ".roprime-language-menu",
+    "[data-roprime-language-menu]",
   );
   const languageTrigger = languageDropdown?.querySelector(
-    ".roprime-language-trigger",
+    "[data-roprime-language-trigger]",
   );
   if (
     languageDropdown instanceof HTMLElement &&
@@ -2031,7 +2006,7 @@ function bindOnce(root) {
       languageMenu.hidden = !next;
     });
     languageMenu
-      .querySelectorAll(".roprime-language-option")
+      .querySelectorAll("[data-roprime-language-option]")
       .forEach((option) => {
         if (!(option instanceof HTMLButtonElement)) return;
         option.addEventListener("click", () => {
@@ -2340,9 +2315,11 @@ function refreshLayoutAndNav(root) {
       }
       if (!hasSearchTerm) {
         pageEl.hidden = pageKey !== searchSourcePage;
-        pageEl.querySelectorAll(".setting-section").forEach((section) => {
-          if (section instanceof HTMLElement) section.style.display = "";
-        });
+        pageEl
+          .querySelectorAll("[data-roprime-settings-card]")
+          .forEach((section) => {
+            if (section instanceof HTMLElement) section.style.display = "";
+          });
         return;
       }
       if (pageKey === "info" || pageKey === "developer") {
@@ -2350,19 +2327,23 @@ function refreshLayoutAndNav(root) {
         return;
       }
       let hasVisible = false;
-      pageEl.querySelectorAll(".setting-section").forEach((section) => {
-        if (!(section instanceof HTMLElement)) return;
-        const text = (section.textContent || "").toLowerCase();
-        const match = text.includes(searchTerm);
-        section.style.display = match ? "" : "none";
-        if (match) hasVisible = true;
-      });
+      pageEl
+        .querySelectorAll("[data-roprime-settings-card]")
+        .forEach((section) => {
+          if (!(section instanceof HTMLElement)) return;
+          const text = (section.textContent || "").toLowerCase();
+          const match = text.includes(searchTerm);
+          section.style.display = match ? "" : "none";
+          if (match) hasVisible = true;
+        });
       pageEl.hidden = !hasVisible;
       return;
     }
-    pageEl.querySelectorAll(".setting-section").forEach((section) => {
-      if (section instanceof HTMLElement) section.style.display = "";
-    });
+    pageEl
+      .querySelectorAll("[data-roprime-settings-card]")
+      .forEach((section) => {
+        if (section instanceof HTMLElement) section.style.display = "";
+      });
     pageEl.hidden = pageKey !== activePage;
   });
 
@@ -2385,13 +2366,13 @@ function refreshSettingsUi(root) {
     setToggleChecked(toggleEl, !!settingsState[key]);
   });
 
-  const accordion = root.querySelector('[data-roprime-accordion="rename"]');
-  if (accordion instanceof HTMLElement) {
-    accordion.classList.toggle(
-      "is-renames-disabled",
-      !settingsState.renameDropdownEnabled,
-    );
-  }
+  root.querySelectorAll("[data-roprime-rename-child]").forEach((toggleEl) => {
+    if (!(toggleEl instanceof HTMLElement)) return;
+    const enabled = !!settingsState.renameDropdownEnabled;
+    toggleEl.classList.toggle("is-renames-disabled", !enabled);
+    const button = toggleEl.querySelector("button.btn-toggle");
+    if (button instanceof HTMLButtonElement) button.disabled = !enabled;
+  });
 
   syncSidebarSliderFromState(root);
 

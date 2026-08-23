@@ -116,7 +116,8 @@ html.roprime-account-settings-open
   cursor: default;
 }
 
-.menu-vertical .menu-option-content:before, .menu-vertical .menu-option-content:after {
+.menu-vertical .menu-option-content:before,
+.menu-vertical .menu-option-content:after {
   content: none !important;
 }
 
@@ -132,7 +133,7 @@ html.roprime-account-settings-open
   height: 18px;
   font-size: 18px;
   line-height: 18px;
-  color: var(--color-content-default, var(--rp-ui-icon-muted, #b8bbc6));
+  color: var(--color-content-default);
 }
 
 #roprime-settings-host .menu-option:hover .roprime-settings-nav-icon,
@@ -175,115 +176,41 @@ html.roprime-account-settings-open
   line-height: 1.25;
 }
 
-#roprime-settings-host .settings-v2-header > [data-roprime-settings-page]:not([hidden]) {
+#roprime-settings-host
+  .settings-v2-header
+  > [data-roprime-settings-page]:not([hidden]) {
   display: flex;
   flex-direction: column;
-  gap: 0;
+  gap: 12px;
   min-width: 0;
 }
 
-#roprime-settings-host .settings-v2-header > [data-roprime-settings-page][hidden] {
+#roprime-settings-host
+  .settings-v2-header
+  > [data-roprime-settings-page][hidden] {
   display: none !important;
 }
 
-#roprime-settings-host .setting-section {
-  margin: 0;
-  padding: 0;
-  border: 0;
-  background: transparent;
+#roprime-settings-host [data-roprime-settings-page] {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
-#roprime-settings-host .setting-section > div {
+#roprime-settings-host [data-roprime-settings-card] {
   min-width: 0;
 }
 
-#roprime-settings-host .roprime-setting-field,
-#roprime-settings-host .roprime-toggle-row {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px 16px;
-  margin: 0;
-  padding: 14px 0;
-  border: 0;
-  border-bottom: 1px solid
-    color-mix(in srgb, var(--color-content-emphasis) 14%, transparent);
-  background: transparent;
+#roprime-settings-host [data-roprime-settings-card] > [role="separator"] {
+  width: 100%;
+  flex-shrink: 0;
 }
 
-#roprime-settings-host .roprime-setting-field-copy,
-#roprime-settings-host .roprime-toggle-copy {
-  flex: 1 1 200px;
-  min-width: 0;
-}
-
-#roprime-settings-host .roprime-setting-title,
-#roprime-settings-host .roprime-toggle-title,
-#roprime-settings-host .roprime-info-title {
-  margin: 0;
-  color: var(--color-content-emphasis);
-  font-size: 14px;
-  font-weight: 600;
-  line-height: 1.35;
-}
-
-#roprime-settings-host .roprime-setting-desc,
-#roprime-settings-host .roprime-toggle-desc,
-#roprime-settings-host .roprime-info-text {
-  margin: 4px 0 0;
-  color: var(--color-content-default);
-  font-size: 12px;
-  font-weight: 400;
-  line-height: 1.4;
-}
-
-#roprime-settings-host .roprime-info-block {
-  padding: 14px 0;
-}
-
-#roprime-settings-host .roprime-accordion {
-  border-bottom: 1px solid
-    color-mix(in srgb, var(--color-content-emphasis) 14%, transparent);
-}
-
-#roprime-settings-host .roprime-accordion-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  padding: 14px 0;
-  min-height: 0;
-  border: 0;
-  background: transparent;
-  color: inherit;
-  text-align: left;
+#roprime-settings-host [data-roprime-accordion-header] {
   cursor: pointer;
 }
 
-#roprime-settings-host .roprime-accordion-master-switch {
-  flex: 0 0 auto;
-  margin-left: auto;
-}
-
-#roprime-settings-host .roprime-accordion-chevron {
-  flex: 0 0 auto;
-  width: 10px;
-  height: 10px;
-  margin-right: 2px;
-  border-right: 2px solid
-    color-mix(in srgb, var(--color-content-emphasis) 70%, transparent);
-  border-bottom: 2px solid
-    color-mix(in srgb, var(--color-content-emphasis) 70%, transparent);
-  transform: rotate(45deg);
-  transition: transform 140ms ease;
-}
-
-#roprime-settings-host .roprime-accordion.is-open .roprime-accordion-chevron {
-  transform: rotate(-135deg);
-}
-
-#roprime-settings-host .roprime-accordion-body {
+#roprime-settings-host [data-roprime-accordion-body] {
   max-height: 0;
   padding: 0;
   overflow: hidden;
@@ -293,154 +220,165 @@ html.roprime-account-settings-open
     max-height 240ms cubic-bezier(0.22, 1, 0.36, 1),
     opacity 180ms ease,
     transform 240ms ease;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
-#roprime-settings-host .roprime-accordion.is-open .roprime-accordion-body {
+#roprime-settings-host
+  [data-roprime-accordion].is-open
+  [data-roprime-accordion-body] {
   max-height: 520px;
   padding-bottom: 4px;
   opacity: 1;
   transform: translateY(0);
 }
 
-#roprime-settings-host .roprime-accordion .setting-section:last-child .roprime-toggle-row,
-#roprime-settings-host .roprime-accordion .roprime-toggle-row:last-child {
-  border-bottom: 0;
-}
-
-#roprime-settings-host .roprime-accordion.is-renames-disabled .roprime-accordion-body {
+#roprime-settings-host
+  [data-roprime-accordion].is-renames-disabled
+  [data-roprime-accordion-body] {
   opacity: 0.55;
 }
 
-#roprime-settings-host .roprime-sidebar-size-row {
-  align-items: flex-start;
+#roprime-settings-host [data-roprime-rename-child].is-renames-disabled {
+  opacity: 0.55;
+  pointer-events: none;
 }
 
-#roprime-settings-host .roprime-sidebar-size-control {
-  display: flex;
-  flex: 0 1 250px;
-  align-items: center;
-  justify-content: flex-end;
-  width: min(100%, 250px);
-  margin-left: auto;
+#roprime-settings-host .btn-toggle .toggle-flip {
+  left: 2px;
+  transition: transform 180ms ease;
 }
 
-#roprime-settings-host .roprime-sidebar-size-box,
-#roprime-settings-host .roprime-sidebar-size-rail {
+#roprime-settings-host .btn-toggle.on .toggle-flip {
+  transform: translateX(16px);
+}
+
+#roprime-settings-host .roprime-sidebar-size-slider-wrap {
+  margin-right: 25px;
+  flex: 0 0 250px;
+  width: 250px;
+  max-width: 100%;
+}
+
+#roprime-settings-host .roprime-sidebar-size-slider-wrap .roprime-mui-slider {
+  height: 40px;
+  padding: 8px 0 22px;
+}
+
+#roprime-settings-host .roprime-sidebar-configure-btn {
+  flex: 0 0 250px;
+  width: 250px;
+  max-width: 100%;
+}
+
+#roprime-settings-host .roprime-mui-slider {
+  position: relative;
   width: 100%;
+  height: 48px;
+  padding: 10px 0 28px;
+  touch-action: none;
 }
 
-#roprime-settings-host .roprime-sidebar-size-rail {
-  --roprime-sidebar-thumb-size: 14px;
+#roprime-settings-host .roprime-mui-slider.Mui-disabled {
+  opacity: 0.45;
+  pointer-events: none;
 }
 
-#roprime-settings-host .roprime-sidebar-size-slider {
-  display: block;
-  width: calc(100% - var(--roprime-sidebar-thumb-size));
-  height: 6px;
-  margin: 4px auto 10px;
-  appearance: none;
-  -webkit-appearance: none;
-  border-radius: 999px;
-  outline: none;
+#roprime-settings-host .roprime-mui-slider .MuiSlider-rail,
+#roprime-settings-host .roprime-mui-slider .MuiSlider-track {
+  position: absolute;
+  top: 18px;
+  left: 0;
+  height: 4px;
+  border-radius: 2px;
+  transform: translateY(-50%);
+}
+
+#roprime-settings-host .roprime-mui-slider .MuiSlider-rail {
+  width: 100%;
   background: color-mix(
     in srgb,
-    var(--color-content-emphasis) 22%,
+    var(--color-content-emphasis) 26%,
     transparent
   );
 }
 
-#roprime-settings-host .roprime-sidebar-size-slider::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  border: 2px solid var(--color-surface-300);
-  background: var(--color-content-emphasis);
-  cursor: pointer;
+#roprime-settings-host .roprime-mui-slider .MuiSlider-track {
+  width: 0;
+  background: var(--color-system-contrast, #005cc8);
 }
 
-#roprime-settings-host .roprime-sidebar-size-slider::-moz-range-thumb {
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  border: 2px solid var(--color-surface-300);
-  background: var(--color-content-emphasis);
-  cursor: pointer;
-}
-
-#roprime-settings-host .roprime-sidebar-size-footer {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 8px;
-  width: calc(100% - var(--roprime-sidebar-thumb-size, 14px));
-  margin: 0 auto;
-}
-
-#roprime-settings-host .roprime-sidebar-size-ticks {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 10px;
+#roprime-settings-host .roprime-mui-slider .MuiSlider-input {
+  position: absolute;
+  inset: 0;
   width: 100%;
-}
-
-#roprime-settings-host .roprime-sidebar-size-tick {
-  min-width: 64px;
-  padding: 6px 10px;
-  border: 1px solid
-    color-mix(in srgb, var(--color-content-emphasis) 22%, transparent);
-  border-radius: 999px;
-  background: var(--color-surface-300);
-  color: var(--color-content-emphasis);
-  font-size: 11px;
-  font-weight: 600;
-  line-height: 1;
-  text-align: center;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
   cursor: pointer;
 }
 
-#roprime-settings-host .roprime-sidebar-size-tick.is-active {
-  border-color: color-mix(
+#roprime-settings-host .roprime-mui-slider .MuiSlider-thumb {
+  position: absolute;
+  top: 18px;
+  left: 0;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--color-system-contrast, #005cc8);
+  border: 2px solid var(--color-surface-100, #fff);
+  box-shadow:
+    0 2px 1px -1px rgba(0, 0, 0, 0.2),
+    0 1px 1px 0 rgba(0, 0, 0, 0.14),
+    0 1px 3px 0 rgba(0, 0, 0, 0.12);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+#roprime-settings-host .roprime-mui-slider .MuiSlider-marks {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+#roprime-settings-host .roprime-mui-slider .MuiSlider-mark {
+  position: absolute;
+  top: 18px;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: color-mix(
     in srgb,
     var(--color-content-emphasis) 40%,
     transparent
   );
+  transform: translate(-50%, -50%);
 }
 
-#roprime-settings-host .roprime-sidebar-configure-btn,
-#roprime-settings-host .roprime-sidebar-content-back {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  align-self: flex-start;
-  max-width: 100%;
-  margin: 0;
-  padding: 8px 12px;
-  border: 1px solid
-    color-mix(in srgb, var(--color-content-emphasis) 22%, transparent);
-  border-radius: 10px;
-  background: var(--color-surface-300);
-  color: var(--color-content-emphasis);
+#roprime-settings-host .roprime-mui-slider .MuiSlider-markActive {
+  background: var(--color-system-contrast, #005cc8);
+  opacity: 1;
+}
+
+#roprime-settings-host .roprime-mui-slider .MuiSlider-markLabel {
+  position: absolute;
+  top: 30px;
+  transform: translateX(-50%);
+  color: var(--color-content-default);
   font-size: 12px;
   font-weight: 600;
   line-height: 1.2;
-  cursor: pointer;
   white-space: nowrap;
+  pointer-events: auto;
+  cursor: pointer;
 }
 
-#roprime-settings-host .roprime-sidebar-configure-btn {
-  padding: 5px 10px;
-  border-radius: 8px;
-  font-size: 11px;
+#roprime-settings-host .roprime-mui-slider .MuiSlider-markLabelActive {
+  color: var(--color-content-emphasis);
 }
 
-#roprime-settings-host .roprime-sidebar-content-back {
-  margin-bottom: 12px;
-}
-
-#roprime-settings-host .roprime-sidebar-size-warning {
+#roprime-settings-host [data-roprime-sidebar-empty-warning] {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -496,7 +434,8 @@ html.roprime-account-settings-open
   font-weight: 600;
 }
 
-#roprime-settings-host .roprime-sidebar-content-row.is-removed-item
+#roprime-settings-host
+  .roprime-sidebar-content-row.is-removed-item
   .roprime-sidebar-content-row-label {
   opacity: 0.72;
 }
@@ -540,101 +479,17 @@ html.roprime-account-settings-open
   );
 }
 
-#roprime-settings-host .roprime-language-dropdown {
-  position: relative;
-  flex: 0 0 190px;
-  width: 190px;
-  max-width: 100%;
-  min-width: 0;
-}
-
-#roprime-settings-host .roprime-language-trigger {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  width: 100%;
-  padding: 9px 11px;
-  border: 1px solid
-    color-mix(in srgb, var(--color-content-emphasis) 22%, transparent);
-  border-radius: 10px;
-  background: var(--color-surface-300);
-  color: var(--color-content-emphasis);
-  cursor: pointer;
-}
-
-#roprime-settings-host .roprime-language-trigger [data-roprime-lang-current] {
-  flex: 1 1 auto;
-  min-width: 0;
-  overflow: hidden;
-  text-align: left;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-#roprime-settings-host .roprime-language-chevron {
-  width: 8px;
-  height: 8px;
-  border-right: 2px solid currentColor;
-  border-bottom: 2px solid currentColor;
-  transform: rotate(45deg);
-  transition: transform 120ms ease;
-}
-
-#roprime-settings-host .roprime-language-dropdown.is-open .roprime-language-chevron {
-  transform: rotate(-135deg);
-}
-
-#roprime-settings-host .roprime-language-menu {
-  position: absolute;
-  top: calc(100% + 6px);
-  right: 0;
-  left: 0;
-  z-index: 5;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  border: 1px solid
-    color-mix(in srgb, var(--color-content-emphasis) 22%, transparent);
-  border-radius: 10px;
-  background: var(--color-surface-300);
-}
-
-#roprime-settings-host .roprime-language-menu[hidden] {
-  display: none !important;
-}
-
-#roprime-settings-host .roprime-language-option {
-  padding: 9px 11px;
-  border: 0;
-  background: transparent;
-  color: var(--color-content-emphasis);
-  text-align: left;
-  cursor: pointer;
-}
-
-#roprime-settings-host .roprime-language-option:hover {
-  background: color-mix(in srgb, var(--color-content-emphasis) 8%, transparent);
-}
-
-#roprime-settings-host .roprime-settings-sync-panel {
+#roprime-settings-host [data-roprime-settings-sync-panel] {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  padding: 14px 0;
 }
 
-#roprime-settings-host .roprime-settings-sync-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-#roprime-settings-host .roprime-settings-sync-preview-wrap {
+#roprime-settings-host [data-roprime-settings-preview-wrap] {
   width: 100%;
 }
 
-#roprime-settings-host .roprime-settings-sync-preview {
+#roprime-settings-host [data-roprime-settings-preview] {
   width: 100%;
   min-height: 120px;
   resize: vertical;
@@ -649,24 +504,13 @@ html.roprime-account-settings-open
   line-height: 1.4;
 }
 
-#roprime-settings-host .roprime-settings-sync-status {
+#roprime-settings-host [data-roprime-settings-sync-status] {
   margin: 0;
   color: var(--color-content-default);
   font-size: 12px;
 }
 
-#roprime-settings-host .roprime-search-ban-field {
-  align-items: flex-start;
-}
-
-#roprime-settings-host .roprime-search-ban-controls {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  width: min(100%, 420px);
-}
-
-#roprime-settings-host .roprime-search-ban-input {
+#roprime-settings-host [data-roprime-search-ban-input] {
   flex: 1 1 180px;
   min-width: 0;
   height: 40px;
@@ -679,22 +523,12 @@ html.roprime-account-settings-open
   font: inherit;
 }
 
-#roprime-settings-host .roprime-search-ban-input:focus-visible {
+#roprime-settings-host [data-roprime-search-ban-input]:focus-visible {
   outline: 2px solid var(--color-focus, #005cc8);
   outline-offset: 1px;
 }
-
-#roprime-settings-host .roprime-search-ban-add-btn {
-  flex: 0 0 auto;
-  min-width: 96px;
-}
 #roprime-settings-host .roprime-search-hint {
-  margin: 0 0 10px;
   padding: 10px 12px;
-  border: 1px solid rgba(255, 220, 64, 0.4);
-  border-radius: 10px;
-  background: rgba(255, 220, 64, 0.12);
-  color: #ffd84a;
   font-size: 12px;
   font-weight: 600;
 }
@@ -708,23 +542,7 @@ html.roprime-account-settings-open
   scroll-margin-top: 12px;
 }
 
-.roprime-custom-css-block {
-  margin-bottom: 14px;
-}
-
-.roprime-custom-css-heading {
-  margin-bottom: 12px;
-}
-
-.roprime-custom-css-heading .roprime-toggle-title {
-  margin: 0 0 4px;
-}
-
-.roprime-custom-css-heading .roprime-toggle-desc {
-  margin: 0;
-}
-
-.roprime-custom-css-editor-wrap {
+[data-roprime-custom-css-editor-wrap] {
   position: relative;
   max-height: calc(22px * 18 + 16px);
   overflow-x: hidden;
@@ -736,7 +554,7 @@ html.roprime-account-settings-open
   scrollbar-width: auto;
 }
 
-.roprime-custom-css-editor-host {
+[data-roprime-custom-css-editor-host] {
   display: block;
   --roprime-editor-bg: var(--color-surface-300);
   color: #adbac7;
@@ -747,11 +565,13 @@ html.roprime-account-settings-open
   background: var(--color-surface-300);
 }
 
-.roprime-custom-css-editor-host:not(.roprime-custom-css-editor-host--ready) {
+[data-roprime-custom-css-editor-host]:not(
+  [data-roprime-custom-css-editor-ready="1"]
+) {
   min-height: 112px;
 }
 
-.roprime-custom-css-placeholder {
+[data-roprime-custom-css-placeholder] {
   position: absolute;
   inset: 12px 14px auto;
   z-index: 1;
@@ -762,140 +582,8 @@ html.roprime-account-settings-open
   color: color-mix(in srgb, var(--color-content-default) 72%, transparent);
 }
 
-.roprime-custom-css-placeholder[hidden] {
+[data-roprime-custom-css-placeholder][hidden] {
   display: none;
-}
-
-.roprime-settings-section[data-roprime-section="design"] .roprime-switch,
-.roprime-settings-section[data-roprime-section="other"] .roprime-switch,
-.roprime-settings-section[data-roprime-section="sidebar-content"]
-  .roprime-switch {
-  width: 40px;
-  height: 24px;
-}
-
-.roprime-settings-section[data-roprime-section="design"] .roprime-switch-slider,
-.roprime-settings-section[data-roprime-section="other"] .roprime-switch-slider,
-.roprime-settings-section[data-roprime-section="sidebar-content"]
-  .roprime-switch-slider {
-  border: none;
-  background: color-mix(
-    in srgb,
-    var(--color-content-emphasis) 38%,
-    transparent
-  );
-  transition:
-    background-color 150ms cubic-bezier(0.4, 0, 0.2, 1),
-    transform 150ms cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.roprime-settings-section[data-roprime-section="design"]
-  .roprime-switch
-  input:checked
-  + .roprime-switch-slider,
-.roprime-settings-section[data-roprime-section="other"]
-  .roprime-switch
-  input:checked
-  + .roprime-switch-slider,
-.roprime-settings-section[data-roprime-section="sidebar-content"]
-  .roprime-switch
-  input:checked
-  + .roprime-switch-slider {
-  background: var(--color-surface-300);
-  border: 1px solid
-    color-mix(in srgb, var(--color-content-emphasis) 40%, transparent);
-}
-
-.roprime-settings-section[data-roprime-section="design"]
-  .roprime-switch-slider::before,
-.roprime-settings-section[data-roprime-section="other"]
-  .roprime-switch-slider::before,
-.roprime-settings-section[data-roprime-section="sidebar-content"]
-  .roprime-switch-slider::before {
-  width: 16px;
-  height: 16px;
-  left: 4px;
-  top: 4px;
-  background: var(--color-content-emphasis);
-  box-shadow:
-    0 2px 1px -1px rgba(0, 0, 0, 0.2),
-    0 1px 1px 0 rgba(0, 0, 0, 0.14),
-    0 1px 3px 0 rgba(0, 0, 0, 0.12);
-  transition: transform 150ms cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.roprime-settings-section[data-roprime-section="design"]
-  .roprime-switch
-  input:checked
-  + .roprime-switch-slider::before,
-.roprime-settings-section[data-roprime-section="other"]
-  .roprime-switch
-  input:checked
-  + .roprime-switch-slider::before,
-.roprime-settings-section[data-roprime-section="sidebar-content"]
-  .roprime-switch
-  input:checked
-  + .roprime-switch-slider::before {
-  transform: translateX(16px);
-}
-
-.roprime-settings-section[data-roprime-section="design"]
-  .roprime-switch
-  input:focus-visible
-  + .roprime-switch-slider,
-.roprime-settings-section[data-roprime-section="other"]
-  .roprime-switch
-  input:focus-visible
-  + .roprime-switch-slider,
-.roprime-settings-section[data-roprime-section="sidebar-content"]
-  .roprime-switch
-  input:focus-visible
-  + .roprime-switch-slider {
-  outline: 2px solid var(--color-content-emphasis);
-  outline-offset: 2px;
-}
-
-.roprime-settings-section[data-roprime-section="design"]
-  .roprime-sidebar-size-slider,
-.roprime-settings-section[data-roprime-section="sidebar-content"]
-  .roprime-sidebar-size-slider {
-  --roprime-sidebar-thumb-size: 20px;
-  height: 4px;
-  margin: 10px auto 12px;
-  border-radius: 2px;
-  background: color-mix(
-    in srgb,
-    var(--color-content-emphasis) 26%,
-    transparent
-  );
-}
-
-.roprime-settings-section[data-roprime-section="design"]
-  .roprime-sidebar-size-slider::-webkit-slider-thumb,
-.roprime-settings-section[data-roprime-section="sidebar-content"]
-  .roprime-sidebar-size-slider::-webkit-slider-thumb {
-  width: 20px;
-  height: 20px;
-  background: var(--color-content-emphasis);
-  border: 2px solid var(--color-surface-300);
-  box-shadow:
-    0 2px 1px -1px rgba(0, 0, 0, 0.2),
-    0 1px 1px 0 rgba(0, 0, 0, 0.14),
-    0 1px 3px 0 rgba(0, 0, 0, 0.12);
-}
-
-.roprime-settings-section[data-roprime-section="design"]
-  .roprime-sidebar-size-slider::-moz-range-thumb,
-.roprime-settings-section[data-roprime-section="sidebar-content"]
-  .roprime-sidebar-size-slider::-moz-range-thumb {
-  width: 20px;
-  height: 20px;
-  background: var(--color-content-emphasis);
-  border: 2px solid var(--color-surface-300);
-  box-shadow:
-    0 2px 1px -1px rgba(0, 0, 0, 0.2),
-    0 1px 1px 0 rgba(0, 0, 0, 0.14),
-    0 1px 3px 0 rgba(0, 0, 0, 0.12);
 }
 
 .roprime-settings-section[data-roprime-section="sidebar-content"]

@@ -1,4 +1,4 @@
-@import "./main.css";
+@import "./ui/toggle.css";
 @import "./account/app-theme.css";
 @import "./settings/extensions-panel.css";
 @import "./settings/overlay.css";
