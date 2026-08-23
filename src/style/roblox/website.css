@@ -2,6 +2,8 @@
   background-color: transparent;
 }
 
+/* more rounded corners feature */
+
 .thumbnail-2d-container,
 .video-preview-wrapper video,
 .carousel-item iframe,
@@ -9,6 +11,17 @@
 .game-details-carousel-container .shimmer {
   border-radius: 12px;
 }
+
+#horizontal-tabs,
+#vertical-menu,
+.menu-vertical {
+  white-space: nowrap;
+  scroll-behavior: smooth;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* more rounded corners feature */
 
 html
   body:has(
@@ -65,8 +78,17 @@ html
   border-left: none !important;
 }
 
-/* fix avatar headshots images with background */
+/* fix for avatar headshots images with background */
 
 .thumbnail-2d-container img {
   margin-bottom: 3px;
 }
+
+/* fix for roblox's dropdown with light theme without actually breaking shadows */
+
+.friend-tile-dropdown,
+.in-game-friend-card--iarc {
+  border-radius: 5px !important;
+}
+
+/* roblox website needs to be stupied fr */
