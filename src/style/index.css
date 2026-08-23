@@ -1,6 +1,6 @@
 @import "./main.css";
 @import "./account/app-theme.css";
-@import "./settings/plugins-panel.css";
+@import "./settings/extensions-panel.css";
 @import "./settings/overlay.css";
 @import "./settings/settings.css";
 @import "./layout/chrome.css";

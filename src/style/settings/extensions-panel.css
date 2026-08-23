@@ -1,4 +1,4 @@
-.roprime-plugins-header-title {
+.roprime-extensions-header-title {
   margin: 0 0 6px;
   color: var(--color-content-emphasis);
   font-size: 20px;
@@ -6,13 +6,13 @@
   line-height: 1.25;
 }
 
-.roprime-plugins-header-desc {
+.roprime-extensions-header-desc {
   color: var(--color-content-default);
   font-size: 13px;
   line-height: 1.45;
 }
 
-.roprime-plugins-tiles {
+.roprime-extensions-tiles {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   gap: 12px;
@@ -149,6 +149,6 @@
   background: transparent;
 }
 
-#roprime-plugins-panel .roprime-switch {
+#roprime-extensions-panel .roprime-switch {
   margin: 0;
 }

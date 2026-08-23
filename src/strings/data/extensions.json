@@ -1,29 +1,35 @@
 [
   {
-    "key": "rovalra",
-    "title": "RoValra",
-    "search": ["rovalra"],
-    "settingsPath": "?rovalra=info#!/info",
+    "key": "RoValra - Roblox Improved",
+    "id": "njcickgebhnpgmoodjdgohkclfplejli",
+    "settingsPath": "?rovalra=info",
     "malicious": "false"
   },
   {
-    "key": "roseal",
-    "title": "RoSeal",
-    "search": ["roseal"],
-    "settingsPath": "?roseal=features_home#!/info",
+    "key": "RoSeal - Augmented Roblox Experience",
+    "id": "",
+    "class": "",
+    "settingsPath": "?roseal=features_home",
     "malicious": "false"
   },
   {
     "key": "roqol",
-    "title": "RoQol",
-    "search": ["roqol"],
-    "settingsPath": "?tab=roqol&option=General",
+    "id": "",
+    "settingsPath": "?tab=robloxqol&option=General",
     "malicious": "false"
   },
   {
     "key": "roprime",
-    "title": "RoPrime",
-    "search": ["roprime"],
+    "id": "",
+    "class": "",
+    "settingsPath": "__roprime__",
+    "malicious": "false",
+    "noToggle": true
+  },
+  {
+    "key": "roprime",
+    "id": "",
+    "class": "",
     "settingsPath": "__roprime__",
     "malicious": "false",
     "noToggle": true

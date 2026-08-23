@@ -6,6 +6,7 @@ import {
   promptCustomCssCautionNotice,
   promptProfileEffectsSupportNotice,
 } from "../alerts/alert.js";
+import { showMaliciousPluginOverlay } from "../ui/overlay.js";
 import { syncAccountSettingsMenuButton } from "../redirect/settingsButton.js";
 import {
   buildPluginUrl,
@@ -484,7 +485,23 @@ const CUSTOM_BUILDERS = {
     const desc = el("div", "roprime-setting-desc");
     setDataI18n(desc, "Developer section description");
     copy.append(title, desc);
-    return createSettingSection(copy);
+
+    const actions = el("div", "roprime-settings-sync-actions");
+    const forceAlertBtn = el("button", "roprime-settings-primary-btn");
+    forceAlertBtn.type = "button";
+    forceAlertBtn.setAttribute(
+      "data-roprime-force-malicious-extension-alert",
+      "1",
+    );
+    setDataI18n(forceAlertBtn, "Force malicious extension alert");
+    forceAlertBtn.addEventListener("click", () => {
+      void showMaliciousPluginOverlay("Example Extension", async () => true);
+    });
+    actions.appendChild(forceAlertBtn);
+
+    const wrap = el("div");
+    wrap.append(copy, actions);
+    return createSettingSection(wrap);
   },
 };
 

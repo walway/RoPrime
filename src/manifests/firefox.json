@@ -53,7 +53,8 @@
       "matches": ["*://www.roblox.com/*", "*://roblox.com/*"],
       "js": ["content.js"],
       "css": ["src/style/index.css"],
-      "run_at": "document_start"
+      "run_at": "document_start",
+      "world": "MAIN"
     }
   ]
 }

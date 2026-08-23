@@ -8,14 +8,17 @@ import {
 import { fetchExtensionIconUrl } from "../lib/cws-images.js";
 import { runWhenIdle } from "../features/runWhenIdle.js";
 import { showMaliciousPluginOverlay } from "../ui/overlay.js";
-import { fetchPluginsRegistry } from "./registry.js";
+import { fetchExtensionsRegistry } from "./registry.js";
 
 const extensionApi = globalThis.browser || globalThis.chrome;
 
-const PANEL_ID = "roprime-plugins-panel";
-const OPEN_KEY = "roprimePluginsPanelOpen";
+const PANEL_ID = "roprime-extensions-panel";
+const OPEN_KEY = "roprimeExtensionsPanelOpen";
+const MENU_ENTRY_ATTR = "data-roprime-account-extensions-entry";
 
-const PLUGINS_LOADING_MARKUP = `
+const NON_STORE_INSTALL_TYPES = new Set(["development", "sideload", "other"]);
+
+const EXTENSIONS_LOADING_MARKUP = `
 <div class="flex width-full justify-center padding-y-small"><div class="foundation-web-progress-circle inline-flex items-center justify-center" role="progressbar" aria-label="Loading" style="width: 32px; height: 32px;"><svg width="32" height="32" viewBox="0 0 32 32" class="relative"><circle cx="16" cy="16" r="14.5" fill="none" stroke-width="3" style="stroke: var(--color-shift-200);"></circle><circle cx="16" cy="16" r="14.5" fill="none" stroke-width="3" stroke-dasharray="68.329640215578 22.776546738526" stroke-dashoffset="0" stroke-linecap="round" class="foundation-web-progress-circle-indeterminate" style="stroke: var(--fui-future-alpha-color-system-progress); transform-origin: 50% 50%;"></circle></svg></div></div>
 `.trim();
 
@@ -73,14 +76,15 @@ function getHost() {
   return null;
 }
 
-function setPluginsMenuActive(active) {
-  const link =
-    document.querySelector(
-      '[data-roprime-account-plugins-entry="1"] a.menu-option-content',
-    ) ||
-    document.querySelector(
-      '[data-roprime-account-plugins-entry="1"] .menu-option-content',
-    );
+function queryExtensionsMenuLink() {
+  return (
+    document.querySelector(`[${MENU_ENTRY_ATTR}="1"] a.menu-option-content`) ||
+    document.querySelector(`[${MENU_ENTRY_ATTR}="1"] .menu-option-content`)
+  );
+}
+
+function setExtensionsMenuActive(active) {
+  const link = queryExtensionsMenuLink();
   if (!(link instanceof HTMLElement)) return;
   if (active) {
     if (!link.classList.contains("active")) link.classList.add("active");
@@ -95,12 +99,12 @@ function setPluginsMenuActive(active) {
   }
 }
 
-function setPluginsLoading(tiles) {
+function setExtensionsLoading(tiles) {
   if (!(tiles instanceof HTMLElement)) return;
-  tiles.innerHTML = PLUGINS_LOADING_MARKUP;
+  tiles.innerHTML = EXTENSIONS_LOADING_MARKUP;
 }
 
-function clearPluginsTiles(tiles) {
+function clearExtensionsTiles(tiles) {
   if (!(tiles instanceof HTMLElement)) return;
   tiles.textContent = "";
 }
@@ -124,7 +128,9 @@ function appendExtensionIconImg(fallback, iconUrl) {
 }
 
 async function resolveCwsIconUrl(extensionId) {
-  const id = String(extensionId || "").trim().toLowerCase();
+  const id = String(extensionId || "")
+    .trim()
+    .toLowerCase();
   if (!id) return "";
 
   if (cwsIconUrlCache.has(id)) {
@@ -152,7 +158,22 @@ async function resolveCwsIconUrl(extensionId) {
   return await pending;
 }
 
-async function setExtensionIcon(iconHost, extensionId, iconPath = "") {
+function shouldUseRegistryIdForCwsIcon(installType, registryId) {
+  const storeId = String(registryId || "").trim();
+  if (!storeId) return false;
+  return NON_STORE_INSTALL_TYPES.has(
+    String(installType || "")
+      .trim()
+      .toLowerCase(),
+  );
+}
+
+async function setExtensionIcon(
+  iconHost,
+  extensionId,
+  iconPath = "",
+  { registryId = "", installType = "" } = {},
+) {
   const fallback = iconHost.querySelector(".roprime-ext-icon-fallback");
   if (!(fallback instanceof HTMLElement)) return;
 
@@ -160,24 +181,18 @@ async function setExtensionIcon(iconHost, extensionId, iconPath = "") {
   const id = String(extensionId || "").trim();
   if (!id) return;
 
-  const cwsIconUrl = await resolveCwsIconUrl(id);
+  const cwsLookupId = shouldUseRegistryIdForCwsIcon(installType, registryId)
+    ? String(registryId).trim()
+    : id;
+  const cwsIconUrl = await resolveCwsIconUrl(cwsLookupId);
   if (appendExtensionIconImg(fallback, cwsIconUrl)) return;
 
-  appendExtensionIconImg(
-    fallback,
-    buildManifestExtensionIconUrl(id, iconPath),
-  );
+  appendExtensionIconImg(fallback, buildManifestExtensionIconUrl(id, iconPath));
 }
 
 function startMenuHighlightObserver() {
   if (menuHighlightObserver) return;
-  const link =
-    document.querySelector(
-      '[data-roprime-account-plugins-entry="1"] a.menu-option-content',
-    ) ||
-    document.querySelector(
-      '[data-roprime-account-plugins-entry="1"] .menu-option-content',
-    );
+  const link = queryExtensionsMenuLink();
   if (!(link instanceof HTMLElement)) return;
 
   menuHighlightObserver = new MutationObserver(() => {
@@ -188,7 +203,7 @@ function startMenuHighlightObserver() {
     runWhenIdle(() => {
       menuHighlightIdlePending = false;
       if (!isOpen()) return;
-      setPluginsMenuActive(true);
+      setExtensionsMenuActive(true);
     }, 450);
   });
   menuHighlightObserver.observe(link, {
@@ -203,15 +218,15 @@ function stopMenuHighlightObserver() {
   menuHighlightIdlePending = false;
 }
 
-async function scanForMaliciousPlugins() {
+async function scanForMaliciousExtensions() {
   const granted = await hasManagementPermission();
   if (!granted) return;
 
-  const registry = await fetchPluginsRegistry();
-  await handleMaliciousPlugins(registry);
+  const registry = await fetchExtensionsRegistry();
+  await handleMaliciousExtensions(registry);
 }
 
-async function handleMaliciousPlugins(registry) {
+async function handleMaliciousExtensions(registry) {
   const maliciousEntries = registry.filter((entry) => entry.malicious);
   if (!maliciousEntries.length) {
     return { removedAny: false, uninstalledKeys: new Set() };
@@ -232,7 +247,7 @@ async function handleMaliciousPlugins(registry) {
     const item = plugin?.item;
     if (!item?.id) continue;
 
-    const pluginName = String(item.name || plugin.title || "Extension");
+    const pluginName = String(item.name || plugin.key || "Extension");
     const extensionId = String(item.id);
 
     const deleted = await showMaliciousPluginOverlay(pluginName, async () => {
@@ -267,7 +282,7 @@ function hideHostChildren(host, panel) {
   });
 }
 
-function ensurePluginsPanel(host) {
+function ensureExtensionsPanel(host) {
   let panel = document.getElementById(PANEL_ID);
   if (!(panel instanceof HTMLElement)) {
     panel = document.createElement("div");
@@ -275,9 +290,9 @@ function ensurePluginsPanel(host) {
     panel.innerHTML = `
       <div class="setting-section">
         <div class="container-header">
-          <h2 class="setting-section-header">Plugins</h2>
+          <h2 class="setting-section-header">Extensions</h2>
         </div>
-          <div class="roprime-plugins-tiles" data-roprime-plugins-tiles="1"></div>
+          <div class="roprime-extensions-tiles" data-roprime-extensions-tiles="1"></div>
       </div>
     `.trim();
     host.appendChild(panel);
@@ -288,7 +303,7 @@ function ensurePluginsPanel(host) {
   return panel;
 }
 
-function requestPluginsRefresh(tiles) {
+function requestExtensionsRefresh(tiles) {
   refreshRequested = true;
   refreshSeq++;
   const mySeq = refreshSeq;
@@ -299,7 +314,7 @@ function requestPluginsRefresh(tiles) {
     while (refreshRequested) {
       refreshRequested = false;
       const seqAtStart = refreshSeq;
-      await refreshPluginsTiles(tiles);
+      await refreshExtensionsTiles(tiles);
       if (refreshSeq !== seqAtStart) continue;
       if (seqAtStart !== mySeq) {
         // noop
@@ -309,21 +324,21 @@ function requestPluginsRefresh(tiles) {
   })();
 }
 
-async function refreshPluginsTiles(tiles) {
+async function refreshExtensionsTiles(tiles) {
   const seqAtCall = refreshSeq;
-  setPluginsLoading(tiles);
+  setExtensionsLoading(tiles);
 
   const granted = await hasManagementPermission();
   if (seqAtCall !== refreshSeq) return;
   if (!granted) {
-    clearPluginsTiles(tiles);
+    clearExtensionsTiles(tiles);
     return;
   }
 
-  const registry = await fetchPluginsRegistry();
+  const registry = await fetchExtensionsRegistry();
   if (seqAtCall !== refreshSeq) return;
 
-  const maliciousResult = await handleMaliciousPlugins(registry);
+  const maliciousResult = await handleMaliciousExtensions(registry);
   if (seqAtCall !== refreshSeq) return;
 
   const safeRegistry = registry.filter((entry) => {
@@ -337,11 +352,11 @@ async function refreshPluginsTiles(tiles) {
   if (seqAtCall !== refreshSeq) return;
   if (!(tiles instanceof HTMLElement)) return;
   if (!resp?.ok || !Array.isArray(resp.plugins)) {
-    clearPluginsTiles(tiles);
+    clearExtensionsTiles(tiles);
     return;
   }
 
-  clearPluginsTiles(tiles);
+  clearExtensionsTiles(tiles);
 
   for (const plugin of resp.plugins) {
     if (seqAtCall !== refreshSeq) return;
@@ -349,9 +364,10 @@ async function refreshPluginsTiles(tiles) {
     const item = plugin?.item;
     if (!item) continue;
 
-    const title = String(item.name || plugin.title || "Extension");
+    const title = String(item.name || plugin.key || "Extension");
     const description = String(item.description || "").trim();
-    const settingsUrl = buildSettingsUrl(plugin);
+    const settingsClass = String(plugin.class || "").trim();
+    const settingsUrl = settingsClass ? "" : buildSettingsUrl(plugin);
 
     const tile = document.createElement("div");
     tile.className = "roprime-ext-tile";
@@ -370,6 +386,10 @@ async function refreshPluginsTiles(tiles) {
       icon,
       String(item.id || ""),
       String(item.iconPath || ""),
+      {
+        registryId: String(plugin.id || ""),
+        installType: String(item.installType || ""),
+      },
     );
 
     const meta = document.createElement("div");
@@ -398,8 +418,7 @@ async function refreshPluginsTiles(tiles) {
 
     const infoBtn = document.createElement("button");
     infoBtn.type = "button";
-    infoBtn.className =
-      "btn-control-md roprime-ext-btn roprime-ext-btn-ghost";
+    infoBtn.className = "btn-control-md roprime-ext-btn roprime-ext-btn-ghost";
     infoBtn.setAttribute("aria-label", "Info");
     infoBtn.title = "Info";
     infoBtn.innerHTML = `
@@ -456,17 +475,24 @@ async function refreshPluginsTiles(tiles) {
 
     const settingsBtn = document.createElement("button");
     settingsBtn.type = "button";
-    settingsBtn.className = "btn-control-md roprime-ext-btn";
+    settingsBtn.className = settingsClass
+      ? `btn-control-md roprime-ext-btn ${settingsClass}`
+      : "btn-control-md roprime-ext-btn";
     settingsBtn.setAttribute("aria-label", "Settings");
     settingsBtn.title = "Settings";
     settingsBtn.innerHTML = `
       <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiSvgIcon-root MuiSvgIcon-fontSizeMedium svg-icon css-o5v4k8" tabindex="-1" viewBox="0 0 24 24" style="width: 18px; height: 18px;"><path d="M19 19H5V5h7V3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14c1.1 0 2-.9 2-2v-7h-2zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3z"/></svg>
       `.trim();
-    settingsBtn.disabled = !settingsUrl;
-    settingsBtn.addEventListener("click", () => {
-      if (!settingsUrl) return;
-      window.location.assign(settingsUrl);
-    });
+
+    if (settingsClass) {
+      settingsBtn.disabled = false;
+    } else {
+      settingsBtn.disabled = !settingsUrl;
+      settingsBtn.addEventListener("click", () => {
+        if (!settingsUrl) return;
+        window.location.assign(settingsUrl);
+      });
+    }
 
     if (toggleWrap) right.appendChild(toggleWrap);
     right.appendChild(settingsBtn);
@@ -483,17 +509,17 @@ function openPanel() {
   if (!(host instanceof HTMLElement)) return;
 
   sessionStorage.setItem(OPEN_KEY, "1");
-  host.setAttribute("data-roprime-plugins-open", "1");
-  setPluginsMenuActive(true);
+  host.setAttribute("data-roprime-extensions-open", "1");
+  setExtensionsMenuActive(true);
   startMenuHighlightObserver();
 
-  const panel = ensurePluginsPanel(host);
+  const panel = ensureExtensionsPanel(host);
   hideHostChildren(host, panel);
 
-  const tiles = panel.querySelector('[data-roprime-plugins-tiles="1"]');
+  const tiles = panel.querySelector('[data-roprime-extensions-tiles="1"]');
   if (!(tiles instanceof HTMLElement)) return;
 
-  requestPluginsRefresh(tiles);
+  requestExtensionsRefresh(tiles);
 }
 
 function closePanel() {
@@ -504,9 +530,9 @@ function closePanel() {
 
   const host = getHost();
   if (!(host instanceof HTMLElement)) return;
-  host.removeAttribute("data-roprime-plugins-open");
+  host.removeAttribute("data-roprime-extensions-open");
   document.getElementById(PANEL_ID)?.remove();
-  setPluginsMenuActive(false);
+  setExtensionsMenuActive(false);
 
   host.querySelectorAll(":scope > *").forEach((child) => {
     if (!(child instanceof HTMLElement)) return;
@@ -524,23 +550,23 @@ function isOpen() {
   return sessionStorage.getItem(OPEN_KEY) === "1";
 }
 
-function isPluginsHashRoute() {
-  return (window.location.hash || "").toLowerCase() === "#!/plugins";
+function isExtensionsHashRoute() {
+  const hash = (window.location.hash || "").toLowerCase();
+  return hash === "#!/extensions" || hash === "#!/plugins";
 }
 
 let bound = false;
-export function initPluginsPanel() {
+export function initExtensionsPanel() {
   if (bound) return;
   bound = true;
 
-  window.addEventListener("roprime-open-plugins-panel", () => openPanel());
+  window.addEventListener("roprime-open-extensions-panel", () => openPanel());
 
   document.addEventListener(
     "click",
     (event) => {
       if (!(event.target instanceof Element)) return;
-      if (event.target.closest('[data-roprime-account-plugins-entry="1"]'))
-        return;
+      if (event.target.closest(`[${MENU_ENTRY_ATTR}="1"]`)) return;
       const menuLink = event.target.closest(
         'ul[role="tablist"] a.menu-option-content',
       );
@@ -556,17 +582,17 @@ export function initPluginsPanel() {
       if (isOpen()) closePanel();
       return;
     }
-    if (isPluginsHashRoute()) {
+    if (isExtensionsHashRoute()) {
       if (!isOpen()) openPanel();
       return;
     }
     if (isOpen()) closePanel();
-    setPluginsMenuActive(false);
+    setExtensionsMenuActive(false);
   };
 
   window.addEventListener("popstate", onRoute);
   window.addEventListener("hashchange", onRoute);
   window.addEventListener("roprime-location-change", onRoute);
   onRoute();
-  void scanForMaliciousPlugins();
+  void scanForMaliciousExtensions();
 }

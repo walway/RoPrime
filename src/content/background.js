@@ -31,35 +31,36 @@ function normalizeExtensionItem(x) {
     id,
     name: String(x?.name || ""),
     enabled: Boolean(x?.enabled),
+    installType: String(x?.installType || "")
+      .trim()
+      .toLowerCase(),
   };
 }
 
-function findBySearchTerms(items, searchTerms) {
-  const terms = (Array.isArray(searchTerms) ? searchTerms : [searchTerms])
-    .map((entry) => String(entry || "").trim().toLowerCase())
-    .filter(Boolean);
-  if (!terms.length) return null;
+function findByKey(items, key) {
+  const needle = String(key || "")
+    .trim()
+    .toLowerCase();
+  if (!needle) return null;
 
-  for (const needle of terms) {
-    const match =
-      items.find((x) =>
-        String(x?.name || "")
-          .toLowerCase()
-          .includes(needle),
-      ) ||
-      items.find((x) =>
-        String(x?.shortName || "")
-          .toLowerCase()
-          .includes(needle),
-      ) ||
-      items.find((x) =>
-        String(x?.description || "")
-          .toLowerCase()
-          .includes(needle),
-      );
-    if (match) return match;
-  }
-  return null;
+  return (
+    items.find((x) =>
+      String(x?.name || "")
+        .toLowerCase()
+        .includes(needle),
+    ) ||
+    items.find((x) =>
+      String(x?.shortName || "")
+        .toLowerCase()
+        .includes(needle),
+    ) ||
+    items.find((x) =>
+      String(x?.description || "")
+        .toLowerCase()
+        .includes(needle),
+    ) ||
+    null
+  );
 }
 
 function getManifestIconPath(manifest) {
@@ -114,17 +115,16 @@ function normalizeRegistryEntry(entry) {
   if (!entry || typeof entry !== "object") return null;
   const key = String(entry.key || "").trim();
   if (!key) return null;
-  const search = Array.isArray(entry.search)
-    ? entry.search.map((value) => String(value || "").trim()).filter(Boolean)
-    : [];
   return {
     key,
-    title: String(entry.title || key).trim() || key,
-    search,
+    id: String(entry.id || "").trim(),
+    class: String(entry.class || "").trim(),
     settingsPath: String(entry.settingsPath || "").trim(),
     malicious:
       entry.malicious === true ||
-      String(entry.malicious || "").trim().toLowerCase() === "true",
+      String(entry.malicious || "")
+        .trim()
+        .toLowerCase() === "true",
     noToggle: Boolean(entry.noToggle),
   };
 }
@@ -212,7 +212,9 @@ extensionApi.runtime.onMessage.addListener((message, sender, sendResponse) => {
           return;
         }
 
-        const registry = (Array.isArray(message?.registry) ? message.registry : [])
+        const registry = (
+          Array.isArray(message?.registry) ? message.registry : []
+        )
           .map(normalizeRegistryEntry)
           .filter(Boolean);
 
@@ -227,7 +229,7 @@ extensionApi.runtime.onMessage.addListener((message, sender, sendResponse) => {
           const plugins = [];
 
           for (const entry of registry) {
-            const match = findBySearchTerms(installed, entry.search);
+            const match = findByKey(installed, entry.key);
             if (!match) continue;
 
             const base = normalizeExtensionItem(match);
@@ -313,7 +315,9 @@ extensionApi.runtime.onMessage.addListener((message, sender, sendResponse) => {
     const url = String(message?.url || "");
     const method = String(message?.method || "GET").toUpperCase();
     const headers =
-      message?.headers && typeof message.headers === "object" ? message.headers : {};
+      message?.headers && typeof message.headers === "object"
+        ? message.headers
+        : {};
 
     if (!url) {
       sendResponse({ ok: false, error: "missing_url" });

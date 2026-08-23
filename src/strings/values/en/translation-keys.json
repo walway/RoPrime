@@ -84,6 +84,7 @@
   "Info card body": "This extension adds useful design-focused features.",
   "Developer section title": "Developer tools",
   "Developer section description": "This page is hidden by default. It is highly recommended not to use it because it is mostly useless.",
+  "Force malicious extension alert": "Force malicious extension alert",
   "Custom CSS title": "Custom CSS",
   "Custom CSS description": "CSS you write here injects into every Roblox page while RoPrime is enabled.",
   "Custom CSS placeholder": "Start typing your custom css",

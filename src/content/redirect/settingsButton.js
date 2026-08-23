@@ -16,7 +16,7 @@ import { openRoPrimeSettingsOnAccountPage } from "../settings/settingsPage.js";
 const ROPRIME_ACCOUNT_MENU_LABEL = "RoPrime Settings";
 
 const TAB_ENTRY_ATTR = "data-roprime-account-menu-entry";
-const PLUGINS_TAB_ATTR = "data-roprime-account-plugins-entry";
+const EXTENSIONS_TAB_ATTR = "data-roprime-account-extensions-entry";
 const POP_ENTRY_ATTR = "data-roprime-account-popover-entry";
 const DIVIDER_ATTR = "data-roprime-account-divider";
 
@@ -53,7 +53,7 @@ function reconcileAccountMenuTabs() {
   reconcilingAccountMenu = true;
   disconnectAccountMenuListObserver();
   try {
-    ensurePluginsTabEntry();
+    ensureExtensionsTabEntry();
     ensureVerticalTabEntry();
   } finally {
     reconcilingAccountMenu = false;
@@ -246,7 +246,7 @@ function removeVerticalAccountInjections() {
   document.querySelectorAll(`[${TAB_ENTRY_ATTR}]`).forEach((n) => {
     n.remove();
   });
-  document.querySelectorAll(`[${PLUGINS_TAB_ATTR}]`).forEach((n) => {
+  document.querySelectorAll(`[${EXTENSIONS_TAB_ATTR}]`).forEach((n) => {
     n.remove();
   });
   document.querySelectorAll(`li[${DIVIDER_ATTR}="1"]`).forEach((n) => {
@@ -324,12 +324,12 @@ function getBrowserPreferencesMenuTab(menuList) {
   return li instanceof HTMLElement ? li : null;
 }
 
-function getOrCreatePluginDivider(menuList) {
+function getOrCreateExtensionsDivider(menuList) {
   const natives = [
     ...menuList.querySelectorAll("li.menu-option[role='tab']"),
   ].filter(
     (li) =>
-      !li.hasAttribute(TAB_ENTRY_ATTR) && !li.hasAttribute(PLUGINS_TAB_ATTR),
+      !li.hasAttribute(TAB_ENTRY_ATTR) && !li.hasAttribute(EXTENSIONS_TAB_ATTR),
   );
   const anchor =
     getBrowserPreferencesMenuTab(menuList) ||
@@ -403,15 +403,15 @@ function placeTabAfterDividerBlock(_menuList, li, divider) {
   insertAfter.insertAdjacentElement("afterend", li);
 }
 
-function buildPluginsTabLi(menuList) {
+function buildExtensionsTabLi(menuList) {
   const li = document.createElement("li");
   li.classList.add("menu-option");
   li.setAttribute("role", "tab");
-  li.setAttribute(PLUGINS_TAB_ATTR, "1");
+  li.setAttribute(EXTENSIONS_TAB_ATTR, "1");
 
   const a = document.createElement("a");
   a.className = "menu-option-content";
-  a.href = "#!/plugins";
+  a.href = "#!/extensions";
   a.style.cursor = "pointer";
   a.addEventListener("click", (e) => {
     e.preventDefault();
@@ -430,15 +430,15 @@ function buildPluginsTabLi(menuList) {
       history.replaceState(
         history.state,
         "",
-        `${window.location.pathname}${window.location.search}#!/plugins`,
+        `${window.location.pathname}${window.location.search}#!/extensions`,
       );
     } catch {
       /* ignore */
     }
-    if (window.location.hash !== "#!/plugins") {
-      window.location.hash = "#!/plugins";
+    if (window.location.hash !== "#!/extensions") {
+      window.location.hash = "#!/extensions";
     }
-    window.dispatchEvent(new Event("roprime-open-plugins-panel"));
+    window.dispatchEvent(new Event("roprime-open-extensions-panel"));
   });
 
   const iconWrap = document.createElement("span");
@@ -459,7 +459,7 @@ function buildPluginsTabLi(menuList) {
 
   const span = document.createElement("span");
   span.classList.add("font-caption-header");
-  span.textContent = "Plugins";
+  span.textContent = "Extensions";
   span.style.fontSize = "12px";
 
   a.append(iconWrap, span);
@@ -467,16 +467,16 @@ function buildPluginsTabLi(menuList) {
   return li;
 }
 
-function ensurePluginsTabEntry() {
+function ensureExtensionsTabEntry() {
   const menuList = getAccountPageMenuList();
   if (!(menuList instanceof HTMLElement)) return false;
 
-  const divider = getOrCreatePluginDivider(menuList);
+  const divider = getOrCreateExtensionsDivider(menuList);
   if (!(divider instanceof HTMLElement)) return false;
 
-  let li = menuList.querySelector(`li[${PLUGINS_TAB_ATTR}]`);
+  let li = menuList.querySelector(`li[${EXTENSIONS_TAB_ATTR}]`);
   if (!(li instanceof HTMLLIElement)) {
-    li = buildPluginsTabLi(menuList);
+    li = buildExtensionsTabLi(menuList);
   }
 
   if (divider.nextElementSibling !== li) {
@@ -508,7 +508,7 @@ function ensureVerticalTabEntry() {
     }
   }
 
-  const divider = getOrCreatePluginDivider(menuList);
+  const divider = getOrCreateExtensionsDivider(menuList);
   if (!(divider instanceof HTMLElement)) {
     if (menuList.lastElementChild !== li) menuList.appendChild(li);
     return true;
@@ -541,7 +541,9 @@ export function syncAccountSettingsMenuButton() {
     let tabOk = true;
     if (shouldInjectVerticalAccountTab()) {
       reconcileAccountMenuTabs();
-      tabOk = !!getAccountPageMenuList()?.querySelector(`li[${TAB_ENTRY_ATTR}]`);
+      tabOk = !!getAccountPageMenuList()?.querySelector(
+        `li[${TAB_ENTRY_ATTR}]`,
+      );
     } else {
       removeVerticalAccountInjections();
     }

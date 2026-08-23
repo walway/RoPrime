@@ -9,7 +9,7 @@ import {
 } from "./core/core.js";
 import { syncCustomCss } from "./features/customCss.js";
 import { syncAccountSettingsMenuButton } from "./redirect/settingsButton.js";
-import { initPluginsPanel } from "./panel/plugins.js";
+import { initExtensionsPanel } from "./panel/extensions.js";
 import "./features/legacyBadges.js";
 import "./roblox.com/info/roblox-badges.js";
 import { syncHomeWelcomeModal } from "./alerts/welcome.js";
@@ -145,7 +145,7 @@ function bootstrap() {
         installProfileRedesignObserver();
         installFriendCarouselEffects();
         installDomSyncScheduler();
-        initPluginsPanel();
+        initExtensionsPanel();
         if (shouldRunRoPrimeOnCurrentPage()) {
           updateRenameLoop();
         }
