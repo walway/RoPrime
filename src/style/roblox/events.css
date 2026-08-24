@@ -40,7 +40,6 @@
   width: 100%;
   min-width: 0;
   overflow: hidden;
-  border-radius: 5px;
 }
 
 .roblox-events .thumbnail-2d-container {
@@ -48,7 +47,7 @@
   width: 100%;
   aspect-ratio: 768 / 432;
   overflow: hidden;
-  border-radius: 12px;
+  border-radius: 5px;
 }
 
 .roblox-events .thumbnail-2d-container img {
