@@ -11,8 +11,8 @@
 .roblox-events > .roblox-events-logo {
   grid-column: 1;
   grid-row: 1;
-  width: 24px;
-  height: 25px;
+  width: 28px;
+  height: 24px;
   flex: 0 0 auto;
 }
 
@@ -40,7 +40,7 @@
   width: 100%;
   min-width: 0;
   overflow: hidden;
-  border-radius: 12px;
+  border-radius: 5px;
 }
 
 .roblox-events .thumbnail-2d-container {
