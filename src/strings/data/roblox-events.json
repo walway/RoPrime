@@ -1,10 +1,20 @@
 {
   "events": [
     {
-      "href": "/events/9054565659421311625",
-      "image": "https://tr.rbxcdn.com/180DAY-2c08405c09811888c466c65fedcd191e/768/432/Image/Webp/noFilter",
-      "alt": "🍀 LUCKY BLOCK BREAKOUT!",
-      "title": "🍀 LUCKY BLOCK BREAKOUT!"
+      "href": "/games/95047916580305/The-Block",
+      "image": "https://tr.rbxcdn.com/180DAY-49ff539c638602638bb3346af2346326/768/432/Image/Webp/noFilter",
+      "alt": "Roblox Innovation Awards 2026",
+      "title": "Roblox Innovation Awards 2026",
+      "startsAt": "2026-08-01T00:00:00Z",
+      "endsAt": "2026-09-12T23:59:59Z"
+    },
+    {
+      "href": "https://devforum.roblox.com/t/save-the-date-rdc26/4556064",
+      "image": "https://devforum-uploads.s3.dualstack.us-east-2.amazonaws.com/uploads/original/5X/7/d/f/e/7dfeab334accc629e32867632d7d1ba08402ddfb.jpeg",
+      "alt": "Roblox Developers Conference 2026",
+      "title": "Roblox Developers Conference 2026",
+      "startsAt": "2026-09-10T00:00:00Z",
+      "endsAt": "2026-09-12T23:59:59Z"
     }
   ]
 }

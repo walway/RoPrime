@@ -37,14 +37,43 @@ function isSafeImageUrl(url) {
   return value.startsWith("/") || /^https?:\/\//i.test(value);
 }
 
+function parseEventDate(value) {
+  const raw = String(value || "").trim();
+  if (!raw) return null;
+  const ms = Date.parse(raw);
+  if (!Number.isFinite(ms)) return null;
+  return ms;
+}
+
 function normalizeEvent(raw) {
   if (!raw || typeof raw !== "object") return null;
   const href = String(raw.href || raw.url || "").trim();
   const image = String(raw.image || raw.imageUrl || raw.src || "").trim();
   const title = String(raw.title || raw.alt || "").trim();
   const alt = String(raw.alt || raw.title || "").trim();
+  const startsAt = parseEventDate(
+    raw.startsAt ?? raw.startAt ?? raw.start ?? raw.starts,
+  );
+  const endsAt = parseEventDate(raw.endsAt ?? raw.endAt ?? raw.end ?? raw.ends);
   if (!isSafeHref(href) || !isSafeImageUrl(image)) return null;
-  return { href, image, title, alt: alt || title };
+  if (startsAt == null || endsAt == null) return null;
+  if (endsAt < startsAt) return null;
+  return {
+    href,
+    image,
+    title,
+    alt: alt || title,
+    startsAt,
+    endsAt,
+  };
+}
+
+function isEventActive(event, now = Date.now()) {
+  return now >= event.startsAt && now <= event.endsAt;
+}
+
+function getActiveEvents(events, now = Date.now()) {
+  return events.filter((event) => isEventActive(event, now));
 }
 
 function parseEventsJson(raw) {
@@ -288,7 +317,7 @@ export async function syncRobloxEvents(options = {}) {
     return;
   }
 
-  const events = await fetchRobloxEvents();
+  const events = getActiveEvents(await fetchRobloxEvents());
   if (!shouldShowRobloxEvents(options)) {
     removeRobloxEvents();
     return;
