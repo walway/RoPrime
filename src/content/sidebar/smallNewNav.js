@@ -5,7 +5,8 @@ import {
 } from "../core/core.js";
 
 export const SMALL_NEW_NAV_CUSTOM_CSS = `
-.gap-large .roseal-events-nav .event-list .event-item .thumbnail-2d-container {
+.gap-large .roseal-events-nav .event-list .event-item .thumbnail-2d-container,
+.gap-large .roblox-events .thumbnail-2d-container {
     height: unset !important;
 }`;
 

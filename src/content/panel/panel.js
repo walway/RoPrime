@@ -37,6 +37,10 @@ import {
 } from "../home/hideExperiencesAds.js";
 import { updateSmallNewNavVisibility } from "../sidebar/smallNewNav.js";
 import { syncRickRollEasterEgg } from "../memes/rickRoll.js";
+import {
+  removeRobloxEvents,
+  syncRobloxEvents,
+} from "../sidebar/robloxEvents.js";
 
 export function updateOldNavigationBarVisibility() {
   syncOldNavigationBar();
@@ -57,11 +61,13 @@ function cleanupBlockedRouteUi() {
   document.getElementById(HIDE_EXPERIENCES_ADS_ID)?.remove();
   document.getElementById("roprime-sidebar-content-hide-style")?.remove();
   document.getElementById("roprime-classic-left-nav-host")?.remove();
+  document.getElementById("roprime-hide-left-nav-for-old-nav")?.remove();
   document.getElementById("roprime-old-navbar-style")?.remove();
   document.getElementById("roprime-left-gray-frame")?.remove();
   document.getElementById("roprime-left-gray-frame-layout-style")?.remove();
   document.getElementById("roprime-custom-nav-menu-btn")?.remove();
   document.getElementById("roprime-nav-menu-slot")?.remove();
+  removeRobloxEvents();
   document.documentElement.classList.remove(
     "roprime-classic-left-nav-on",
     "roprime-old-navigation-bar-collapsed",
@@ -94,6 +100,7 @@ export function syncRoEliteView() {
     syncRobloxFoundationWebMenuButton();
     syncSearchBan();
     syncRickRollEasterEgg();
+    void syncRobloxEvents();
   } catch (e) {
     if (isExtensionContextInvalidatedError(e)) return;
     throw e;

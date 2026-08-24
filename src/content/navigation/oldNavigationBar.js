@@ -1,7 +1,96 @@
 import { settingsState } from "../core/core.js";
+import { getRobloxUserId } from "../profile/robloxUserId.js";
+import { showOfficialStorePopupLegacy } from "../popups/officialStore/OfficialStorePopupLegacy.js";
+import { syncRobloxEvents } from "../sidebar/robloxEvents.js";
 
 const HOST_ID = "roprime-classic-left-nav-host";
 const COLLAPSED_CLASS = "roprime-old-navigation-bar-collapsed";
+const LEFT_NAV_HIDE_STYLE_ID = "roprime-hide-left-nav-for-old-nav";
+const HEADSHOT_API = "https://thumbnails.roblox.com/v1/users/avatar-headshot";
+const USER_API = "https://users.roblox.com/v1/users";
+const UNREAD_MESSAGES_API =
+  "https://privatemessages.roblox.com/v1/messages/unread/count";
+const FRIEND_REQUESTS_API =
+  "https://friends.roblox.com/v1/user/friend-requests/count";
+const TRADE_REQUESTS_API = "https://trades.roblox.com/v1/trades/inbound/count";
+
+let lastNavRenderKey = "";
+let hydrateSeq = 0;
+
+function el(tag, props = {}, children = []) {
+  const node = document.createElement(tag);
+  for (const [key, value] of Object.entries(props)) {
+    if (value == null || value === false) continue;
+    if (key === "className") {
+      node.className = value;
+    } else if (key === "text") {
+      node.textContent = value;
+    } else if (key === "style" && typeof value === "object") {
+      Object.assign(node.style, value);
+    } else if (key.startsWith("on") && typeof value === "function") {
+      node.addEventListener(key.slice(2).toLowerCase(), value);
+    } else if (key === "dataset" && typeof value === "object") {
+      for (const [dataKey, dataValue] of Object.entries(value)) {
+        node.dataset[dataKey] = String(dataValue);
+      }
+    } else if (typeof value === "boolean") {
+      if (value) node.setAttribute(key, "");
+    } else {
+      node.setAttribute(key, String(value));
+    }
+  }
+  for (const child of children) {
+    if (child == null || child === false) continue;
+    node.appendChild(
+      typeof child === "string" ? document.createTextNode(child) : child,
+    );
+  }
+  return node;
+}
+
+function getNativeLeftNavigationContainer() {
+  for (const node of document.querySelectorAll("#left-navigation-container")) {
+    if (!(node instanceof HTMLElement)) continue;
+    if (node.closest(`#${HOST_ID}`)) continue;
+    return node;
+  }
+  return null;
+}
+
+function nativeLeftNavigationHasContent() {
+  const native = getNativeLeftNavigationContainer();
+  return !!(native && native.childElementCount > 0);
+}
+
+function setLeftNavHidden(hidden) {
+  const existing = document.getElementById(LEFT_NAV_HIDE_STYLE_ID);
+  if (!hidden) {
+    existing?.remove();
+    return;
+  }
+  if (existing) return;
+  const style = document.createElement("style");
+  style.id = LEFT_NAV_HIDE_STYLE_ID;
+  style.textContent =
+    ".left-nav{display:none!important;visibility:hidden!important;}";
+  (document.head || document.documentElement).appendChild(style);
+}
+
+function teardownOldNavigationBar() {
+  document.getElementById(HOST_ID)?.remove();
+  setLeftNavHidden(false);
+  document.documentElement.classList.remove(
+    "roprime-classic-left-nav-on",
+    COLLAPSED_CLASS,
+  );
+  lastNavRenderKey = "";
+  hydrateSeq += 1;
+  try {
+    delete window.__oldRobloxOldNavigationBar;
+  } catch {
+    /* ignore */
+  }
+}
 
 function stripLegacyInjections() {
   document.getElementById("roprime-left-gray-frame")?.remove();
@@ -28,8 +117,8 @@ function stripLegacyInjections() {
   }
   document
     .querySelectorAll("button.roprime-native-nav-menu-hidden")
-    .forEach((b) => {
-      b.classList.remove("roprime-native-nav-menu-hidden");
+    .forEach((button) => {
+      button.classList.remove("roprime-native-nav-menu-hidden");
     });
   document.getElementById("roprime-custom-nav-menu-btn")?.remove();
 }
@@ -40,236 +129,457 @@ function shouldMountOldNavigationBar() {
   if (
     /\/login\b/i.test(path) ||
     /^\/(?:[a-z]{2,3}(?:-[a-z0-9]{2,8})?\/)?newlogin\b/i.test(path)
-  )
+  ) {
     return false;
+  }
   return true;
 }
 
-function scrapeProfile() {
-  const nav = document.querySelector(".left-nav.fixed");
-  if (!nav)
-    return {
-      href: `${window.location.origin}/my/account`,
-      avatar: "",
-      name: "Profile",
-    };
+function origin() {
+  return window.location.origin;
+}
 
-  let profileLink = null;
-  for (const a of nav.querySelectorAll("a[href]")) {
-    if (!(a instanceof HTMLAnchorElement)) continue;
-    const pathOnly = (a.getAttribute("href") || "").replace(
-      /^https?:\/\/[^/]+/i,
-      "",
+function communitiesLabel() {
+  return settingsState.renameCommunitiesToGroups ? "Groups" : "Communities";
+}
+
+function navIcon(iconClass) {
+  return el("div", {}, [el("span", { className: iconClass })]);
+}
+
+function navLabel(text, title = text) {
+  return el("span", {
+    className: "font-header-2 dynamic-ellipsis-item",
+    title,
+    text,
+  });
+}
+
+function navLinkItem({
+  href,
+  id,
+  iconClass,
+  label,
+  target = "_self",
+  badgeKey,
+}) {
+  const children = [navIcon(iconClass), navLabel(label)];
+  if (badgeKey) {
+    children.push(el("span", { "data-roprime-nav-badge": badgeKey }));
+  }
+  return el("li", {}, [
+    el(
+      "a",
+      {
+        className: "dynamic-overflow-container text-nav",
+        href,
+        id,
+        target,
+      },
+      children,
+    ),
+  ]);
+}
+
+function createNotificationBadge(count) {
+  const n = Number(count);
+  if (!Number.isFinite(n) || n <= 0) return null;
+  const label = String(Math.floor(n));
+  return el("div", { className: "dynamic-width-item align-right" }, [
+    el("span", {
+      className: "notification-blue notification",
+      title: label,
+      text: label,
+    }),
+  ]);
+}
+
+function buildNavTree(userId) {
+  const id = Number(userId) > 0 ? String(userId) : "";
+  const profileHref = id
+    ? `${origin()}/users/${id}/profile`
+    : `${origin()}/users/profile`;
+  const inventoryHref = id
+    ? `${origin()}/users/${id}/inventory`
+    : `${origin()}/users/inventory`;
+  const groupLabel = communitiesLabel();
+
+  const profileHeader = el("li", {}, [
+    el(
+      "a",
+      {
+        className: "dynamic-overflow-container text-nav",
+        href: profileHref,
+        role: "link",
+        "data-roprime-nav-profile-header": "1",
+      },
+      [
+        el("span", { className: "avatar avatar-headshot-xs" }, [
+          el("span", {
+            className: "thumbnail-2d-container shimmer avatar-card-image",
+            "data-roprime-nav-headshot": "1",
+          }),
+        ]),
+        el(
+          "span",
+          {
+            className:
+              "flex flex-col gap-xsmall min-width-0 large:flex-row large:align-items-center",
+          },
+          [
+            el(
+              "span",
+              {
+                className: "flex gap-xsmall min-width-0 align-items-center",
+              },
+              [
+                el("div", {
+                  className: "font-header-2 dynamic-ellipsis-item",
+                  "data-roprime-nav-display-name": "1",
+                }),
+              ],
+            ),
+          ],
+        ),
+      ],
+    ),
+  ]);
+
+  const leftColList = el("ul", { className: "left-col-list" }, [
+    navLinkItem({
+      href: `${origin()}/home`,
+      id: "nav-home",
+      iconClass: "icon-nav-home",
+      label: "Home",
+    }),
+    navLinkItem({
+      href: profileHref,
+      id: "nav-profile",
+      iconClass: "icon-nav-profile",
+      label: "Profile",
+    }),
+    navLinkItem({
+      href: `${origin()}/my/messages/#!/inbox`,
+      id: "nav-message",
+      iconClass: "icon-nav-message",
+      label: "Messages",
+      badgeKey: "messages",
+    }),
+    navLinkItem({
+      href: `${origin()}/users/friends`,
+      id: "nav-friends",
+      iconClass: "icon-nav-friends",
+      label: "Connect",
+      badgeKey: "friends",
+    }),
+    navLinkItem({
+      href: `${origin()}/my/avatar`,
+      id: "nav-character",
+      iconClass: "icon-nav-charactercustomizer",
+      label: "Avatar",
+    }),
+    navLinkItem({
+      href: inventoryHref,
+      id: "nav-inventory",
+      iconClass: "icon-nav-inventory",
+      label: "Inventory",
+    }),
+    navLinkItem({
+      href: `${origin()}/trades`,
+      id: "nav-trade",
+      iconClass: "icon-nav-trade",
+      label: "Trade",
+      badgeKey: "trades",
+    }),
+    navLinkItem({
+      href: `${origin()}/my/communities`,
+      id: "nav-group",
+      iconClass: "icon-nav-group",
+      label: groupLabel,
+    }),
+    navLinkItem({
+      href: "https://blog.roblox.com",
+      id: "nav-blog",
+      iconClass: "icon-nav-blog",
+      label: "Blog",
+      target: "_blank",
+    }),
+    el("li", {}, [
+      el(
+        "button",
+        {
+          id: "nav-shop",
+          type: "button",
+          className: "dynamic-overflow-container text-nav",
+        },
+        [navIcon("icon-nav-shop"), navLabel("Official Store")],
+      ),
+    ]),
+    navLinkItem({
+      href: `${origin()}/giftcards-us`,
+      id: "nav-giftcards",
+      iconClass: "icon-nav-giftcards",
+      label: "Buy Gift Cards",
+    }),
+    el("li", { className: "rbx-upgrade-now" }, [
+      el("a", {
+        href: `${origin()}/plus`,
+        className: "btn-growth-md btn-secondary-md",
+        id: "upgrade-now-button",
+        text: "Roblox Plus",
+      }),
+    ]),
+  ]);
+
+  return el("div", { id: "left-navigation-container" }, [
+    el("div", { id: "navigation", className: "rbx-left-col" }, [
+      el("ul", {}, [profileHeader, el("li", { className: "rbx-divider" })]),
+      el("div", { "data-simplebar": "init", className: "rbx-scrollbar" }, [
+        el(
+          "div",
+          { className: "simplebar-wrapper", style: { margin: "0px" } },
+          [
+            el("div", { className: "simplebar-height-auto-observer-wrapper" }, [
+              el("div", { className: "simplebar-height-auto-observer" }),
+            ]),
+            el("div", { className: "simplebar-mask" }, [
+              el(
+                "div",
+                {
+                  className: "simplebar-offset",
+                  style: { right: "0px", bottom: "0px" },
+                },
+                [
+                  el(
+                    "div",
+                    {
+                      className: "simplebar-content-wrapper",
+                      tabindex: "0",
+                      role: "region",
+                      "aria-label": "scrollable content",
+                      style: { height: "100%", overflow: "hidden" },
+                    },
+                    [
+                      el(
+                        "div",
+                        {
+                          className: "simplebar-content",
+                          style: { padding: "0px" },
+                        },
+                        [leftColList],
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ]),
+            el("div", {
+              className: "simplebar-placeholder",
+              style: { width: "auto", height: "437px" },
+            }),
+          ],
+        ),
+        el(
+          "div",
+          {
+            className: "simplebar-track simplebar-horizontal",
+            style: { visibility: "hidden" },
+          },
+          [
+            el("div", {
+              className: "simplebar-scrollbar",
+              style: { width: "0px", display: "none" },
+            }),
+          ],
+        ),
+        el(
+          "div",
+          {
+            className: "simplebar-track simplebar-vertical",
+            style: { visibility: "hidden" },
+          },
+          [
+            el("div", {
+              className: "simplebar-scrollbar",
+              style: { height: "0px", display: "none" },
+            }),
+          ],
+        ),
+      ]),
+    ]),
+  ]);
+}
+
+async function fetchJsonCount(url) {
+  try {
+    const response = await fetch(url, { credentials: "include" });
+    if (!response.ok) return 0;
+    const data = await response.json();
+    const count = Number(data?.count);
+    return Number.isFinite(count) && count > 0 ? count : 0;
+  } catch {
+    return 0;
+  }
+}
+
+async function fetchDisplayName(userId) {
+  try {
+    const response = await fetch(`${USER_API}/${userId}`, {
+      credentials: "include",
+    });
+    if (!response.ok) return "";
+    const data = await response.json();
+    return String(data?.displayName || data?.name || "").trim();
+  } catch {
+    return "";
+  }
+}
+
+async function fetchHeadshotUrl(userId) {
+  try {
+    const response = await fetch(
+      `${HEADSHOT_API}?userIds=${userId}&size=150x150&format=Webp`,
+      { credentials: "include" },
     );
-    if (
-      !/\/users\/\d+/i.test(pathOnly) &&
-      !/\/my\/account\b/i.test(pathOnly) &&
-      !/\/my\/profile\b/i.test(pathOnly)
-    )
-      continue;
-    if (!a.querySelector("img")) continue;
-    profileLink = a;
-    break;
+    if (!response.ok) return "";
+    const data = await response.json();
+    return String(data?.data?.[0]?.imageUrl || "").trim();
+  } catch {
+    return "";
   }
-  if (!profileLink)
-    return {
-      href: `${window.location.origin}/my/account`,
-      avatar: "",
-      name: "Profile",
-    };
-
-  const img = profileLink.querySelector("img");
-  const avatar = img instanceof HTMLImageElement ? img.src || "" : "";
-  let name = "Profile";
-  const nameSpan = profileLink.querySelector(
-    "span[class*='font-body'], span[class*='text-'], span.text-truncate-end, p[class*='text-']",
-  );
-  if (nameSpan?.textContent?.trim()) name = nameSpan.textContent.trim();
-
-  const href = profileLink.getAttribute("href") || "/my/account";
-  const abs = /^https?:/i.test(href)
-    ? href
-    : `${window.location.origin}${href.startsWith("/") ? "" : "/"}${href}`;
-  return { href: abs, avatar, name };
 }
 
-function scrapeMessagesBadge() {
-  const nav = document.querySelector(".left-nav.fixed");
-  if (!nav) return null;
-  const link = nav.querySelector('a[href*="/messages" i]');
-  if (!(link instanceof HTMLAnchorElement)) return null;
-
-  const badgeLike = link.querySelector(
-    "[class*='badge' i], [class*='Badge'], [class*='notification' i], [data-testid*='badge' i]",
-  );
-  if (badgeLike?.textContent) {
-    const n = badgeLike.textContent.replace(/\D/g, "");
-    if (n) return n.length > 3 ? "99+" : n;
+function setBadge(host, key, count) {
+  const slot = host.querySelector(`[data-roprime-nav-badge="${key}"]`);
+  if (!(slot instanceof HTMLElement)) return;
+  const badge = createNotificationBadge(count);
+  if (!badge) {
+    slot.replaceChildren();
+    return;
   }
-  for (const el of link.querySelectorAll("span, div")) {
-    const t = el.textContent?.trim() || "";
-    if (/^\d{1,3}$/.test(t)) return t;
-  }
-  const label = link.getAttribute("aria-label") || "";
-  const m = label.match(/(\d+)\s*(unread|new)?/i);
-  if (m) return m[1];
-  return null;
+  slot.replaceWith(badge);
 }
 
-function esc(s) {
-  return String(s)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/"/g, "&quot;");
+function applyHeadshot(host, imageUrl, alt) {
+  const wrap = host.querySelector("[data-roprime-nav-headshot]");
+  if (!(wrap instanceof HTMLElement)) return;
+
+  if (!imageUrl) {
+    wrap.className = "thumbnail-2d-container avatar-card-image";
+    wrap.replaceChildren();
+    return;
+  }
+
+  wrap.className = "thumbnail-2d-container shimmer avatar-card-image";
+  const img = document.createElement("img");
+  img.className = "loading";
+  img.alt = alt || "";
+  img.src = imageUrl;
+  const finish = () => {
+    wrap.className = "thumbnail-2d-container avatar-card-image";
+    img.classList.remove("loading");
+  };
+  img.addEventListener("load", finish, { once: true });
+  img.addEventListener("error", finish, { once: true });
+  wrap.replaceChildren(img);
+}
+
+function bindShopButton(host) {
+  const btn = host.querySelector("#nav-shop");
+  if (!(btn instanceof HTMLButtonElement)) return;
+  if (btn.getAttribute("data-roprime-shop-bound") === "1") return;
+  btn.setAttribute("data-roprime-shop-bound", "1");
+  btn.addEventListener("click", (event) => {
+    event.preventDefault();
+    showOfficialStorePopupLegacy();
+  });
 }
 
 function bindNativeMenuButtonToggle() {
   const root = document.documentElement;
-  if (!root || root.getAttribute("data-roprime-old-nav-menu-bound") === "1")
+  if (!root || root.getAttribute("data-roprime-old-nav-menu-bound") === "1") {
     return;
+  }
   root.setAttribute("data-roprime-old-nav-menu-bound", "1");
 
-  const handler = (event) => {
-    const target = event.target;
-    if (!(target instanceof Element)) return;
-    const btn = target.closest("button.menu-button.btn-navigation-nav-menu-md");
-    if (!btn) return;
-    root.classList.toggle(COLLAPSED_CLASS);
-  };
-
-  document.addEventListener("click", handler, true);
+  document.addEventListener(
+    "click",
+    (event) => {
+      const target = event.target;
+      if (!(target instanceof Element)) return;
+      const btn = target.closest(
+        "button.menu-button.btn-navigation-nav-menu-md",
+      );
+      if (!btn) return;
+      if (!settingsState.oldNavigationBarEnabled) return;
+      root.classList.toggle(COLLAPSED_CLASS);
+    },
+    true,
+  );
 }
 
-const ICON = {
-  home: `<svg class="roprime-cln-svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5L12 3l9 7.5"/><path d="M5 10v10a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V10"/></svg>`,
-  user: `<svg class="roprime-cln-svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path d="M6 20v-1a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v1"/></svg>`,
-  message: `<svg class="roprime-cln-svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 5h14a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-4l-4 3v-3H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z"/><path d="M8 10h8"/><path d="M8 13h5"/></svg>`,
-  connect: `<svg class="roprime-cln-svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.5"/><path d="M3 20v-1a4 4 0 0 1 4-4h2"/><path d="M17 11.5A4 4 0 0 1 21 15v1"/></svg>`,
-  avatar: `<svg class="roprime-cln-svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="19.5" rx="5" ry="1.75"/><circle cx="12" cy="8.5" r="3.25"/><path d="M7.5 18.5v-.5a4.5 4.5 0 0 1 9 0v.5"/></svg>`,
-  inventory: `<svg class="roprime-cln-svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v1"/><rect x="4" y="6" width="16" height="14" rx="2"/><path d="M4 11h16"/></svg>`,
-  trade: `<svg class="roprime-cln-svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 5l5 5"/><path d="M5 5v5h5"/><path d="M19 19l-5-5"/><path d="M19 19v-5h-5"/></svg>`,
-  communities: `<svg class="roprime-cln-svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="2.5"/><circle cx="15" cy="7" r="2"/><circle cx="17" cy="13" r="2"/><path d="M3 20v-1a3 3 0 0 1 3-3h1"/><path d="M21 20v-1a3 3 0 0 0-3-3h-1"/><path d="M12 11c-1.5 0-3 1-3 3v2h6v-2c0-2-1.5-3-3-3z"/></svg>`,
-  blog: `<svg class="roprime-cln-svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 4h8l4 4v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"/><path d="M8 11h8"/><path d="M8 15h5"/></svg>`,
-  store: `<svg class="roprime-cln-svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="20" r="1"/><circle cx="18" cy="20" r="1"/><path d="M3 5h2l1 12a2 2 0 0 0 2 1.5h9a2 2 0 0 0 2-1.5L21 9H7"/><path d="M16 5l-2-2h-4"/></svg>`,
-  gift: `<svg class="roprime-cln-svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="8" width="18" height="12" rx="2"/><path d="M12 8V20"/><path d="M3 12h18"/><path d="M12 8a3 3 0 0 0 3-3c0 1.5-1.5 2-3 2S9 6.5 9 5a3 3 0 0 0 3 3z"/></svg>`,
-};
+async function hydrateNav(host, userId, seq) {
+  const [displayName, headshotUrl, messages, friends, trades] =
+    await Promise.all([
+      fetchDisplayName(userId),
+      fetchHeadshotUrl(userId),
+      fetchJsonCount(UNREAD_MESSAGES_API),
+      fetchJsonCount(FRIEND_REQUESTS_API),
+      fetchJsonCount(TRADE_REQUESTS_API),
+    ]);
 
-const ORIGIN = () => window.location.origin;
+  if (seq !== hydrateSeq) return;
+  if (!host.isConnected) return;
 
-const PRIMARY_LINKS = [
-  { label: "Home", path: "/home", icon: "home" },
-  { label: "Profile", path: "/users/profile", icon: "user" },
-  { label: "Messages", path: "/my/messages/#!/inbox", icon: "message" },
-  { label: "Connect", path: "/users/friends", icon: "connect" },
-  { label: "Avatar", path: "/my/avatar", icon: "avatar" },
-  { label: "Inventory", path: "/users/inventory", icon: "inventory" },
-  { label: "Trade", path: "/trades", icon: "trade" },
-  { label: "Communities", path: "/communities", icon: "communities" },
-  {
-    label: "Blog",
-    path: "about.roblox.com/newsroom",
-    icon: "blog",
-    newTab: true,
-    extIcon: true,
-  },
-  { label: "Official Store", path: "/catalog", icon: "store", extIcon: true },
-  {
-    label: "Buy Gift Cards",
-    path: "/giftcards-us",
-    icon: "gift",
-    extIcon: true,
-  },
-];
-
-function linkRow(item, messagesBadge) {
-  const isAbsolute = /^https?:/i.test(item.path);
-  const href = isAbsolute ? item.path : `${ORIGIN()}${item.path}`;
-  const target = item.newTab
-    ? ' target="_blank" rel="noopener noreferrer"'
-    : "";
-
-  let cls = "roprime-cln-link";
-  if (item.extIcon) cls += " roprime-cln-link--ext-icon";
-  if (item.newTab) cls += " roprime-cln-link--new-tab";
-
-  const wrapCls = item.extIcon
-    ? "roprime-cln-icon-wrap roprime-cln-icon-wrap--external"
-    : "roprime-cln-icon-wrap";
-  const icon = ICON[item.icon] || ICON.home;
-
-  let tail = "";
-  if (item.path === "/messages" && messagesBadge) {
-    tail = `<span class="roprime-cln-badge" aria-label="${esc(messagesBadge)} unread">${esc(messagesBadge)}</span>`;
+  const nameEl = host.querySelector("[data-roprime-nav-display-name]");
+  if (nameEl instanceof HTMLElement) {
+    nameEl.textContent = displayName || "Profile";
   }
 
-  return `<li><a class="${cls}" href="${esc(href)}"${target}><span class="${wrapCls}">${icon}</span><span class="roprime-cln-label">${esc(item.label)}</span>${tail}</a></li>`;
+  applyHeadshot(host, headshotUrl, displayName);
+  setBadge(host, "messages", messages);
+  setBadge(host, "friends", friends);
+  setBadge(host, "trades", trades);
 }
 
-function buildNavHtml(profileHref, avatarUrl, displayName) {
-  const links = PRIMARY_LINKS.map((item) =>
-    item.path === "/groups"
-      ? {
-          ...item,
-          label: settingsState.renameCommunitiesToGroups
-            ? "Groups"
-            : "Communities",
-        }
-      : item,
-  );
-  const badge = scrapeMessagesBadge();
-  const primary = links.map((item) => linkRow(item, badge)).join("");
-
-  const avatar = avatarUrl
-    ? `<img class="roprime-cln-avatar" src="${esc(avatarUrl)}" alt="" width="36" height="36" />`
-    : `<span class="roprime-cln-avatar roprime-cln-avatar--ph" aria-hidden="true"></span>`;
-
-  return `
-  <div id="left-navigation-container"><div id="navigation" class="rbx-left-col"><ul><li><a class="dynamic-overflow-container text-nav" href="https://www.roblox.com/users/2605032407/profile" role="link"><span class="avatar avatar-headshot-xs"><span class="thumbnail-2d-container avatar-card-image"></span></span><span class="flex flex-col gap-xsmall min-width-0 large:flex-row large:align-items-center"><span class="flex gap-xsmall min-width-0 align-items-center"><div class="font-header-2 dynamic-ellipsis-item">CEO</div></span></span></a></li><li class="rbx-divider"></li></ul><div data-simplebar="init" class="rbx-scrollbar"><div class="simplebar-wrapper" style="margin: 0px;"><div class="simplebar-height-auto-observer-wrapper"><div class="simplebar-height-auto-observer"></div></div><div class="simplebar-mask"><div class="simplebar-offset" style="right: 0px; bottom: 0px;"><div class="simplebar-content-wrapper" tabindex="0" role="region" aria-label="scrollable content" style="height: 100%; overflow: hidden;"><div class="simplebar-content" style="padding: 0px;"><ul class="left-col-list"><li><a class="dynamic-overflow-container text-nav" href="https://www.roblox.com/home" id="nav-home" target="_self"><div><span class="icon-nav-home"></span></div><span class="font-header-2 dynamic-ellipsis-item" title="Home">Home</span></a></li><li><a class="dynamic-overflow-container text-nav" href="https://www.roblox.com/users/2605032407/profile" id="nav-profile" target="_self"><div><span class="icon-nav-profile"></span></div><span class="font-header-2 dynamic-ellipsis-item" title="Profile">Profile</span></a></li><li><a class="dynamic-overflow-container text-nav" href="https://www.roblox.com/my/messages/#!/inbox" id="nav-message" target="_self"><div><span class="icon-nav-message"></span></div><span class="font-header-2 dynamic-ellipsis-item" title="Messages">Messages</span></a></li><li><a class="dynamic-overflow-container text-nav" href="https://www.roblox.com/users/friends" id="nav-friends" target="_self"><div><span class="icon-nav-friends"></span></div><span class="font-header-2 dynamic-ellipsis-item" title="Connect">Connect</span></a></li><li><a class="dynamic-overflow-container text-nav" href="https://www.roblox.com/my/avatar" id="nav-character" target="_self"><div><span class="icon-nav-charactercustomizer"></span></div><span class="font-header-2 dynamic-ellipsis-item" title="Avatar">Avatar</span></a></li><li><a class="dynamic-overflow-container text-nav" href="https://www.roblox.com/users/2605032407/inventory" id="nav-inventory" target="_self"><div><span class="icon-nav-inventory"></span></div><span class="font-header-2 dynamic-ellipsis-item" title="Inventory">Inventory</span></a></li><li><a class="dynamic-overflow-container text-nav" href="https://www.roblox.com/trades" id="nav-trade" target="_self"><div><span class="icon-nav-trade"></span></div><span class="font-header-2 dynamic-ellipsis-item" title="Trade">Trade</span></a></li><li><a class="dynamic-overflow-container text-nav" href="https://www.roblox.com/my/communities" id="nav-group" target="_self"><div><span class="icon-nav-group"></span></div><span class="font-header-2 dynamic-ellipsis-item" title="Communities">Groups</span></a></li><li><a class="dynamic-overflow-container text-nav" href="https://blog.roblox.com" id="nav-blog" target="_blank"><div><span class="icon-nav-blog"></span></div><span class="font-header-2 dynamic-ellipsis-item" title="Blog">Blog</span></a></li><li><button id="nav-shop" type="button" class="dynamic-overflow-container text-nav"><div><span class="icon-nav-shop"></span></div><span class="font-header-2 dynamic-ellipsis-item" title="Official Store">Official Store</span></button></li><li><a class="dynamic-overflow-container text-nav" href="https://www.roblox.com/giftcards-us" id="nav-giftcards" target="_self"><div><span class="icon-nav-giftcards"></span></div><span class="font-header-2 dynamic-ellipsis-item" title="Buy Gift Cards">Buy Gift Cards</span></a></li><li class="rbx-upgrade-now"><a href="https://www.roblox.com/plus" class="btn-growth-md btn-secondary-md" id="upgrade-now-button">Roblox Plus</a></li></ul></div></div></div></div><div class="simplebar-placeholder" style="width: auto; height: 437px;"></div></div><div class="simplebar-track simplebar-horizontal" style="visibility: hidden;"><div class="simplebar-scrollbar" style="width: 0px; display: none;"></div></div><div class="simplebar-track simplebar-vertical" style="visibility: hidden;"><div class="simplebar-scrollbar" style="height: 0px; display: none;"></div></div></div></div></div>
-  `.trim();
-}
-
-let lastNavRenderKey = "";
-
-function renderInto(host) {
-  const { href, avatar, name } = scrapeProfile();
-  const renderKey = `${href}|${avatar}|${name}`;
-  if (
-    renderKey === lastNavRenderKey &&
-    host.querySelector(".roprime-cln-list")
-  ) {
+function renderInto(host, userId) {
+  const renderKey = String(userId || "");
+  const hasNav = !!host.querySelector("#navigation.rbx-left-col");
+  if (renderKey === lastNavRenderKey && hasNav) {
+    bindShopButton(host);
+    void syncRobloxEvents({ preferOldNav: true });
     return;
   }
   lastNavRenderKey = renderKey;
-  host.innerHTML = buildNavHtml(href, avatar, name);
+  host.replaceChildren(buildNavTree(userId));
+  bindShopButton(host);
+  void syncRobloxEvents({ preferOldNav: true });
+
+  if (Number(userId) > 0) {
+    const seq = ++hydrateSeq;
+    void hydrateNav(host, userId, seq);
+  }
 }
 
-/**
- * Mounts the Old Navigation bar when {@link settingsState.oldNavigationBarEnabled} is on and the user is logged in.
- */
 export function syncOldNavigationBar() {
   stripLegacyInjections();
 
   const root = document.documentElement;
-  root.classList.remove("roprime-classic-left-nav-on");
 
-  if (!settingsState.oldNavigationBarEnabled) {
-    document.getElementById(HOST_ID)?.remove();
-    root.classList.remove(COLLAPSED_CLASS);
-    lastNavRenderKey = "";
-    try {
-      delete window.__oldRobloxOldNavigationBar;
-    } catch {
-      /* ignore */
-    }
+  if (
+    !settingsState.oldNavigationBarEnabled ||
+    !shouldMountOldNavigationBar()
+  ) {
+    teardownOldNavigationBar();
     return;
   }
 
-  if (!shouldMountOldNavigationBar()) {
-    document.getElementById(HOST_ID)?.remove();
-    root.classList.remove(COLLAPSED_CLASS);
+  if (!nativeLeftNavigationHasContent()) {
+    teardownOldNavigationBar();
     return;
   }
 
+  setLeftNavHidden(true);
   root.classList.add("roprime-classic-left-nav-on");
   bindNativeMenuButtonToggle();
 
@@ -282,20 +592,31 @@ export function syncOldNavigationBar() {
     (document.body || document.documentElement).appendChild(host);
   }
 
-  renderInto(host);
+  const peekId = Number(window.__roprimeNavUserId) || 0;
+  renderInto(host, peekId || "");
+
+  void (async () => {
+    const userId = await getRobloxUserId();
+    if (!settingsState.oldNavigationBarEnabled) return;
+    if (!nativeLeftNavigationHasContent()) {
+      teardownOldNavigationBar();
+      return;
+    }
+    const liveHost = document.getElementById(HOST_ID);
+    if (!(liveHost instanceof HTMLElement)) return;
+    if (userId) {
+      try {
+        window.__roprimeNavUserId = userId;
+      } catch {
+        /* ignore */
+      }
+    }
+    renderInto(liveHost, userId || "");
+  })();
 
   try {
     window.__oldRobloxOldNavigationBar = host;
   } catch {
     /* ignore */
-  }
-
-  if (!host.dataset.rpConsoleLogged) {
-    host.dataset.rpConsoleLogged = "1";
-    console.log(
-      "[RoPrime] Old Navigation bar:",
-      host,
-      "| window.__oldRobloxOldNavigationBar",
-    );
   }
 }

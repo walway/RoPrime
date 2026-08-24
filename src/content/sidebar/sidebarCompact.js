@@ -81,7 +81,8 @@ body .no-gutter-ads.logged-in.left-nav-new-width {
 .nav-item-text {
   display: none !important;
 }
-.roseal-events-nav {
+.roseal-events-nav,
+.roblox-events {
   display: none !important;
 }
 .padding-top-xsmall  {

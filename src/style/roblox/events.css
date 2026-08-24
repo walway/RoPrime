@@ -1,0 +1,64 @@
+.roblox-events {
+  display: grid;
+  grid-template-columns: 24px minmax(0, 1fr);
+  align-items: center;
+  column-gap: 8px;
+  row-gap: 12px;
+  width: 100%;
+  min-width: 0;
+}
+
+.roblox-events > .roblox-events-logo {
+  grid-column: 1;
+  grid-row: 1;
+  width: 24px;
+  height: 25px;
+  flex: 0 0 auto;
+}
+
+.roblox-events > ul,
+.roblox-events > .show-more-btn {
+  grid-column: 1 / -1;
+}
+
+.roblox-events ul {
+  display: flex !important;
+  padding: 0 !important;
+  flex-direction: column !important;
+}
+
+.roblox-events li {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  min-width: 0;
+}
+
+.roblox-events a {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  overflow: hidden;
+  border-radius: 12px;
+}
+
+.roblox-events .thumbnail-2d-container {
+  display: block;
+  width: 100%;
+  aspect-ratio: 768 / 432;
+  overflow: hidden;
+  border-radius: 12px;
+}
+
+.roblox-events .thumbnail-2d-container img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.roblox-events .show-more-btn[hidden],
+.roblox-events a[hidden] {
+  display: none !important;
+}

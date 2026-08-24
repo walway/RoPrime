@@ -305,7 +305,9 @@ function findRobloxPlusAdItem(nav) {
 }
 
 function findGameEventsItem(nav) {
-  const eventsNav = nav.querySelector("div.roseal-events-nav");
+  const eventsNav =
+    nav.querySelector("div.roblox-events") ||
+    nav.querySelector("div.roseal-events-nav");
   if (!(eventsNav instanceof HTMLElement)) return null;
   return eventsNav;
 }
@@ -458,7 +460,10 @@ function buildHideStyle() {
     .join("\n");
   const extraBlocks = [];
   if (hidden.includes("game-events")) {
-    const gameEventsSelectors = [".left-nav.fixed div.roseal-events-nav"]
+    const gameEventsSelectors = [
+      ".left-nav.fixed div.roseal-events-nav",
+      ".left-nav.fixed div.roblox-events",
+    ]
       .map((selector) => `${selector}{${SIDEBAR_ITEM_HIDE_CSS}}`)
       .join("\n");
     extraBlocks.push(gameEventsSelectors);
