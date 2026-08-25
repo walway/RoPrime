@@ -23,3 +23,7 @@ export function syncCustomCss() {
   }
   style.textContent = css;
 }
+
+import { registerFeature } from './registry.js';
+registerFeature(syncCustomCss);
+

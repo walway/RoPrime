@@ -143,3 +143,7 @@ export function installProfilePageEffectObserver() {
     });
   }
 }
+
+import { registerFeature } from '../features/registry.js';
+registerFeature(syncProfilePageEffect);
+

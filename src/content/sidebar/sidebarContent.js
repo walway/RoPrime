@@ -700,3 +700,7 @@ export function syncSidebarContent(options = {}) {
   updateSidebarHideStyle();
   syncSidebarCollapseMenuIcon();
 }
+
+import { registerFeature } from '../features/registry.js';
+registerFeature(() => syncSidebarContent({ force: true }));
+

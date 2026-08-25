@@ -133,3 +133,7 @@ export function updateRenameLoop() {
 export function stopRenameLoop() {
   stopRenameObserver();
 }
+
+import { registerFeature } from './registry.js';
+registerFeature(updateRenameLoop);
+

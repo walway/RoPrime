@@ -1,127 +1,173 @@
+/**
+ *
+ * To add a feature:
+ * 1. Add a toggle below (key, title, description?, byDefault).
+ * 2. Create a feature module that calls registerFeature(yourSyncFn).
+ * 3. Import that module from src/content/index.js.
+ *
+ */
+
 export const SETTINGS_CONFIG = {
-  design: {
-    labelKey: "Nav tab design",
-    titleKey: "Nav tab design",
+  appearance: {
+    title: "settings.nav.appearance",
+    icon: "palette",
     items: [
       {
         type: "toggle",
-        id: "roprime-toggle-rename-master",
         key: "renameDropdownEnabled",
-        titleKey: "Rename wording section title",
-        onChange: ["updateRenameLoop", "syncRoEliteView"],
+        title: "settings.appearance.rename.title",
+        byDefault: true,
       },
       {
         type: "toggle",
-        id: "roprime-toggle-rename-communities",
         key: "renameCommunitiesToGroups",
-        titleKey: "Rename communities label",
-        onChange: ["updateRenameLoop", "syncRoEliteView"],
-        renameChild: true,
+        title: "settings.appearance.rename.communities",
+        byDefault: true,
+        parent: "renameDropdownEnabled",
       },
       {
         type: "toggle",
-        id: "roprime-toggle-rename-marketplace",
         key: "renameMarketplaceToCatalog",
-        titleKey: "Rename marketplace label",
-        onChange: ["updateRenameLoop", "syncRoEliteView"],
-        renameChild: true,
+        title: "settings.appearance.rename.marketplace",
+        byDefault: true,
+        parent: "renameDropdownEnabled",
       },
-      { type: "custom", builder: "sidebarPanel" },
+      { 
+        type: "panel", 
+        id: "sidebar",
+        hide: true,
+      },
       {
         type: "toggle",
-        id: "roprime-toggle-friend-styling-reimagned",
         key: "friendStylingReimagnedEnabled",
-        titleKey: "Friend styling title",
-        descKey: "Friend styling description",
-        onChange: ["syncRoEliteView"],
+        title: "settings.appearance.friendStyling.title",
+        description: "settings.appearance.friendStyling.description",
+        byDefault: false,
       },
       {
         type: "toggle",
-        id: "roprime-toggle-hide-age-badge",
         key: "hideAgeBadgeEnabled",
-        titleKey: "Hide age badge title",
-        descKey: "Hide age badge description",
-        onChange: ["syncRoEliteView"],
+        title: "settings.appearance.hideAgeBadge.title",
+        description: "settings.appearance.hideAgeBadge.description",
+        byDefault: true,
       },
       {
         type: "toggle",
-        id: "roprime-toggle-profile-redesign",
         key: "profileRedesignEnabled",
-        titleKey: "Profile redesign title",
-        descKey: "Profile redesign description",
-        onChange: ["syncProfileRedesign"],
+        title: "settings.appearance.profileRedesign.title",
+        description: "settings.appearance.profileRedesign.description",
+        byDefault: false,
       },
     ],
   },
   home: {
-    labelKey: "Nav tab home",
-    titleKey: "Nav tab home",
+    title: "settings.nav.home",
+    icon: "home",
     items: [
       {
         type: "toggle",
-        id: "roprime-toggle-hide-experiences-ads",
         key: "hideExperiencesAdsEnabled",
-        titleKey: "Hide experiences ads title",
-        onChange: ["syncHideExperiencesAds"],
+        title: "settings.home.hideExperiencesAds.title",
+        byDefault: false,
       },
     ],
   },
   "sidebar-content": {
-    titleKey: "Sidebar content list title",
+    title: "settings.sidebar.content.listTitle",
+    nav: false,
     items: [
-      { type: "custom", builder: "sidebarContentBack" },
-      { type: "custom", builder: "sidebarContentList" },
+      { 
+        type: "panel", 
+        id: "sidebarContentBack",
+        hide: true,
+      },
+      { 
+        type: "panel", 
+        id: "sidebarContentList",
+        hide: true,
+      },
     ],
   },
   settings: {
-    labelKey: "Nav tab settings",
-    titleKey: "Nav tab settings",
+    title: "settings.nav.settings",
+    icon: "settings",
     items: [
-      { type: "custom", builder: "language" },
-      { type: "custom", builder: "settingsSync" },
+      { 
+        type: "panel", 
+        id: "language",
+        hide: true,
+      },
+      { 
+        type: "panel", 
+        id: "settingsSync",
+        hide: true,
+      },
     ],
   },
   privacy: {
-    labelKey: "Nav tab privacy",
-    titleKey: "Nav tab privacy",
+    title: "settings.nav.privacy",
+    icon: "shield",
     items: [
       {
         type: "toggle",
-        id: "roprime-toggle-search-ban",
         key: "searchBanEnabled",
-        titleKey: "Search ban enable title",
-        descKey: "Search ban enable description",
-        onChange: ["syncSearchBan"],
+        title: "settings.privacy.searchBan.enableTitle",
+        description: "settings.privacy.searchBan.enableDescription",
+        byDefault: false,
       },
-      { type: "custom", builder: "searchBan" },
+      { type: "panel", id: "searchBan" },
     ],
   },
   other: {
-    labelKey: "Nav tab other",
-    titleKey: "Nav tab other",
+    title: "settings.nav.other",
+    icon: "extension",
     items: [
-      { type: "custom", builder: "customCss" },
+      { type: "panel", id: "customCss" },
       {
         type: "toggle",
-        id: "roprime-toggle-cosmetics-enabled",
         key: "cosmeticsEnabled",
-        titleKey: "Enable cosmetics title",
-        descKey: "Enable cosmetics description",
-        onChange: ["syncCosmeticsUi"],
-        hidden: true,
+        title: "settings.other.cosmetics.enableTitle",
+        description: "settings.other.cosmetics.enableDescription",
+        byDefault: false,
+        hide: true,
       },
-      { type: "custom", builder: "cosmeticsShop", hidden: true },
+      { 
+        type: "panel", 
+        id: "cosmeticsShop", 
+        hide: true,
+      },
     ],
   },
   info: {
-    labelKey: "Nav tab info",
-    titleKey: "Nav tab info",
-    items: [{ type: "custom", builder: "infoBlock" }],
+    title: "settings.nav.info",
+    icon: "info",
+    items: [{ 
+      type: "panel", 
+      id: "infoBlock",
+      hide: true,
+    }],
   },
   developer: {
-    labelKey: "Nav tab developer",
-    titleKey: "Nav tab developer",
-    hidden: true,
-    items: [{ type: "custom", builder: "developerBlock" }],
+    title: "settings.nav.developer",
+    icon: "code",
+    hide: true,
+    items: [{ 
+      type: "panel", 
+      id: "developerBlock",
+      hide: true,
+    }],
   },
 };
+
+/* Export byDefault values */
+export function collectToggleDefaults() {
+  const defaults = {};
+  for (const page of Object.values(SETTINGS_CONFIG)) {
+    for (const item of page.items || []) {
+      if (item.type === "toggle" && typeof item.key === "string") {
+        defaults[item.key] = !!item.byDefault;
+      }
+    }
+  }
+  return defaults;
+}

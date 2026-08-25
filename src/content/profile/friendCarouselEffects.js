@@ -398,3 +398,7 @@ export function syncFriendCarouselEffects() {
 
   scheduleAvatarScan();
 }
+
+import { registerFeature } from '../features/registry.js';
+registerFeature(syncFriendCarouselEffects);
+

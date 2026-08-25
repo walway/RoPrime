@@ -1,5 +1,6 @@
 import { saveSettings, settingsState } from "../core/core.js";
 import { getRobloxUserId } from "../profile/robloxUserId.js";
+import { setHidden } from "../ui/visibility.js";
 
 const ROBLOX_PLUS_MEMBERSHIP_API =
   "https://premiumfeatures.roblox.com/v1/users/{userId}/validate-membership";
@@ -301,9 +302,9 @@ function hideNativeAppThemeSections(container) {
     const target =
       settingSection instanceof HTMLElement ? settingSection : section;
     if (target.id === APP_THEME_HOST_ID) return;
-    if (target.hidden && target.style.display === "none") return;
-    target.hidden = true;
-    target.setAttribute("data-roprime-native-app-theme", "1");
+    if (target.classList.contains("hidden") && target.style.display === "none") return;
+    setHidden(target, true);
+    target.classList.add("roprime-native-app-theme-hidden");
     target.style.display = "none";
   });
 }
@@ -402,3 +403,7 @@ export async function initFreeRobloxThemes() {
   installThemeObserver();
   injectThemePanel();
 }
+
+import { registerFeature } from '../features/registry.js';
+registerFeature(syncFreeRobloxTheme);
+

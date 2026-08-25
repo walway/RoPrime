@@ -1,4 +1,5 @@
 import { shouldRunRoPrimeOnCurrentPage } from "../core/core.js";
+import { setHidden } from "../ui/visibility.js";
 
 const RP_RICK_ROLL_ATTR = "data-roprime-rick-roll";
 const FAQ_PANEL_ID = "faq-panel-Action.HowToGetRobuxForFree";
@@ -43,7 +44,7 @@ function buildRickRollFaq() {
   panel.setAttribute("role", "region");
   panel.setAttribute("aria-label", "How to get Robux for free?");
   panel.className = "padding-bottom-medium text-body-medium content-default";
-  panel.hidden = true;
+  setHidden(panel, true);
   panel.style.whiteSpace = "pre-wrap";
   panel.innerHTML =
     '<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ?si=z3oFdFY3HE3Dkufe" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>';
@@ -54,7 +55,7 @@ function buildRickRollFaq() {
     toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
     chevron.classList.toggle("icon-regular-chevron-large-down", !expanded);
     chevron.classList.toggle("icon-regular-chevron-large-up", expanded);
-    panel.hidden = !expanded;
+    setHidden(panel, !expanded);
   };
 
   const onToggle = () =>
@@ -80,3 +81,7 @@ export function syncRickRollEasterEgg() {
 
   container.appendChild(buildRickRollFaq());
 }
+
+import { registerFeature } from '../features/registry.js';
+registerFeature(syncRickRollEasterEgg);
+

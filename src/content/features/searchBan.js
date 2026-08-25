@@ -5,12 +5,13 @@ import {
   settingsState,
   shouldRunRoPrimeOnCurrentPage,
 } from "../core/core.js";
+import { setHidden } from "../ui/visibility.js";
 
 export const RP_SEARCH_BAN_ERROR_ID = "roprime-search-ban-error";
 export const RP_SEARCH_BAN_HIDE_STYLE_ID = "roprime-search-ban-hide-style";
 
 const DISCOVER_ERROR_HTML = `
-<div data-testid="error-container" class="discovery-error-container" data-roprime-search-ban-error="1">
+<div data-testid="error-container" class="discovery-error-container" id="roprime-search-ban-error">
   <div class="error-container-content">
     <img 
       data-testid="error-container-image" 
@@ -107,13 +108,12 @@ function ensureSearchBanHideStyle(active) {
 
 function removeSearchBanError() {
   document.getElementById(RP_SEARCH_BAN_ERROR_ID)?.remove();
-  document.querySelector('[data-roprime-search-ban-error="1"]')?.remove();
 }
 
 function applySearchBanBlock() {
   const gameSearch = document.getElementById("game-search-web-app");
   if (gameSearch instanceof HTMLElement) {
-    gameSearch.hidden = true;
+    setHidden(gameSearch, true);
     gameSearch.style.display = "none";
   }
   ensureSearchBanHideStyle(true);
@@ -121,19 +121,9 @@ function applySearchBanBlock() {
   const contentRoot = getDiscoverContentRoot();
   if (!(contentRoot instanceof HTMLElement)) return;
 
-  let error = document.getElementById(RP_SEARCH_BAN_ERROR_ID);
-  if (!(error instanceof HTMLElement)) {
-    error = contentRoot.querySelector('[data-roprime-search-ban-error="1"]');
-  }
-  if (error instanceof HTMLElement) return;
+  if (document.getElementById(RP_SEARCH_BAN_ERROR_ID)) return;
 
   contentRoot.insertAdjacentHTML("beforeend", DISCOVER_ERROR_HTML);
-  const injected = contentRoot.querySelector(
-    '[data-roprime-search-ban-error="1"]',
-  );
-  if (injected instanceof HTMLElement) {
-    injected.id = RP_SEARCH_BAN_ERROR_ID;
-  }
 }
 
 function clearSearchBanBlock() {
@@ -141,7 +131,7 @@ function clearSearchBanBlock() {
 
   const gameSearch = document.getElementById("game-search-web-app");
   if (gameSearch instanceof HTMLElement) {
-    gameSearch.hidden = false;
+    setHidden(gameSearch, false);
     gameSearch.style.removeProperty("display");
   }
 
@@ -237,3 +227,7 @@ export function installSearchBanObserver() {
   window.addEventListener("roprime-location-change", onRoute);
   window.addEventListener("popstate", onRoute);
 }
+
+import { registerFeature } from './registry.js';
+registerFeature(syncSearchBan);
+

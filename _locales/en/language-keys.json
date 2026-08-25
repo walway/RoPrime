@@ -1,0 +1,173 @@
+{
+  "settings": {
+    "hero": {
+      "title": "RoPrime Settings"
+    },
+    "search": {
+      "placeholder": "Search settings...",
+      "minLengthHint": "Please type at least 2 characters",
+      "developerUnlockedHint": "Developer page unlocked. It is highly recommended not to use it because it is mostly useless."
+    },
+    "nav": {
+      "appearance": "Appearance",
+      "home": "Home",
+      "settings": "Settings",
+      "privacy": "Privacy & Content Restrictions",
+      "other": "Other",
+      "info": "Info",
+      "developer": "Developer"
+    },
+    "appearance": {
+      "rename": {
+        "title": "Rename Roblox Wording",
+        "communities": "Communities → Groups",
+        "marketplace": "Marketplace → Catalog"
+      },
+      "oldNavigation": {
+        "title": "Old Navigation Bar",
+        "description": "In development. Keep disabled unless you are testing it."
+      },
+      "sidebar": {
+        "title": "Sidebar",
+        "closureStyleTitle": "Sidebar Closure Style",
+        "closureCloseButton": "Close Button",
+        "closureCollapseButton": "Collapse Button",
+        "sizeTitle": "Sidebar Size",
+        "sizeDescription": "Drag slider to choose the size of the sidebar.",
+        "sizeFull": "Full",
+        "sizeSmall": "Small",
+        "sizeIconOnly": "Icon Only",
+        "collapseMenuTitle": "Full to Icon Only Collapse Button",
+        "collapseMenuDescription": "Adds a button for the sidebar to switch between full and icon-only size.",
+        "configureContent": "Configure Sidebar Content",
+        "contentTitle": "Sidebar Content",
+        "contentBack": "Back to Appearance",
+        "contentListTitle": "Sidebar Items",
+        "contentListDescription": "Remove items you do not want from the sidebar.",
+        "contentRemoveItem": "Remove from Sidebar",
+        "contentRestoreItem": "Add Back to Sidebar",
+        "contentEmptyHint": "Open a Roblox page with the left navigation visible to detect sidebar items.",
+        "contentReset": "Reset Sidebar Content",
+        "alwaysShowCloseTitle": "Always Show Close Button",
+        "alwaysShowCloseDescription": "Forces Roblox's sidebar close/menu button to always be visible.",
+        "emptyWarning": "No sidebar items visible."
+      },
+      "friendStyling": {
+        "title": "Friend Styling Reimagined",
+        "description": "Restyles the friends carousel with background and presence glow by offlinewealth"
+      },
+      "hideAgeBadge": {
+        "title": "Hide Age Rate Badge",
+        "description": "Hides new age rate badge, it is SELECT and KIDS sign near Roblox logo at the left top side."
+      },
+      "profileRedesign": {
+        "title": "Profile Redesign",
+        "description": "Show all profile sections at once and adjust the header layout on profile pages."
+      }
+    },
+    "home": {
+      "hideExperiencesAds": {
+        "title": "Hide Experiences Ads on the Home Page"
+      }
+    },
+    "privacy": {
+      "searchBan": {
+        "enableTitle": "Enable Search Ban",
+        "enableDescription": "Blocks Roblox discover searches for keywords you add below.",
+        "title": "Banned Search Words",
+        "description": "When a banned word is searched on Discover, results are hidden and an error screen is shown instead.",
+        "inputPlaceholder": "Type a word to ban...",
+        "addWord": "Add Word",
+        "removeWord": "Remove Banned Word",
+        "emptyHint": "No banned words yet. Add words above to block them from Discover search."
+      }
+    },
+    "language": {
+      "title": "Language",
+      "description": "Choose your language."
+    },
+    "sync": {
+      "title": "Synchronization",
+      "description": "Copy, export, or import RoPrime settings as JSON file. You can edit the JSON in the preview.",
+      "copy": "Copy",
+      "export": "Export",
+      "import": "Import",
+      "copied": "Settings copied to clipboard.",
+      "copyFailed": "Could not copy settings.",
+      "exported": "Settings file downloaded.",
+      "imported": "Settings imported.",
+      "saved": "Settings saved.",
+      "importFailed": "Couldn't import this file. Choose a valid settings export file.",
+      "resetTitle": "Reset All Settings",
+      "resetButton": "Reset",
+      "resetDone": "All settings were reset to defaults.",
+      "resetFailed": "Could not reset settings."
+    },
+    "info": {
+      "title": "RoPrime",
+      "body": "This extension adds useful design-focused features."
+    },
+    "developer": {
+      "title": "Developer Tools",
+      "description": "This page is hidden by default. It is highly recommended not to use it because it is mostly useless.",
+      "forceMaliciousAlert": "Force Malicious Extension Alert"
+    },
+    "customCss": {
+      "title": "Custom CSS",
+      "description": "CSS you write here injects into every Roblox page while RoPrime is enabled.",
+      "placeholder": "Start typing your custom css"
+    },
+    "other": {
+      "cosmetics": {
+        "enableTitle": "Enable Cosmetics",
+        "enableDescription": "Enable to see profile effect previews and equip options."
+      }
+    },
+    "profileEffects": {
+      "pictureTitle": "Profile Picture Effects",
+      "pictureDescription": "Animation on your profile avatar.",
+      "title": "Profile Effects",
+      "description": "Animation across your profile page.",
+      "searchPlaceholder": "Search effects…",
+      "layoutGrid": "Grid View",
+      "layoutList": "List View",
+      "layoutWide": "Two Per Row",
+      "layout": "Layout",
+      "equip": "Equip",
+      "unequip": "Unequip",
+      "dizzy": "Dizzy (Star)",
+      "clockwork": "Clockwork",
+      "heartbroken": "Heartbroken",
+      "highvoltage": "High Voltage",
+      "laughing": "Laughing",
+      "monkeys": "Monkeys",
+      "neutral": "Neutral",
+      "supersnow": "Super Snow",
+      "trophy": "Trophy",
+      "ufo": "UFO"
+    },
+    "sidebar": {
+      "content": {
+        "listTitle": "Sidebar Items"
+      },
+      "item": {
+        "profileWithAvatar": "Profile",
+        "home": "Home",
+        "messages": "Messages",
+        "friends": "Friends",
+        "avatar": "Avatar",
+        "inventory": "Inventory",
+        "trades": "Trades",
+        "communities": "Communities",
+        "blog": "Blog",
+        "buyGiftCards": "Buy Gift Cards",
+        "officialStoreButton": "Official Store",
+        "profileNoAvatar": "Profile (Without Picture)",
+        "robloxPlus": "Roblox Plus",
+        "favorites": "Favorites",
+        "robloxPlusAd": "Roblox Plus Ad",
+        "gameEvents": "Game Events"
+      }
+    }
+  }
+}

@@ -144,15 +144,13 @@ html.roprime-account-settings-open
   color: var(--color-content-emphasis);
 }
 
-#roprime-settings-host li[data-roprime-settings-search-item="1"] {
+#roprime-settings-host li.roprime-settings-search-item {
   display: flex;
   align-items: center;
   gap: 6px;
 }
 
-#roprime-settings-host
-  li[data-roprime-settings-search-item="1"]
-  .roprime-settings-nav-icon {
+#roprime-settings-host li.roprime-settings-search-item .roprime-settings-nav-icon {
   margin-left: 9px;
 }
 
@@ -168,7 +166,7 @@ html.roprime-account-settings-open
   min-width: 0;
 }
 
-#roprime-settings-host .settings-v2-header > h2[data-roprime-page-title] {
+#roprime-settings-host .settings-v2-header > #roprime-page-title {
   margin: 0 0 16px;
   color: var(--color-content-emphasis);
   font-size: 20px;
@@ -178,30 +176,24 @@ html.roprime-account-settings-open
 
 #roprime-settings-host
   .settings-v2-header
-  > [data-roprime-settings-page]:not([hidden]) {
+  > .roprime-settings-page:not(.hidden) {
   display: flex;
   flex-direction: column;
   gap: 12px;
   min-width: 0;
 }
 
-#roprime-settings-host
-  .settings-v2-header
-  > [data-roprime-settings-page][hidden] {
-  display: none !important;
-}
-
-#roprime-settings-host [data-roprime-settings-page] {
+#roprime-settings-host .roprime-settings-page:not(.hidden) {
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
 
-#roprime-settings-host [data-roprime-settings-card] {
+#roprime-settings-host .roprime-settings-card {
   min-width: 0;
 }
 
-#roprime-settings-host [data-roprime-settings-card] > [role="separator"] {
+#roprime-settings-host .roprime-settings-card > [role="separator"] {
   width: 100%;
   flex-shrink: 0;
 }
@@ -240,7 +232,10 @@ html.roprime-account-settings-open
   opacity: 0.55;
 }
 
-#roprime-settings-host [data-roprime-rename-child].is-renames-disabled {
+#roprime-settings-host
+  .roprime-rename-child.is-renames-disabled,
+#roprime-settings-host
+  .roprime-setting-child.is-setting-child-disabled {
   opacity: 0.55;
   pointer-events: none;
 }
@@ -378,7 +373,7 @@ html.roprime-account-settings-open
   color: var(--color-content-emphasis);
 }
 
-#roprime-settings-host [data-roprime-sidebar-empty-warning] {
+#roprime-settings-host .roprime-sidebar-empty-warning {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -479,17 +474,17 @@ html.roprime-account-settings-open
   );
 }
 
-#roprime-settings-host [data-roprime-settings-sync-panel] {
+#roprime-settings-host .roprime-settings-sync-panel {
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
 
-#roprime-settings-host [data-roprime-settings-preview-wrap] {
+#roprime-settings-host .roprime-settings-preview-wrap {
   width: 100%;
 }
 
-#roprime-settings-host [data-roprime-settings-preview] {
+#roprime-settings-host .roprime-settings-preview {
   width: 100%;
   min-height: 120px;
   resize: vertical;
@@ -504,13 +499,13 @@ html.roprime-account-settings-open
   line-height: 1.4;
 }
 
-#roprime-settings-host [data-roprime-settings-sync-status] {
+#roprime-settings-host .roprime-settings-sync-status {
   margin: 0;
   color: var(--color-content-default);
   font-size: 12px;
 }
 
-#roprime-settings-host [data-roprime-search-ban-input] {
+#roprime-settings-host .roprime-search-ban-input {
   flex: 1 1 180px;
   min-width: 0;
   height: 40px;
@@ -523,7 +518,7 @@ html.roprime-account-settings-open
   font: inherit;
 }
 
-#roprime-settings-host [data-roprime-search-ban-input]:focus-visible {
+#roprime-settings-host .roprime-search-ban-input:focus-visible {
   outline: 2px solid var(--color-focus, #005cc8);
   outline-offset: 1px;
 }
@@ -547,7 +542,7 @@ html.roprime-account-settings-open
   scroll-margin-top: 12px;
 }
 
-[data-roprime-custom-css-editor-wrap] {
+.roprime-custom-css-editor-wrap {
   position: relative;
   max-height: calc(22px * 18 + 16px);
   overflow-x: hidden;
@@ -559,7 +554,7 @@ html.roprime-account-settings-open
   scrollbar-width: auto;
 }
 
-[data-roprime-custom-css-editor-host] {
+.roprime-custom-css-editor-host {
   display: block;
   --roprime-editor-bg: var(--color-surface-300);
   color: #adbac7;
@@ -570,13 +565,11 @@ html.roprime-account-settings-open
   background: var(--color-surface-300);
 }
 
-[data-roprime-custom-css-editor-host]:not(
-  [data-roprime-custom-css-editor-ready="1"]
-) {
+.roprime-custom-css-editor-host:not(.roprime-custom-css-editor-ready) {
   min-height: 112px;
 }
 
-[data-roprime-custom-css-placeholder] {
+.roprime-custom-css-placeholder {
   position: absolute;
   inset: 12px 14px auto;
   z-index: 1;
@@ -585,10 +578,6 @@ html.roprime-account-settings-open
   font-size: 14px;
   line-height: 1.4;
   color: color-mix(in srgb, var(--color-content-default) 72%, transparent);
-}
-
-[data-roprime-custom-css-placeholder][hidden] {
-  display: none;
 }
 
 .roprime-settings-section[data-roprime-section="sidebar-content"]

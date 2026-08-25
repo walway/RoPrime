@@ -51,7 +51,7 @@ export const PROFILE_PICTURE_EFFECTS = [
   {
     id: "dizzy",
     kind: "picture",
-    titleKey: "Profile effect dizzy title",
+    titleKey: "settings.profileEffects.dizzy",
   },
 ];
 
@@ -59,47 +59,47 @@ export const PROFILE_EFFECTS = [
   {
     id: "clockwork",
     kind: "profile",
-    titleKey: "Profile effect clockwork title",
+    titleKey: "settings.profileEffects.clockwork",
   },
   {
     id: "heartbroken",
     kind: "profile",
-    titleKey: "Profile effect heartbroken title",
+    titleKey: "settings.profileEffects.heartbroken",
   },
   {
     id: "highvoltage",
     kind: "profile",
-    titleKey: "Profile effect highvoltage title",
+    titleKey: "settings.profileEffects.highvoltage",
   },
   {
     id: "laughing",
     kind: "profile",
-    titleKey: "Profile effect laughing title",
+    titleKey: "settings.profileEffects.laughing",
   },
   {
     id: "monkeys",
     kind: "profile",
-    titleKey: "Profile effect monkeys title",
+    titleKey: "settings.profileEffects.monkeys",
   },
   {
     id: "neutral",
     kind: "profile",
-    titleKey: "Profile effect neutral title",
+    titleKey: "settings.profileEffects.neutral",
   },
   {
     id: "supersnow",
     kind: "profile",
-    titleKey: "Profile effect supersnow title",
+    titleKey: "settings.profileEffects.supersnow",
   },
   {
     id: "trophy",
     kind: "profile",
-    titleKey: "Profile effect trophy title",
+    titleKey: "settings.profileEffects.trophy",
   },
   {
     id: "ufo",
     kind: "profile",
-    titleKey: "Profile effect ufo title",
+    titleKey: "settings.profileEffects.ufo",
   },
 ];
 

@@ -4,6 +4,7 @@ import "prism-code-editor/prism/languages/css";
 import { saveSettings, settingsState } from "../core/core.js";
 import { promptCustomCssCautionNotice } from "../alerts/alert.js";
 import { syncCustomCss } from "../features/customCss.js";
+import { setHidden } from "../ui/visibility.js";
 import { t as accountSettingsPaneT } from "./roprimeAccountSettingsPage.js";
 
 let cssEditor = null;
@@ -19,17 +20,15 @@ export function buildCustomCssHtml() {
   return `
 		<div class="roprime-custom-css-block">
 			<div class="roprime-custom-css-heading">
-				<div class="roprime-toggle-title" data-i18n="Custom CSS title"></div>
-				<div class="roprime-toggle-desc" data-i18n="Custom CSS description"></div>
+				<div class="roprime-toggle-title" data-i18n="settings.customCss.title"></div>
+				<div class="roprime-toggle-desc" data-i18n="settings.customCss.description"></div>
 			</div>
-			<div class="roprime-custom-css-editor-wrap" data-roprime-custom-css-editor-wrap>
+			<div class="roprime-custom-css-editor-wrap">
 				<div
 					class="roprime-custom-css-placeholder"
-					data-roprime-custom-css-placeholder
-					data-i18n="Custom CSS placeholder"
 					aria-hidden="true"
 				></div>
-				<div class="roprime-custom-css-editor-host" data-roprime-custom-css-editor-host></div>
+				<div class="roprime-custom-css-editor-host"></div>
 			</div>
 		</div>`;
 }
@@ -41,7 +40,7 @@ function destroyCssEditor() {
 }
 
 function getEditorWrap() {
-  return cssEditorHost?.closest("[data-roprime-custom-css-editor-wrap]");
+  return cssEditorHost?.closest(".roprime-custom-css-editor-wrap");
 }
 
 function isCustomCssEditorLocked() {
@@ -138,20 +137,18 @@ function applyEditorHeight(editor) {
 }
 
 function syncPlaceholder(inner) {
-  const placeholder = inner.querySelector(
-    "[data-roprime-custom-css-placeholder]",
-  );
+  const placeholder = inner.querySelector(".roprime-custom-css-placeholder");
   if (!(placeholder instanceof HTMLElement)) return;
 
   const value = String(cssEditor?.value ?? settingsState.customCss ?? "");
   const empty = !value.trim();
   const focused = !!cssEditor?.focused;
-  placeholder.hidden = !empty || focused;
+  setHidden(placeholder, !empty || focused);
   placeholder.setAttribute("aria-hidden", empty && !focused ? "false" : "true");
 }
 
 function ensureCssEditor(inner) {
-  const host = inner.querySelector("[data-roprime-custom-css-editor-host]");
+  const host = inner.querySelector(".roprime-custom-css-editor-host");
   if (!(host instanceof HTMLElement)) return;
   if (cssEditorHost === host && cssEditor) return;
 
@@ -230,11 +227,9 @@ export function syncCustomCssUi(inner) {
     applyEditorHeight(cssEditor);
   }
 
-  const placeholder = inner.querySelector(
-    "[data-roprime-custom-css-placeholder]",
-  );
+  const placeholder = inner.querySelector(".roprime-custom-css-placeholder");
   if (placeholder instanceof HTMLElement && !placeholder.textContent?.trim()) {
-    placeholder.textContent = accountSettingsPaneT("Custom CSS placeholder");
+    placeholder.textContent = accountSettingsPaneT("settings.customCss.placeholder");
   }
 
   applyCustomCssEditorLock(inner);

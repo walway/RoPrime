@@ -25,3 +25,7 @@ export function syncHideExperiencesAds() {
   style.textContent = HIDE_EXPERIENCES_ADS_CSS;
   document.documentElement.appendChild(style);
 }
+
+import { registerFeature } from '../features/registry.js';
+registerFeature(syncHideExperiencesAds);
+

@@ -197,6 +197,10 @@ function assemblePlatformDist(platform) {
   walkFiles(join(root, "src/strings"), "src/strings", stringFiles);
   copyPathsToDist(stringFiles, platformDistDir);
 
+  const localeFiles = [];
+  walkFiles(join(root, "_locales"), "_locales", localeFiles);
+  copyPathsToDist(localeFiles, platformDistDir);
+
   writeDistManifest(platform, platformDistDir);
 }
 

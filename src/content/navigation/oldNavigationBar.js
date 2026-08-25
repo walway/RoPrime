@@ -587,8 +587,7 @@ export function syncOldNavigationBar() {
   if (!(host instanceof HTMLElement)) {
     host = document.createElement("div");
     host.id = HOST_ID;
-    host.className = "roprime-classic-left-nav-host";
-    host.setAttribute("data-roelite", "old-navigation-bar");
+    host.className = "roprime-classic-left-nav-host roprime-old-navigation-bar";
     (document.body || document.documentElement).appendChild(host);
   }
 

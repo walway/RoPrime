@@ -41,6 +41,7 @@ import {
   removeRobloxEvents,
   syncRobloxEvents,
 } from "../sidebar/robloxEvents.js";
+import { registerFeature } from "../features/registry.js";
 
 export function updateOldNavigationBarVisibility() {
   syncOldNavigationBar();
@@ -79,7 +80,7 @@ function cleanupBlockedRouteUi() {
   );
 }
 
-export function syncRoEliteView() {
+export function syncRoPrimeView() {
   try {
     if (!shouldRunRoPrimeOnCurrentPage()) {
       cleanupBlockedRouteUi();
@@ -106,3 +107,5 @@ export function syncRoEliteView() {
     throw e;
   }
 }
+
+registerFeature(syncRoPrimeView);

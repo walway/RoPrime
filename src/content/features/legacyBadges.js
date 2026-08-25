@@ -1,4 +1,5 @@
 import { getExtensionResourceUrl } from "../core/core.js";
+import { setHidden } from "../ui/visibility.js";
 
 const ROBLOX_BADGES_API =
   "https://accountinformation.roblox.com/v1/users/{userId}/roblox-badges";
@@ -328,7 +329,7 @@ function renderBadgeRows(root, badges) {
   const button = root.querySelector("[data-roprime-see-more]");
   if (button instanceof HTMLButtonElement) {
     const hasMore = badges.length > BADGES_PER_ROW;
-    button.hidden = !hasMore;
+    setHidden(button, !hasMore);
     button.style.display = hasMore ? "" : "none";
     if (!hasMore) root.classList.remove("is-expanded");
     button.textContent = root.classList.contains("is-expanded")

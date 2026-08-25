@@ -7,7 +7,7 @@ import {
   shouldRunRoPrimeOnCurrentPage,
   syncAccountSettingsLayoutInset,
 } from "./core/core.js";
-import { syncCustomCss } from "./features/customCss.js";
+import { syncAllFeatures } from "./features/registry.js";
 import { syncAccountSettingsMenuButton } from "./redirect/settingsButton.js";
 import { initExtensionsPanel } from "./panel/extensions.js";
 import "./features/legacyBadges.js";
@@ -18,36 +18,34 @@ import {
   applyMarketplaceRename,
   updateRenameLoop,
 } from "./features/rename.js";
-import {
-  installSearchBanObserver,
-  syncSearchBan,
-} from "./features/searchBan.js";
+import { installSearchBanObserver } from "./features/searchBan.js";
 import { installDomSyncScheduler } from "./panel/domSyncScheduler.js";
-import { syncRoEliteView } from "./panel/panel.js";
-import {
-  installFriendCarouselEffects,
-  syncFriendCarouselEffects,
-} from "./profile/friendCarouselEffects.js";
-import {
-  installProfilePageEffectObserver,
-  syncProfilePageEffect,
-} from "./profile/profileEffectsDisplay.js";
-import {
-  installProfileRedesignObserver,
-  syncProfileRedesign,
-} from "./profile/profileRedesign.js";
+import "./panel/panel.js";
+import { installFriendCarouselEffects } from "./profile/friendCarouselEffects.js";
+import { installProfilePageEffectObserver } from "./profile/profileEffectsDisplay.js";
+import { installProfileRedesignObserver } from "./profile/profileRedesign.js";
 import { normalizeEquippedProfileEffects } from "./settings/profileSettings.js";
 import { syncProfileSettingsRoute } from "./settings/profileSettings.js";
-import { syncSidebarContent } from "./sidebar/sidebarContent.js";
-import {
-  initFreeRobloxThemes,
-  syncFreeRobloxTheme,
-} from "./account/freeThemes.js";
-import { syncRickRollEasterEgg } from "./memes/rickRoll.js";
-import { syncHideExperiencesAds } from "./home/hideExperiencesAds.js";
-import { syncRobloxEvents } from "./sidebar/robloxEvents.js";
+import "./sidebar/sidebarContent.js";
+import { initFreeRobloxThemes } from "./account/freeThemes.js";
+import "./home/hideExperiencesAds.js";
+import "./features/customCss.js";
+import "./features/searchBan.js";
+import "./profile/friendCarouselEffects.js";
+import "./profile/profileEffectsDisplay.js";
+import "./memes/rickRoll.js";
+import "./account/freeThemes.js";
+import "./sidebar/robloxEvents.js";
 
 const extensionApi = globalThis.browser || globalThis.chrome;
+
+function runSyncPass() {
+  syncAllFeatures();
+  syncProfileSettingsRoute();
+  syncAccountSettingsMenuButton();
+  syncAccountSettingsLayoutInset();
+  syncHomeWelcomeModal();
+}
 
 function installStorageSyncListener() {
   if (!extensionApi?.storage?.onChanged) return;
@@ -62,21 +60,7 @@ function installStorageSyncListener() {
               saveSettings();
             }
             await reloadSettingsUiStrings();
-            updateRenameLoop();
-            syncRoEliteView();
-            syncProfileSettingsRoute();
-            syncAccountSettingsMenuButton();
-            void syncProfilePageEffect();
-            syncProfileRedesign();
-            syncFriendCarouselEffects();
-            syncCustomCss();
-            syncAccountSettingsLayoutInset();
-            syncSidebarContent({ force: true });
-            syncSearchBan();
-            syncHideExperiencesAds();
-            void syncRobloxEvents();
-            syncFreeRobloxTheme();
-            syncRickRollEasterEgg();
+            runSyncPass();
           } catch (e) {
             if (!isExtensionContextInvalidatedError(e)) throw e;
           }
@@ -106,20 +90,7 @@ function installHistoryListeners() {
 
   const handleRouteChange = () => {
     try {
-      syncRoEliteView();
-      syncHomeWelcomeModal();
-      syncProfileSettingsRoute();
-      syncAccountSettingsMenuButton();
-      void syncProfilePageEffect();
-      syncProfileRedesign();
-      syncFriendCarouselEffects();
-      syncCustomCss();
-      syncAccountSettingsLayoutInset();
-      syncSearchBan();
-      syncHideExperiencesAds();
-      void syncRobloxEvents();
-      syncFreeRobloxTheme();
-      syncRickRollEasterEgg();
+      runSyncPass();
     } catch (e) {
       if (!isExtensionContextInvalidatedError(e)) throw e;
     }
@@ -152,24 +123,11 @@ function bootstrap() {
         if (shouldRunRoPrimeOnCurrentPage()) {
           updateRenameLoop();
         }
-        syncRoEliteView();
-        syncProfileSettingsRoute();
-        syncAccountSettingsMenuButton();
-        void syncProfilePageEffect();
-        syncProfileRedesign();
-        syncFriendCarouselEffects();
-        syncCustomCss();
-        syncAccountSettingsLayoutInset();
-        syncSidebarContent({ force: true });
-        syncSearchBan();
-        syncHideExperiencesAds();
-        void syncRobloxEvents();
+        runSyncPass();
         void initFreeRobloxThemes();
-        syncRickRollEasterEgg();
         if (shouldRunRoPrimeOnCurrentPage()) {
           applyCommunityRename(document.body);
           applyMarketplaceRename(document.body);
-          syncHomeWelcomeModal();
         }
       } catch (e) {
         if (!isExtensionContextInvalidatedError(e)) throw e;

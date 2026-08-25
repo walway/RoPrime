@@ -62,8 +62,3 @@
   height: 100%;
   object-fit: cover;
 }
-
-.roblox-events .show-more-btn[hidden],
-.roblox-events a[hidden] {
-  display: none !important;
-}

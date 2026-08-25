@@ -1,4 +1,5 @@
 import { langList } from "../../i18n/i18n-config.js";
+import { collectToggleDefaults } from "../settings/settingsConfig.js";
 
 const extensionApi = globalThis.browser || globalThis.chrome;
 
@@ -10,9 +11,10 @@ export const RP_ALWAYS_SHOW_CLOSE_STYLE_ID = "roprime-always-show-close-style";
 export const RP_CUSTOM_CSS_STYLE_ID = "roprime-custom-css-style";
 export const RP_PARAM_KEY = "roprime";
 export const RP_PARAM_KEY_NEW = "roprime-new";
-export const RP_DEFAULT_PAGE = "design";
+export const RP_DEFAULT_PAGE = "appearance";
 export const RP_SUPPORTED_PAGES = new Set([
-  "design",
+  "appearance",
+  "design", // legacy alias → appearance
   "home",
   "settings",
   "other",
@@ -21,6 +23,9 @@ export const RP_SUPPORTED_PAGES = new Set([
   "sidebar-content",
   "privacy",
 ]);
+const RP_PAGE_ALIASES = {
+  design: "appearance",
+};
 export const RP_SETTINGS_KEY = "rpSettings";
 export const RP_SETTINGS_FLAT_INNER_ID = "rp-settings-flat-inner";
 export const RP_SETTINGS_INNER_ID = RP_SETTINGS_FLAT_INNER_ID;
@@ -140,7 +145,7 @@ export function buildManifestExtensionIconUrl(extensionId, iconPath) {
   return `chrome-extension://${id}/${path}`;
 }
 
-let settingsUiStrings = {};
+let settingsUiTree = {};
 
 function normalizeUiLocale(raw) {
   const s = String(raw || "en").toLowerCase();
@@ -159,32 +164,63 @@ function fetchExtensionJson(path) {
   }
 }
 
-async function buildSettingsUiStringMap(language) {
-  const enRes = await fetchExtensionJson(
-    "src/strings/values/en/translation-keys.json",
-  );
-  if (!enRes.ok) throw new Error(`strings en: ${enRes.status}`);
+function deepMergeLocale(base, overlay) {
+  if (!overlay || typeof overlay !== "object" || Array.isArray(overlay)) {
+    return base;
+  }
+  const out = { ...base };
+  for (const [key, value] of Object.entries(overlay)) {
+    if (
+      value &&
+      typeof value === "object" &&
+      !Array.isArray(value) &&
+      out[key] &&
+      typeof out[key] === "object" &&
+      !Array.isArray(out[key])
+    ) {
+      out[key] = deepMergeLocale(out[key], value);
+    } else {
+      out[key] = value;
+    }
+  }
+  return out;
+}
+
+function lookupDotPath(tree, path) {
+  if (typeof path !== "string" || !path) return undefined;
+  const parts = path.split(".");
+  let cur = tree;
+  for (const part of parts) {
+    if (cur == null || typeof cur !== "object") return undefined;
+    cur = cur[part];
+  }
+  return cur;
+}
+
+async function buildSettingsUiTree(language) {
+  const enRes = await fetchExtensionJson("_locales/en/language-keys.json");
+  if (!enRes.ok) throw new Error(`locales en: ${enRes.status}`);
   const en = await enRes.json();
   const loc = normalizeUiLocale(language);
-  if (loc === "en") return { ...en };
-  const curRes = await fetchExtensionJson(
-    `src/strings/values/${loc}/translation-keys.json`,
-  );
-  if (!curRes.ok) return { ...en };
+  if (loc === "en") return en;
+  const curRes = await fetchExtensionJson(`_locales/${loc}/language-keys.json`);
+  if (!curRes.ok) return en;
   const cur = await curRes.json();
-  return { ...en, ...cur };
+  return deepMergeLocale(en, cur);
 }
 
 export async function loadSettingsUiStrings() {
-  settingsUiStrings = await buildSettingsUiStringMap(settingsState.language);
+  settingsUiTree = await buildSettingsUiTree(settingsState.language);
 }
 
 export async function reloadSettingsUiStrings() {
   return loadSettingsUiStrings();
 }
 
+/** Resolve a dotted locale key. Missing translations return the key path. */
 export function settingsT(key) {
-  const v = settingsUiStrings[key];
+  if (typeof key !== "string" || !key) return "";
+  const v = lookupDotPath(settingsUiTree, key);
   if (typeof v === "string" && v.length > 0) return v;
   return key;
 }
@@ -209,33 +245,24 @@ export function applyAccountSettingsShellFromUrl() {
 
 export const RP_DEFAULT_SETTINGS = {
   language: "en",
-  renameDropdownEnabled: true,
-  renameCommunitiesToGroups: true,
-  renameMarketplaceToCatalog: true,
+  ...collectToggleDefaults(),
   oldNavigationBarEnabled: false,
   smallNewNavigationBarEnabled: false,
   sidebarIconsOnlyEnabled: false,
   alwaysShowCloseButtonEnabled: false,
-  friendStylingReimagnedEnabled: false,
-  hideAgeBadgeEnabled: true,
-  hideExperiencesAdsEnabled: false,
-  profileRedesignEnabled: false,
   developerPageUnlocked: false,
   sidebarSize: "full",
   sidebarCollapseMenuEnabled: false,
   hiddenSidebarItemsBySize: { full: [], small: [], icon: [] },
   customCss: "",
   customCssCautionAccepted: false,
-  cosmeticsEnabled: false,
   profileEffectsLayoutView: "grid",
   ownedProfileEffects: [],
-
   equippedProfileEffect: "",
   equippedProfilePictureEffect: "",
   equippedProfilePageEffect: "",
   profileEffectsEquippedByUser: {},
   profileEffectsSupportNoticeAccepted: false,
-  searchBanEnabled: false,
   searchBannedWords: [],
   robloxFreeThemeClass: "",
 };
@@ -567,8 +594,8 @@ export function getCurrentrp() {
     params.get(RP_PARAM_KEY_NEW) ||
     ""
   ).toLowerCase();
-  if (RP_SUPPORTED_PAGES.has(route)) return route;
-  return null;
+  if (!RP_SUPPORTED_PAGES.has(route)) return null;
+  return RP_PAGE_ALIASES[route] || route;
 }
 
 export function buildPluginUrl(page = RP_DEFAULT_PAGE) {

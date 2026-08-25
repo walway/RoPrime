@@ -184,3 +184,7 @@ export function installProfileRedesignObserver() {
     });
   }
 }
+
+import { registerFeature } from '../features/registry.js';
+registerFeature(syncProfileRedesign);
+

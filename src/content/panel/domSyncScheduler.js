@@ -1,5 +1,5 @@
 import { debounce } from "../core/debounce.js";
-import { syncRoEliteView } from "./panel.js";
+import { syncRoPrimeView } from "./panel.js";
 
 const DOM_SYNC_DEBOUNCE_MS = 800;
 const FALLBACK_SYNC_MS = 15000;
@@ -8,7 +8,7 @@ let observer = null;
 let fallbackIntervalId = null;
 
 const scheduleSync = debounce(() => {
-  syncRoEliteView();
+  syncRoPrimeView();
 }, DOM_SYNC_DEBOUNCE_MS);
 
 export function installDomSyncScheduler() {
@@ -32,7 +32,7 @@ export function installDomSyncScheduler() {
 
   if (fallbackIntervalId === null) {
     fallbackIntervalId = window.setInterval(() => {
-      syncRoEliteView();
+      syncRoPrimeView();
     }, FALLBACK_SYNC_MS);
   }
 }

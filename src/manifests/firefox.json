@@ -43,6 +43,7 @@
         "resources/logo.svg",
         "resources/EventLogo2024.svg",
         "resources/icons/*",
+        "_locales/**/*",
         "src/strings/**/*",
         "resources/data/*",
         "resources/badges/*"

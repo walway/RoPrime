@@ -4,6 +4,7 @@ const RP_MATERIAL_SYMBOLS_STYLE_ID = "roprime-material-symbols-font";
 
 export const SETTINGS_NAV_ICONS = {
   search: "search",
+  appearance: "palette",
   design: "palette",
   home: "home",
   settings: "settings",

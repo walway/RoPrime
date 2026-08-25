@@ -5,6 +5,7 @@ import {
   shouldRunRoPrimeOnCurrentPage,
 } from "../core/core.js";
 import { isSidebarItemHidden } from "./sidebarContent.js";
+import { setHidden } from "../ui/visibility.js";
 
 export const ROBLOX_EVENTS_CDN_URL =
   "https://cdn.jsdelivr.net/gh/walway/roprime-data@latest/v1/roblox-events.json";
@@ -181,13 +182,13 @@ function applyCollapsedState(root, eventCount) {
   const links = root.querySelectorAll("ul a");
   links.forEach((link, index) => {
     if (!(link instanceof HTMLElement)) return;
-    link.hidden = !expanded && index >= PREVIEW_COUNT;
+    setHidden(link, !expanded && index >= PREVIEW_COUNT);
   });
 
   const button = root.querySelector("button.show-more-btn");
   if (!(button instanceof HTMLButtonElement)) return;
   const needsButton = eventCount > PREVIEW_COUNT;
-  button.hidden = !needsButton;
+  setHidden(button, !needsButton);
   if (needsButton) {
     button.textContent = expanded ? "Show less" : "Show more";
   }
@@ -335,3 +336,7 @@ export async function syncRobloxEvents(options = {}) {
     asListItem: liveMount.asListItem,
   });
 }
+
+import { registerFeature } from '../features/registry.js';
+registerFeature(syncRobloxEvents);
+
