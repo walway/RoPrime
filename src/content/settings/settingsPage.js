@@ -68,16 +68,16 @@ import {
   setSliderDisabled,
   setSliderValue,
 } from "../ui/slider.js";
-import { t as accountSettingsPaneT } from "./roprimeAccountSettingsPage.js";
+import { t as accountSettingsPaneT } from "./translationsHook.js";
 import {
   clearSettingsPageLayout,
   resolveSettingsMountHost,
-} from "./settingsPageHost.js";
+} from "./injectSettingsPage.js";
 import { SETTINGS_CONFIG } from "./settingsConfig.js";
 import {
   createSettingsNavIcon,
   SETTINGS_NAV_ICONS,
-} from "./settingsNavIcons.js";
+} from "./navBarIcons.js";
 const extensionApi = globalThis.browser || globalThis.chrome;
 const RP_DEBUG_UNLOCK = "debug";
 const RP_SETTINGS_HOST_ID = "roprime-settings-host";

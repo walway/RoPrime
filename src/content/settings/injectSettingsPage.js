@@ -12,16 +12,13 @@ function findNativeContentRoot() {
   const containerMain = findAccountContainerMain();
   if (!containerMain) return null;
   return (
-    containerMain.querySelector("#content.content") ||
-    containerMain.querySelector(".content#content") ||
-    containerMain.querySelector("#content") ||
     containerMain.querySelector(".content")
   );
 }
 
 function applySettingsPageLayout(accountBase) {
   const content =
-    accountBase.closest(".content, #content") || findNativeContentRoot();
+    accountBase.closest(".content") || findNativeContentRoot();
   if (content instanceof HTMLElement) {
     content.classList.add(RP_SETTINGS_PAGE_CONTENT_CLASS);
   }
@@ -96,10 +93,6 @@ function buildAccountScaffoldInContainerMain() {
   return accountBase;
 }
 
-/**
- * Resolves the mount node for RoPrime settings using Roblox's account `.content`
- * scaffold (same placement pattern as RoValra's settings UI, without copying markup).
- */
 export function resolveSettingsMountHost() {
   const userAccount = document.getElementById("user-account");
   if (userAccount instanceof HTMLElement) {
