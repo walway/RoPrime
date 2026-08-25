@@ -534,8 +534,13 @@ html.roprime-account-settings-open
 }
 
 #roprime-settings-host .roprime-settings-search {
-  height: 26px;
+  height: 20px;
+  padding: 8px;
+  font-size: 12px;
+  border: transparent;
+  background: transparent !important;
   outline: none;
+  margin-left: 25px;
 }
 
 #roprime-settings-host [data-roprime-element-name] {

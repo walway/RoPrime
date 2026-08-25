@@ -9,11 +9,16 @@
 }
 
 .roblox-events > .roblox-events-logo {
+  margin-top: 5px;
   grid-column: 1;
   grid-row: 1;
   width: 28px;
   height: 24px;
   flex: 0 0 auto;
+}
+
+.roblox-events > h5 {
+  margin-top: 5px;
 }
 
 .roblox-events > ul,

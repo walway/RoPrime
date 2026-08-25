@@ -1,3 +1,8 @@
+.left-nav {
+  display: none !important;
+  visibility: hidden !important;
+}
+
 .roblox-events > ul {
   display: flex;
   padding: 0;
