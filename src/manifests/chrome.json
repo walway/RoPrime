@@ -1,8 +1,9 @@
 {
   "manifest_version": 3,
-  "name": "RoPrime - New Era of Roblox website",
+  "name": "__MSG_extName__",
   "version": "1.5.0",
-  "description": "RoPrime adds useful design-focused features and more.",
+  "default_locale": "en",
+  "description": "__MSG_extDescription__",
   "permissions": ["storage", "management"],
   "host_permissions": [
     "*://*.supabase.co/*",
@@ -17,7 +18,7 @@
     "service_worker": "background.js"
   },
   "action": {
-    "default_title": "RoPrime"
+    "default_title": "__MSG_extActionTitle__"
   },
   "icons": {
     "16": "resources/icons/icon16.png",

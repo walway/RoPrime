@@ -1,10 +1,5 @@
 /**
- *
- * To add a feature:
- * 1. Add a toggle below (key, title, description?, byDefault).
- * 2. Create a feature module that calls registerFeature(yourSyncFn).
- * 3. Import that module from src/content/index.js.
- *
+ * Use { type: "separator" }, to add separator
  */
 
 export const SETTINGS_CONFIG = {
@@ -32,10 +27,52 @@ export const SETTINGS_CONFIG = {
         byDefault: true,
         parent: "renameDropdownEnabled",
       },
-      { 
-        type: "panel", 
+      {
+        type: "card",
         id: "sidebar",
-        hide: true,
+        title: "settings.appearance.sidebar.title",
+        items: [
+          {
+            type: "sidebarSize",
+            title: "settings.appearance.sidebar.sizeTitle",
+            description: "settings.appearance.sidebar.sizeDescription",
+          },
+          { type: "separator" },
+          {
+            type: "sidebarContent",
+            title: "settings.appearance.sidebar.contentTitle",
+            button: "settings.appearance.sidebar.configureContent",
+          },
+          { type: "separator" },
+          {
+            type: "toggle",
+            key: "sidebarCollapseMenuEnabled",
+            title: "settings.appearance.sidebar.collapseMenuTitle",
+            description: "settings.appearance.sidebar.collapseMenuDescription",
+            byDefault: false,
+          },
+          {
+            type: "toggle",
+            key: "alwaysShowCloseButtonEnabled",
+            title: "settings.appearance.sidebar.alwaysShowCloseTitle",
+            description: "settings.appearance.sidebar.alwaysShowCloseDescription",
+            byDefault: false,
+          },
+          {
+            type: "toggle",
+            key: "oldNavigationBarEnabled",
+            title: "settings.appearance.oldNavigation.title",
+            description: "settings.appearance.oldNavigation.description",
+            byDefault: false,
+          },
+          {
+            type: "toggle",
+            key: "robloxEventsEnabled",
+            title: "settings.appearance.sidebar.eventsTitle",
+            description: "settings.appearance.sidebar.eventsDescription",
+            byDefault: true,
+          },
+        ],
       },
       {
         type: "toggle",
@@ -76,15 +113,13 @@ export const SETTINGS_CONFIG = {
     title: "settings.sidebar.content.listTitle",
     nav: false,
     items: [
-      { 
-        type: "panel", 
+      {
+        type: "panel",
         id: "sidebarContentBack",
-        hide: true,
       },
-      { 
-        type: "panel", 
+      {
+        type: "panel",
         id: "sidebarContentList",
-        hide: true,
       },
     ],
   },
@@ -92,15 +127,13 @@ export const SETTINGS_CONFIG = {
     title: "settings.nav.settings",
     icon: "settings",
     items: [
-      { 
-        type: "panel", 
+      {
+        type: "panel",
         id: "language",
-        hide: true,
       },
-      { 
-        type: "panel", 
+      {
+        type: "panel",
         id: "settingsSync",
-        hide: true,
       },
     ],
   },
@@ -131,9 +164,9 @@ export const SETTINGS_CONFIG = {
         byDefault: false,
         hide: true,
       },
-      { 
-        type: "panel", 
-        id: "cosmeticsShop", 
+      {
+        type: "panel",
+        id: "cosmeticsShop",
         hide: true,
       },
     ],
@@ -141,33 +174,44 @@ export const SETTINGS_CONFIG = {
   info: {
     title: "settings.nav.info",
     icon: "info",
-    items: [{ 
-      type: "panel", 
-      id: "infoBlock",
-      hide: true,
-    }],
+    items: [
+      {
+        type: "panel",
+        id: "infoBlock",
+      },
+    ],
   },
   developer: {
     title: "settings.nav.developer",
     icon: "code",
     hide: true,
-    items: [{ 
-      type: "panel", 
-      id: "developerBlock",
-      hide: true,
-    }],
+    items: [
+      {
+        type: "panel",
+        id: "developerBlock",
+      },
+    ],
   },
 };
 
-/* Export byDefault values */
+function walkConfigItems(items, visit) {
+  for (const item of items || []) {
+    visit(item);
+    if (item.type === "card" && Array.isArray(item.items)) {
+      walkConfigItems(item.items, visit);
+    }
+  }
+}
+
+/** Export byDefault values (including toggles nested under cards). */
 export function collectToggleDefaults() {
   const defaults = {};
   for (const page of Object.values(SETTINGS_CONFIG)) {
-    for (const item of page.items || []) {
+    walkConfigItems(page.items, (item) => {
       if (item.type === "toggle" && typeof item.key === "string") {
         defaults[item.key] = !!item.byDefault;
       }
-    }
+    });
   }
   return defaults;
 }

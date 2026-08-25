@@ -68,6 +68,11 @@ function cleanupBlockedRouteUi() {
   document.getElementById("roprime-left-gray-frame-layout-style")?.remove();
   document.getElementById("roprime-custom-nav-menu-btn")?.remove();
   document.getElementById("roprime-nav-menu-slot")?.remove();
+  const oldNavContainer = document.getElementById("left-navigation-container");
+  if (oldNavContainer?.classList.contains("roprime-old-navigation-bar")) {
+    oldNavContainer.classList.remove("roprime-old-navigation-bar");
+    oldNavContainer.replaceChildren();
+  }
   removeRobloxEvents();
   document.documentElement.classList.remove(
     "roprime-classic-left-nav-on",

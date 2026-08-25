@@ -1,0 +1,14 @@
+{
+  "extName": {
+    "message": "RoPrime - New Era of Roblox website",
+    "description": "Extension name"
+  },
+  "extDescription": {
+    "message": "RoPrime adds useful design-focused features and more.",
+    "description": "Extension description"
+  },
+  "extActionTitle": {
+    "message": "RoPrime - New Era of Roblox website",
+    "description": "Toolbar action button title"
+  }
+}

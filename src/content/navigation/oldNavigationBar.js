@@ -3,7 +3,8 @@ import { getRobloxUserId } from "../profile/robloxUserId.js";
 import { showOfficialStorePopupLegacy } from "../popups/officialStore/OfficialStorePopupLegacy.js";
 import { syncRobloxEvents } from "../sidebar/robloxEvents.js";
 
-const HOST_ID = "roprime-classic-left-nav-host";
+const LEGACY_HOST_ID = "roprime-classic-left-nav-host";
+const ROOT_CLASS = "roprime-old-navigation-bar";
 const COLLAPSED_CLASS = "roprime-old-navigation-bar-collapsed";
 const LEFT_NAV_HIDE_STYLE_ID = "roprime-hide-left-nav-for-old-nav";
 const HEADSHOT_API = "https://thumbnails.roblox.com/v1/users/avatar-headshot";
@@ -49,17 +50,15 @@ function el(tag, props = {}, children = []) {
 }
 
 function getNativeLeftNavigationContainer() {
-  for (const node of document.querySelectorAll("#left-navigation-container")) {
-    if (!(node instanceof HTMLElement)) continue;
-    if (node.closest(`#${HOST_ID}`)) continue;
-    return node;
-  }
-  return null;
+  const node = document.getElementById("left-navigation-container");
+  return node instanceof HTMLElement ? node : null;
 }
 
-function nativeLeftNavigationHasContent() {
+function nativeLeftNavigationReady() {
   const native = getNativeLeftNavigationContainer();
-  return !!(native && native.childElementCount > 0);
+  if (!native) return false;
+  if (native.classList.contains(ROOT_CLASS)) return true;
+  return native.childElementCount > 0;
 }
 
 function setLeftNavHidden(hidden) {
@@ -77,7 +76,14 @@ function setLeftNavHidden(hidden) {
 }
 
 function teardownOldNavigationBar() {
-  document.getElementById(HOST_ID)?.remove();
+  document.getElementById(LEGACY_HOST_ID)?.remove();
+
+  const native = getNativeLeftNavigationContainer();
+  if (native instanceof HTMLElement && native.classList.contains(ROOT_CLASS)) {
+    native.classList.remove(ROOT_CLASS);
+    native.replaceChildren();
+  }
+
   setLeftNavHidden(false);
   document.documentElement.classList.remove(
     "roprime-classic-left-nav-on",
@@ -194,6 +200,7 @@ function createNotificationBadge(count) {
   ]);
 }
 
+/** Classic left-nav markup for Roblox's existing #left-navigation-container. */
 function buildNavTree(userId) {
   const id = Number(userId) > 0 ? String(userId) : "";
   const profileHref = id
@@ -331,81 +338,79 @@ function buildNavTree(userId) {
     ]),
   ]);
 
-  return el("div", { id: "left-navigation-container" }, [
-    el("div", { id: "navigation", className: "rbx-left-col" }, [
-      el("ul", {}, [profileHeader, el("li", { className: "rbx-divider" })]),
-      el("div", { "data-simplebar": "init", className: "rbx-scrollbar" }, [
-        el(
-          "div",
-          { className: "simplebar-wrapper", style: { margin: "0px" } },
-          [
-            el("div", { className: "simplebar-height-auto-observer-wrapper" }, [
-              el("div", { className: "simplebar-height-auto-observer" }),
-            ]),
-            el("div", { className: "simplebar-mask" }, [
-              el(
-                "div",
-                {
-                  className: "simplebar-offset",
-                  style: { right: "0px", bottom: "0px" },
-                },
-                [
-                  el(
-                    "div",
-                    {
-                      className: "simplebar-content-wrapper",
-                      tabindex: "0",
-                      role: "region",
-                      "aria-label": "scrollable content",
-                      style: { height: "100%", overflow: "hidden" },
-                    },
-                    [
-                      el(
-                        "div",
-                        {
-                          className: "simplebar-content",
-                          style: { padding: "0px" },
-                        },
-                        [leftColList],
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ]),
-            el("div", {
-              className: "simplebar-placeholder",
-              style: { width: "auto", height: "437px" },
-            }),
-          ],
-        ),
-        el(
-          "div",
-          {
-            className: "simplebar-track simplebar-horizontal",
-            style: { visibility: "hidden" },
-          },
-          [
-            el("div", {
-              className: "simplebar-scrollbar",
-              style: { width: "0px", display: "none" },
-            }),
-          ],
-        ),
-        el(
-          "div",
-          {
-            className: "simplebar-track simplebar-vertical",
-            style: { visibility: "hidden" },
-          },
-          [
-            el("div", {
-              className: "simplebar-scrollbar",
-              style: { height: "0px", display: "none" },
-            }),
-          ],
-        ),
-      ]),
+  return el("div", { id: "navigation", className: "rbx-left-col" }, [
+    el("ul", {}, [profileHeader, el("li", { className: "rbx-divider" })]),
+    el("div", { "data-simplebar": "init", className: "rbx-scrollbar" }, [
+      el(
+        "div",
+        { className: "simplebar-wrapper", style: { margin: "0px" } },
+        [
+          el("div", { className: "simplebar-height-auto-observer-wrapper" }, [
+            el("div", { className: "simplebar-height-auto-observer" }),
+          ]),
+          el("div", { className: "simplebar-mask" }, [
+            el(
+              "div",
+              {
+                className: "simplebar-offset",
+                style: { right: "0px", bottom: "0px" },
+              },
+              [
+                el(
+                  "div",
+                  {
+                    className: "simplebar-content-wrapper",
+                    tabindex: "0",
+                    role: "region",
+                    "aria-label": "scrollable content",
+                    style: { height: "100%", overflow: "hidden" },
+                  },
+                  [
+                    el(
+                      "div",
+                      {
+                        className: "simplebar-content",
+                        style: { padding: "0px" },
+                      },
+                      [leftColList],
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ]),
+          el("div", {
+            className: "simplebar-placeholder",
+            style: { width: "auto", height: "437px" },
+          }),
+        ],
+      ),
+      el(
+        "div",
+        {
+          className: "simplebar-track simplebar-horizontal",
+          style: { visibility: "hidden" },
+        },
+        [
+          el("div", {
+            className: "simplebar-scrollbar",
+            style: { width: "0px", display: "none" },
+          }),
+        ],
+      ),
+      el(
+        "div",
+        {
+          className: "simplebar-track simplebar-vertical",
+          style: { visibility: "hidden" },
+        },
+        [
+          el("div", {
+            className: "simplebar-scrollbar",
+            style: { height: "0px", display: "none" },
+          }),
+        ],
+      ),
     ]),
   ]);
 }
@@ -438,7 +443,7 @@ async function fetchDisplayName(userId) {
 async function fetchHeadshotUrl(userId) {
   try {
     const response = await fetch(
-      `${HEADSHOT_API}?userIds=${userId}&size=150x150&format=Webp`,
+      `${HEADSHOT_API}?userIds=${userId}&includeBackground=true&includeProfileFrame=true&size=150x150&format=Webp`,
       { credentials: "include" },
     );
     if (!response.ok) return "";
@@ -487,8 +492,8 @@ function applyHeadshot(host, imageUrl, alt) {
 function bindShopButton(host) {
   const btn = host.querySelector("#nav-shop");
   if (!(btn instanceof HTMLButtonElement)) return;
-  if (btn.getAttribute("data-roprime-shop-bound") === "1") return;
-  btn.setAttribute("data-roprime-shop-bound", "1");
+  if (btn.classList.contains("roprime-shop-bound")) return;
+  btn.classList.add("roprime-shop-bound");
   btn.addEventListener("click", (event) => {
     event.preventDefault();
     showOfficialStorePopupLegacy();
@@ -497,10 +502,8 @@ function bindShopButton(host) {
 
 function bindNativeMenuButtonToggle() {
   const root = document.documentElement;
-  if (!root || root.getAttribute("data-roprime-old-nav-menu-bound") === "1") {
-    return;
-  }
-  root.setAttribute("data-roprime-old-nav-menu-bound", "1");
+  if (root.classList.contains("roprime-old-nav-menu-bound")) return;
+  root.classList.add("roprime-old-nav-menu-bound");
 
   document.addEventListener(
     "click",
@@ -542,27 +545,29 @@ async function hydrateNav(host, userId, seq) {
   setBadge(host, "trades", trades);
 }
 
-function renderInto(host, userId) {
+function renderInto(container, userId) {
   const renderKey = String(userId || "");
-  const hasNav = !!host.querySelector("#navigation.rbx-left-col");
+  const hasNav = !!container.querySelector("#navigation.rbx-left-col");
   if (renderKey === lastNavRenderKey && hasNav) {
-    bindShopButton(host);
+    bindShopButton(container);
     void syncRobloxEvents({ preferOldNav: true });
     return;
   }
   lastNavRenderKey = renderKey;
-  host.replaceChildren(buildNavTree(userId));
-  bindShopButton(host);
+  container.classList.add(ROOT_CLASS);
+  container.replaceChildren(buildNavTree(userId));
+  bindShopButton(container);
   void syncRobloxEvents({ preferOldNav: true });
 
   if (Number(userId) > 0) {
     const seq = ++hydrateSeq;
-    void hydrateNav(host, userId, seq);
+    void hydrateNav(container, userId, seq);
   }
 }
 
 export function syncOldNavigationBar() {
   stripLegacyInjections();
+  document.getElementById(LEGACY_HOST_ID)?.remove();
 
   const root = document.documentElement;
 
@@ -574,7 +579,13 @@ export function syncOldNavigationBar() {
     return;
   }
 
-  if (!nativeLeftNavigationHasContent()) {
+  if (!nativeLeftNavigationReady()) {
+    teardownOldNavigationBar();
+    return;
+  }
+
+  const container = getNativeLeftNavigationContainer();
+  if (!(container instanceof HTMLElement)) {
     teardownOldNavigationBar();
     return;
   }
@@ -583,26 +594,17 @@ export function syncOldNavigationBar() {
   root.classList.add("roprime-classic-left-nav-on");
   bindNativeMenuButtonToggle();
 
-  let host = document.getElementById(HOST_ID);
-  if (!(host instanceof HTMLElement)) {
-    host = document.createElement("div");
-    host.id = HOST_ID;
-    host.className = "roprime-classic-left-nav-host roprime-old-navigation-bar";
-    (document.body || document.documentElement).appendChild(host);
-  }
-
   const peekId = Number(window.__roprimeNavUserId) || 0;
-  renderInto(host, peekId || "");
+  renderInto(container, peekId || "");
 
   void (async () => {
     const userId = await getRobloxUserId();
     if (!settingsState.oldNavigationBarEnabled) return;
-    if (!nativeLeftNavigationHasContent()) {
+    const live = getNativeLeftNavigationContainer();
+    if (!(live instanceof HTMLElement) || !nativeLeftNavigationReady()) {
       teardownOldNavigationBar();
       return;
     }
-    const liveHost = document.getElementById(HOST_ID);
-    if (!(liveHost instanceof HTMLElement)) return;
     if (userId) {
       try {
         window.__roprimeNavUserId = userId;
@@ -610,11 +612,11 @@ export function syncOldNavigationBar() {
         /* ignore */
       }
     }
-    renderInto(liveHost, userId || "");
+    renderInto(live, userId || "");
   })();
 
   try {
-    window.__oldRobloxOldNavigationBar = host;
+    window.__oldRobloxOldNavigationBar = container;
   } catch {
     /* ignore */
   }

@@ -198,12 +198,12 @@ function lookupDotPath(tree, path) {
 }
 
 async function buildSettingsUiTree(language) {
-  const enRes = await fetchExtensionJson("_locales/en/language-keys.json");
+  const enRes = await fetchExtensionJson("_locales/en/translations.json");
   if (!enRes.ok) throw new Error(`locales en: ${enRes.status}`);
   const en = await enRes.json();
   const loc = normalizeUiLocale(language);
   if (loc === "en") return en;
-  const curRes = await fetchExtensionJson(`_locales/${loc}/language-keys.json`);
+  const curRes = await fetchExtensionJson(`_locales/${loc}/translations.json`);
   if (!curRes.ok) return en;
   const cur = await curRes.json();
   return deepMergeLocale(en, cur);
@@ -378,6 +378,7 @@ export function serializeSettingsPayload() {
     developerPageUnlocked: !!settingsState.developerPageUnlocked,
     sidebarSize: settingsState.sidebarSize || "full",
     sidebarCollapseMenuEnabled: !!settingsState.sidebarCollapseMenuEnabled,
+    robloxEventsEnabled: !!settingsState.robloxEventsEnabled,
     hiddenSidebarItemsBySize: normalizeHiddenSidebarItemsBySize({
       hiddenSidebarItemsBySize: settingsState.hiddenSidebarItemsBySize,
     }),

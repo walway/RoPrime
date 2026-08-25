@@ -477,8 +477,102 @@ function createSidebarInlineToggleRow(item) {
   return row;
 }
 
+function buildSidebarSizeRow(item) {
+  const sizeRow = el("div", "flex justify-between items-center gap-medium");
+  const sizeCopy = el("div", "flex flex-col gap-xsmall");
+  const sizeTitle = el("span", "text-title-large content-emphasis roprime-i18n");
+  setI18n(sizeTitle, item.title || "settings.appearance.sidebar.sizeTitle");
+  const sizeDesc = el("p", "text-body-large content-default roprime-i18n");
+  setI18n(
+    sizeDesc,
+    item.description || "settings.appearance.sidebar.sizeDescription",
+  );
+  sizeCopy.append(sizeTitle, sizeDesc);
+
+  const mv = sidebarModeValues();
+  const slider = createMarkedSlider({
+    id: "roprime-sidebar-size-slider",
+    min: mv.full,
+    max: mv.icon,
+    step: 1,
+    value: sidebarValueForMode(settingsState.sidebarSize || "full"),
+    marks: [
+      {
+        value: mv.full,
+        label: accountSettingsPaneT("settings.appearance.sidebar.sizeFull"),
+      },
+      {
+        value: mv.small,
+        label: accountSettingsPaneT("settings.appearance.sidebar.sizeSmall"),
+      },
+      {
+        value: mv.icon,
+        label: accountSettingsPaneT("settings.appearance.sidebar.sizeIconOnly"),
+      },
+    ],
+    ariaLabel: accountSettingsPaneT(
+      item.title || "settings.appearance.sidebar.sizeTitle",
+    ),
+  });
+  slider.classList.add("roprime-sidebar-size-slider");
+
+  const sliderWrap = el("div", "roprime-sidebar-size-slider-wrap");
+  sliderWrap.appendChild(slider);
+  sizeRow.append(sizeCopy, sliderWrap);
+  return sizeRow;
+}
+
+function buildSidebarContentButtonRow(item) {
+  const contentRow = el("div", "flex justify-between items-center gap-medium");
+  const contentLabel = el("span", "text-title-large content-emphasis roprime-i18n");
+  setI18n(
+    contentLabel,
+    item.title || "settings.appearance.sidebar.contentTitle",
+  );
+  const configureBtn = createControlButton(
+    item.button || "settings.appearance.sidebar.configureContent",
+  );
+  configureBtn.classList.add(
+    "roprime-sidebar-configure-btn",
+    "roprime-open-sidebar-content",
+  );
+  contentRow.append(contentLabel, configureBtn);
+  return contentRow;
+}
+
+function buildCardItem(item) {
+  if (!item || typeof item !== "object") return null;
+  if (item.type === "separator") return createSettingsCardHeaderSeparator();
+  if (item.type === "sidebarSize") return buildSidebarSizeRow(item);
+  if (item.type === "sidebarContent") return buildSidebarContentButtonRow(item);
+  if (item.type === "toggle") return createSidebarInlineToggleRow(item);
+  return null;
+}
+
+function buildConfigCard(cardCfg) {
+  const card = createSettingsCardShell();
+  if (cardCfg.id) card.classList.add(`roprime-${cardCfg.id}-panel`);
+  if (cardCfg.title) {
+    card.append(
+      createSettingsCardHeaderRow(cardCfg.title),
+      createSettingsCardHeaderSeparator(),
+    );
+  }
+  for (const item of cardCfg.items || []) {
+    const node = buildCardItem(item);
+    if (node instanceof HTMLElement) card.appendChild(node);
+  }
+  if (cardCfg.id === "sidebar") {
+    const warning = el("div", "roprime-sidebar-empty-warning hidden");
+    const warningText = el("span", "text-body-medium content-default");
+    setI18n(warningText, "settings.appearance.sidebar.emptyWarning");
+    warning.appendChild(warningText);
+    card.appendChild(warning);
+  }
+  return card;
+}
+
 const CUSTOM_BUILDERS = {
-  sidebar: () => buildSidebarPanel(),
   sidebarContentBack: () => {
     const btn = createControlButton("settings.appearance.sidebar.contentBack");
     btn.classList.add("roprime-sidebar-content-back");
@@ -533,6 +627,8 @@ function renderPageContent(container, pageKey) {
     let node = null;
     if (item.type === "toggle") {
       node = createToggleSection(item);
+    } else if (item.type === "card") {
+      node = buildConfigCard(item);
     } else if (item.type === "panel" && CUSTOM_BUILDERS[item.id]) {
       node = CUSTOM_BUILDERS[item.id]();
     }
@@ -540,94 +636,6 @@ function renderPageContent(container, pageKey) {
     if (item.hide) setHidden(node, true);
     container.appendChild(node);
   }
-}
-
-function buildSidebarPanel() {
-  const card = createSettingsCardShell();
-  card.classList.add("roprime-sidebar-panel");
-  card.append(
-    createSettingsCardHeaderRow("settings.appearance.sidebar.title"),
-    createSettingsCardHeaderSeparator(),
-  );
-
-  const sizeRow = el("div", "flex justify-between items-center gap-medium");
-  const sizeCopy = el("div", "flex flex-col gap-xsmall");
-  const sizeTitle = el("span", "text-title-large content-emphasis roprime-i18n");
-  setI18n(sizeTitle, "settings.appearance.sidebar.sizeTitle");
-  const sizeDesc = el("p", "text-body-large content-default roprime-i18n");
-  setI18n(sizeDesc, "settings.appearance.sidebar.sizeDescription");
-  sizeCopy.append(sizeTitle, sizeDesc);
-
-  const mv = sidebarModeValues();
-  const slider = createMarkedSlider({
-    id: "roprime-sidebar-size-slider",
-    min: mv.full,
-    max: mv.icon,
-    step: 1,
-    value: sidebarValueForMode(settingsState.sidebarSize || "full"),
-    marks: [
-      {
-        value: mv.full,
-        label: accountSettingsPaneT("settings.appearance.sidebar.sizeFull"),
-      },
-      {
-        value: mv.small,
-        label: accountSettingsPaneT("settings.appearance.sidebar.sizeSmall"),
-      },
-      {
-        value: mv.icon,
-        label: accountSettingsPaneT("settings.appearance.sidebar.sizeIconOnly"),
-      },
-    ],
-    ariaLabel: accountSettingsPaneT("settings.appearance.sidebar.sizeTitle"),
-  });
-  slider.classList.add("roprime-sidebar-size-slider");
-
-  const sliderWrap = el("div", "roprime-sidebar-size-slider-wrap");
-  sliderWrap.appendChild(slider);
-  sizeRow.append(sizeCopy, sliderWrap);
-
-  const contentRow = el("div", "flex justify-between items-center gap-medium");
-  const contentLabel = el("span", "text-title-large content-emphasis roprime-i18n");
-  setI18n(contentLabel, "settings.appearance.sidebar.contentTitle");
-  const configureBtn = createControlButton(
-    "settings.appearance.sidebar.configureContent",
-  );
-  configureBtn.classList.add(
-    "roprime-sidebar-configure-btn",
-    "roprime-open-sidebar-content",
-  );
-  contentRow.append(contentLabel, configureBtn);
-
-  const warning = el("div", "roprime-sidebar-empty-warning hidden");
-  const warningText = el("span", "text-body-medium content-default");
-  setI18n(warningText, "settings.appearance.sidebar.emptyWarning");
-  warning.appendChild(warningText);
-
-  card.append(
-    sizeRow,
-    createSettingsCardHeaderSeparator(),
-    contentRow,
-    createSettingsCardHeaderSeparator(),
-    createSidebarInlineToggleRow({
-      key: "sidebarCollapseMenuEnabled",
-      title: "settings.appearance.sidebar.collapseMenuTitle",
-      description: "settings.appearance.sidebar.collapseMenuDescription",
-    }),
-    createSidebarInlineToggleRow({
-      key: "alwaysShowCloseButtonEnabled",
-      title: "settings.appearance.sidebar.alwaysShowCloseTitle",
-      description: "settings.appearance.sidebar.alwaysShowCloseDescription",
-    }),
-    createSidebarInlineToggleRow({
-      key: "oldNavigationBarEnabled",
-      title: "settings.appearance.oldNavigation.title",
-      description: "settings.appearance.oldNavigation.description",
-    }),
-    warning,
-  );
-
-  return card;
 }
 
 function buildLanguageControl() {

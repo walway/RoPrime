@@ -6,8 +6,8 @@
 #roprime-standalone-settings *,
 #roprime-home-welcome-root,
 #roprime-home-welcome-root *,
-#roprime-classic-left-nav-host,
-#roprime-classic-left-nav-host * {
+#left-navigation-container.roprime-old-navigation-bar,
+#left-navigation-container.roprime-old-navigation-bar * {
   box-sizing: border-box;
   text-rendering: auto;
   -webkit-font-smoothing: antialiased;

@@ -128,7 +128,7 @@ export async function fetchRobloxEvents() {
 
 function findOldNavList() {
   const list = document.querySelector(
-    "#roprime-classic-left-nav-host #left-navigation-container ul.left-col-list, #left-navigation-container ul.left-col-list",
+    "#left-navigation-container.roprime-old-navigation-bar ul.left-col-list, #left-navigation-container ul.left-col-list",
   );
   return list instanceof HTMLElement ? list : null;
 }
@@ -139,6 +139,7 @@ function findNewSidebarParent() {
 }
 
 function shouldShowRobloxEvents(options = {}) {
+  if (!settingsState.robloxEventsEnabled) return false;
   if (!shouldRunRoPrimeOnCurrentPage()) return false;
   if (isSidebarItemHidden("game-events")) return false;
   if (options.preferOldNav || settingsState.oldNavigationBarEnabled) {
@@ -197,8 +198,8 @@ function applyCollapsedState(root, eventCount) {
 function bindShowMore(root, eventCount) {
   const button = root.querySelector("button.show-more-btn");
   if (!(button instanceof HTMLButtonElement)) return;
-  if (button.getAttribute("data-roprime-events-bound") === "1") return;
-  button.setAttribute("data-roprime-events-bound", "1");
+  if (button.classList.contains("roprime-events-bound")) return;
+  button.classList.add("roprime-events-bound");
   button.addEventListener("click", (event) => {
     event.preventDefault();
     expanded = !expanded;
@@ -294,13 +295,18 @@ function renderRobloxEvents(parent, events, options = {}) {
 function resolveMountTarget(options = {}) {
   const preferOld =
     options.preferOldNav || settingsState.oldNavigationBarEnabled;
+
   if (preferOld) {
-    const list = findOldNavList();
-    if (list) return { parent: list, asListItem: true };
-    return null;
+    const oldList = findOldNavList();
+    if (oldList) return { parent: oldList, asListItem: true };
   }
-  const sidebar = findNewSidebarParent();
-  if (sidebar) return { parent: sidebar, asListItem: false };
+
+  const newSidebar = findNewSidebarParent();
+  if (newSidebar) return { parent: newSidebar, asListItem: false };
+
+  const oldList = findOldNavList();
+  if (oldList) return { parent: oldList, asListItem: true };
+
   return null;
 }
 
@@ -312,9 +318,7 @@ export async function syncRobloxEvents(options = {}) {
 
   const mount = resolveMountTarget(options);
   if (!mount) {
-    if (!(options.preferOldNav || settingsState.oldNavigationBarEnabled)) {
-      removeRobloxEvents();
-    }
+    removeRobloxEvents();
     return;
   }
 
@@ -326,9 +330,7 @@ export async function syncRobloxEvents(options = {}) {
 
   const liveMount = resolveMountTarget(options);
   if (!liveMount) {
-    if (!(options.preferOldNav || settingsState.oldNavigationBarEnabled)) {
-      removeRobloxEvents();
-    }
+    removeRobloxEvents();
     return;
   }
 
