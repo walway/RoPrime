@@ -300,7 +300,6 @@ export function mergeStoredSettings(stored) {
     }
   }
   delete settingsState.renameMarketplaceToAvatarShop;
-  delete settingsState.renameExperiencesToGames;
   delete settingsState.renameDropdownRestore;
   delete settingsState.blockedExecutionPages;
   settingsState.developerPageUnlocked = !!stored.developerPageUnlocked;
@@ -367,6 +366,9 @@ export function serializeSettingsPayload() {
     renameDropdownEnabled: settingsState.renameDropdownEnabled,
     renameCommunitiesToGroups: settingsState.renameCommunitiesToGroups,
     renameMarketplaceToCatalog: settingsState.renameMarketplaceToCatalog,
+    renameChartsToDiscover: !!settingsState.renameChartsToDiscover,
+    renameExperiencesToGames: !!settingsState.renameExperiencesToGames,
+    moreRoundedCornersEnabled: !!settingsState.moreRoundedCornersEnabled,
     oldNavigationBarEnabled: settingsState.oldNavigationBarEnabled,
     smallNewNavigationBarEnabled: settingsState.smallNewNavigationBarEnabled,
     sidebarIconsOnlyEnabled: settingsState.sidebarIconsOnlyEnabled,

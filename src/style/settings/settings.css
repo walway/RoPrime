@@ -235,7 +235,13 @@ html.roprime-account-settings-open
 #roprime-settings-host
   .roprime-rename-child.is-renames-disabled,
 #roprime-settings-host
-  .roprime-setting-child.is-setting-child-disabled {
+  .roprime-setting-child.is-setting-child-disabled,
+#roprime-settings-host
+  .roprime-setting-exclusive.is-setting-child-disabled,
+#roprime-settings-host
+  .roprime-setting-child-row.is-setting-row-disabled,
+#roprime-settings-host
+  .roprime-sidebar-inline-toggle.is-setting-row-disabled {
   opacity: 0.55;
   pointer-events: none;
 }

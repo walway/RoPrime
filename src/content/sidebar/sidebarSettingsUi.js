@@ -2,7 +2,7 @@ import {
   getActiveSidebarSize,
   normalizeSidebarSizeMode,
 } from "../core/core.js";
-import { t as accountSettingsPaneT } from "../settings/roprimeAccountSettingsPage.js";
+import { t as accountSettingsPaneT } from "../settings/translationsHook.js";
 import {
   discoverSidebarNavItems,
   hideSidebarItem,
@@ -21,7 +21,7 @@ const SIDEBAR_SIZE_TITLE_KEYS = {
 };
 
 const SIDEBAR_SIZE_CONTROL_INNER =
-  '<div class="roprime-sidebar-size-box"><div class="roprime-sidebar-size-rail"><input id="{{id}}" class="roprime-sidebar-size-slider" type="range" min="0" max="100" step="0.1" value="0" data-i18n-aria-label="settings.appearance.sidebar.sizeTitle" /></div><div class="roprime-sidebar-size-footer"><div class="roprime-sidebar-size-ticks"><button class="roprime-sidebar-size-tick" type="button" data-size-mode="full"><span data-i18n="settings.appearance.sidebar.sizeFull"></span></button><button class="roprime-sidebar-size-tick" type="button" data-size-mode="small"><span data-i18n="settings.appearance.sidebar.sizeSmall"></span></button><button class="roprime-sidebar-size-tick" type="button" data-size-mode="icon"><span data-i18n="settings.appearance.sidebar.sizeIconOnly"></span></button></div><button type="button" class="roprime-sidebar-configure-btn" data-roprime-open-sidebar-content data-i18n="settings.appearance.sidebar.configureContent"></button></div><div class="roprime-sidebar-size-warning" data-roprime-sidebar-empty-warning hidden><span class="roprime-sidebar-size-warning-text">No sidebar items visible.</span></div></div>';
+  '<div class="roprime-sidebar-size-box"><div class="roprime-sidebar-size-rail"><input id="{{id}}" class="roprime-sidebar-size-slider" type="range" min="0" max="100" step="0.1" value="0" data-i18n-aria-label="settings.appearance.sidebar.sizeTitle" /></div><div class="roprime-sidebar-size-footer"><div class="roprime-sidebar-size-ticks"><button class="roprime-sidebar-size-tick" type="button" data-size-mode="full"><span data-i18n="settings.appearance.sidebar.sizeFull"></span></button><button class="roprime-sidebar-size-tick" type="button" data-size-mode="small"><span data-i18n="settings.appearance.sidebar.sizeSmall"></span></button><button class="roprime-sidebar-size-tick" type="button" data-size-mode="icon"><span data-i18n="settings.appearance.sidebar.sizeIconOnly"></span></button></div><button type="button" class="roprime-sidebar-configure-btn" data-roprime-open-sidebar-content data-i18n="settings.appearance.sidebar.configureContent"></button></div></div>';
 
 export function buildSidebarSizeControlHtml(
   sliderId = "roprime-sidebar-size-slider",
@@ -92,28 +92,9 @@ export function refreshSidebarContentList(inner) {
   if (!(list instanceof HTMLElement)) return;
   list.innerHTML = buildSidebarContentListHtml();
   bindSidebarContentList(inner);
-  refreshSidebarSizeWarnings(inner);
 }
 
-function visibleSidebarItemsCount(sizeMode = getActiveSidebarSize()) {
-  return discoverSidebarNavItems(sizeMode).filter(
-    (item) => !isSidebarItemHidden(item.id, sizeMode),
-  ).length;
-}
-
-export function refreshSidebarSizeWarnings(inner) {
-  const mode = normalizeSidebarSizeMode(getActiveSidebarSize());
-  const noVisibleItems = visibleSidebarItemsCount(mode) === 0;
-  inner
-    .querySelectorAll(".roprime-sidebar-empty-warning")
-    .forEach((node) => {
-      if (!(node instanceof HTMLElement)) return;
-      setHidden(node, !noVisibleItems);
-      node.setAttribute("aria-hidden", noVisibleItems ? "false" : "true");
-    });
-}
-
-export function bindSidebarContentList(inner) {
+function bindSidebarContentList(inner) {
   const list = inner.querySelector("[data-roprime-sidebar-content-list]");
   if (!(list instanceof HTMLElement)) return;
   list.querySelectorAll("[data-roprime-sidebar-delete]").forEach((btn) => {
@@ -149,5 +130,4 @@ export function bindSidebarContentList(inner) {
       refreshSidebarContentList(inner);
     });
   });
-  refreshSidebarSizeWarnings(inner);
 }

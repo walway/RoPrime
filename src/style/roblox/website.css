@@ -2,32 +2,6 @@
   background-color: transparent;
 }
 
-/* more rounded corners feature */
-
-.thumbnail-2d-container,
-.video-preview-wrapper video,
-.carousel-item iframe,
-.thumbnail-shimmer-overlay,
-.game-details-carousel-container .shimmer {
-  border-radius: 12px;
-}
-
-#horizontal-tabs {
-  white-space: nowrap;
-  scroll-behavior: smooth;
-  border-radius: 8px;
-  overflow: hidden;
-}
-
-#vertical-menu,
-.menu-vertical {
-  scroll-behavior: smooth;
-  border-radius: 8px;
-  overflow: hidden;
-}
-
-/* more rounded corners feature */
-
 html
   body:has(
     main.container-main[data-rovalra-sidebar-collapse-ready="true"][data-rovalra-sidebar-layout-active="true"]

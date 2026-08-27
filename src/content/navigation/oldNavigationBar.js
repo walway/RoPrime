@@ -7,6 +7,8 @@ const LEGACY_HOST_ID = "roprime-classic-left-nav-host";
 const ROOT_CLASS = "roprime-old-navigation-bar";
 const COLLAPSED_CLASS = "roprime-old-navigation-bar-collapsed";
 const LEFT_NAV_HIDE_STYLE_ID = "roprime-hide-left-nav-for-old-nav";
+const OLD_NAVBAR_PANEL_STYLE_ID = "roprime-old-navbar-panel-style";
+const OLD_NAVBAR_PANEL_PX = 175;
 const HEADSHOT_API = "https://thumbnails.roblox.com/v1/users/avatar-headshot";
 const USER_API = "https://users.roblox.com/v1/users";
 const UNREAD_MESSAGES_API =
@@ -75,8 +77,40 @@ function setLeftNavHidden(hidden) {
   (document.head || document.documentElement).appendChild(style);
 }
 
+function getOldNavbarPanelCss() {
+  return `
+.no-gutter-ads.left-nav-new-width main.container-main {
+    margin-left: ${OLD_NAVBAR_PANEL_PX}px;
+}
+
+@media (min-width: 1688px) {
+    .no-gutter-ads.logged-in.left-nav-new-width, body.left-nav-new-width {
+        --left-nav-reserved-width: ${OLD_NAVBAR_PANEL_PX}px;
+    }
+}
+`.trim();
+}
+
+function setOldNavbarPanelStyle(enabled) {
+  const existing = document.getElementById(OLD_NAVBAR_PANEL_STYLE_ID);
+  if (!enabled) {
+    existing?.remove();
+    return;
+  }
+  const css = getOldNavbarPanelCss();
+  if (existing instanceof HTMLStyleElement) {
+    if (existing.textContent !== css) existing.textContent = css;
+    return;
+  }
+  const style = document.createElement("style");
+  style.id = OLD_NAVBAR_PANEL_STYLE_ID;
+  style.textContent = css;
+  (document.head || document.documentElement).appendChild(style);
+}
+
 function teardownOldNavigationBar() {
   document.getElementById(LEGACY_HOST_ID)?.remove();
+  setOldNavbarPanelStyle(false);
 
   const native = getNativeLeftNavigationContainer();
   if (native instanceof HTMLElement && native.classList.contains(ROOT_CLASS)) {
@@ -146,7 +180,10 @@ function origin() {
 }
 
 function communitiesLabel() {
-  return settingsState.renameCommunitiesToGroups ? "Groups" : "Communities";
+  return settingsState.renameDropdownEnabled &&
+    settingsState.renameCommunitiesToGroups
+    ? "Groups"
+    : "Communities";
 }
 
 function navIcon(iconClass) {
@@ -200,7 +237,6 @@ function createNotificationBadge(count) {
   ]);
 }
 
-/** Classic left-nav markup for Roblox's existing #left-navigation-container. */
 function buildNavTree(userId) {
   const id = Number(userId) > 0 ? String(userId) : "";
   const profileHref = id
@@ -591,6 +627,7 @@ export function syncOldNavigationBar() {
   }
 
   setLeftNavHidden(true);
+  setOldNavbarPanelStyle(true);
   root.classList.add("roprime-classic-left-nav-on");
   bindNativeMenuButtonToggle();
 

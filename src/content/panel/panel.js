@@ -60,10 +60,12 @@ function cleanupBlockedRouteUi() {
   document.getElementById(RP_FRIEND_STYLING_REIMAGNED_STYLE_ID)?.remove();
   document.getElementById(RP_HIDE_AGE_BADGE_STYLE_ID)?.remove();
   document.getElementById(HIDE_EXPERIENCES_ADS_ID)?.remove();
+  document.getElementById("roprime-more-rounded-corners-style")?.remove();
   document.getElementById("roprime-sidebar-content-hide-style")?.remove();
   document.getElementById("roprime-classic-left-nav-host")?.remove();
   document.getElementById("roprime-hide-left-nav-for-old-nav")?.remove();
   document.getElementById("roprime-old-navbar-style")?.remove();
+  document.getElementById("roprime-old-navbar-panel-style")?.remove();
   document.getElementById("roprime-left-gray-frame")?.remove();
   document.getElementById("roprime-left-gray-frame-layout-style")?.remove();
   document.getElementById("roprime-custom-nav-menu-btn")?.remove();

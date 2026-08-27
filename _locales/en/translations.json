@@ -21,11 +21,17 @@
       "rename": {
         "title": "Rename Roblox Wording",
         "communities": "Communities → Groups",
-        "marketplace": "Marketplace → Catalog"
+        "marketplace": "Marketplace → Catalog",
+        "charts": "Charts → Discover",
+        "experiences": "Experiences → Games"
       },
       "oldNavigation": {
         "title": "Old Navigation Bar",
         "description": "In development. Keep disabled unless you are testing it."
+      },
+      "moreRoundedCorners": {
+        "title": "More rounded corners",
+        "description": "Softens thumbnails, carousels, and menu corners across Roblox."
       },
       "sidebar": {
         "title": "Sidebar",
@@ -51,8 +57,7 @@
         "alwaysShowCloseTitle": "Always Show Close Button",
         "alwaysShowCloseDescription": "Forces Roblox's sidebar close/menu button to always be visible.",
         "eventsTitle": "Roblox Events",
-        "eventsDescription": "Brings back the Roblox Events in the sidebar deleted in 2024-2025 after Sidebar redesign.",
-        "emptyWarning": "No sidebar items visible."
+        "eventsDescription": "Brings back the Roblox Events in the sidebar deleted in 2024-2025 after Sidebar redesign."
       },
       "friendStyling": {
         "title": "Friend Styling Reimagined",

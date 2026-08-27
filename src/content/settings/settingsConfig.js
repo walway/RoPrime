@@ -1,8 +1,37 @@
 /**
- * Use { type: "separator" }, to add separator
+ * Use { type: "separator" } inside a card's items to add a separator.
+ * Use { type: "navDivider" } as a top-level SETTINGS_CONFIG entry to add a
+ * Roblox-style divider in the settings left nav (anywhere in key order).
  */
 
 export const SETTINGS_CONFIG = {
+  info: {
+    title: "settings.nav.info",
+    icon: "info",
+    items: [
+      {
+        type: "panel",
+        id: "infoBlock",
+      },
+    ],
+  },
+  settings: {
+    title: "settings.nav.settings",
+    icon: "settings",
+    items: [
+      {
+        type: "panel",
+        id: "language",
+      },
+      {
+        type: "panel",
+        id: "settingsSync",
+      },
+    ],
+  },
+  navDividerAfterSettings: {
+    type: "navDivider",
+  },
   appearance: {
     title: "settings.nav.appearance",
     icon: "palette",
@@ -19,6 +48,8 @@ export const SETTINGS_CONFIG = {
         title: "settings.appearance.rename.communities",
         byDefault: true,
         parent: "renameDropdownEnabled",
+        skipI18n: true,
+        literalTitle: "Communities → Groups",
       },
       {
         type: "toggle",
@@ -26,6 +57,26 @@ export const SETTINGS_CONFIG = {
         title: "settings.appearance.rename.marketplace",
         byDefault: true,
         parent: "renameDropdownEnabled",
+        skipI18n: true,
+        literalTitle: "Marketplace → Catalog",
+      },
+      {
+        type: "toggle",
+        key: "renameChartsToDiscover",
+        title: "settings.appearance.rename.charts",
+        byDefault: true,
+        parent: "renameDropdownEnabled",
+        skipI18n: true,
+        literalTitle: "Charts → Discover",
+      },
+      {
+        type: "toggle",
+        key: "renameExperiencesToGames",
+        title: "settings.appearance.rename.experiences",
+        byDefault: true,
+        parent: "renameDropdownEnabled",
+        skipI18n: true,
+        literalTitle: "Experiences → Games",
       },
       {
         type: "card",
@@ -50,13 +101,16 @@ export const SETTINGS_CONFIG = {
             title: "settings.appearance.sidebar.collapseMenuTitle",
             description: "settings.appearance.sidebar.collapseMenuDescription",
             byDefault: false,
+            exclusiveWith: "alwaysShowCloseButtonEnabled",
           },
           {
             type: "toggle",
             key: "alwaysShowCloseButtonEnabled",
             title: "settings.appearance.sidebar.alwaysShowCloseTitle",
-            description: "settings.appearance.sidebar.alwaysShowCloseDescription",
+            description:
+              "settings.appearance.sidebar.alwaysShowCloseDescription",
             byDefault: false,
+            exclusiveWith: "sidebarCollapseMenuEnabled",
           },
           {
             type: "toggle",
@@ -73,6 +127,13 @@ export const SETTINGS_CONFIG = {
             byDefault: true,
           },
         ],
+      },
+      {
+        type: "toggle",
+        key: "moreRoundedCornersEnabled",
+        title: "settings.appearance.moreRoundedCorners.title",
+        description: "settings.appearance.moreRoundedCorners.description",
+        byDefault: true,
       },
       {
         type: "toggle",
@@ -106,34 +167,6 @@ export const SETTINGS_CONFIG = {
         key: "hideExperiencesAdsEnabled",
         title: "settings.home.hideExperiencesAds.title",
         byDefault: false,
-      },
-    ],
-  },
-  "sidebar-content": {
-    title: "settings.sidebar.content.listTitle",
-    nav: false,
-    items: [
-      {
-        type: "panel",
-        id: "sidebarContentBack",
-      },
-      {
-        type: "panel",
-        id: "sidebarContentList",
-      },
-    ],
-  },
-  settings: {
-    title: "settings.nav.settings",
-    icon: "settings",
-    items: [
-      {
-        type: "panel",
-        id: "language",
-      },
-      {
-        type: "panel",
-        id: "settingsSync",
       },
     ],
   },
@@ -171,16 +204,6 @@ export const SETTINGS_CONFIG = {
       },
     ],
   },
-  info: {
-    title: "settings.nav.info",
-    icon: "info",
-    items: [
-      {
-        type: "panel",
-        id: "infoBlock",
-      },
-    ],
-  },
   developer: {
     title: "settings.nav.developer",
     icon: "code",
@@ -189,6 +212,20 @@ export const SETTINGS_CONFIG = {
       {
         type: "panel",
         id: "developerBlock",
+      },
+    ],
+  },
+  "sidebar-content": {
+    title: "settings.sidebar.content.listTitle",
+    nav: false,
+    items: [
+      {
+        type: "panel",
+        id: "sidebarContentBack",
+      },
+      {
+        type: "panel",
+        id: "sidebarContentList",
       },
     ],
   },
@@ -207,6 +244,7 @@ function walkConfigItems(items, visit) {
 export function collectToggleDefaults() {
   const defaults = {};
   for (const page of Object.values(SETTINGS_CONFIG)) {
+    if (page?.type === "navDivider") continue;
     walkConfigItems(page.items, (item) => {
       if (item.type === "toggle" && typeof item.key === "string") {
         defaults[item.key] = !!item.byDefault;

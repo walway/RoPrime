@@ -6,6 +6,8 @@ let renameObserver = null;
 const applyAllRenames = debounce(() => {
   applyCommunityRename(document.body);
   applyMarketplaceRename(document.body);
+  applyChartsRename(document.body);
+  applyExperiencesRename(document.body);
 }, RENAME_DEBOUNCE_MS);
 
 function renameCommunityText(text) {
@@ -36,6 +38,34 @@ function renameCatalogBackText(text) {
     .replace(/\bcatalog\b/g, "marketplace");
 }
 
+function renameChartsText(text) {
+  return text
+    .replace(/\bCharts\b/g, "Discover")
+    .replace(/\bcharts\b/g, "discover");
+}
+
+function renameDiscoverBackText(text) {
+  return text
+    .replace(/\bDiscover\b/g, "Charts")
+    .replace(/\bdiscover\b/g, "charts");
+}
+
+function renameExperiencesText(text) {
+  return text
+    .replace(/\bExperiences\b/g, "Games")
+    .replace(/\bexperiences\b/g, "games")
+    .replace(/\bExperience\b/g, "Game")
+    .replace(/\bexperience\b/g, "game");
+}
+
+function renameGamesBackText(text) {
+  return text
+    .replace(/\bGames\b/g, "Experiences")
+    .replace(/\bgames\b/g, "experiences")
+    .replace(/\bGame\b/g, "Experience")
+    .replace(/\bgame\b/g, "experience");
+}
+
 function shouldSkipNode(node) {
   if (!(node.parentElement instanceof HTMLElement)) return true;
   const tag = node.parentElement.tagName;
@@ -48,7 +78,7 @@ function shouldSkipNode(node) {
     return true;
   if (
     node.parentElement.closest(
-      `#${RP_SETTINGS_INNER_ID}, #react-user-account-base`,
+      `#${RP_SETTINGS_INNER_ID}, #roprime-settings-host, #react-user-account-base`,
     )
   )
     return true;
@@ -77,7 +107,8 @@ export function applyMarketplaceRename(rootNode) {
   applyTextTransform(
     rootNode,
     renameMarketplaceText,
-    settingsState.renameMarketplaceToCatalog,
+    settingsState.renameDropdownEnabled &&
+      settingsState.renameMarketplaceToCatalog,
   );
 }
 
@@ -89,12 +120,48 @@ export function applyCommunityRename(rootNode) {
   applyTextTransform(
     rootNode,
     renameCommunityText,
-    settingsState.renameCommunitiesToGroups,
+    settingsState.renameDropdownEnabled &&
+      settingsState.renameCommunitiesToGroups,
   );
 }
 
 export function applyGroupsBackRename(rootNode) {
   applyTextTransform(rootNode, renameGroupsBackText, true);
+}
+
+export function applyChartsRename(rootNode) {
+  applyTextTransform(
+    rootNode,
+    renameChartsText,
+    settingsState.renameDropdownEnabled &&
+      settingsState.renameChartsToDiscover,
+  );
+}
+
+export function applyDiscoverBackRename(rootNode) {
+  applyTextTransform(rootNode, renameDiscoverBackText, true);
+}
+
+export function applyExperiencesRename(rootNode) {
+  applyTextTransform(
+    rootNode,
+    renameExperiencesText,
+    settingsState.renameDropdownEnabled &&
+      settingsState.renameExperiencesToGames,
+  );
+}
+
+export function applyGamesBackRename(rootNode) {
+  applyTextTransform(rootNode, renameGamesBackText, true);
+}
+
+function anyRenameChildEnabled() {
+  return (
+    settingsState.renameCommunitiesToGroups ||
+    settingsState.renameMarketplaceToCatalog ||
+    settingsState.renameChartsToDiscover ||
+    settingsState.renameExperiencesToGames
+  );
 }
 
 function startRenameObserver() {
@@ -107,6 +174,8 @@ function startRenameObserver() {
     renameObserver.observe(document.body, { childList: true, subtree: true });
     applyCommunityRename(document.body);
     applyMarketplaceRename(document.body);
+    applyChartsRename(document.body);
+    applyExperiencesRename(document.body);
   };
   if (document.body) start();
   else document.addEventListener("DOMContentLoaded", start, { once: true });
@@ -119,11 +188,7 @@ function stopRenameObserver() {
 }
 
 export function updateRenameLoop() {
-  if (
-    settingsState.renameDropdownEnabled &&
-    (settingsState.renameCommunitiesToGroups ||
-      settingsState.renameMarketplaceToCatalog)
-  ) {
+  if (settingsState.renameDropdownEnabled && anyRenameChildEnabled()) {
     startRenameObserver();
     return;
   }
@@ -134,6 +199,5 @@ export function stopRenameLoop() {
   stopRenameObserver();
 }
 
-import { registerFeature } from './registry.js';
+import { registerFeature } from "./registry.js";
 registerFeature(updateRenameLoop);
-

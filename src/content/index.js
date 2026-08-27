@@ -14,7 +14,9 @@ import "./features/legacyBadges.js";
 import "./roblox.com/info/roblox-badges.js";
 import { syncHomeWelcomeModal } from "./alerts/welcome.js";
 import {
+  applyChartsRename,
   applyCommunityRename,
+  applyExperiencesRename,
   applyMarketplaceRename,
   updateRenameLoop,
 } from "./features/rename.js";
@@ -30,6 +32,7 @@ import "./sidebar/sidebarContent.js";
 import { initFreeRobloxThemes } from "./account/freeThemes.js";
 import "./home/hideExperiencesAds.js";
 import "./features/customCss.js";
+import "./features/moreRoundedCorners.js";
 import "./features/searchBan.js";
 import "./profile/friendCarouselEffects.js";
 import "./profile/profileEffectsDisplay.js";
@@ -128,6 +131,8 @@ function bootstrap() {
         if (shouldRunRoPrimeOnCurrentPage()) {
           applyCommunityRename(document.body);
           applyMarketplaceRename(document.body);
+          applyChartsRename(document.body);
+          applyExperiencesRename(document.body);
         }
       } catch (e) {
         if (!isExtensionContextInvalidatedError(e)) throw e;

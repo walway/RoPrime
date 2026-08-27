@@ -5,7 +5,7 @@ import { saveSettings, settingsState } from "../core/core.js";
 import { promptCustomCssCautionNotice } from "../alerts/alert.js";
 import { syncCustomCss } from "../features/customCss.js";
 import { setHidden } from "../ui/visibility.js";
-import { t as accountSettingsPaneT } from "./roprimeAccountSettingsPage.js";
+import { t as accountSettingsPaneT } from "./translationsHook.js";
 
 let cssEditor = null;
 

@@ -219,10 +219,40 @@ function isDeveloperPageUnlocked() {
   return !!settingsState.developerPageUnlocked;
 }
 
+const FOUNDATION_WEB_BUTTON_CLASS =
+  "foundation-web-button relative clip group/interactable focus-visible:outline-focus disabled:outline-none cursor-pointer relative flex items-center justify-center stroke-none padding-y-none select-none radius-medium text-label-medium height-1000 padding-x-medium bg-action-standard content-action-standard min-width-[90px] small:min-width-[120px] medium:min-width-[200px] text-label-medium shrink-0";
+
+function getControlButtonLabel(btn) {
+  if (!(btn instanceof HTMLElement)) return null;
+  const label = btn.querySelector(".price-tag.robux-price-tag");
+  return label instanceof HTMLElement ? label : null;
+}
+
 function createControlButton(textKey, attrs = {}) {
-  const btn = el("button", "btn-control-md");
+  const btn = el("button", FOUNDATION_WEB_BUTTON_CLASS);
   btn.type = "button";
-  setI18n(btn, textKey);
+  btn.style.textDecoration = "none";
+
+  const stateLayer = el(
+    "div",
+    "absolute inset-[0] transition-colors group-hover/interactable:bg-[var(--color-state-hover)] group-active/interactable:bg-[var(--color-state-press)] group-disabled/interactable:bg-none",
+  );
+  stateLayer.setAttribute("aria-hidden", "true");
+  stateLayer.setAttribute("data-testid", "foundation-web-state-layer");
+
+  const labelOuter = el("span", "flex items-center min-width-0 gap-small");
+  const labelWrap = el("span", "padding-y-xsmall text-truncate-end text-no-wrap");
+  const labelInner = el(
+    "div",
+    "d-flex-inline gap-1 justify-content-start align-items-center",
+  );
+  const label = el("span", "price-tag robux-price-tag");
+  if (textKey) setI18n(label, textKey);
+  labelInner.appendChild(label);
+  labelWrap.appendChild(labelInner);
+  labelOuter.appendChild(labelWrap);
+  btn.append(stateLayer, labelOuter);
+
   for (const [key, value] of Object.entries(attrs)) {
     btn.setAttribute(key, value);
   }
@@ -323,6 +353,12 @@ function buildSettingsHostContent(host) {
   searchItem.appendChild(search);
 
   for (const [pageKey, pageCfg] of Object.entries(SETTINGS_CONFIG)) {
+    if (pageCfg?.type === "navDivider") {
+      const divider = el("li", "rbx-divider thick-height");
+      divider.style.width = "100%";
+      navList.appendChild(divider);
+      continue;
+    }
     if (pageCfg.nav === false) continue;
     const li = el("li", `menu-option roprime-nav-page roprime-nav-page--${pageKey}`);
     li.setAttribute("role", "tab");
@@ -352,7 +388,8 @@ function buildSettingsHostContent(host) {
   pageTitle.id = "roprime-page-title";
   header.appendChild(pageTitle);
 
-  for (const pageKey of Object.keys(SETTINGS_CONFIG)) {
+  for (const [pageKey, pageCfg] of Object.entries(SETTINGS_CONFIG)) {
+    if (pageCfg?.type === "navDivider") continue;
     const pageWrap = el("div", `${RP_SETTINGS_PAGE_CLASS} roprime-settings-page--${pageKey}`);
     setHidden(pageWrap, true);
     renderPageContent(pageWrap, pageKey);
@@ -388,16 +425,73 @@ function createSettingsCardHeaderSeparator() {
   separator.setAttribute("role", "separator");
   separator.setAttribute("data-orientation", "horizontal");
   separator.setAttribute("aria-orientation", "horizontal");
-  separator.className = "stroke-default self-stretch";
+  separator.className = "stroke-default self-stretch roprime-settings-separator";
   separator.style.cssText =
     "border-right-width: 0px; border-bottom-width: 0px; box-sizing: border-box; border-style: solid; height: 0px; border-top-width: var(--stroke-standard); border-left-width: 0px;";
   return separator;
 }
 
-function createSettingsCardHeaderRow(titleKey, trailing = null) {
+function isSettingsSeparator(node) {
+  return (
+    node instanceof HTMLElement &&
+    (node.getAttribute("role") === "separator" ||
+      node.classList.contains("roprime-settings-separator"))
+  );
+}
+
+function hasVisibleContentBelow(node) {
+  let next = node?.nextElementSibling;
+  while (next) {
+    if (!(next instanceof HTMLElement)) {
+      next = next.nextElementSibling;
+      continue;
+    }
+    if (next.classList.contains("hidden") || next.hasAttribute("hidden")) {
+      next = next.nextElementSibling;
+      continue;
+    }
+    if (isSettingsSeparator(next)) {
+      next = next.nextElementSibling;
+      continue;
+    }
+    const text = (next.textContent || "").trim();
+    if (text || next.children.length > 0) return true;
+    next = next.nextElementSibling;
+  }
+  return false;
+}
+
+function pruneEmptySeparators(root) {
+  if (!(root instanceof HTMLElement)) return;
+  root.querySelectorAll(".roprime-settings-separator, [role='separator']").forEach(
+    (sep) => {
+      if (!(sep instanceof HTMLElement)) return;
+      if (!sep.closest(".roprime-settings-card") && !root.classList.contains("roprime-settings-card")) {
+        return;
+      }
+      setHidden(sep, !hasVisibleContentBelow(sep));
+    },
+  );
+}
+
+function setSettingTitle(node, item) {
+  if (!(node instanceof HTMLElement) || !item) return node;
+  if (item.skipI18n || item.literalTitle) {
+    node.textContent = String(item.literalTitle || item.title || "");
+    return node;
+  }
+  return setI18n(node, item.title);
+}
+
+function createSettingsCardHeaderRow(titleKeyOrItem, trailing = null) {
   const headerRow = el("div", "flex justify-between items-center");
-  const title = el("span", "text-title-large content-emphasis roprime-i18n");
-  setI18n(title, titleKey);
+  const title = el("span", "text-title-large content-emphasis");
+  if (titleKeyOrItem && typeof titleKeyOrItem === "object") {
+    setSettingTitle(title, titleKeyOrItem);
+  } else {
+    title.classList.add("roprime-i18n");
+    setI18n(title, titleKeyOrItem);
+  }
   headerRow.appendChild(title);
   if (trailing) headerRow.appendChild(trailing);
   return headerRow;
@@ -411,12 +505,12 @@ function createSettingsCardDescription(descKey) {
 
 function createSettingsCard({ title, description, trailing, extraContent }) {
   const card = createSettingsCardShell();
-  card.append(
-    createSettingsCardHeaderRow(title, trailing),
-    createSettingsCardHeaderSeparator(),
-  );
+  card.append(createSettingsCardHeaderRow(title, trailing));
+  const hasBelow = !!(description || extraContent);
+  if (hasBelow) card.appendChild(createSettingsCardHeaderSeparator());
   if (description) card.appendChild(createSettingsCardDescription(description));
   if (extraContent) card.appendChild(extraContent);
+  pruneEmptySeparators(card);
   return card;
 }
 
@@ -426,12 +520,7 @@ function createSettingSection(innerContent) {
   return card;
 }
 
-function createToggleSection(item) {
-  const toggle = createToggle({
-    id: item.id || `roprime-toggle-${item.key}`,
-    checked: !!settingsState[item.key],
-    ariaLabel: accountSettingsPaneT(item.title),
-  });
+function decorateSettingToggle(toggle, item) {
   toggle.classList.add("roprime-setting-toggle", `roprime-setting--${item.key}`);
   if (item.parent) {
     toggle.classList.add(
@@ -442,9 +531,64 @@ function createToggleSection(item) {
       toggle.classList.add("roprime-rename-child");
     }
   }
+  if (item.exclusiveWith) {
+    toggle.dataset.exclusiveWith = item.exclusiveWith;
+    toggle.classList.add("roprime-setting-exclusive");
+  }
+  return toggle;
+}
+
+function createChildToggleRow(item) {
+  const row = el(
+    "div",
+    `flex justify-between items-center roprime-setting-child-row roprime-setting-child-row--${item.key}`,
+  );
+  const title = el("span", "text-title-large content-emphasis");
+  setSettingTitle(title, item);
+
+  const toggle = createToggle({
+    id: item.id || `roprime-toggle-${item.key}`,
+    checked: !!settingsState[item.key],
+    ariaLabel:
+      item.literalTitle ||
+      accountSettingsPaneT(item.title) ||
+      String(item.title || item.key),
+  });
+  decorateSettingToggle(toggle, item);
+  row.append(title, toggle);
+  return row;
+}
+
+function createToggleSection(item, children = []) {
+  const toggle = createToggle({
+    id: item.id || `roprime-toggle-${item.key}`,
+    checked: !!settingsState[item.key],
+    ariaLabel:
+      item.literalTitle ||
+      accountSettingsPaneT(item.title) ||
+      String(item.title || item.key),
+  });
+  decorateSettingToggle(toggle, item);
+
+  if (children.length) {
+    const card = createSettingsCardShell();
+    card.classList.add("roprime-settings-card--with-children");
+    card.append(createSettingsCardHeaderRow(item, toggle));
+    if (item.description || children.length) {
+      card.appendChild(createSettingsCardHeaderSeparator());
+    }
+    if (item.description) {
+      card.appendChild(createSettingsCardDescription(item.description));
+    }
+    for (const child of children) {
+      card.appendChild(createChildToggleRow(child));
+    }
+    pruneEmptySeparators(card);
+    return card;
+  }
 
   return createSettingsCard({
-    title: item.title,
+    title: item,
     description: item.description,
     trailing: toggle,
   });
@@ -457,8 +601,8 @@ function createSidebarInlineToggleRow(item) {
   );
 
   const copy = el("div", "flex flex-col gap-xsmall");
-  const title = el("span", "text-title-large content-emphasis roprime-i18n");
-  setI18n(title, item.title);
+  const title = el("span", "text-title-large content-emphasis");
+  setSettingTitle(title, item);
   copy.appendChild(title);
   if (item.description) {
     const desc = el("p", "text-body-large content-default roprime-i18n");
@@ -469,9 +613,12 @@ function createSidebarInlineToggleRow(item) {
   const toggle = createToggle({
     id: item.id || `roprime-toggle-${item.key}`,
     checked: !!settingsState[item.key],
-    ariaLabel: accountSettingsPaneT(item.title),
+    ariaLabel:
+      item.literalTitle ||
+      accountSettingsPaneT(item.title) ||
+      String(item.title || item.key),
   });
-  toggle.classList.add("roprime-setting-toggle", `roprime-setting--${item.key}`);
+  decorateSettingToggle(toggle, item);
 
   row.append(copy, toggle);
   return row;
@@ -552,23 +699,16 @@ function buildCardItem(item) {
 function buildConfigCard(cardCfg) {
   const card = createSettingsCardShell();
   if (cardCfg.id) card.classList.add(`roprime-${cardCfg.id}-panel`);
+  const items = cardCfg.items || [];
   if (cardCfg.title) {
-    card.append(
-      createSettingsCardHeaderRow(cardCfg.title),
-      createSettingsCardHeaderSeparator(),
-    );
+    card.append(createSettingsCardHeaderRow(cardCfg.title));
+    if (items.length) card.appendChild(createSettingsCardHeaderSeparator());
   }
-  for (const item of cardCfg.items || []) {
+  for (const item of items) {
     const node = buildCardItem(item);
     if (node instanceof HTMLElement) card.appendChild(node);
   }
-  if (cardCfg.id === "sidebar") {
-    const warning = el("div", "roprime-sidebar-empty-warning hidden");
-    const warningText = el("span", "text-body-medium content-default");
-    setI18n(warningText, "settings.appearance.sidebar.emptyWarning");
-    warning.appendChild(warningText);
-    card.appendChild(warning);
-  }
+  pruneEmptySeparators(card);
   return card;
 }
 
@@ -622,11 +762,24 @@ const CUSTOM_BUILDERS = {
 
 function renderPageContent(container, pageKey) {
   const page = SETTINGS_CONFIG[pageKey];
-  if (!page) return;
-  for (const item of page.items || []) {
+  if (!page || page.type === "navDivider") return;
+  const items = page.items || [];
+  const renderedChildKeys = new Set();
+
+  for (const item of items) {
+    if (item.type === "toggle" && item.parent) {
+      if (renderedChildKeys.has(item.key)) continue;
+      continue;
+    }
+
     let node = null;
     if (item.type === "toggle") {
-      node = createToggleSection(item);
+      const children = items.filter(
+        (candidate) =>
+          candidate.type === "toggle" && candidate.parent === item.key,
+      );
+      for (const child of children) renderedChildKeys.add(child.key);
+      node = createToggleSection(item, children);
     } else if (item.type === "card") {
       node = buildConfigCard(item);
     } else if (item.type === "panel" && CUSTOM_BUILDERS[item.id]) {
@@ -646,7 +799,9 @@ function buildLanguageControl() {
   const current = el("span", "roprime-language-current");
   const chevron = el("span", "roprime-language-chevron");
   chevron.setAttribute("aria-hidden", "true");
-  trigger.append(current, chevron);
+  const triggerLabel = getControlButtonLabel(trigger);
+  if (triggerLabel) triggerLabel.replaceChildren(current, chevron);
+  else trigger.append(current, chevron);
 
   const menu = el("div", "roprime-language-menu hidden");
   for (const code of Object.keys(langList)) {
@@ -833,11 +988,10 @@ function buildProfileEffectCard(effect) {
   const footer = el("div", "roprime-profile-effect-footer");
   const title = el("div", "roprime-profile-effect-title roprime-i18n");
   setI18n(title, effect.titleKey);
-  const action = el("button", "btn-control-md roprime-profile-effect-action");
-  action.type = "button";
+  const action = createControlButton("settings.profileEffects.equip");
+  action.classList.add("roprime-profile-effect-action");
   action._rpEffectId = effect.id;
   action._rpEffectAction = "equip";
-  setI18n(action, "settings.profileEffects.equip");
   footer.append(title, action);
   card.append(preview, footer);
   return card;
@@ -854,7 +1008,6 @@ function applySidebarMode(root, mode) {
   syncAccountSettingsLayoutInset();
   syncRoPrimeView();
   syncSidebarContent({ force: true });
-  refreshSidebarSizeWarnings(root);
   syncSidebarSliderFromState(root);
   if (getCurrentrp() === "sidebar-content") refreshSidebarContentList(root);
 }
@@ -871,23 +1024,6 @@ function syncSidebarSliderFromState(root) {
     });
 
   setSidebarSizeModeClass(root, effectiveMode);
-  refreshSidebarSizeWarnings(root);
-}
-
-function visibleSidebarItemsCount(sizeMode = getActiveSidebarSize()) {
-  return discoverSidebarNavItems(sizeMode).filter(
-    (item) => !isSidebarItemHidden(item.id, sizeMode),
-  ).length;
-}
-
-function refreshSidebarSizeWarnings(root) {
-  const mode = normalizeSidebarSizeMode(getActiveSidebarSize());
-  const noVisibleItems = visibleSidebarItemsCount(mode) === 0;
-  root.querySelectorAll(".roprime-sidebar-empty-warning").forEach((node) => {
-      if (!(node instanceof HTMLElement)) return;
-      setHidden(node, !noVisibleItems);
-      node.setAttribute("aria-hidden", noVisibleItems ? "false" : "true");
-    });
 }
 
 function sidebarItemLabel(item) {
@@ -960,7 +1096,6 @@ function refreshSidebarContentList(root) {
   if (!(list instanceof HTMLElement)) return;
   buildSidebarContentListInto(list);
   bindSidebarContentList(root);
-  refreshSidebarSizeWarnings(root);
 }
 
 function bindSidebarContentList(root) {
@@ -1417,12 +1552,13 @@ function syncEffectButtons(shop) {
     const card = btn.closest(".roprime-profile-effect-card");
     btn.disabled = false;
     btn.classList.toggle("roprime-profile-effect-action--equipped", equipped);
+    const label = getControlButtonLabel(btn) || btn;
     if (equipped) {
       btn._rpEffectAction = "unequip";
-      btn.textContent = accountSettingsPaneT("settings.profileEffects.unequip");
+      setI18n(label, "settings.profileEffects.unequip");
     } else {
       btn._rpEffectAction = "equip";
-      btn.textContent = accountSettingsPaneT("settings.profileEffects.equip");
+      setI18n(label, "settings.profileEffects.equip");
     }
     if (card instanceof HTMLElement) {
       card.classList.toggle("roprime-profile-effect-card--equipped", equipped);
@@ -1768,7 +1904,8 @@ function syncLanguageMenuLabels(root) {
       const code = node._rpLangCode;
       if (!code) return;
       const label = langList[code];
-      if (typeof label === "string") node.textContent = label;
+      const target = getControlButtonLabel(node) || node;
+      if (typeof label === "string") target.textContent = label;
     });
   const current = root.querySelector(".roprime-language-current");
   if (current instanceof HTMLElement) {
@@ -1791,9 +1928,21 @@ function wireToggleElements(root) {
       const checked = button.getAttribute("aria-checked") !== "true";
       setToggleChecked(toggleEl, checked);
       settingsState[key] = checked;
+      const exclusiveWith = toggleEl.dataset.exclusiveWith;
+      if (checked && exclusiveWith) {
+        settingsState[exclusiveWith] = false;
+        const other = querySettingToggle(root, exclusiveWith);
+        if (other instanceof HTMLElement) setToggleChecked(other, false);
+      }
       saveSettings();
       syncAllFeatures();
-      if (key === "renameDropdownEnabled") refreshSettingsUi(root);
+      if (
+        key === "renameDropdownEnabled" ||
+        exclusiveWith ||
+        toggleEl.classList.contains("roprime-setting-exclusive")
+      ) {
+        refreshSettingsUi(root);
+      }
       if (key === "sidebarCollapseMenuEnabled") {
         if (checked && settingsState.sidebarSize !== "full") {
           applySidebarMode(root, "full");
@@ -2276,29 +2425,39 @@ function refreshSettingsUi(root) {
     const key = getSettingKeyFromToggle(toggleEl);
     if (!key) return;
     setToggleChecked(toggleEl, !!settingsState[key]);
-  });
 
-  root
-    .querySelectorAll(".roprime-rename-child, .roprime-setting-child")
-    .forEach((toggleEl) => {
-      if (!(toggleEl instanceof HTMLElement)) return;
-      let parentKey = null;
-      for (const cls of toggleEl.classList) {
-        if (cls.startsWith("roprime-setting-child--")) {
-          parentKey = cls.slice("roprime-setting-child--".length);
-          break;
-        }
+    let disabled = false;
+    const exclusiveWith = toggleEl.dataset.exclusiveWith;
+    if (exclusiveWith && settingsState[exclusiveWith]) {
+      disabled = true;
+    }
+
+    let parentKey = null;
+    for (const cls of toggleEl.classList) {
+      if (cls.startsWith("roprime-setting-child--")) {
+        parentKey = cls.slice("roprime-setting-child--".length);
+        break;
       }
-      if (toggleEl.classList.contains("roprime-rename-child")) {
-        parentKey = "renameDropdownEnabled";
-      }
-      if (!parentKey) return;
-      const enabled = !!settingsState[parentKey];
-      toggleEl.classList.toggle("is-renames-disabled", !enabled);
-      toggleEl.classList.toggle("is-setting-child-disabled", !enabled);
-      const button = toggleEl.querySelector("button.btn-toggle");
-      if (button instanceof HTMLButtonElement) button.disabled = !enabled;
-    });
+    }
+    if (toggleEl.classList.contains("roprime-rename-child")) {
+      parentKey = "renameDropdownEnabled";
+    }
+    if (parentKey && !settingsState[parentKey]) {
+      disabled = true;
+    }
+
+    toggleEl.classList.toggle("is-renames-disabled", disabled);
+    toggleEl.classList.toggle("is-setting-child-disabled", disabled);
+    const button = toggleEl.querySelector("button.btn-toggle");
+    if (button instanceof HTMLButtonElement) button.disabled = disabled;
+
+    const dimRow =
+      toggleEl.closest(".roprime-setting-child-row") ||
+      toggleEl.closest(".roprime-sidebar-inline-toggle");
+    if (dimRow instanceof HTMLElement) {
+      dimRow.classList.toggle("is-setting-row-disabled", disabled);
+    }
+  });
 
   syncSidebarSliderFromState(root);
 
@@ -2315,6 +2474,9 @@ function refreshSettingsUi(root) {
   syncSearchBanSettingsUi(root);
   refreshSearchBanList(root);
   refreshSettingsSyncPreview(root);
+  root.querySelectorAll(".roprime-settings-card").forEach((card) => {
+    pruneEmptySeparators(card);
+  });
   refreshLayoutAndNav(root);
 }
 
