@@ -12,7 +12,7 @@
     "npm:esbuild@0.28.2": "0.28.2",
     "npm:prettier@*": "3.9.6",
     "npm:prism-code-editor@5.3.0": "5.3.0",
-    "npm:roavatar-renderer@1.6.2": "1.6.2"
+    "npm:roavatar-renderer@1.6.3": "1.6.3"
   },
   "jsr": {
     "@luca/esbuild-deno-loader@0.11.1": {
@@ -295,8 +295,8 @@
     "react@19.2.8": {
       "integrity": "sha512-PWaYA1L/q9u2u7xYQi+Y3L3Yfnie7XyLeaJICV1MGD6LprsBxcAqGjYyr0eY3p+QdsA+x/Irkt4Qif8D63+Sbw=="
     },
-    "roavatar-renderer@1.6.2": {
-      "integrity": "sha512-gT/cKxxXDZIjLxE5umtoXeOArcETvsUF0YzIy2LyQGxrn80OFboxTTl0Xv7pt0RnG7PD7DaJJyOccZhJmLIiVw==",
+    "roavatar-renderer@1.6.3": {
+      "integrity": "sha512-ESZ2CRlVVPQO7ej328a9ywWRgjkgC0L0edVS/4qZ982gpE+JYBbYv30WETsFVqOJcezowqDLASYd4kpjtRiX4A==",
       "dependencies": [
         "fzstd",
         "postprocessing",
@@ -336,7 +336,7 @@
       "npm:dotenv@17.4.2",
       "npm:esbuild@0.28.2",
       "npm:prism-code-editor@5.3.0",
-      "npm:roavatar-renderer@1.6.2"
+      "npm:roavatar-renderer@1.6.3"
     ]
   }
 }
