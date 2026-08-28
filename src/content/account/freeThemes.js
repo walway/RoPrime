@@ -1,5 +1,8 @@
 import { saveSettings, settingsState } from "../core/core.js";
-import { getRobloxUserId } from "../profile/robloxUserId.js";
+import {
+  getRobloxUserId,
+  peekRobloxUserId,
+} from "../profile/robloxUserId.js";
 import { setHidden } from "../ui/visibility.js";
 
 const ROBLOX_PLUS_MEMBERSHIP_API =
@@ -29,25 +32,105 @@ export const ROBLOX_THEMES_CLASSES = [
 ];
 
 const DYNAMIC_THEMES = [
-  { id: "", name: "Default", color: "rgb(18, 18, 21)" },
-  { id: "cosmic-dust-theme", name: "Cosmic Dust", color: "rgb(102, 37, 208)" },
-  { id: "polar-freeze-theme", name: "Polar Freeze", color: "rgb(6, 86, 132)" },
-  { id: "super-charge-theme", name: "Super Charge", color: "rgb(4, 93, 74)" },
-  { id: "electric-lime-theme", name: "Electric Lime", color: "rgb(69, 89, 3)" },
-  { id: "lava-glow-theme", name: "Lava Glow", color: "rgb(167, 24, 17)" },
-  { id: "star-burst-theme", name: "Star Burst", color: "rgb(165, 9, 79)" },
-  { id: "pixel-pop-theme", name: "Pixel Pop", color: "rgb(142, 31, 142)" },
+  {
+    id: "",
+    name: "Default",
+    darkColor: "rgb(18, 18, 21)",
+    lightColor: "rgb(255, 255, 255)",
+  },
+  {
+    id: "cosmic-dust-theme",
+    name: "Cosmic Dust",
+    darkColor: "rgb(102, 37, 208)",
+    lightColor: "rgb(203, 183, 253)",
+  },
+  {
+    id: "polar-freeze-theme",
+    name: "Polar Freeze",
+    darkColor: "rgb(6, 86, 132)",
+    lightColor: "rgb(108, 209, 237)",
+  },
+  {
+    id: "super-charge-theme",
+    name: "Super Charge",
+    darkColor: "rgb(4, 93, 74)",
+    lightColor: "rgb(129, 216, 135)",
+  },
+  {
+    id: "electric-lime-theme",
+    name: "Electric Lime",
+    darkColor: "rgb(69, 89, 3)",
+    lightColor: "rgb(180, 209, 89)",
+  },
+  {
+    id: "lava-glow-theme",
+    name: "Lava Glow",
+    darkColor: "rgb(167, 24, 17)",
+    lightColor: "rgb(251, 178, 169)",
+  },
+  {
+    id: "star-burst-theme",
+    name: "Star Burst",
+    darkColor: "rgb(165, 9, 79)",
+    lightColor: "rgb(251, 173, 198)",
+  },
+  {
+    id: "pixel-pop-theme",
+    name: "Pixel Pop",
+    darkColor: "rgb(142, 31, 142)",
+    lightColor: "rgb(247, 172, 244)",
+  },
 ];
 
 const CALM_THEMES = [
-  { id: "", name: "Default", color: "rgb(18, 18, 21)" },
-  { id: "nebula-drift-theme", name: "Nebula Drift", color: "rgb(72, 11, 152)" },
-  { id: "nitro-frost-theme", name: "Nitro Frost", color: "rgb(4, 59, 93)" },
-  { id: "circuit-rush-theme", name: "Circuit Rush", color: "rgb(4, 62, 50)" },
-  { id: "kinetic-energy-theme", name: "Kinetic Energy", color: "rgb(46, 60, 2)" },
-  { id: "inferno-blast-theme", name: "Inferno Blast", color: "rgb(107, 15, 11)" },
-  { id: "hyper-plum-theme", name: "Hyper Plum", color: "rgb(113, 4, 55)" },
-  { id: "quantum-pulse-theme", name: "Quantum Pulse", color: "rgb(93, 14, 93)" },
+  {
+    id: "",
+    name: "Default",
+    darkColor: "rgb(18, 18, 21)",
+    lightColor: "rgb(255, 255, 255)",
+  },
+  {
+    id: "nebula-drift-theme",
+    name: "Nebula Drift",
+    darkColor: "rgb(72, 11, 152)",
+    lightColor: "rgb(221, 207, 254)",
+  },
+  {
+    id: "nitro-frost-theme",
+    name: "Nitro Frost",
+    darkColor: "rgb(4, 59, 93)",
+    lightColor: "rgb(152, 227, 244)",
+  },
+  {
+    id: "circuit-rush-theme",
+    name: "Circuit Rush",
+    darkColor: "rgb(4, 62, 50)",
+    lightColor: "rgb(173, 231, 177)",
+  },
+  {
+    id: "kinetic-energy-theme",
+    name: "Kinetic Energy",
+    darkColor: "rgb(46, 60, 2)",
+    lightColor: "rgb(202, 227, 136)",
+  },
+  {
+    id: "inferno-blast-theme",
+    name: "Inferno Blast",
+    darkColor: "rgb(107, 15, 11)",
+    lightColor: "rgb(254, 206, 200)",
+  },
+  {
+    id: "hyper-plum-theme",
+    name: "Hyper Plum",
+    darkColor: "rgb(113, 4, 55)",
+    lightColor: "rgb(251, 201, 216)",
+  },
+  {
+    id: "quantum-pulse-theme",
+    name: "Quantum Pulse",
+    darkColor: "rgb(93, 14, 93)",
+    lightColor: "rgb(251, 200, 248)",
+  },
 ];
 
 const TAB_SELECTED_CLASS =
@@ -63,9 +146,11 @@ let themeObserver = null;
 let panelObserver = null;
 let applyingTheme = false;
 let initialized = false;
+let initStarted = false;
+let initPromise = null;
 let plusMembership = null;
 let activePalette = "dynamic";
-let panelSyncTimer = 0;
+let panelSyncFrame = 0;
 
 function isBrowserPreferencesRoute() {
   const hash = (window.location.hash || "").toLowerCase();
@@ -92,6 +177,14 @@ function paletteForTheme(themeClass) {
 
 function themesForPalette(palette) {
   return palette === "calm" ? CALM_THEMES : DYNAMIC_THEMES;
+}
+
+function isRobloxLightTheme(body = document.body) {
+  return body instanceof HTMLBodyElement && body.classList.contains("light-theme");
+}
+
+function themeSwatchColor(theme, body = document.body) {
+  return isRobloxLightTheme(body) ? theme.lightColor : theme.darkColor;
 }
 
 function stripThemeClasses(body = document.body) {
@@ -125,6 +218,26 @@ async function hasRobloxPlusMembership(userId) {
   }
 }
 
+function canUseFreeThemes() {
+  return plusMembership !== true;
+}
+
+function activateFreeThemes() {
+  if (initialized) return;
+  initialized = true;
+  activePalette = paletteForTheme(getSavedThemeClass());
+  applySavedThemeClass();
+  installThemeObserver();
+  injectThemePanel();
+}
+
+function teardownFreeThemes() {
+  if (!initialized && !document.getElementById(APP_THEME_HOST_ID)) return;
+  initialized = false;
+  stopPanelObserver();
+  document.getElementById(APP_THEME_HOST_ID)?.remove();
+}
+
 function persistThemeClass(themeClass) {
   const next = typeof themeClass === "string" ? themeClass : "";
   if (settingsState.robloxFreeThemeClass === next) return;
@@ -133,7 +246,7 @@ function persistThemeClass(themeClass) {
 }
 
 function applySavedThemeClass() {
-  if (!initialized) return;
+  if (!canUseFreeThemes()) return;
   const saved = getSavedThemeClass();
   const body = document.body;
   if (!(body instanceof HTMLBodyElement)) return;
@@ -201,7 +314,7 @@ function createThemeCard(theme) {
   const swatch = document.createElement("span");
   swatch.setAttribute("aria-hidden", "true");
   swatch.className = "shrink-0 size-800 radius-circle stroke-standard stroke-muted";
-  swatch.style.backgroundColor = theme.color;
+  swatch.style.backgroundColor = themeSwatchColor(theme);
 
   const name = document.createElement("span");
   name.className =
@@ -319,7 +432,7 @@ function placeThemePanel(container, host) {
 
 function injectThemePanel() {
   if (injectingPanel) return;
-  if (!initialized || !isBrowserPreferencesRoute()) {
+  if (!canUseFreeThemes() || !isBrowserPreferencesRoute()) {
     stopPanelObserver();
     document.getElementById(APP_THEME_HOST_ID)?.remove();
     return;
@@ -328,7 +441,10 @@ function injectThemePanel() {
   const container = document.querySelector(
     "#react-user-account-base .settings-container-v2",
   );
-  if (!(container instanceof HTMLElement)) return;
+  if (!(container instanceof HTMLElement)) {
+    startPanelObserver();
+    return;
+  }
 
   injectingPanel = true;
   try {
@@ -350,32 +466,44 @@ function injectThemePanel() {
   }
 }
 
+function schedulePanelSync() {
+  if (panelSyncFrame) return;
+  panelSyncFrame = requestAnimationFrame(() => {
+    panelSyncFrame = 0;
+    injectThemePanel();
+  });
+}
+
 function startPanelObserver() {
   const root = document.getElementById("react-user-account-base");
   if (panelObserver || !(root instanceof HTMLElement)) return;
   panelObserver = new MutationObserver(() => {
     if (injectingPanel) return;
-    if (panelSyncTimer) return;
-    panelSyncTimer = window.setTimeout(() => {
-      panelSyncTimer = 0;
-      injectThemePanel();
-    }, 60);
+    schedulePanelSync();
   });
   panelObserver.observe(root, { childList: true, subtree: true });
 }
 
 function stopPanelObserver() {
-  window.clearTimeout(panelSyncTimer);
-  panelSyncTimer = 0;
+  if (panelSyncFrame) {
+    cancelAnimationFrame(panelSyncFrame);
+    panelSyncFrame = 0;
+  }
   panelObserver?.disconnect();
   panelObserver = null;
 }
 
 function installThemeObserver() {
   if (themeObserver || !(document.body instanceof HTMLBodyElement)) return;
+  let lastLight = isRobloxLightTheme();
   themeObserver = new MutationObserver(() => {
     if (applyingTheme) return;
     applySavedThemeClass();
+    const nextLight = isRobloxLightTheme();
+    if (nextLight !== lastLight) {
+      lastLight = nextLight;
+      refreshThemePanelUi();
+    }
   });
   themeObserver.observe(document.body, {
     attributes: true,
@@ -384,24 +512,75 @@ function installThemeObserver() {
 }
 
 export function syncFreeRobloxTheme() {
-  if (!initialized) return;
+  if (!canUseFreeThemes()) {
+    teardownFreeThemes();
+    return;
+  }
+
   applySavedThemeClass();
-  injectThemePanel();
+
+  if (!initStarted) {
+    void ensureFreeThemesInitialized();
+  }
+
+  if (isBrowserPreferencesRoute()) {
+    injectThemePanel();
+    return;
+  }
+
+  stopPanelObserver();
+  document.getElementById(APP_THEME_HOST_ID)?.remove();
+}
+
+async function verifyFreeThemesEligibility() {
+  const userId = peekRobloxUserId() ?? (await getRobloxUserId());
+  if (!userId) {
+    teardownFreeThemes();
+    return false;
+  }
+
+  if (plusMembership === true) {
+    teardownFreeThemes();
+    return false;
+  }
+
+  if (plusMembership === false) {
+    return true;
+  }
+
+  const isPlus = await hasRobloxPlusMembership(userId);
+  if (isPlus) {
+    teardownFreeThemes();
+    return false;
+  }
+
+  return true;
+}
+
+async function ensureFreeThemesInitialized() {
+  if (initPromise) return initPromise;
+  initStarted = true;
+
+  initPromise = (async () => {
+    if (!(document.body instanceof HTMLBodyElement)) return;
+
+    if (plusMembership !== true) {
+      activateFreeThemes();
+      injectThemePanel();
+    }
+
+    const eligible = await verifyFreeThemesEligibility();
+    if (!eligible) return;
+
+    activateFreeThemes();
+    injectThemePanel();
+  })();
+
+  return initPromise;
 }
 
 export async function initFreeRobloxThemes() {
-  if (initialized) return;
-  if (!(document.body instanceof HTMLBodyElement)) return;
-
-  const userId = await getRobloxUserId();
-  if (!userId) return;
-  if (await hasRobloxPlusMembership(userId)) return;
-
-  initialized = true;
-  activePalette = paletteForTheme(getSavedThemeClass());
-  applySavedThemeClass();
-  installThemeObserver();
-  injectThemePanel();
+  await ensureFreeThemesInitialized();
 }
 
 import { registerFeature } from '../features/registry.js';

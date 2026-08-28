@@ -220,7 +220,7 @@ function isDeveloperPageUnlocked() {
 }
 
 const FOUNDATION_WEB_BUTTON_CLASS =
-  "foundation-web-button relative clip group/interactable focus-visible:outline-focus disabled:outline-none cursor-pointer relative flex items-center justify-center stroke-none padding-y-none select-none radius-medium text-label-medium height-1000 padding-x-medium bg-action-standard content-action-standard min-width-[90px] small:min-width-[120px] medium:min-width-[200px] text-label-medium shrink-0";
+  "foundation-web-button relative clip group/interactable focus-visible:outline-focus disabled:outline-none cursor-pointer relative flex items-center justify-center stroke-none padding-y-none select-none radius-medium text-label-medium height-1000 padding-x-medium bg-action-standard content-action-standard text-label-medium shrink-0";
 
 function getControlButtonLabel(btn) {
   if (!(btn instanceof HTMLElement)) return null;
@@ -327,6 +327,73 @@ function ensureSettingsHost() {
   return host;
 }
 
+function buildMobileNavigationDropdown() {
+  const wrap = el("div", "mobile-navigation-dropdown");
+  const inner = el("div", "flex flex-col gap-small");
+
+  const button = el(
+    "button",
+    "relative clip group/interactable outline-none foundation-web-input flex items-center justify-between width-full cursor-pointer bg-none stroke-standard radius-medium height-1000 padding-x-medium text-body-medium stroke-contrast-alpha focus-within:stroke-system-emphasis content-default",
+  );
+  button.type = "button";
+  button.setAttribute("role", "combobox");
+  button.setAttribute("aria-expanded", "false");
+  button.setAttribute("aria-autocomplete", "none");
+  button.dataset.roprimeMobileNavTrigger = "1";
+
+  const stateLayer = el(
+    "div",
+    "absolute inset-[0] transition-colors group-hover/interactable:bg-[var(--color-state-hover)] group-active/interactable:bg-[var(--color-state-press)] group-disabled/interactable:bg-none",
+  );
+  stateLayer.setAttribute("aria-hidden", "true");
+  stateLayer.setAttribute("data-testid", "foundation-web-state-layer");
+
+  const labelWrap = el("div", "grow-1 text-truncate-split text-align-x-left");
+  const labelInner = el("span");
+  labelInner.style.pointerEvents = "none";
+  const label = el(
+    "span",
+    "foundation-web-menu-item-title text-no-wrap text-truncate-split content-emphasis",
+  );
+  label.id = "roprime-mobile-nav-label";
+  label.dataset.roprimeMobileNavLabel = "1";
+  labelInner.appendChild(label);
+  labelWrap.appendChild(labelInner);
+
+  const chevron = el(
+    "span",
+    "size-500 icon icon-regular-chevron-large-down content-default",
+  );
+  chevron.setAttribute("aria-hidden", "true");
+  chevron.textContent = "▼";
+
+  button.append(stateLayer, labelWrap, chevron);
+
+  const menu = el("div", "roprime-mobile-nav-menu hidden");
+  menu.dataset.roprimeMobileNavMenu = "1";
+  menu.setAttribute("role", "listbox");
+
+  for (const [pageKey, pageCfg] of Object.entries(SETTINGS_CONFIG)) {
+    if (pageCfg?.type === "navDivider") continue;
+    if (pageCfg.nav === false) continue;
+    const option = el("button", "roprime-mobile-nav-option");
+    option.type = "button";
+    option.dataset.roprimeMobileNavPage = pageKey;
+    if (pageCfg.hide) setHidden(option, true);
+    const optionLabel = el(
+      "span",
+      "foundation-web-menu-item-title text-no-wrap text-truncate-split content-emphasis roprime-i18n",
+    );
+    setI18n(optionLabel, pageCfg.title);
+    option.appendChild(optionLabel);
+    menu.appendChild(option);
+  }
+
+  inner.append(button, menu);
+  wrap.appendChild(inner);
+  return wrap;
+}
+
 function buildSettingsHostContent(host) {
   const heading = el("h1");
   heading.textContent = "RoPrime Settings";
@@ -334,6 +401,7 @@ function buildSettingsHostContent(host) {
 
   const settingsContainer = el("div");
   settingsContainer.id = "settings-container";
+  settingsContainer.appendChild(buildMobileNavigationDropdown());
 
   const leftNav = el("div", "settings-left-navigation");
 
@@ -388,14 +456,6 @@ function buildSettingsHostContent(host) {
   pageTitle.id = "roprime-page-title";
   header.appendChild(pageTitle);
 
-  for (const [pageKey, pageCfg] of Object.entries(SETTINGS_CONFIG)) {
-    if (pageCfg?.type === "navDivider") continue;
-    const pageWrap = el("div", `${RP_SETTINGS_PAGE_CLASS} roprime-settings-page--${pageKey}`);
-    setHidden(pageWrap, true);
-    renderPageContent(pageWrap, pageKey);
-    header.appendChild(pageWrap);
-  }
-
   const searchHint = el("div", "roprime-search-hint roprime-i18n");
   searchHint.id = "roprime-search-hint";
   setI18n(searchHint, "settings.search.minLengthHint");
@@ -404,7 +464,17 @@ function buildSettingsHostContent(host) {
   devHint.id = "roprime-developer-unlock-message";
   setI18n(devHint, "settings.search.developerUnlockedHint");
 
-  containerV2.append(header, searchHint, devHint);
+  containerV2.append(header);
+
+  for (const [pageKey, pageCfg] of Object.entries(SETTINGS_CONFIG)) {
+    if (pageCfg?.type === "navDivider") continue;
+    const pageWrap = el("div", `${RP_SETTINGS_PAGE_CLASS} roprime-settings-page--${pageKey}`);
+    setHidden(pageWrap, true);
+    renderPageContent(pageWrap, pageKey);
+    containerV2.appendChild(pageWrap);
+  }
+
+  containerV2.append(searchHint, devHint);
   tabPane.appendChild(containerV2);
   tabContent.appendChild(tabPane);
 
@@ -2037,6 +2107,45 @@ function bindOnce(root) {
     });
   });
 
+  const mobileTrigger = root.querySelector("[data-roprime-mobile-nav-trigger]");
+  const mobileMenu = root.querySelector("[data-roprime-mobile-nav-menu]");
+  if (
+    mobileTrigger instanceof HTMLButtonElement &&
+    mobileMenu instanceof HTMLElement
+  ) {
+    const closeMobileMenu = () => {
+      setHidden(mobileMenu, true);
+      mobileTrigger.setAttribute("aria-expanded", "false");
+    };
+    mobileTrigger.addEventListener("click", (event) => {
+      event.stopPropagation();
+      const open = mobileMenu.classList.contains("hidden");
+      setHidden(mobileMenu, !open);
+      mobileTrigger.setAttribute("aria-expanded", open ? "true" : "false");
+    });
+    mobileMenu.querySelectorAll("[data-roprime-mobile-nav-page]").forEach(
+      (option) => {
+        if (!(option instanceof HTMLButtonElement)) return;
+        option.addEventListener("click", () => {
+          const page = option.getAttribute("data-roprime-mobile-nav-page") || "";
+          if (page === "developer" && !isDeveloperPageUnlocked()) return;
+          closeMobileMenu();
+          navigateToPage(page || RP_DEFAULT_PAGE);
+        });
+      },
+    );
+    document.addEventListener("mousedown", (event) => {
+      if (!(event.target instanceof Node)) return;
+      if (
+        mobileTrigger.contains(event.target) ||
+        mobileMenu.contains(event.target)
+      ) {
+        return;
+      }
+      closeMobileMenu();
+    });
+  }
+
   wireToggleElements(root);
 
   root.querySelectorAll(".roprime-sidebar-size-slider").forEach((slider) => {
@@ -2343,6 +2452,26 @@ function refreshLayoutAndNav(root) {
     pageTitle.textContent = accountSettingsPaneT(titleKey);
   }
 
+  const mobileLabel = root.querySelector("[data-roprime-mobile-nav-label]");
+  if (mobileLabel instanceof HTMLElement) {
+    const titleKey = pageDef?.title || "settings.nav.appearance";
+    mobileLabel.textContent = accountSettingsPaneT(titleKey);
+  }
+
+  root.querySelectorAll("[data-roprime-mobile-nav-page]").forEach((option) => {
+    if (!(option instanceof HTMLElement)) return;
+    const page = option.getAttribute("data-roprime-mobile-nav-page") || "";
+    if (page === "developer" && !unlocked) {
+      setHidden(option, true);
+      return;
+    }
+    setHidden(option, false);
+    option.classList.toggle(
+      "is-active",
+      !isSearchMode && page === activePage,
+    );
+  });
+
   root.querySelectorAll(".roprime-nav-page").forEach((li) => {
     if (!(li instanceof HTMLElement)) return;
     const page = getNavPageKey(li);
@@ -2361,6 +2490,17 @@ function refreshLayoutAndNav(root) {
       }
     }
   });
+
+  const mobileTrigger = root.querySelector("[data-roprime-mobile-nav-trigger]");
+  const mobileMenu = root.querySelector("[data-roprime-mobile-nav-menu]");
+  if (mobileTrigger instanceof HTMLButtonElement) {
+    mobileTrigger.setAttribute(
+      "aria-expanded",
+      mobileMenu instanceof HTMLElement && !mobileMenu.classList.contains("hidden")
+        ? "true"
+        : "false",
+    );
+  }
 
   const devHint = root.querySelector("#roprime-developer-unlock-message");
   setHidden(

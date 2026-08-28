@@ -126,8 +126,8 @@ function bootstrap() {
         if (shouldRunRoPrimeOnCurrentPage()) {
           updateRenameLoop();
         }
-        runSyncPass();
         void initFreeRobloxThemes();
+        runSyncPass();
         if (shouldRunRoPrimeOnCurrentPage()) {
           applyCommunityRename(document.body);
           applyMarketplaceRename(document.body);

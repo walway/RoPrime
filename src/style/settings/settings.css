@@ -175,12 +175,64 @@ html.roprime-account-settings-open
 }
 
 #roprime-settings-host
-  .settings-v2-header
+  .settings-container-v2
   > .roprime-settings-page:not(.hidden) {
   display: flex;
   flex-direction: column;
   gap: 12px;
   min-width: 0;
+}
+
+#roprime-settings-host #settings-container > .mobile-navigation-dropdown {
+  display: none;
+  margin-bottom: 12px;
+}
+
+#roprime-settings-host .roprime-mobile-nav-menu {
+  position: absolute;
+  z-index: 30;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 6px;
+  border-radius: 12px;
+  border: 1px solid
+    color-mix(in srgb, var(--color-content-emphasis) 14%, transparent);
+  background: var(--color-surface-300);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.14);
+}
+
+#roprime-settings-host .mobile-navigation-dropdown .flex {
+  position: relative;
+}
+
+#roprime-settings-host .roprime-mobile-nav-option {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-height: 40px;
+  padding: 8px 12px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--color-content-default);
+  text-align: left;
+  cursor: pointer;
+}
+
+#roprime-settings-host .roprime-mobile-nav-option:hover,
+#roprime-settings-host .roprime-mobile-nav-option.is-active {
+  background: color-mix(in srgb, var(--color-content-emphasis) 8%, transparent);
+  color: var(--color-content-emphasis);
+}
+
+@media (max-width: 991px) {
+  #roprime-settings-host #settings-container > .mobile-navigation-dropdown {
+    display: block;
+  }
 }
 
 #roprime-settings-host .roprime-settings-page:not(.hidden) {
