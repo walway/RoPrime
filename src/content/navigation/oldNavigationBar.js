@@ -79,14 +79,57 @@ function setLeftNavHidden(hidden) {
 
 function getOldNavbarPanelCss() {
   return `
+@media (min-width: 1688px) {
 .no-gutter-ads.left-nav-new-width main.container-main {
-    margin-left: ${OLD_NAVBAR_PANEL_PX}px;
+    margin-left: ${OLD_NAVBAR_PANEL_PX}px !important;
+    }
 }
 
 @media (min-width: 1688px) {
     .no-gutter-ads.logged-in.left-nav-new-width, body.left-nav-new-width {
-        --left-nav-reserved-width: ${OLD_NAVBAR_PANEL_PX}px;
+        --left-nav-reserved-width: ${OLD_NAVBAR_PANEL_PX}px !important;
     }
+}
+
+@media (min-width: 1688px) {
+      .rbx-header .rbx-nav-collapse .menu-button {
+        display: none !important;
+    }
+}
+
+@media (min-width: 1688px) {
+    html body .rbx-header .icon-logo {
+        display: block !important;
+    }
+}
+
+@media (max-width: 1688px) {
+    .left-nav-new-width .rbx-header .icon-logo-r, .left-nav-new-width .rbx-header .nav-container .nav-icon {
+        display: block !important;
+    }
+}
+
+@media (min-width: 1688px) {
+    html body .rbx-header .icon-logo-r,
+    html body .rbx-header .nav-container .nav-icon {
+        display: none !important;
+    }
+}
+
+.no-gutter-ads.left-nav-new-width main.container-main {
+    margin-left: 0px;
+}
+
+.no-gutter-ads.logged-in.left-nav-new-width, body.left-nav-new-width {
+    --left-nav-reserved-width: 0px;
+}
+
+.left-nav-new-width .rbx-header .rbx-nav-collapse .menu-button {
+    display: inline-block;
+}
+
+.rbx-header .icon-logo {
+    display: none !important;
 }
 `.trim();
 }

@@ -69,3 +69,17 @@ html
 .in-game-friend-card--iarc {
   border-radius: 5px !important;
 }
+
+/* fix for https://www.roblox.com/my/messages corners because Roblox didn't 
+* and tried to apply .overflow-hidden (probably not noticed)
+*/
+
+.private-message-page > :nth-child(4) > :first-child {
+  border-top-left-radius: 7px;
+  border-top-right-radius: 7px;
+}
+
+.private-message-page > :nth-child(4) > :last-child {
+  border-bottom-left-radius: 7px;
+  border-bottom-right-radius: 7px;
+}
