@@ -5,7 +5,7 @@
     "build": "deno run -A tasks/build.js"
   },
   "imports": {
-    "@supabase/supabase-js": "npm:@supabase/supabase-js@2.112.3",
+    "@supabase/supabase-js": "npm:@supabase/supabase-js@2.112.4",
     "prism-code-editor/setups": "npm:prism-code-editor@5.3.0/setups",
     "prism-code-editor/languages/css": "npm:prism-code-editor@5.3.0/languages/css",
     "prism-code-editor/prism/languages/css": "npm:prism-code-editor@5.3.0/prism/languages/css",
