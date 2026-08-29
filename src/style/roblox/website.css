@@ -83,3 +83,17 @@ img {
   border-bottom-left-radius: 7px;
   border-bottom-right-radius: 7px;
 }
+
+/* Support for Roblox Plus themes colors on sliders across Roblox website */
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.5) rgba(255, 255, 255, 0.1);
+}
+
+/* Hide sidebar separator when there is a slider in a sidebar */
+
+:root:has(.width-\[288px\] roseal-events-nav,
+ .width-\[288px\] .roblox-events) .width-\[289px\] div[role="separator"][data-orientation="vertical"] {
+  display: none !important;
+}

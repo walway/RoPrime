@@ -5,7 +5,8 @@ export const RP_MORE_ROUNDED_CORNERS_STYLE_ID =
   "roprime-more-rounded-corners-style";
 
 const MORE_ROUNDED_CORNERS_CSS = `
-.thumbnail-2d-container,
+.carousel-item,
+#game-details-carousel-container,
 .video-preview-wrapper video,
 .carousel-item iframe,
 .thumbnail-shimmer-overlay,
