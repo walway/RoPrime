@@ -59,8 +59,8 @@ html
 
 /* fix for avatar headshots images with background */
 
-.thumbnail-2d-container img {
-  margin-bottom: 3px;
+img {
+ vertical-align: unset !important;
 }
 
 /* fix for roblox's dropdown with light theme without actually breaking shadows */
