@@ -17,6 +17,7 @@ const ROPRIME_LABEL = "RoPrime Settings";
 const EXTENSIONS_LABEL = "Extensions";
 const ROQOL_LABEL_PATTERN = /roqol/i;
 const MENU_WIRED_ATTR = "data-roprime-foundation-menu-wired";
+const MENU_CLOSE_WATCH_ATTR = "data-roprime-foundation-menu-close-watch";
 
 const ROPRIME_RADIX_ID = "radix-roprime-settings-dropdown-9";
 const EXTENSIONS_RADIX_ID = "radix-roprime-extensions-dropdown-9";
@@ -112,9 +113,22 @@ function moveMenuHighlight(group, direction) {
   let nextIndex = currentIndex;
 
   if (direction > 0) {
-    nextIndex = currentIndex < buttons.length - 1 ? currentIndex + 1 : 0;
+    if (currentIndex < 0) {
+      nextIndex = 0;
+    } else if (currentIndex < buttons.length - 1) {
+      nextIndex = currentIndex + 1;
+    } else {
+      return buttons[currentIndex];
+    }
   } else if (direction < 0) {
-    nextIndex = currentIndex > 0 ? currentIndex - 1 : buttons.length - 1;
+    if (currentIndex < 0) {
+      return null;
+    }
+    if (currentIndex > 0) {
+      nextIndex = currentIndex - 1;
+    } else {
+      return buttons[0];
+    }
   } else if (currentIndex < 0) {
     nextIndex = 0;
   }
@@ -123,6 +137,21 @@ function moveMenuHighlight(group, direction) {
   setHighlightedMenuButton(group, nextButton);
   nextButton.focus({ preventScroll: true });
   return nextButton;
+}
+
+function resetMenuHighlight(group, { blur = false } = {}) {
+  clearHighlightedMenuButtons(group);
+  if (!blur) return;
+  const active = document.activeElement;
+  if (active instanceof HTMLButtonElement && group.contains(active)) {
+    active.blur();
+  }
+}
+
+function isMenuButtonInGroup(group, node) {
+  if (!(node instanceof Element) || !group.contains(node)) return false;
+  const button = node.closest("button.foundation-web-menu-item");
+  return button instanceof HTMLButtonElement && group.contains(button);
 }
 
 function wireFoundationMenuInteractions(group) {
@@ -151,12 +180,39 @@ function wireFoundationMenuInteractions(group) {
       if (!(button instanceof HTMLButtonElement) || !group.contains(button)) {
         return;
       }
-      if (button.matches(":hover")) return;
-      button.removeAttribute("data-highlighted");
-      syncExtensionsEntryAriaSelected(group, button);
+      if (isMenuButtonInGroup(group, event.relatedTarget)) return;
+      resetMenuHighlight(group);
     },
     true,
   );
+
+  group.addEventListener("mouseleave", (event) => {
+    if (event.target !== group) return;
+    if (group.contains(event.relatedTarget)) return;
+    resetMenuHighlight(group, { blur: true });
+  });
+
+  group.addEventListener("focusout", (event) => {
+    if (group.contains(event.relatedTarget)) return;
+    resetMenuHighlight(group);
+  });
+
+  const listbox = group.closest('[role="listbox"]');
+  if (
+    listbox instanceof HTMLElement &&
+    listbox.getAttribute(MENU_CLOSE_WATCH_ATTR) !== "1"
+  ) {
+    listbox.setAttribute(MENU_CLOSE_WATCH_ATTR, "1");
+    const observer = new MutationObserver(() => {
+      if (listbox.getAttribute("data-state") === "closed") {
+        resetMenuHighlight(group, { blur: true });
+      }
+    });
+    observer.observe(listbox, {
+      attributes: true,
+      attributeFilter: ["data-state"],
+    });
+  }
 
   group.addEventListener("keydown", (event) => {
     if (event.key !== "ArrowDown" && event.key !== "ArrowUp") return;

@@ -27,11 +27,11 @@
       },
       "oldNavigation": {
         "title": "Old Navigation Bar",
-        "description": "In development. Keep disabled unless you are testing it."
+        "description": "Bring back Old Navigation Bar that Roblox redesigned in 2025."
       },
       "moreRoundedCorners": {
         "title": "More rounded corners",
-        "description": "Softens thumbnails, carousels, and menu corners across Roblox."
+        "description": "Makes game thumbnails, vertical menus and horizontal tabs more soften.\n\nRoblox applies this by default to the horizontal tab in the Avatar page."
       },
       "sidebar": {
         "title": "Sidebar",
@@ -56,6 +56,8 @@
         "contentReset": "Reset Sidebar Content",
         "alwaysShowCloseTitle": "Always Show Close Button",
         "alwaysShowCloseDescription": "Forces Roblox's sidebar close/menu button to always be visible.",
+        "expandSidebarOnHover": "Expand Sidebar on Hover",
+        "expandSidebarOnHoverDescription": "Keeps the sidebar icon-only until you hover over it, then expands to full size.",
         "eventsTitle": "Roblox Events",
         "eventsDescription": "Brings back the Roblox Events in the sidebar deleted in 2024-2025 after Sidebar redesign."
       },

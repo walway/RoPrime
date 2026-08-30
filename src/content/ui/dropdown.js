@@ -28,10 +28,7 @@ function findOptionLabel(options, value) {
 }
 
 function positionPopper(popper, trigger) {
-  if (
-    !(popper instanceof HTMLElement) ||
-    !(trigger instanceof HTMLElement)
-  ) {
+  if (!(popper instanceof HTMLElement) || !(trigger instanceof HTMLElement)) {
     return;
   }
 
@@ -135,7 +132,7 @@ function buildPopperMarkup() {
 function createTriggerButton(initialLabel) {
   const button = createElement(
     "button",
-    "relative clip group/interactable outline-none foundation-web-input flex items-center justify-between width-full cursor-pointer bg-none stroke-standard radius-medium height-1000 padding-x-medium text-body-medium stroke-contrast-alpha content-default",
+    "relative clip group/interactable outline-none foundation-web-input flex items-center justify-between width-full cursor-pointer bg-none stroke-standard radius-medium height-1000 padding-x-medium text-body-medium stroke-contrast-alpha focus-within:stroke-system-emphasis content-default",
   );
   button.type = "button";
   button.setAttribute("role", "combobox");
@@ -148,9 +145,13 @@ function createTriggerButton(initialLabel) {
     "div",
     "absolute inset-[0] transition-colors group-hover/interactable:bg-[var(--color-state-hover)] group-active/interactable:bg-[var(--color-state-press)] group-disabled/interactable:bg-none",
   );
-  stateLayer.setAttribute("role", "presentation");
+  stateLayer.setAttribute("aria-hidden", "true");
+  stateLayer.setAttribute("data-testid", "foundation-web-state-layer");
 
-  const labelWrap = createElement("div", "grow-1 text-truncate-split text-align-x-left");
+  const labelWrap = createElement(
+    "div",
+    "grow-1 text-truncate-split text-align-x-left",
+  );
   const labelInner = createElement("span");
   labelInner.style.pointerEvents = "none";
   const label = createElement(
@@ -174,7 +175,8 @@ function createTriggerButton(initialLabel) {
 
 function isRobloxManagedSelectPortal(wrapper) {
   if (!(wrapper instanceof HTMLElement)) return false;
-  if (wrapper.getAttribute("data-roprime-dropdown-popper") === "1") return false;
+  if (wrapper.getAttribute("data-roprime-dropdown-popper") === "1")
+    return false;
   if (
     wrapper.querySelector(
       "#react-user-account-base, #user-account, #roprime-settings-host",
@@ -189,9 +191,7 @@ function isRobloxManagedSelectPortal(wrapper) {
 
 function dispatchEscapeKey(target) {
   const node =
-    target instanceof Element || target instanceof Document
-      ? target
-      : document;
+    target instanceof Element || target instanceof Document ? target : document;
   node.dispatchEvent(
     new KeyboardEvent("keydown", {
       key: "Escape",
@@ -234,11 +234,10 @@ export function dismissFoundationWebDropdown(origin) {
     "[data-radix-popper-content-wrapper]",
   )) {
     if (!isRobloxManagedSelectPortal(wrapper)) continue;
-    const listbox = wrapper.querySelector('[role="listbox"][data-state="open"]');
-    if (
-      listbox instanceof HTMLElement &&
-      !openListboxes.includes(listbox)
-    ) {
+    const listbox = wrapper.querySelector(
+      '[role="listbox"][data-state="open"]',
+    );
+    if (listbox instanceof HTMLElement && !openListboxes.includes(listbox)) {
       openListboxes.push(listbox);
     }
   }
@@ -257,6 +256,7 @@ export function createDropdown({
   options = [],
   onChange,
   wrapperClass = "roprime-dropdown-textbox",
+  includeFormGroup = true,
 } = {}) {
   const state = {
     value: String(value || ""),
@@ -265,13 +265,21 @@ export function createDropdown({
     highlightIndex: -1,
   };
 
-  const root = createElement("div", `roprime-dropdown ${wrapperClass}`);
-  const formGroup = createElement("div", "flex flex-col gap-small form-group");
+  const root = createElement(
+    "div",
+    includeFormGroup ? `roprime-dropdown ${wrapperClass}` : wrapperClass,
+  );
+  const triggerWrap = createElement(
+    "div",
+    includeFormGroup
+      ? "flex flex-col gap-small form-group"
+      : "flex flex-col gap-small",
+  );
   const { button: trigger, label: triggerLabel } = createTriggerButton(
     findOptionLabel(state.options, state.value),
   );
-  formGroup.appendChild(trigger);
-  root.appendChild(formGroup);
+  triggerWrap.appendChild(trigger);
+  root.appendChild(triggerWrap);
 
   const { wrapper: popper, listbox, group } = buildPopperMarkup();
   document.body.appendChild(popper);
@@ -317,15 +325,16 @@ export function createDropdown({
       return;
     }
 
-    const bounded =
-      ((index % visibleButtons.length) + visibleButtons.length) %
-      visibleButtons.length;
-    state.highlightIndex = bounded;
+    if (index < 0 || index >= visibleButtons.length) {
+      return;
+    }
+
+    state.highlightIndex = index;
 
     const visibleOptions = getVisibleOptions();
     visibleButtons.forEach((button, buttonIndex) => {
       const option = visibleOptions[buttonIndex];
-      const highlighted = buttonIndex === bounded;
+      const highlighted = buttonIndex === index;
       if (highlighted) {
         button.setAttribute("data-highlighted", "");
       } else {
@@ -338,9 +347,27 @@ export function createDropdown({
     });
 
     if (focusOption) {
-      visibleButtons[bounded]?.focus({ preventScroll: true });
+      visibleButtons[index]?.focus({ preventScroll: true });
     }
   };
+
+  const moveHighlightedIndex = (delta) => {
+    const visibleButtons = getVisibleButtons();
+    if (!visibleButtons.length) return;
+
+    if (state.highlightIndex < 0) {
+      if (delta > 0) setHighlightedIndex(0);
+      return;
+    }
+
+    setHighlightedIndex(state.highlightIndex + delta);
+  };
+
+  group.addEventListener("mouseleave", (event) => {
+    if (event.target !== group) return;
+    if (group.contains(event.relatedTarget)) return;
+    clearHighlight();
+  });
 
   const renderOptions = () => {
     group.textContent = "";
@@ -357,6 +384,21 @@ export function createDropdown({
         const visibleButtons = getVisibleButtons();
         const index = visibleButtons.indexOf(button);
         if (index >= 0) setHighlightedIndex(index, false);
+      });
+
+      button.addEventListener("mouseleave", (event) => {
+        const related = event.relatedTarget;
+        if (related instanceof Element) {
+          const nextButton = related.closest("button.foundation-web-menu-item");
+          if (
+            nextButton instanceof HTMLButtonElement &&
+            !nextButton.hidden &&
+            group.contains(nextButton)
+          ) {
+            return;
+          }
+        }
+        clearHighlight();
       });
 
       button.addEventListener("click", (event) => {
@@ -412,13 +454,13 @@ export function createDropdown({
     if (event.key === "ArrowDown") {
       event.preventDefault();
       if (!state.open) open();
-      else setHighlightedIndex(state.highlightIndex + 1);
+      else moveHighlightedIndex(1);
       return;
     }
     if (event.key === "ArrowUp") {
       event.preventDefault();
       if (!state.open) open();
-      else setHighlightedIndex(state.highlightIndex - 1);
+      else moveHighlightedIndex(-1);
       return;
     }
     if (event.key === "Enter" || event.key === " ") {
@@ -443,12 +485,12 @@ export function createDropdown({
     if (!state.open) return;
     if (event.key === "ArrowDown") {
       event.preventDefault();
-      setHighlightedIndex(state.highlightIndex + 1);
+      moveHighlightedIndex(1);
       return;
     }
     if (event.key === "ArrowUp") {
       event.preventDefault();
-      setHighlightedIndex(state.highlightIndex - 1);
+      moveHighlightedIndex(-1);
       return;
     }
     if (event.key === "Enter" || event.key === " ") {

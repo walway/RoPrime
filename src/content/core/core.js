@@ -101,9 +101,10 @@ export function syncAccountSettingsLayoutInset() {
     );
     return;
   }
-  const effectiveSize =
-    settingsState.sidebarCollapseMenuEnabled &&
-    settingsState.sidebarIconsOnlyEnabled
+  const effectiveSize = settingsState.expandSidebarOnHoverEnabled
+    ? "icon"
+    : settingsState.sidebarCollapseMenuEnabled &&
+        settingsState.sidebarIconsOnlyEnabled
       ? "icon"
       : getActiveSidebarSize();
   document.documentElement.style.setProperty(
@@ -380,6 +381,7 @@ export function serializeSettingsPayload() {
     developerPageUnlocked: !!settingsState.developerPageUnlocked,
     sidebarSize: settingsState.sidebarSize || "full",
     sidebarCollapseMenuEnabled: !!settingsState.sidebarCollapseMenuEnabled,
+    expandSidebarOnHoverEnabled: !!settingsState.expandSidebarOnHoverEnabled,
     robloxEventsEnabled: !!settingsState.robloxEventsEnabled,
     hiddenSidebarItemsBySize: normalizeHiddenSidebarItemsBySize({
       hiddenSidebarItemsBySize: settingsState.hiddenSidebarItemsBySize,

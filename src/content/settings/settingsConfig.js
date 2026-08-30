@@ -1,7 +1,6 @@
 /**
  * Use { type: "separator" } inside a card's items to add a separator.
- * Use { type: "navDivider" } as a top-level SETTINGS_CONFIG entry to add a
- * Roblox-style divider in the settings left nav (anywhere in key order).
+ * Use { type: "navDivider" } to add a divider in the vertical menu.
  */
 
 export const SETTINGS_CONFIG = {
@@ -101,7 +100,8 @@ export const SETTINGS_CONFIG = {
             title: "settings.appearance.sidebar.collapseMenuTitle",
             description: "settings.appearance.sidebar.collapseMenuDescription",
             byDefault: false,
-            exclusiveWith: "alwaysShowCloseButtonEnabled",
+            exclusiveWith:
+              "alwaysShowCloseButtonEnabled, expandSidebarOnHoverEnabled",
           },
           {
             type: "toggle",
@@ -110,8 +110,20 @@ export const SETTINGS_CONFIG = {
             description:
               "settings.appearance.sidebar.alwaysShowCloseDescription",
             byDefault: false,
-            exclusiveWith: "sidebarCollapseMenuEnabled",
+            exclusiveWith:
+              "sidebarCollapseMenuEnabled, expandSidebarOnHoverEnabled",
           },
+          {
+            type: "toggle",
+            key: "expandSidebarOnHoverEnabled",
+            title: "settings.appearance.sidebar.expandSidebarOnHover",
+            description:
+              "settings.appearance.sidebar.expandSidebarOnHoverDescription",
+            byDefault: false,
+            exclusiveWith:
+              "alwaysShowCloseButtonEnabled, sidebarCollapseMenuEnabled",
+          },
+          { type: "separator" },
           {
             type: "toggle",
             key: "oldNavigationBarEnabled",

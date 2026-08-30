@@ -7,7 +7,7 @@ export const RP_MORE_ROUNDED_CORNERS_STYLE_ID =
 const MORE_ROUNDED_CORNERS_CSS = `
 .carousel-item,
 #game-details-carousel-container,
-.video-preview-wrapper video,
+.video-preview-wrapper video:not(.featured-game-icon-container .video-preview-wrapper video),
 .carousel-item iframe,
 .thumbnail-shimmer-overlay,
 .game-details-carousel-container .shimmer {

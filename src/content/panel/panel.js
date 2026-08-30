@@ -26,6 +26,7 @@ import {
   syncSidebarCompactDecorations,
   updateSidebarCompactVisibility,
 } from "../sidebar/sidebarCompact.js";
+import { syncExpandSidebarOnHover } from "../sidebar/expandOnHover.js";
 import { syncSidebarCollapseMenuIcon } from "../sidebar/sidebarContent.js";
 import {
   syncHideAgeBadge,
@@ -75,6 +76,13 @@ function cleanupBlockedRouteUi() {
     oldNavContainer.classList.remove("roprime-old-navigation-bar");
     oldNavContainer.replaceChildren();
   }
+  document
+    .getElementById("roprime-sidebar-expand-on-hover-expanded-style")
+    ?.remove();
+  document.documentElement.classList.remove(
+    "roprime-sidebar-expand-on-hover-active",
+    "roprime-sidebar-expand-on-hover-expanded",
+  );
   removeRobloxEvents();
   document.documentElement.classList.remove(
     "roprime-classic-left-nav-on",
@@ -101,6 +109,7 @@ export function syncRoPrimeView() {
     updateFriendStylingReimagnedVisibility();
     syncSidebarCompactDecorations();
     syncSidebarCollapseMenuIcon();
+    syncExpandSidebarOnHover();
     syncCustomCss();
     syncHideAgeBadge();
     syncHideExperiencesAds();

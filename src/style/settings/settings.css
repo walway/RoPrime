@@ -50,6 +50,10 @@ html.roprime-account-settings-open
   pointer-events: auto !important;
 }
 
+html.roprime-account-settings-open #user-account > #roprime-settings-host {
+  padding: 0 9px !important;
+}
+
 #react-user-account-base > #rp-settings-flat-inner.roprime-settings-flat {
   max-width: none;
 }
@@ -233,9 +237,13 @@ html.roprime-account-settings-open
   color: var(--color-content-emphasis);
 }
 
-@media (max-width: 991px) {
+@media (max-width: 767px) {
   #roprime-settings-host #settings-container > .mobile-navigation-dropdown {
     display: block;
+  }
+
+  #roprime-settings-host #settings-container .settings-v2-header {
+    display: none !important;
   }
 }
 
