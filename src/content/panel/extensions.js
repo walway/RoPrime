@@ -240,6 +240,7 @@ async function handleMaliciousExtensions(registry) {
   const resp = await sendToBackground({
     type: "ROPRIME_GET_WANTED_EXTENSIONS",
     registry: maliciousEntries,
+    pageLang: document.documentElement.getAttribute("lang") || "",
   });
   if (!resp?.ok || !Array.isArray(resp.plugins)) {
     return { removedAny: false, uninstalledKeys: new Set() };
@@ -353,6 +354,7 @@ async function refreshExtensionsTiles(tiles) {
   const resp = await sendToBackground({
     type: "ROPRIME_GET_WANTED_EXTENSIONS",
     registry: safeRegistry,
+    pageLang: document.documentElement.getAttribute("lang") || "",
   });
   if (seqAtCall !== refreshSeq) return;
   if (!(tiles instanceof HTMLElement)) return;

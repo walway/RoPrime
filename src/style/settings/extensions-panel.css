@@ -21,6 +21,8 @@
 .roprime-ext-tile {
   display: flex;
   flex-direction: column;
+  align-self: start;
+  height: auto;
   background: var(--color-surface-300);
   overflow: hidden;
 }

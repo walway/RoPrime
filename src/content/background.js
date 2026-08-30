@@ -1,3 +1,5 @@
+import { resolveLocalizedManifestStrings } from "./lib/extension-i18n.js";
+
 const extensionApi = globalThis.browser || globalThis.chrome;
 
 function arrayBufferToBase64(buffer) {
@@ -78,7 +80,7 @@ function getManifestIconPath(manifest) {
   return "";
 }
 
-async function fetchExtensionManifestInfo(extensionId) {
+async function fetchExtensionManifestInfo(extensionId, pageLang = "") {
   const id = String(extensionId || "").trim();
   if (!id) return { name: "", description: "", iconPath: "" };
 
@@ -87,9 +89,17 @@ async function fetchExtensionManifestInfo(extensionId) {
     const response = await fetch(manifestUrl, { cache: "no-store" });
     if (response.ok) {
       const manifest = await response.json();
+      const localized = await resolveLocalizedManifestStrings(
+        id,
+        manifest,
+        pageLang,
+      );
       return {
-        name: String(manifest?.name || manifest?.short_name || "").trim(),
-        description: String(manifest?.description || "").trim(),
+        name:
+          localized.name ||
+          String(manifest?.name || manifest?.short_name || "").trim(),
+        description:
+          localized.description || String(manifest?.description || "").trim(),
         iconPath: getManifestIconPath(manifest),
       };
     }
@@ -218,7 +228,7 @@ extensionApi.runtime.onMessage.addListener((message, sender, sendResponse) => {
           .map(normalizeRegistryEntry)
           .filter(Boolean);
 
-        extensionApi.management.getAll(async (items) => {
+        extensionApi.management.getAll((items) => {
           const lastErr = asLastErrorMessage();
           if (lastErr) {
             sendResponse({ ok: false, error: lastErr });
@@ -226,27 +236,40 @@ extensionApi.runtime.onMessage.addListener((message, sender, sendResponse) => {
           }
 
           const installed = items || [];
-          const plugins = [];
+          const pageLang = String(message?.pageLang || "").trim();
 
-          for (const entry of registry) {
-            const match = findByKey(installed, entry.key);
-            if (!match) continue;
+          Promise.all(
+            registry.map(async (entry) => {
+              const match = findByKey(installed, entry.key);
+              if (!match) return null;
 
-            const base = normalizeExtensionItem(match);
-            const manifestInfo = await fetchExtensionManifestInfo(base.id);
-            plugins.push({
-              ...entry,
-              item: {
-                ...base,
-                name: manifestInfo.name || base.name,
-                description:
-                  manifestInfo.description || String(match.description || ""),
-                iconPath: manifestInfo.iconPath || "",
-              },
+              const base = normalizeExtensionItem(match);
+              const manifestInfo = await fetchExtensionManifestInfo(
+                base.id,
+                pageLang,
+              );
+              return {
+                ...entry,
+                item: {
+                  ...base,
+                  name: manifestInfo.name || base.name,
+                  description:
+                    manifestInfo.description ||
+                    String(match.description || ""),
+                  iconPath: manifestInfo.iconPath || "",
+                },
+              };
+            }),
+          )
+            .then((results) => {
+              sendResponse({
+                ok: true,
+                plugins: results.filter(Boolean),
+              });
+            })
+            .catch((err) => {
+              sendResponse({ ok: false, error: String(err || "Unknown error") });
             });
-          }
-
-          sendResponse({ ok: true, plugins });
         });
       })
       .catch((err) =>

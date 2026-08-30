@@ -91,9 +91,9 @@ img {
   scrollbar-color: rgba(255, 255, 255, 0.5) rgba(255, 255, 255, 0.1);
 }
 
-/* Hide sidebar separator when there is a slider in a sidebar */
-
-:root:has(.width-\[288px\] roseal-events-nav,
- .width-\[288px\] .roblox-events) .width-\[289px\] div[role="separator"][data-orientation="vertical"] {
-  display: none !important;
-}
+/* Hide sidebar separator when there is a slider in a sidebar
+*
+* :root:has(.width-\[288px\] .roseal-events-nav, .width-\[288px\] .roblox-events a:nth-of-type(2)) .width-\[289px\] div[role="separator"][data-orientation="vertical"] {
+* display: none !important;
+* }
+*/

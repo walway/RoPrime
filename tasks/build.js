@@ -170,10 +170,15 @@ function copyBundleToPlatform(platformDistDir) {
 }
 
 function copyBackgroundToPlatform(platformDistDir) {
-  cpSync(
-    join(root, "src/content/background.js"),
-    join(platformDistDir, "background.js"),
-  );
+  const src = join(bundleDir, "background.js");
+  if (!existsSync(src)) {
+    throw new Error("Missing bundled background.js after esbuild.");
+  }
+  cpSync(src, join(platformDistDir, "background.js"));
+  const mapSrc = join(bundleDir, "background.js.map");
+  if (existsSync(mapSrc)) {
+    cpSync(mapSrc, join(platformDistDir, "background.js.map"));
+  }
 }
 
 function copyStyleTreeToDist(targetBase) {
@@ -222,6 +227,11 @@ await copyDracoDecoder();
 await bundleEntry(
   "src/content/content.entry.js",
   join(bundleDir, "content.js"),
+  "iife",
+);
+await bundleEntry(
+  "src/content/background.js",
+  join(bundleDir, "background.js"),
   "iife",
 );
 await bundleEntry(

@@ -1,42 +1,98 @@
 import {
   buildRoPrimeSettingsFullUrl,
+  getRobloxLocalePathPrefix,
   isExtensionContextAlive,
   isExtensionContextInvalidatedError,
+  isMyAccountPath,
   isOnRoPrimeSettingsPage,
+  RP_DEFAULT_PAGE,
   shouldRunRoPrimeOnCurrentPage,
 } from "../core/core.js";
+import { openRoPrimeSettingsOnAccountPage } from "../settings/settingsPage.js";
 
-const ENTRY_ATTR = "data-roprime-foundation-menu-entry";
+const ROPRIME_ENTRY_ATTR = "data-roprime-foundation-menu-entry";
+const EXTENSIONS_ENTRY_ATTR = "data-roprime-foundation-extensions-entry";
 const ROPRIME_LABEL = "RoPrime Settings";
+const EXTENSIONS_LABEL = "Extensions";
+const ROQOL_LABEL_PATTERN = /roqol/i;
 
 const ROPRIME_RADIX_ID = "radix-roprime-settings-dropdown-9";
+const EXTENSIONS_RADIX_ID = "radix-roprime-extensions-dropdown-9";
 const ACCOUNT_INFO_MENU_TITLE = "Account info";
-const PARENTAL_CONTROLS_MENU_TITLE = "Parental controls";
-const PARENTAL_CONTROLS_MENU_POSITION = 7;
-const ROPRIME_MENU_POSITION_WITH_PARENTAL = 10;
-const ROPRIME_MENU_POSITION_WITHOUT_PARENTAL = 9;
 
-const BUTTON_HTML = `<button type="button" class="relative clip group/interactable focus-visible:outline-focus disabled:outline-none foundation-web-menu-item flex items-center content-default text-truncate-split focus-visible:hover:outline-none cursor-pointer stroke-none bg-none text-align-x-left width-full text-body-medium padding-x-medium padding-y-small gap-x-medium radius-medium" aria-labelledby="${ROPRIME_RADIX_ID}" aria-selected="false" data-state="unchecked" tabindex="-1" data-radix-collection-item="" ${ENTRY_ATTR}="1" style="outline-offset: 0px;"><div role="presentation" class="absolute inset-[0] transition-colors group-hover/interactable:bg-[var(--color-state-hover)] group-active/interactable:bg-[var(--color-state-press)] group-disabled/interactable:bg-none"></div><div class="grow-1 text-truncate-split flex flex-col gap-y-xsmall"><span class="foundation-web-menu-item-title text-no-wrap text-truncate-split content-emphasis" id="${ROPRIME_RADIX_ID}">${ROPRIME_LABEL}</span></div></button>`;
+function buildFoundationMenuButtonHtml(label, radixId, entryAttr) {
+  return `<button type="button" class="relative clip group/interactable focus-visible:outline-focus disabled:outline-none foundation-web-menu-item flex items-center content-default text-truncate-split focus-visible:hover:outline-none cursor-pointer stroke-none bg-none text-align-x-left width-full text-body-medium padding-x-medium padding-y-small gap-x-medium radius-medium" aria-labelledby="${radixId}" aria-selected="false" data-state="unchecked" tabindex="-1" data-radix-collection-item="" ${entryAttr}="1" style="outline-offset: 0px;"><div role="presentation" class="absolute inset-[0] transition-colors group-hover/interactable:bg-[var(--color-state-hover)] group-active/interactable:bg-[var(--color-state-press)] group-disabled/interactable:bg-none"></div><div class="grow-1 text-truncate-split flex flex-col gap-y-xsmall"><span class="foundation-web-menu-item-title text-no-wrap text-truncate-split content-emphasis" id="${radixId}">${label}</span></div></button>`;
+}
+
+const ROPRIME_BUTTON_HTML = buildFoundationMenuButtonHtml(
+  ROPRIME_LABEL,
+  ROPRIME_RADIX_ID,
+  ROPRIME_ENTRY_ATTR,
+);
+const EXTENSIONS_BUTTON_HTML = buildFoundationMenuButtonHtml(
+  EXTENSIONS_LABEL,
+  EXTENSIONS_RADIX_ID,
+  EXTENSIONS_ENTRY_ATTR,
+);
 
 let domObserver = null;
 let clickInstalled = false;
 
+function navigateToExtensions(e) {
+  e.preventDefault();
+  e.stopPropagation();
+  if (isMyAccountPath()) {
+    try {
+      history.replaceState(
+        history.state,
+        "",
+        `${window.location.pathname}${window.location.search}#!/extensions`,
+      );
+    } catch {
+      /* ignore */
+    }
+    if (window.location.hash !== "#!/extensions") {
+      window.location.hash = "#!/extensions";
+    }
+    window.dispatchEvent(new Event("roprime-open-extensions-panel"));
+    return;
+  }
+  const prefix = getRobloxLocalePathPrefix();
+  window.location.assign(
+    `${window.location.origin}${prefix}/my/account#!/extensions`,
+  );
+}
+
 function navigateToRoPrimeSettings(e) {
   e.preventDefault();
   e.stopPropagation();
-  if (isOnRoPrimeSettingsPage()) {
-    window.location.reload();
+  if (isMyAccountPath()) {
+    if (isOnRoPrimeSettingsPage()) {
+      window.location.reload();
+      return;
+    }
+    openRoPrimeSettingsOnAccountPage(RP_DEFAULT_PAGE);
     return;
   }
   window.location.assign(buildRoPrimeSettingsFullUrl());
 }
 
-function onRoPrimeMenuClick(ev) {
+function onFoundationMenuClick(ev) {
   if (!shouldRunRoPrimeOnCurrentPage() || !isExtensionContextAlive()) return;
   if (!(ev.target instanceof Element)) return;
-  const button = ev.target.closest(`button[${ENTRY_ATTR}="1"]`);
-  if (!(button instanceof HTMLButtonElement)) return;
-  navigateToRoPrimeSettings(ev);
+
+  const extensionsButton = ev.target.closest(
+    `button[${EXTENSIONS_ENTRY_ATTR}="1"]`,
+  );
+  if (extensionsButton instanceof HTMLButtonElement) {
+    navigateToExtensions(ev);
+    return;
+  }
+
+  const settingsButton = ev.target.closest(`button[${ROPRIME_ENTRY_ATTR}="1"]`);
+  if (settingsButton instanceof HTMLButtonElement) {
+    navigateToRoPrimeSettings(ev);
+  }
 }
 
 function getFoundationMenuItemTitle(button) {
@@ -93,84 +149,70 @@ function getNativeMenuItemButtons(group) {
     (child) =>
       child instanceof HTMLButtonElement &&
       child.classList.contains("foundation-web-menu-item") &&
-      !child.hasAttribute(ENTRY_ATTR),
+      !child.hasAttribute(ROPRIME_ENTRY_ATTR) &&
+      !child.hasAttribute(EXTENSIONS_ENTRY_ATTR),
   );
 }
 
-function getMenuItemButtonAtPosition(group, oneBasedPosition) {
-  return getNativeMenuItemButtons(group)[oneBasedPosition - 1] ?? null;
+function ensureInjectedButton(group, entryAttr, buttonHtml) {
+  if (!(group instanceof HTMLElement)) return null;
+
+  let button = group.querySelector(`button[${entryAttr}="1"]`);
+  if (!(button instanceof HTMLButtonElement)) {
+    group.insertAdjacentHTML("beforeend", buttonHtml);
+    button = group.querySelector(`button[${entryAttr}="1"]`);
+  }
+  return button instanceof HTMLButtonElement ? button : null;
 }
 
-function getRoPrimeMenuPosition(group) {
-  const seventhButton = getMenuItemButtonAtPosition(
-    group,
-    PARENTAL_CONTROLS_MENU_POSITION,
-  );
-  if (!(seventhButton instanceof HTMLButtonElement)) {
-    return ROPRIME_MENU_POSITION_WITHOUT_PARENTAL;
+function findRoQolMenuButton(group) {
+  if (!(group instanceof HTMLElement)) return null;
+  for (const button of getNativeMenuItemButtons(group)) {
+    const title = getFoundationMenuItemTitle(button);
+    if (ROQOL_LABEL_PATTERN.test(title)) return button;
   }
-
-  if (
-    getFoundationMenuItemTitle(seventhButton) === PARENTAL_CONTROLS_MENU_TITLE
-  ) {
-    return ROPRIME_MENU_POSITION_WITH_PARENTAL;
-  }
-
-  return ROPRIME_MENU_POSITION_WITHOUT_PARENTAL;
+  return null;
 }
 
-function getInsertBeforeTarget(group, menuPosition) {
-  return getNativeMenuItemButtons(group)[menuPosition - 1] ?? null;
-}
-
-function ensureButtonAtMenuPosition(group, button) {
-  if (
-    !(group instanceof HTMLElement) ||
-    !(button instanceof HTMLButtonElement) ||
-    !group.contains(button)
-  ) {
-    return;
-  }
-
-  const insertBefore = getInsertBeforeTarget(
-    group,
-    getRoPrimeMenuPosition(group),
-  );
-  if (insertBefore) {
-    if (button.nextElementSibling !== insertBefore) {
-      group.insertBefore(button, insertBefore);
-    }
-    return;
-  }
-
-  if (group.lastElementChild !== button) {
-    group.appendChild(button);
-  }
-}
-
-function injectIntoGroup(group) {
+function ensureButtonOrder(group) {
   if (!(group instanceof HTMLElement)) return;
 
-  const existing = group.querySelector(`button[${ENTRY_ATTR}="1"]`);
-  if (existing instanceof HTMLButtonElement) {
-    ensureButtonAtMenuPosition(group, existing);
-    return;
-  }
-
-  const insertBefore = getInsertBeforeTarget(
+  const settingsButton = ensureInjectedButton(
     group,
-    getRoPrimeMenuPosition(group),
+    ROPRIME_ENTRY_ATTR,
+    ROPRIME_BUTTON_HTML,
   );
-  if (insertBefore) {
-    insertBefore.insertAdjacentHTML("beforebegin", BUTTON_HTML);
+  const extensionsButton = ensureInjectedButton(
+    group,
+    EXTENSIONS_ENTRY_ATTR,
+    EXTENSIONS_BUTTON_HTML,
+  );
+  if (
+    !(settingsButton instanceof HTMLButtonElement) ||
+    !(extensionsButton instanceof HTMLButtonElement)
+  ) {
     return;
   }
 
-  group.insertAdjacentHTML("beforeend", BUTTON_HTML);
+  if (group.lastElementChild !== settingsButton) {
+    group.appendChild(settingsButton);
+  }
+
+  const roqolButton = findRoQolMenuButton(group);
+  const insertBefore =
+    roqolButton instanceof HTMLButtonElement
+      ? roqolButton
+      : settingsButton;
+
+  if (extensionsButton.nextElementSibling !== insertBefore) {
+    group.insertBefore(extensionsButton, insertBefore);
+  }
 }
 
 function removeInjectedButtons() {
-  for (const button of document.querySelectorAll(`button[${ENTRY_ATTR}="1"]`)) {
+  for (const button of document.querySelectorAll(
+    `button[${ROPRIME_ENTRY_ATTR}="1"], button[${EXTENSIONS_ENTRY_ATTR}="1"]`,
+  )) {
     button.remove();
   }
 }
@@ -181,7 +223,9 @@ function injectFoundationWebMenuEntries() {
     return;
   }
 
-  for (const button of document.querySelectorAll(`button[${ENTRY_ATTR}="1"]`)) {
+  for (const button of document.querySelectorAll(
+    `button[${ROPRIME_ENTRY_ATTR}="1"], button[${EXTENSIONS_ENTRY_ATTR}="1"]`,
+  )) {
     const group = button.closest('[role="group"].padding-small');
     if (!isAccountInfoFoundationMenuGroup(group)) {
       button.remove();
@@ -189,7 +233,7 @@ function injectFoundationWebMenuEntries() {
   }
 
   for (const group of findAccountInfoMenuGroups()) {
-    injectIntoGroup(group);
+    ensureButtonOrder(group);
   }
 }
 
@@ -233,7 +277,7 @@ export function syncRobloxFoundationWebMenuButton() {
     }
 
     if (!clickInstalled) {
-      document.addEventListener("click", onRoPrimeMenuClick, true);
+      document.addEventListener("click", onFoundationMenuClick, true);
       clickInstalled = true;
     }
 
@@ -247,7 +291,7 @@ export function syncRobloxFoundationWebMenuButton() {
 
 export function stopRobloxFoundationWebMenuButton() {
   if (clickInstalled) {
-    document.removeEventListener("click", onRoPrimeMenuClick, true);
+    document.removeEventListener("click", onFoundationMenuClick, true);
     clickInstalled = false;
   }
   teardownDomObserver();
