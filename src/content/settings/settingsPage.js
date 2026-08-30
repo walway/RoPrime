@@ -61,7 +61,7 @@ import {
 import { syncSidebarContent } from "../sidebar/sidebarContent.js";
 import { sidebarItemLabelKey } from "../sidebar/sidebarItemLabels.js";
 import { ADD_ICON_SVG, DELETE_ICON_SVG } from "../sidebar/sidebarIcons.js";
-import { setHidden } from "../ui/visibility.js";
+import { applyPlainOrRichText } from "../ui/richText.js";
 import { createDropdown } from "../ui/dropdown.js";
 import { createToggle, setToggleChecked } from "../ui/toggle.js";
 import {
@@ -119,11 +119,16 @@ function appendSvgMarkup(parent, markup) {
   }
 }
 
+function applyI18nText(node, text) {
+  if (!(node instanceof HTMLElement)) return;
+  applyPlainOrRichText(node, text);
+}
+
 function setI18n(node, key) {
   if (key) {
     node._rpI18n = key;
     node.classList.add("roprime-i18n");
-    node.textContent = accountSettingsPaneT(key);
+    applyI18nText(node, accountSettingsPaneT(key));
   }
   return node;
 }
@@ -156,7 +161,7 @@ function getSettingsHostRoot(node) {
 function applyI18n(root) {
   root.querySelectorAll(".roprime-i18n").forEach((node) => {
     if (!(node instanceof HTMLElement)) return;
-    if (node._rpI18n) node.textContent = accountSettingsPaneT(node._rpI18n);
+    if (node._rpI18n) applyI18nText(node, accountSettingsPaneT(node._rpI18n));
     if (
       node._rpI18nPlaceholder &&
       (node instanceof HTMLInputElement || node instanceof HTMLTextAreaElement)
@@ -574,7 +579,10 @@ function createSettingsCardHeaderRow(titleKeyOrItem, trailing = null) {
 }
 
 function createSettingsCardDescription(descKey) {
-  const desc = el("p", "text-body-large content-default roprime-i18n");
+  const desc = el(
+    "div",
+    "text-body-large content-default margin-top-large roprime-i18n",
+  );
   if (descKey) setI18n(desc, descKey);
   return desc;
 }
@@ -684,7 +692,10 @@ function createSidebarInlineToggleRow(item) {
   setSettingTitle(title, item);
   copy.appendChild(title);
   if (item.description) {
-    const desc = el("p", "text-body-large content-default roprime-i18n");
+    const desc = el(
+      "div",
+      "text-body-large content-default roprime-i18n",
+    );
     setI18n(desc, item.description);
     copy.appendChild(desc);
   }
@@ -711,7 +722,10 @@ function buildSidebarSizeRow(item) {
     "text-title-large content-emphasis roprime-i18n",
   );
   setI18n(sizeTitle, item.title || "settings.appearance.sidebar.sizeTitle");
-  const sizeDesc = el("p", "text-body-large content-default roprime-i18n");
+  const sizeDesc = el(
+    "div",
+    "text-body-large content-default roprime-i18n",
+  );
   setI18n(
     sizeDesc,
     item.description || "settings.appearance.sidebar.sizeDescription",
@@ -829,7 +843,7 @@ const CUSTOM_BUILDERS = {
     const wrap = el("div", "flex flex-col gap-medium roprime-developer-block");
     const title = el("span", "text-title-large content-emphasis roprime-i18n");
     setI18n(title, "settings.developer.title");
-    const desc = el("p", "text-body-large content-default roprime-i18n");
+    const desc = el("div", "text-body-large content-default roprime-i18n");
     setI18n(desc, "settings.developer.description");
     const actions = el("div", "flex flex-wrap gap-small");
     const forceAlertBtn = createControlButton(
@@ -1048,7 +1062,7 @@ function buildProfileEffectsSection(titleKey, descKey, effects) {
   const section = el("div", "roprime-cosmetics-shop-section");
   const h3 = el("h3", "roprime-settings-section-title roprime-i18n");
   setI18n(h3, titleKey);
-  const p = el("p", "roprime-setting-desc roprime-i18n");
+  const p = el("div", "roprime-setting-desc roprime-i18n");
   setI18n(p, descKey);
   const grid = el("div", "roprime-profile-effects-grid");
   for (const effect of effects) {

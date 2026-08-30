@@ -10,7 +10,7 @@ export {
   setSliderValue,
 } from "./slider.js";
 export { attachTooltip, createTooltip } from "./tooltip.js";
-export { createDropdown, dismissFoundationWebDropdown } from "./dropdown.js";
+export { applyPlainOrRichText, renderRichText, shouldRenderRichText } from "./richText.js";
 export {
   createPill,
   getPillValue,
