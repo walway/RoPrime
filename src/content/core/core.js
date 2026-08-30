@@ -1,5 +1,6 @@
 import { langList } from "../../i18n/i18n-config.js";
 import { collectToggleDefaults } from "../settings/settingsConfig.js";
+import { SIDEBAR_FULL_RESERVED_PX } from "../sidebar/sidebarLayout.js";
 
 const extensionApi = globalThis.browser || globalThis.chrome;
 
@@ -37,7 +38,7 @@ export const RP_ACCOUNT_SETTINGS_SHELL_CLASS = "roprime-account-settings-open";
 export const ACCOUNT_SETTINGS_LEFT_INSET_BY_SIZE = {
   icon: 83,
   small: 200,
-  full: 289,
+  full: SIDEBAR_FULL_RESERVED_PX,
 };
 
 const SIDEBAR_SIZE_MODES = ["full", "small", "icon"];

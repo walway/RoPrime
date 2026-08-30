@@ -10,6 +10,7 @@ import {
   updateSidebarCompactVisibility,
 } from "./sidebarCompact.js";
 import { updateSmallNewNavVisibility } from "./smallNewNav.js";
+import { buildSidebarFullLayoutCss } from "./sidebarLayout.js";
 
 const RP_EXPAND_ON_HOVER_ACTIVE_CLASS =
   "roprime-sidebar-expand-on-hover-active";
@@ -18,35 +19,14 @@ const RP_EXPAND_ON_HOVER_EXPANDED_CLASS =
 const RP_EXPAND_ON_HOVER_EXPANDED_STYLE_ID =
   "roprime-sidebar-expand-on-hover-expanded-style";
 
-const SIDEBAR_FULL_WIDTH_PX = 289;
-
 let boundNav = null;
 let hoverExpanded = false;
 let navObserver = null;
 
-const EXPANDED_SIDEBAR_CSS = `
-body .no-gutter-ads.logged-in.left-nav-new-width {
-  --left-nav-reserved-width: ${SIDEBAR_FULL_WIDTH_PX}px !important;
-}
-.rollercoaster-background {
-  margin-left: ${SIDEBAR_FULL_WIDTH_PX}px !important;
-}
-.left-nav.fixed {
-  width: ${SIDEBAR_FULL_WIDTH_PX}px !important;
-  min-width: ${SIDEBAR_FULL_WIDTH_PX}px !important;
-  max-width: ${SIDEBAR_FULL_WIDTH_PX}px !important;
-}
-.left-nav.fixed .simplebar-wrapper,
-.left-nav.fixed .simplebar-mask,
-.left-nav.fixed .simplebar-offset,
-.left-nav.fixed .simplebar-content-wrapper,
-.left-nav.fixed .simplebar-content {
-  max-width: ${SIDEBAR_FULL_WIDTH_PX}px !important;
-}
-`;
+const EXPANDED_SIDEBAR_CSS = buildSidebarFullLayoutCss();
 
 function getLeftNav() {
-  const nav = document.querySelector(".left-nav.fixed, .left-nav");
+  const nav = document.querySelector(".left-nav");
   return nav instanceof HTMLElement ? nav : null;
 }
 
@@ -160,7 +140,12 @@ export function syncExpandSidebarOnHover() {
   ensureNavObserver();
 
   const nav = getLeftNav();
-  if (nav instanceof HTMLElement) bindNavHover(nav);
+  if (nav instanceof HTMLElement) {
+    bindNavHover(nav);
+    if (nav.matches(":hover")) {
+      setHoverExpanded(true);
+    }
+  }
 }
 
 registerFeature(syncExpandSidebarOnHover);

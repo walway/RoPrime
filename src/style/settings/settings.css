@@ -419,6 +419,8 @@ html.roprime-account-settings-open #user-account > #roprime-settings-host {
     transparent
   );
   transform: translate(-50%, -50%);
+  pointer-events: auto;
+  cursor: pointer;
 }
 
 #roprime-settings-host .roprime-mui-slider .MuiSlider-markActive {

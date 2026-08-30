@@ -431,6 +431,14 @@ export function updateSidebarCompactVisibility() {
     if (existingStyle instanceof HTMLStyleElement) existingStyle.remove();
     return;
   }
+  if (
+    document.documentElement.classList.contains(
+      "roprime-sidebar-expand-on-hover-expanded",
+    )
+  ) {
+    existingStyle?.remove();
+    return;
+  }
   let style = existingStyle;
   if (!(style instanceof HTMLStyleElement)) {
     style = document.createElement("style");

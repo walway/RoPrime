@@ -129,6 +129,7 @@ export function createMarkedSlider(options = {}) {
     input.value = String(snapped);
     syncSliderVisual(root, snapped);
     onChange?.(snapped, input, root);
+    input.dispatchEvent(new Event("change", { bubbles: true }));
   };
 
   input.addEventListener("input", () => {
@@ -143,6 +144,14 @@ export function createMarkedSlider(options = {}) {
     label.addEventListener("click", () => {
       if (input.disabled) return;
       commitValue(label.dataset.value);
+    });
+  });
+
+  marksWrap.querySelectorAll(".MuiSlider-mark").forEach((mark) => {
+    if (!(mark instanceof HTMLElement)) return;
+    mark.addEventListener("click", () => {
+      if (input.disabled) return;
+      commitValue(mark.dataset.value);
     });
   });
 

@@ -79,6 +79,7 @@ function cleanupBlockedRouteUi() {
   document
     .getElementById("roprime-sidebar-expand-on-hover-expanded-style")
     ?.remove();
+  document.getElementById("roprime-sidebar-full-touch-style")?.remove();
   document.documentElement.classList.remove(
     "roprime-sidebar-expand-on-hover-active",
     "roprime-sidebar-expand-on-hover-expanded",
@@ -104,12 +105,12 @@ export function syncRoPrimeView() {
 
     updateOldNavigationBarVisibility();
     updateSmallNewNavVisibility();
+    syncExpandSidebarOnHover();
     updateSidebarCompactVisibility();
     syncAlwaysShowCloseButton();
     updateFriendStylingReimagnedVisibility();
     syncSidebarCompactDecorations();
     syncSidebarCollapseMenuIcon();
-    syncExpandSidebarOnHover();
     syncCustomCss();
     syncHideAgeBadge();
     syncHideExperiencesAds();

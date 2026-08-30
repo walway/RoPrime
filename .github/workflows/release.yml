@@ -1,0 +1,221 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  DENO_VERSION: v2.x
+  NODE_VERSION: "22"
+
+jobs:
+  prepare:
+    name: Validate release tag
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.meta.outputs.version }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Parse release version
+        id: meta
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          if [ -z "$VERSION" ]; then
+            echo "Invalid release tag: ${GITHUB_REF_NAME}" >&2
+            exit 1
+          fi
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Verify manifest versions match tag
+        run: |
+          VERSION="${{ steps.meta.outputs.version }}"
+          CHROME="$(jq -r '.version' src/manifests/chrome.json)"
+          FIREFOX="$(jq -r '.version' src/manifests/firefox.json)"
+          if [ "$CHROME" != "$VERSION" ] || [ "$FIREFOX" != "$VERSION" ]; then
+            echo "Tag v$VERSION does not match manifest versions (chrome=$CHROME, firefox=$FIREFOX)." >&2
+            echo "Update src/manifests/chrome.json and src/manifests/firefox.json before tagging." >&2
+            exit 1
+          fi
+
+  build:
+    name: Build extension packages
+    needs: prepare
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Deno
+        uses: denoland/setup-deno@v2
+        with:
+          deno-version: ${{ env.DENO_VERSION }}
+
+      - name: Build browser targets
+        run: deno task build
+
+      - name: Create distributable ZIP archives
+        run: |
+          VERSION="${{ needs.prepare.outputs.version }}"
+          (cd dist/chrome && zip -r "../../roprime-chrome-${VERSION}.zip" .)
+          cp "roprime-chrome-${VERSION}.zip" "roprime-chromium-${VERSION}.zip"
+          (cd dist/firefox && zip -r "../../roprime-firefox-${VERSION}.zip" .)
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: extension-packages
+          path: |
+            roprime-chrome-*.zip
+            roprime-chromium-*.zip
+            roprime-firefox-*.zip
+          if-no-files-found: error
+          retention-days: 30
+
+  github-release:
+    name: Publish GitHub Release
+    needs: [prepare, build]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: extension-packages
+          path: packages
+
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: RoPrime v${{ needs.prepare.outputs.version }}
+          tag_name: ${{ github.ref_name }}
+          generate_release_notes: true
+          files: packages/*
+
+  publish-chrome:
+    name: Publish to Chrome Web Store
+    needs: [prepare, build, github-release]
+    runs-on: ubuntu-latest
+    environment: chrome-web-store
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Deno
+        uses: denoland/setup-deno@v2
+        with:
+          deno-version: ${{ env.DENO_VERSION }}
+
+      - name: Build Chrome package
+        run: deno task build
+
+      - name: Upload to Chrome Web Store
+        uses: fregante/chrome-webstore-upload@v3
+        with:
+          extension-id: ${{ secrets.CHROME_EXTENSION_ID }}
+          client-id: ${{ secrets.CHROME_CLIENT_ID }}
+          client-secret: ${{ secrets.CHROME_CLIENT_SECRET }}
+          refresh-token: ${{ secrets.CHROME_REFRESH_TOKEN }}
+          source: dist/chrome
+          publish: true
+
+  publish-firefox:
+    name: Publish to Firefox Add-ons
+    needs: [prepare, build, github-release]
+    runs-on: ubuntu-latest
+    environment: firefox-addons
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Deno
+        uses: denoland/setup-deno@v2
+        with:
+          deno-version: ${{ env.DENO_VERSION }}
+
+      - name: Build Firefox package
+        run: deno task build
+
+      - name: Sign and publish to Mozilla Add-ons
+        uses: cschleiden/web-ext-action@v2
+        with:
+          artifact: dist/firefox
+          api-key: ${{ secrets.AMO_JWT_ISSUER }}
+          api-secret: ${{ secrets.AMO_JWT_SECRET }}
+          channel: listed
+
+  publish-edge:
+    name: Publish to Microsoft Edge Add-ons
+    needs: [prepare, build, github-release]
+    runs-on: ubuntu-latest
+    environment: edge-addons
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: extension-packages
+          path: packages
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Publish to Microsoft Edge Add-ons
+        env:
+          EDGE_PRODUCT_ID: ${{ secrets.EDGE_PRODUCT_ID }}
+          EDGE_CLIENT_ID: ${{ secrets.EDGE_CLIENT_ID }}
+          EDGE_API_KEY: ${{ secrets.EDGE_API_KEY }}
+        run: |
+          npx --yes web-ext-deploy@latest cli \
+            --edge-product-id="${EDGE_PRODUCT_ID}" \
+            --edge-client-id="${EDGE_CLIENT_ID}" \
+            --edge-api-key="${EDGE_API_KEY}" \
+            --edge-zip="packages/roprime-chromium-${{ needs.prepare.outputs.version }}.zip" \
+            --edge-dev-changelog="RoPrime v${{ needs.prepare.outputs.version }}" \
+            --verbose
+
+  publish-opera:
+    name: Publish to Opera Add-ons
+    needs: [prepare, build, github-release]
+    runs-on: ubuntu-latest
+    environment: opera-addons
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: extension-packages
+          path: packages
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Publish to Opera Add-ons
+        env:
+          OPERA_PACKAGE_ID: ${{ secrets.OPERA_PACKAGE_ID }}
+          OPERA_SESSIONID: ${{ secrets.OPERA_SESSIONID }}
+          OPERA_CSRFTOKEN: ${{ secrets.OPERA_CSRFTOKEN }}
+        run: |
+          npx --yes web-ext-deploy@latest cli \
+            --opera-package-id="${OPERA_PACKAGE_ID}" \
+            --opera-sessionid="${OPERA_SESSIONID}" \
+            --opera-csrftoken="${OPERA_CSRFTOKEN}" \
+            --opera-zip="packages/roprime-chromium-${{ needs.prepare.outputs.version }}.zip" \
+            --opera-changelog="RoPrime v${{ needs.prepare.outputs.version }}" \
+            --verbose

@@ -29,6 +29,7 @@ import { installProfileRedesignObserver } from "./profile/profileRedesign.js";
 import { normalizeEquippedProfileEffects } from "./settings/profileSettings.js";
 import { syncProfileSettingsRoute } from "./settings/profileSettings.js";
 import "./sidebar/sidebarContent.js";
+import "./sidebar/sidebarFullTouch.js";
 import { initFreeRobloxThemes } from "./account/freeThemes.js";
 import "./home/hideExperiencesAds.js";
 import "./features/customCss.js";
