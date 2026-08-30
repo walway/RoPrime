@@ -32,6 +32,7 @@ let refreshInProgress = false;
 let refreshRequested = false;
 let menuHighlightObserver = null;
 let menuHighlightIdlePending = false;
+let panelHost = null;
 const cwsIconUrlCache = new Map();
 const cwsIconFetchPromises = new Map();
 
@@ -272,6 +273,20 @@ async function handleMaliciousExtensions(registry) {
   }
 
   return { removedAny, uninstalledKeys };
+}
+
+function restoreHostChildren(host) {
+  if (!(host instanceof HTMLElement)) return;
+  host.querySelectorAll(":scope > *").forEach((child) => {
+    if (!(child instanceof HTMLElement)) return;
+    const prev = child.getAttribute("data-roprime-prev-display");
+    if (prev !== null) {
+      child.style.display = prev;
+      child.removeAttribute("data-roprime-prev-display");
+    } else if (child.style.display === "none") {
+      child.style.display = "";
+    }
+  });
 }
 
 function hideHostChildren(host, panel) {
@@ -519,6 +534,7 @@ function openPanel() {
   startMenuHighlightObserver();
 
   const panel = ensureExtensionsPanel(host);
+  panelHost = host;
   hideHostChildren(host, panel);
 
   const tiles = panel.querySelector('[data-roprime-extensions-tiles="1"]');
@@ -533,22 +549,18 @@ function closePanel() {
   refreshRequested = false;
   stopMenuHighlightObserver();
 
-  const host = getHost();
-  if (!(host instanceof HTMLElement)) return;
+  const host = panelHost || getHost();
+  panelHost = null;
+  if (!(host instanceof HTMLElement)) {
+    document.getElementById(PANEL_ID)?.remove();
+    setExtensionsMenuActive(false);
+    return;
+  }
+
   host.removeAttribute("data-roprime-extensions-open");
   document.getElementById(PANEL_ID)?.remove();
   setExtensionsMenuActive(false);
-
-  host.querySelectorAll(":scope > *").forEach((child) => {
-    if (!(child instanceof HTMLElement)) return;
-    const prev = child.getAttribute("data-roprime-prev-display");
-    if (prev !== null) {
-      child.style.display = prev;
-      child.removeAttribute("data-roprime-prev-display");
-    } else if (child.style.display === "none") {
-      child.style.display = "";
-    }
-  });
+  restoreHostChildren(host);
 }
 
 function isOpen() {
@@ -571,12 +583,13 @@ export function initExtensionsPanel() {
     "click",
     (event) => {
       if (!(event.target instanceof Element)) return;
+      if (!isOpen()) return;
+      if (event.target.closest(`#${PANEL_ID}`)) return;
       if (event.target.closest(`[${MENU_ENTRY_ATTR}="1"]`)) return;
       const menuLink = event.target.closest(
         'ul[role="tablist"] a.menu-option-content',
       );
       if (!menuLink) return;
-      if (!isOpen()) return;
       closePanel();
     },
     true,

@@ -209,6 +209,10 @@ html.roprime-account-settings-open
   position: relative;
 }
 
+#roprime-settings-host .roprime-language-dropdown {
+  min-width: 220px;
+}
+
 #roprime-settings-host .roprime-mobile-nav-option {
   display: flex;
   align-items: center;

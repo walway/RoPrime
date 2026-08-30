@@ -8,6 +8,7 @@ import {
   RP_DEFAULT_PAGE,
   shouldRunRoPrimeOnCurrentPage,
 } from "../core/core.js";
+import { dismissFoundationWebDropdown } from "../ui/dropdown.js";
 import { openRoPrimeSettingsOnAccountPage } from "../settings/settingsPage.js";
 
 const ROPRIME_ENTRY_ATTR = "data-roprime-foundation-menu-entry";
@@ -15,6 +16,7 @@ const EXTENSIONS_ENTRY_ATTR = "data-roprime-foundation-extensions-entry";
 const ROPRIME_LABEL = "RoPrime Settings";
 const EXTENSIONS_LABEL = "Extensions";
 const ROQOL_LABEL_PATTERN = /roqol/i;
+const MENU_WIRED_ATTR = "data-roprime-foundation-menu-wired";
 
 const ROPRIME_RADIX_ID = "radix-roprime-settings-dropdown-9";
 const EXTENSIONS_RADIX_ID = "radix-roprime-extensions-dropdown-9";
@@ -38,9 +40,136 @@ const EXTENSIONS_BUTTON_HTML = buildFoundationMenuButtonHtml(
 let domObserver = null;
 let clickInstalled = false;
 
+function isExtensionsRouteActive() {
+  const hash = (window.location.hash || "").toLowerCase();
+  return (
+    hash === "#!/extensions" ||
+    hash === "#!/plugins" ||
+    sessionStorage.getItem("roprimeExtensionsPanelOpen") === "1"
+  );
+}
+
+function getMenuButtons(group) {
+  if (!(group instanceof HTMLElement)) return [];
+  return [
+    ...group.querySelectorAll("button.foundation-web-menu-item"),
+  ].filter((button) => group.contains(button));
+}
+
+function setHighlightedMenuButton(group, button) {
+  if (!(group instanceof HTMLElement) || !(button instanceof HTMLButtonElement)) {
+    return;
+  }
+  for (const item of getMenuButtons(group)) {
+    if (item === button) {
+      item.setAttribute("data-highlighted", "");
+    } else {
+      item.removeAttribute("data-highlighted");
+    }
+    syncExtensionsEntryAriaSelected(group, item);
+  }
+}
+
+function clearHighlightedMenuButtons(group) {
+  if (!(group instanceof HTMLElement)) return;
+  for (const item of getMenuButtons(group)) {
+    item.removeAttribute("data-highlighted");
+    syncExtensionsEntryAriaSelected(group, item);
+  }
+}
+
+function syncExtensionsEntryAriaSelected(group, button) {
+  if (!(group instanceof HTMLElement) || !(button instanceof HTMLButtonElement)) {
+    return;
+  }
+  if (!button.hasAttribute(EXTENSIONS_ENTRY_ATTR)) return;
+  const highlighted =
+    button.hasAttribute("data-highlighted") || button.matches(":hover");
+  button.setAttribute(
+    "aria-selected",
+    isExtensionsRouteActive() && highlighted ? "true" : "false",
+  );
+}
+
+function syncAllExtensionsEntryAriaSelected() {
+  for (const group of findAccountInfoMenuGroups()) {
+    const extensionsButton = group.querySelector(
+      `button[${EXTENSIONS_ENTRY_ATTR}="1"]`,
+    );
+    if (extensionsButton instanceof HTMLButtonElement) {
+      syncExtensionsEntryAriaSelected(group, extensionsButton);
+    }
+  }
+}
+
+function moveMenuHighlight(group, direction) {
+  const buttons = getMenuButtons(group);
+  if (!buttons.length) return null;
+
+  const currentIndex = buttons.findIndex((button) =>
+    button.hasAttribute("data-highlighted"),
+  );
+  let nextIndex = currentIndex;
+
+  if (direction > 0) {
+    nextIndex = currentIndex < buttons.length - 1 ? currentIndex + 1 : 0;
+  } else if (direction < 0) {
+    nextIndex = currentIndex > 0 ? currentIndex - 1 : buttons.length - 1;
+  } else if (currentIndex < 0) {
+    nextIndex = 0;
+  }
+
+  const nextButton = buttons[nextIndex];
+  setHighlightedMenuButton(group, nextButton);
+  nextButton.focus({ preventScroll: true });
+  return nextButton;
+}
+
+function wireFoundationMenuInteractions(group) {
+  if (!(group instanceof HTMLElement)) return;
+  if (group.getAttribute(MENU_WIRED_ATTR) === "1") return;
+  group.setAttribute(MENU_WIRED_ATTR, "1");
+
+  group.addEventListener(
+    "mouseenter",
+    (event) => {
+      if (!(event.target instanceof Element)) return;
+      const button = event.target.closest("button.foundation-web-menu-item");
+      if (!(button instanceof HTMLButtonElement) || !group.contains(button)) {
+        return;
+      }
+      setHighlightedMenuButton(group, button);
+    },
+    true,
+  );
+
+  group.addEventListener(
+    "mouseleave",
+    (event) => {
+      if (!(event.target instanceof Element)) return;
+      const button = event.target.closest("button.foundation-web-menu-item");
+      if (!(button instanceof HTMLButtonElement) || !group.contains(button)) {
+        return;
+      }
+      if (button.matches(":hover")) return;
+      button.removeAttribute("data-highlighted");
+      syncExtensionsEntryAriaSelected(group, button);
+    },
+    true,
+  );
+
+  group.addEventListener("keydown", (event) => {
+    if (event.key !== "ArrowDown" && event.key !== "ArrowUp") return;
+    event.preventDefault();
+    event.stopPropagation();
+    moveMenuHighlight(group, event.key === "ArrowDown" ? 1 : -1);
+  });
+}
+
 function navigateToExtensions(e) {
   e.preventDefault();
   e.stopPropagation();
+  dismissFoundationWebDropdown(e.target instanceof Element ? e.target : null);
   if (isMyAccountPath()) {
     try {
       history.replaceState(
@@ -55,6 +184,7 @@ function navigateToExtensions(e) {
       window.location.hash = "#!/extensions";
     }
     window.dispatchEvent(new Event("roprime-open-extensions-panel"));
+    syncAllExtensionsEntryAriaSelected();
     return;
   }
   const prefix = getRobloxLocalePathPrefix();
@@ -66,6 +196,7 @@ function navigateToExtensions(e) {
 function navigateToRoPrimeSettings(e) {
   e.preventDefault();
   e.stopPropagation();
+  dismissFoundationWebDropdown(e.target instanceof Element ? e.target : null);
   if (isMyAccountPath()) {
     if (isOnRoPrimeSettingsPage()) {
       window.location.reload();
@@ -207,6 +338,9 @@ function ensureButtonOrder(group) {
   if (extensionsButton.nextElementSibling !== insertBefore) {
     group.insertBefore(extensionsButton, insertBefore);
   }
+
+  wireFoundationMenuInteractions(group);
+  syncExtensionsEntryAriaSelected(group, extensionsButton);
 }
 
 function removeInjectedButtons() {
@@ -236,6 +370,17 @@ function injectFoundationWebMenuEntries() {
     ensureButtonOrder(group);
   }
 }
+
+function ensureRouteSyncListeners() {
+  if (ensureRouteSyncListeners.bound) return;
+  ensureRouteSyncListeners.bound = true;
+  const sync = () => syncAllExtensionsEntryAriaSelected();
+  window.addEventListener("hashchange", sync);
+  window.addEventListener("popstate", sync);
+  window.addEventListener("roprime-location-change", sync);
+  window.addEventListener("roprime-open-extensions-panel", sync);
+}
+ensureRouteSyncListeners.bound = false;
 
 function ensureDomObserver() {
   if (domObserver || !isExtensionContextAlive()) return;
@@ -281,8 +426,10 @@ export function syncRobloxFoundationWebMenuButton() {
       clickInstalled = true;
     }
 
+    ensureRouteSyncListeners();
     ensureDomObserver();
     injectFoundationWebMenuEntries();
+    syncAllExtensionsEntryAriaSelected();
   } catch (e) {
     if (isExtensionContextInvalidatedError(e)) return;
     throw e;
