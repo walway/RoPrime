@@ -27,24 +27,41 @@ function findOptionLabel(options, value) {
   return match?.label || options[0]?.label || "";
 }
 
-function positionPopper(popper, trigger) {
+function positionPopper(popper, trigger, { popperZIndex = "1050" } = {}) {
   if (!(popper instanceof HTMLElement) || !(trigger instanceof HTMLElement)) {
     return;
   }
 
   const rect = trigger.getBoundingClientRect();
-  const left = Math.max(8, rect.left);
-  const top = rect.bottom + 4;
   const width = Math.max(rect.width, 180);
+  const left = Math.max(8, Math.min(rect.left, window.innerWidth - width - 8));
 
   popper.style.position = "fixed";
   popper.style.left = "0px";
   popper.style.top = "0px";
-  popper.style.transform = `translate(${left}px, ${top}px)`;
   popper.style.minWidth = "max-content";
-  popper.style.zIndex = "1050";
+  popper.style.width = `${width}px`;
+  popper.style.zIndex = String(popperZIndex);
   popper.style.setProperty("--radix-popper-anchor-width", `${width}px`);
   popper.style.setProperty("--radix-popper-anchor-height", `${rect.height}px`);
+
+  const wasHidden = popper.hidden;
+  popper.hidden = false;
+  popper.style.visibility = "hidden";
+  popper.style.pointerEvents = "none";
+  const popperHeight = popper.offsetHeight || 0;
+  popper.style.visibility = "";
+  popper.style.pointerEvents = "";
+  if (wasHidden) popper.hidden = true;
+
+  const spaceBelow = window.innerHeight - rect.bottom;
+  const openBelow =
+    spaceBelow >= popperHeight + 8 || rect.top < popperHeight + 8;
+  const top = openBelow
+    ? rect.bottom + 4
+    : Math.max(8, rect.top - popperHeight - 4);
+
+  popper.style.transform = `translate(${left}px, ${top}px)`;
 }
 
 function createMenuItemButton(label) {
@@ -257,6 +274,9 @@ export function createDropdown({
   onChange,
   wrapperClass = "roprime-dropdown-textbox",
   includeFormGroup = true,
+  popperParent = null,
+  popperZIndex = "1050",
+  ignoreOutsidePointerDown = null,
 } = {}) {
   const state = {
     value: String(value || ""),
@@ -282,7 +302,9 @@ export function createDropdown({
   root.appendChild(triggerWrap);
 
   const { wrapper: popper, listbox, group } = buildPopperMarkup();
-  document.body.appendChild(popper);
+  const popperMount =
+    popperParent instanceof HTMLElement ? popperParent : document.body;
+  popperMount.appendChild(popper);
 
   const optionButtons = [];
 
@@ -299,7 +321,9 @@ export function createDropdown({
     listbox.setAttribute("data-state", open ? "open" : "closed");
     popper.hidden = !open;
     if (open) {
-      positionPopper(popper, trigger);
+      const position = () => positionPopper(popper, trigger, { popperZIndex });
+      position();
+      requestAnimationFrame(position);
       const visible = getVisibleOptions();
       const selectedIndex = visible.findIndex(
         (entry) => entry.value === state.value,
@@ -442,12 +466,15 @@ export function createDropdown({
     if (!state.open) return;
     if (!(event.target instanceof Node)) return;
     if (root.contains(event.target) || popper.contains(event.target)) return;
+    if (typeof ignoreOutsidePointerDown === "function") {
+      if (ignoreOutsidePointerDown(event)) return;
+    }
     close();
   };
 
   const onWindowChange = () => {
     if (!state.open) return;
-    positionPopper(popper, trigger);
+    positionPopper(popper, trigger, { popperZIndex });
   };
 
   const onTriggerKeyDown = (event) => {

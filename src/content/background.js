@@ -39,30 +39,29 @@ function normalizeExtensionItem(x) {
   };
 }
 
-function findByKey(items, key) {
+function findAllByKey(items, key) {
   const needle = String(key || "")
     .trim()
     .toLowerCase();
-  if (!needle) return null;
+  if (!needle) return [];
 
-  return (
-    items.find((x) =>
+  return items.filter(
+    (x) =>
       String(x?.name || "")
         .toLowerCase()
-        .includes(needle),
-    ) ||
-    items.find((x) =>
+        .includes(needle) ||
       String(x?.shortName || "")
         .toLowerCase()
-        .includes(needle),
-    ) ||
-    items.find((x) =>
+        .includes(needle) ||
       String(x?.description || "")
         .toLowerCase()
         .includes(needle),
-    ) ||
-    null
   );
+}
+
+function findByKey(items, key) {
+  const matches = findAllByKey(items, key);
+  return matches[0] || null;
 }
 
 function getManifestIconPath(manifest) {
@@ -254,8 +253,7 @@ extensionApi.runtime.onMessage.addListener((message, sender, sendResponse) => {
                   ...base,
                   name: manifestInfo.name || base.name,
                   description:
-                    manifestInfo.description ||
-                    String(match.description || ""),
+                    manifestInfo.description || String(match.description || ""),
                   iconPath: manifestInfo.iconPath || "",
                 },
               };
@@ -268,9 +266,86 @@ extensionApi.runtime.onMessage.addListener((message, sender, sendResponse) => {
               });
             })
             .catch((err) => {
-              sendResponse({ ok: false, error: String(err || "Unknown error") });
+              sendResponse({
+                ok: false,
+                error: String(err || "Unknown error"),
+              });
             });
         });
+      })
+      .catch((err) =>
+        sendResponse({ ok: false, error: String(err || "Unknown error") }),
+      );
+    return true;
+  }
+
+  if (type === "ROPRIME_GET_ROPRIME_INSTALLATIONS") {
+    containsManagementPermission()
+      .then((granted) => {
+        if (!granted) {
+          sendResponse({
+            ok: false,
+            error: "missing_management_permission",
+          });
+          return;
+        }
+
+        const registry = (
+          Array.isArray(message?.registry) ? message.registry : []
+        )
+          .map(normalizeRegistryEntry)
+          .filter(Boolean);
+
+        extensionApi.management.getAll((items) => {
+          const lastErr = asLastErrorMessage();
+          if (lastErr) {
+            sendResponse({ ok: false, error: lastErr });
+            return;
+          }
+
+          const installed = items || [];
+          const seen = new Set();
+          const matches = [];
+
+          for (const entry of registry) {
+            for (const item of findAllByKey(installed, entry.key)) {
+              const normalized = normalizeExtensionItem(item);
+              if (!normalized.id || seen.has(normalized.id)) continue;
+              seen.add(normalized.id);
+              matches.push(normalized);
+            }
+          }
+
+          sendResponse({ ok: true, items: matches });
+        });
+      })
+      .catch((err) =>
+        sendResponse({ ok: false, error: String(err || "Unknown error") }),
+      );
+    return true;
+  }
+
+  if (type === "ROPRIME_UNINSTALL_SELF") {
+    containsManagementPermission()
+      .then((granted) => {
+        if (!granted) {
+          sendResponse({
+            ok: false,
+            error: "missing_management_permission",
+          });
+          return;
+        }
+
+        const showConfirmDialog = message?.showConfirmDialog === true;
+        extensionApi.management.uninstall(
+          extensionApi.runtime.id,
+          { showConfirmDialog },
+          () => {
+            const lastErr = asLastErrorMessage();
+            if (lastErr) return sendResponse({ ok: false, error: lastErr });
+            sendResponse({ ok: true });
+          },
+        );
       })
       .catch((err) =>
         sendResponse({ ok: false, error: String(err || "Unknown error") }),

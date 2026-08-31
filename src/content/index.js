@@ -13,6 +13,7 @@ import { initExtensionsPanel } from "./panel/extensions.js";
 import "./features/legacyBadges.js";
 import "./roblox.com/info/roblox-badges.js";
 import { syncHomeWelcomeModal } from "./alerts/welcome.js";
+import { syncVersionUpdateAlert } from "./alerts/versionAlert.js";
 import {
   applyChartsRename,
   applyCommunityRename,
@@ -49,6 +50,7 @@ function runSyncPass() {
   syncAccountSettingsMenuButton();
   syncAccountSettingsLayoutInset();
   syncHomeWelcomeModal();
+  syncVersionUpdateAlert();
 }
 
 function installStorageSyncListener() {

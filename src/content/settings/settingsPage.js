@@ -6,7 +6,11 @@ import {
   promptCustomCssCautionNotice,
   promptProfileEffectsSupportNotice,
 } from "../alerts/alert.js";
-import { showMaliciousPluginOverlay } from "../ui/overlay.js";
+import {
+  showMaliciousPluginOverlay,
+  showVersionUpdateOverlay,
+} from "../ui/overlay.js";
+import { fetchVersionManifest } from "../core/version.js";
 import { syncAccountSettingsMenuButton } from "../redirect/settingsButton.js";
 import {
   buildPluginUrl,
@@ -63,6 +67,8 @@ import { sidebarItemLabelKey } from "../sidebar/sidebarItemLabels.js";
 import { ADD_ICON_SVG, DELETE_ICON_SVG } from "../sidebar/sidebarIcons.js";
 import { applyPlainOrRichText } from "../ui/richText.js";
 import { createDropdown } from "../ui/dropdown.js";
+import { setHidden } from "../ui/visibility.js";
+import { createControlButton, getControlButtonLabel } from "../ui/controlButton.js";
 import { createToggle, setToggleChecked } from "../ui/toggle.js";
 import {
   createMarkedSlider,
@@ -238,49 +244,6 @@ function setSidebarSizeModeClass(root, mode) {
 
 function isDeveloperPageUnlocked() {
   return !!settingsState.developerPageUnlocked;
-}
-
-const FOUNDATION_WEB_BUTTON_CLASS =
-  "foundation-web-button relative clip group/interactable focus-visible:outline-focus disabled:outline-none cursor-pointer relative flex items-center justify-center stroke-none padding-y-none select-none radius-medium text-label-medium height-1000 padding-x-medium bg-action-standard content-action-standard text-label-medium shrink-0";
-
-function getControlButtonLabel(btn) {
-  if (!(btn instanceof HTMLElement)) return null;
-  const label = btn.querySelector(".price-tag.robux-price-tag");
-  return label instanceof HTMLElement ? label : null;
-}
-
-function createControlButton(textKey, attrs = {}) {
-  const btn = el("button", FOUNDATION_WEB_BUTTON_CLASS);
-  btn.type = "button";
-  btn.style.textDecoration = "none";
-
-  const stateLayer = el(
-    "div",
-    "absolute inset-[0] transition-colors group-hover/interactable:bg-[var(--color-state-hover)] group-active/interactable:bg-[var(--color-state-press)] group-disabled/interactable:bg-none",
-  );
-  stateLayer.setAttribute("aria-hidden", "true");
-  stateLayer.setAttribute("data-testid", "foundation-web-state-layer");
-
-  const labelOuter = el("span", "flex items-center min-width-0 gap-small");
-  const labelWrap = el(
-    "span",
-    "padding-y-xsmall text-truncate-end text-no-wrap",
-  );
-  const labelInner = el(
-    "div",
-    "d-flex-inline gap-1 justify-content-start align-items-center",
-  );
-  const label = el("span", "price-tag robux-price-tag");
-  if (textKey) setI18n(label, textKey);
-  labelInner.appendChild(label);
-  labelWrap.appendChild(labelInner);
-  labelOuter.appendChild(labelWrap);
-  btn.append(stateLayer, labelOuter);
-
-  for (const [key, value] of Object.entries(attrs)) {
-    btn.setAttribute(key, value);
-  }
-  return btn;
 }
 
 function sidebarModeValues() {
@@ -581,7 +544,7 @@ function createSettingsCardHeaderRow(titleKeyOrItem, trailing = null) {
 function createSettingsCardDescription(descKey) {
   const desc = el(
     "div",
-    "text-body-large content-default margin-top-large roprime-i18n",
+    "text-body-large content-default roprime-i18n",
   );
   if (descKey) setI18n(desc, descKey);
   return desc;
@@ -692,10 +655,7 @@ function createSidebarInlineToggleRow(item) {
   setSettingTitle(title, item);
   copy.appendChild(title);
   if (item.description) {
-    const desc = el(
-      "div",
-      "text-body-large content-default roprime-i18n",
-    );
+    const desc = el("div", "text-body-large content-default roprime-i18n");
     setI18n(desc, item.description);
     copy.appendChild(desc);
   }
@@ -722,10 +682,7 @@ function buildSidebarSizeRow(item) {
     "text-title-large content-emphasis roprime-i18n",
   );
   setI18n(sizeTitle, item.title || "settings.appearance.sidebar.sizeTitle");
-  const sizeDesc = el(
-    "div",
-    "text-body-large content-default roprime-i18n",
-  );
+  const sizeDesc = el("div", "text-body-large content-default roprime-i18n");
   setI18n(
     sizeDesc,
     item.description || "settings.appearance.sidebar.sizeDescription",
@@ -853,7 +810,22 @@ const CUSTOM_BUILDERS = {
     forceAlertBtn.addEventListener("click", () => {
       void showMaliciousPluginOverlay("{$Extension}", async () => true);
     });
-    actions.appendChild(forceAlertBtn);
+    const forceVersionBtn = createControlButton(
+      "settings.developer.forceVersionAlert",
+    );
+    forceVersionBtn.classList.add("roprime-force-version-update-alert");
+    forceVersionBtn.addEventListener("click", () => {
+      void (async () => {
+        const manifest = await fetchVersionManifest();
+        if (!manifest?.version) return;
+        await showVersionUpdateOverlay({
+          currentVersion: getExtensionVersion(),
+          latestVersion: manifest.version,
+          config: manifest.config,
+        });
+      })();
+    });
+    actions.append(forceAlertBtn, forceVersionBtn);
     wrap.append(title, desc, actions);
     return wrap;
   },

@@ -5,9 +5,6 @@ export const SIDEBAR_FULL_RESERVED_PX =
 
 export function buildSidebarFullLayoutCss() {
   return `
-body .no-gutter-ads.logged-in.left-nav-new-width {
-  --left-nav-reserved-width: ${SIDEBAR_FULL_RESERVED_PX}px !important;
-}
 .rollercoaster-background {
   margin-left: ${SIDEBAR_FULL_RESERVED_PX}px !important;
 }

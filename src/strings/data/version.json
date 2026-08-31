@@ -1,0 +1,11 @@
+{
+  "version": "1.5.0",
+  "config": {
+    "GitHubLink": "https://github.com/walway/RoPrime/releases",
+    "ChromeLink": "https://github.com/walway/RoPrime/releases",
+    "FirefoxLink": "",
+    "EdgeLink": "",
+    "OperaLink": "",
+    "enabled": "true"
+  }
+}

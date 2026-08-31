@@ -26,6 +26,20 @@ export const SETTINGS_CONFIG = {
         type: "panel",
         id: "settingsSync",
       },
+      {
+        type: "card",
+        id: "notifications",
+        title: "settings.notifications.title",
+        items: [
+          {
+            type: "toggle",
+            key: "updateNotificationsEnabled",
+            title: "settings.notifications.update.title",
+            description: "settings.notifications.update.description",
+            byDefault: true,
+          },
+        ],
+      },
     ],
   },
   navDividerAfterSettings: {

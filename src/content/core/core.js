@@ -384,6 +384,7 @@ export function serializeSettingsPayload() {
     sidebarCollapseMenuEnabled: !!settingsState.sidebarCollapseMenuEnabled,
     expandSidebarOnHoverEnabled: !!settingsState.expandSidebarOnHoverEnabled,
     robloxEventsEnabled: !!settingsState.robloxEventsEnabled,
+    updateNotificationsEnabled: settingsState.updateNotificationsEnabled !== false,
     hiddenSidebarItemsBySize: normalizeHiddenSidebarItemsBySize({
       hiddenSidebarItemsBySize: settingsState.hiddenSidebarItemsBySize,
     }),

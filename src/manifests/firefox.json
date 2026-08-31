@@ -15,7 +15,7 @@
     "*://*.supabase.co/*",
     "*://*.roblox.com/*",
     "*://*.rbxcdn.com/*",
-    "https://cdn.jsdelivr.net/*",
+    "https://raw.githubusercontent.com/*",
     "https://walway.github.io/*",
     "https://chromewebstore.googleapis.com/*",
     "https://lh3.googleusercontent.com/*"

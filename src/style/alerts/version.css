@@ -1,0 +1,63 @@
+.roprime-version-overlay-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  overflow: visible;
+}
+
+.roprime-version-overlay-dropdown-host {
+  position: relative;
+  display: block;
+  width: 100%;
+  min-height: 40px;
+  overflow: visible;
+  z-index: 2;
+}
+
+.roprime-version-overlay-dropdown-host .roprime-dropdown-textbox,
+.roprime-version-overlay-dropdown-host .roprime-version-overlay-dropdown {
+  display: block;
+  width: 100%;
+}
+
+.roprime-version-overlay-dropdown-host .flex {
+  display: flex;
+  width: 100%;
+}
+
+.roprime-version-overlay-dropdown-host button[role="combobox"] {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  min-height: 40px;
+  border: 1px solid
+    color-mix(in srgb, var(--color-content-emphasis) 22%, transparent);
+  background: var(--color-surface-300, #2a2d34);
+  color: var(--color-content-emphasis, #f0f0f0);
+  border-radius: 8px;
+  padding: 8px 12px;
+  box-sizing: border-box;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.roprime-version-overlay-dropdown-host
+  button[role="combobox"]
+  .foundation-web-menu-item-title {
+  color: var(--color-content-emphasis, #f0f0f0);
+}
+
+.roprime-version-overlay-dropdown-host button[role="combobox"] .icon {
+  color: var(--color-content-emphasis, #f0f0f0);
+  opacity: 1;
+}
+
+#roprime-overlay-root .foundation-web-dialog-content {
+  overflow: visible;
+}
+
+.roprime-version-overlay-dropdown-host .roprime-dropdown-popper {
+  z-index: 2147483001 !important;
+}

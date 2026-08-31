@@ -2,6 +2,7 @@
 @import "./account/app-theme.css";
 @import "./settings/extensions-panel.css";
 @import "./settings/overlay.css";
+@import "./alerts/version.css";
 @import "./settings/settings.css";
 @import "./layout/chrome.css";
 @import "./welcome/welcome.css";

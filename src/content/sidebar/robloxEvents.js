@@ -8,7 +8,7 @@ import { isSidebarItemHidden } from "./sidebarContent.js";
 import { setHidden } from "../ui/visibility.js";
 
 export const ROBLOX_EVENTS_CDN_URL =
-  "https://cdn.jsdelivr.net/gh/walway/roprime-data@latest/v1/roblox-events.json";
+  "https://raw.githubusercontent.com/walway/roprime-data/main/v1/roblox-events.json";
 const LOCAL_EVENTS_PATH = "src/strings/data/roblox-events.json";
 const EVENTS_ROOT_CLASS = "roblox-events";
 const EVENTS_LIST_ITEM_ATTR = "data-roprime-events-item";

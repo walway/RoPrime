@@ -95,6 +95,13 @@
       "title": "Language",
       "description": "Choose your language."
     },
+    "notifications": {
+      "title": "Notifications",
+      "update": {
+        "title": "Update notifications",
+        "description": "Show a notification when a newer version of RoPrime is available."
+      }
+    },
     "sync": {
       "title": "Synchronization",
       "description": "Copy, export, or import RoPrime settings as JSON file. You can edit the JSON in the preview.",
@@ -119,7 +126,8 @@
     "developer": {
       "title": "Developer Tools",
       "description": "This page is hidden by default. It is highly recommended not to use it because it is mostly useless.",
-      "forceMaliciousAlert": "Force Malicious Extension Alert"
+      "forceMaliciousAlert": "Force Malicious Extension Alert",
+      "forceVersionAlert": "Force Version Bump Alert"
     },
     "customCss": {
       "title": "Custom CSS",

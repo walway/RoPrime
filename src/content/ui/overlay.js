@@ -1,4 +1,12 @@
 import { getExtensionResourceUrl } from "../core/core.js";
+import { resolveDuplicateRoPrimeBeforeDownload } from "../core/conflicts.js";
+import {
+  getDefaultDownloadSource,
+  getDownloadOptions,
+  getDownloadUrl,
+  persistVersionUpdateDismissed,
+} from "../core/version.js";
+import { createDropdown } from "./dropdown.js";
 
 const OVERLAY_ROOT_ID = "roprime-overlay-root";
 
@@ -198,4 +206,208 @@ export function showMaliciousPluginOverlay(pluginName, onDelete) {
     buttonText: "Click to delete the extension",
     onAction: onDelete,
   });
+}
+
+function buildVersionUpdateOverlayMarkup({ currentVersion, latestVersion }) {
+  return `
+<div
+  data-state="open"
+  class="foundation-web-dialog-overlay padding-medium foundation-web-portal-zindex bg-common-backdrop roprime-overlay-backdrop"
+  style="pointer-events: auto;"
+>
+  <div
+    role="dialog"
+    aria-labelledby="roprime-overlay-heading"
+    data-state="open"
+    class="relative radius-large bg-surface-100 stroke-muted stroke-standard foundation-web-dialog-content shadow-transient-high download-dialog"
+    data-size="Medium"
+    tabindex="-1"
+    style="pointer-events: auto;"
+  >
+    <div class="roprime-overlay-header">
+      <div class="absolute foundation-web-dialog-close-container">
+        <button
+          type="button"
+          class="foundation-web-close-affordance flex stroke-none bg-none cursor-pointer relative clip group/interactable focus-visible:outline-focus disabled:outline-none bg-over-media-100 padding-small radius-circle roprime-overlay-close"
+          aria-label="Close"
+        >
+          <div
+            role="presentation"
+            class="absolute inset-[0] transition-colors group-hover/interactable:bg-[var(--color-state-hover)] group-active/interactable:bg-[var(--color-state-press)] group-disabled/interactable:bg-none"
+          ></div>
+          <span
+            role="presentation"
+            class="grow-0 shrink-0 basis-auto icon icon-regular-x size-[var(--icon-size-medium)]"
+          ></span>
+        </button>
+      </div>
+    </div>
+    <div class="padding-x-xlarge padding-top-xlarge padding-bottom-large flex flex-col items-center gap-xlarge">
+      <img class="roprime-overlay-icon-img" src="${escapeHtml(getExtensionResourceUrl("resources/roprime-icon.png"))}" alt="" />
+      <h2
+        id="roprime-overlay-heading"
+        class="text-heading-small padding-x-xxlarge padding-y-none text-align-x-center flex flex-col"
+      >
+        A new version of RoPrime is available
+      </h2>
+      <p class="text-body-medium padding-x-xxlarge padding-y-none text-align-x-center roprime-overlay-description">
+        You are on ${escapeHtml(currentVersion)}. Version ${escapeHtml(latestVersion)} is now available.
+      </p>
+    </div>
+    <div class="padding-x-xlarge padding-bottom-xlarge roprime-version-overlay-actions">
+      <div class="roprime-version-overlay-dropdown-host"></div>
+      <div class="flex gap-small width-full">
+        <button
+          type="button"
+          class="foundation-web-button relative clip group/interactable focus-visible:outline-focus disabled:outline-none cursor-pointer flex items-center justify-center stroke-none padding-y-none select-none radius-medium text-label-medium height-1000 padding-x-medium bg-action-emphasis content-action-emphasis grow roprime-version-overlay-download"
+          style="text-decoration: none;"
+        >
+          <div
+            role="presentation"
+            class="absolute inset-[0] transition-colors group-hover/interactable:bg-[var(--color-state-hover)] group-active/interactable:bg-[var(--color-state-press)] group-disabled/interactable:bg-none"
+            aria-hidden="true"
+            data-testid="foundation-web-state-layer"
+          ></div>
+          <span class="flex items-center min-width-0 gap-small">
+            <span class="padding-y-xsmall text-truncate-end text-no-wrap">
+              <div class="d-flex-inline gap-1 justify-content-start align-items-center">
+                <span class="price-tag robux-price-tag">Download</span>
+              </div>
+            </span>
+          </span>
+        </button>
+        <button
+          type="button"
+          class="foundation-web-button relative clip group/interactable focus-visible:outline-focus disabled:outline-none cursor-pointer flex items-center justify-center stroke-none padding-y-none select-none radius-medium text-label-medium height-1000 padding-x-medium bg-action-standard content-action-standard shrink-0 grow roprime-version-overlay-dismiss"
+          style="text-decoration: none;"
+        >
+          <div
+            class="absolute inset-[0] transition-colors group-hover/interactable:bg-[var(--color-state-hover)] group-active/interactable:bg-[var(--color-state-press)] group-disabled/interactable:bg-none"
+            aria-hidden="true"
+            data-testid="foundation-web-state-layer"
+          ></div>
+          <span class="flex items-center min-width-0 gap-small">
+            <span class="padding-y-xsmall text-truncate-end text-no-wrap">
+              <div class="d-flex-inline gap-1 justify-content-start align-items-center">
+                <span class="price-tag robux-price-tag">Dismiss</span>
+              </div>
+            </span>
+          </span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+`.trim();
+}
+
+export function showVersionUpdateOverlay({
+  currentVersion = "0.0.0",
+  latestVersion = "0.0.0",
+  config = {},
+} = {}) {
+  if (activeOverlayPromise && document.getElementById(OVERLAY_ROOT_ID)) {
+    return activeOverlayPromise;
+  }
+  activeOverlayPromise = null;
+
+  activeOverlayPromise = new Promise((resolve) => {
+    removeOverlayIfPresent();
+
+    const root = document.createElement("div");
+    root.id = OVERLAY_ROOT_ID;
+    root.setAttribute("role", "dialog");
+    root.setAttribute("aria-modal", "true");
+    root.setAttribute("aria-labelledby", "roprime-overlay-heading");
+    root.innerHTML = buildVersionUpdateOverlayMarkup({
+      currentVersion,
+      latestVersion,
+    });
+
+    const dropdownHost = root.querySelector(
+      ".roprime-version-overlay-dropdown-host",
+    );
+    const downloadOptions = getDownloadOptions(config);
+    const defaultSource = getDefaultDownloadSource(config);
+    let selectedSource = defaultSource;
+    let dropdown = null;
+
+    if (downloadOptions.length > 0 && dropdownHost instanceof HTMLElement) {
+      dropdown = createDropdown({
+        value: defaultSource,
+        options: downloadOptions.map((entry) => ({
+          value: entry.value,
+          label: entry.label,
+        })),
+        wrapperClass: "roprime-dropdown-textbox roprime-version-overlay-dropdown",
+        includeFormGroup: false,
+        popperParent: dropdownHost,
+        popperZIndex: "2147483001",
+        onChange: (value) => {
+          selectedSource = value;
+        },
+      });
+      dropdownHost.appendChild(dropdown.root);
+    } else if (dropdownHost instanceof HTMLElement) {
+      dropdownHost.classList.add("hidden");
+    }
+
+    const downloadButton = root.querySelector(
+      ".roprime-version-overlay-download",
+    );
+    if (downloadButton instanceof HTMLButtonElement) {
+      downloadButton.disabled = !getDownloadUrl(config, selectedSource);
+    }
+
+    const close = (accepted) => {
+      dropdown?.destroy();
+      removeOverlayIfPresent();
+      activeOverlayPromise = null;
+      resolve(accepted);
+    };
+
+    root
+      .querySelector(".roprime-version-overlay-download")
+      ?.addEventListener("click", () => {
+        void (async () => {
+          const url = getDownloadUrl(config, selectedSource);
+          if (!url) return;
+          window.open(url, "_blank", "noopener,noreferrer");
+          const removedSelf = await resolveDuplicateRoPrimeBeforeDownload();
+          if (!removedSelf) close(true);
+        })();
+      });
+    root
+      .querySelector(".roprime-version-overlay-dismiss")
+      ?.addEventListener("click", () => {
+        persistVersionUpdateDismissed(latestVersion);
+        close(false);
+      });
+    root
+      .querySelector(".roprime-overlay-close")
+      ?.addEventListener("click", () => {
+        persistVersionUpdateDismissed(latestVersion);
+        close(false);
+      });
+    root
+      .querySelector(".roprime-overlay-backdrop")
+      ?.addEventListener("click", (event) => {
+        if (event.target === event.currentTarget) {
+          persistVersionUpdateDismissed(latestVersion);
+          close(false);
+        }
+      });
+
+    activeOverlayKeydownHandler = (event) => {
+      if (event.key === "Escape") {
+        persistVersionUpdateDismissed(latestVersion);
+        close(false);
+      }
+    };
+    document.addEventListener("keydown", activeOverlayKeydownHandler, true);
+
+    appendOverlayWhenBodyReady(root);
+  });
+
+  return activeOverlayPromise;
 }

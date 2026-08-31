@@ -1,8 +1,4 @@
-export {
-  createToggle,
-  getToggleChecked,
-  setToggleChecked,
-} from "./toggle.js";
+export { createToggle, getToggleChecked, setToggleChecked } from "./toggle.js";
 export {
   createMarkedSlider,
   getSliderValue,
@@ -10,7 +6,12 @@ export {
   setSliderValue,
 } from "./slider.js";
 export { attachTooltip, createTooltip } from "./tooltip.js";
-export { applyPlainOrRichText, renderRichText, shouldRenderRichText } from "./richText.js";
+export { createFilter } from "./filter.js";
+export {
+  applyPlainOrRichText,
+  renderRichText,
+  shouldRenderRichText,
+} from "./richText.js";
 export {
   createPill,
   getPillValue,
