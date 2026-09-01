@@ -1,3 +1,5 @@
+import { appendParsedMarkup } from "./dom.js";
+
 let filterIdCounter = 0;
 
 function createElement(tag, className) {
@@ -66,16 +68,25 @@ function buildTextFieldMarkup({ id, label, value, focused }) {
     .join(" ");
 
   const legendClass = focused ? "css-14lo706" : "css-yjsfm1";
+  const safeLabel = String(label)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;");
+  const safeValue = String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll('"', "&quot;");
 
   return `
     <div style="display: flex; flex-direction: row; gap: 8px;">
       <div class="MuiFormControl-root MuiFormControl-fullWidth MuiTextField-root css-feqhe6">
-        <label class="${labelClasses}" data-shrink="${focused ? "true" : "false"}" for="${inputId}" id="${inputId}-label">${label}</label>
+        <label class="${labelClasses}" data-shrink="${focused ? "true" : "false"}" for="${inputId}" id="${inputId}-label">${safeLabel}</label>
         <div class="${inputWrapClasses}">
-          <input aria-invalid="false" type="text" class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputSizeSmall css-vojnal" value="${value}" id="${inputId}">
+          <input aria-invalid="false" type="text" class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputSizeSmall css-vojnal" value="${safeValue}" id="${inputId}">
           <fieldset aria-hidden="true" class="MuiOutlinedInput-notchedOutline css-igs3ac">
             <legend class="${legendClass}">
-              <span>${label}</span>
+              <span>${safeLabel}</span>
             </legend>
           </fieldset>
         </div>
@@ -269,12 +280,15 @@ export function createFilter({
 
       const content = createElement("div");
       if (option.type === "text") {
-        content.innerHTML = buildTextFieldMarkup({
-          id: `${filterIdCounter++}-${option.id}`,
-          label: option.placeholder || option.label,
-          value: option.value,
-          focused: false,
-        });
+        appendParsedMarkup(
+          content,
+          buildTextFieldMarkup({
+            id: `${filterIdCounter++}-${option.id}`,
+            label: option.placeholder || option.label,
+            value: option.value,
+            focused: false,
+          }),
+        );
       } else {
         const name = createElement("span", "filter-option-name");
         name.textContent = option.label;

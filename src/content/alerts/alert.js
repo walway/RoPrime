@@ -1,3 +1,5 @@
+import { appendParsedMarkup } from "../ui/dom.js";
+
 const SUPPORT_ALERT_ROOT_ID = "roprime-support-alert-root";
 
 let activeAlertPromise = null;
@@ -50,7 +52,9 @@ function showAlertModal({ title, bodyHtml, okLabel = "Ok" }) {
     root.setAttribute("aria-modal", "true");
     root.setAttribute("aria-labelledby", "roprime-alert-title");
 
-    root.innerHTML = `
+    appendParsedMarkup(
+      root,
+      `
 <div data-state="open" class="foundation-web-dialog-overlay padding-medium foundation-web-portal-zindex bg-common-backdrop" style="pointer-events: auto;" data-roprime-alert-overlay>
   <div role="dialog" data-state="open" class="relative radius-large bg-surface-100 stroke-muted stroke-standard foundation-web-dialog-content shadow-transient-high" data-size="Medium" tabindex="-1" style="pointer-events: auto;">
     <div class="absolute foundation-web-dialog-close-container">
@@ -60,20 +64,28 @@ function showAlertModal({ title, bodyHtml, okLabel = "Ok" }) {
       </button>
     </div>
     <div class="padding-x-xlarge padding-top-xlarge padding-bottom-xlarge">
-      <h2 id="roprime-alert-title">${title}</h2>
-      ${bodyHtml}
+      <h2 id="roprime-alert-title"></h2>
+      <div class="roprime-alert-body"></div>
     </div>
     <div class="padding-x-xlarge padding-bottom-xlarge flex gap-medium justify-end">
       <button type="button" class="foundation-web-button relative clip group/interactable focus-visible:outline-focus disabled:outline-none cursor-pointer relative flex items-center justify-center stroke-none padding-y-none select-none radius-medium text-label-large height-1200 padding-x-medium bg-action-emphasis content-action-emphasis roprime-alert-ok">
         <div role="presentation" class="absolute inset-[0] transition-colors group-hover/interactable:bg-[var(--color-state-hover)] group-active/interactable:bg-[var(--color-state-press)] group-disabled/interactable:bg-none"></div>
         <span class="flex items-center min-width-0 gap-small">
-          <span class="padding-y-xsmall text-truncate-end text-no-wrap">${okLabel}</span>
+          <span class="padding-y-xsmall text-truncate-end text-no-wrap roprime-alert-ok-label"></span>
         </span>
       </button>
     </div>
   </div>
 </div>
-`;
+`,
+    );
+
+    const titleEl = root.querySelector("#roprime-alert-title");
+    if (titleEl) titleEl.textContent = title;
+    const bodyEl = root.querySelector(".roprime-alert-body");
+    if (bodyEl) appendParsedMarkup(bodyEl, bodyHtml);
+    const okLabelEl = root.querySelector(".roprime-alert-ok-label");
+    if (okLabelEl) okLabelEl.textContent = okLabel;
 
     const close = (accepted) => {
       removeAlertIfPresent();

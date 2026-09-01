@@ -3,6 +3,7 @@ import {
   normalizeSidebarSizeMode,
 } from "../core/core.js";
 import { t as accountSettingsPaneT } from "../settings/translationsHook.js";
+import { createControlButton } from "../ui/controlButton.js";
 import {
   discoverSidebarNavItems,
   hideSidebarItem,
@@ -11,8 +12,6 @@ import {
   restoreSidebarItem,
 } from "./sidebarContent.js";
 import { sidebarItemLabelKey } from "./sidebarItemLabels.js";
-import { ADD_ICON_SVG, DELETE_ICON_SVG } from "./sidebarIcons.js";
-import { setHidden } from "../ui/visibility.js";
 
 const SIDEBAR_SIZE_TITLE_KEYS = {
   full: "settings.appearance.sidebar.sizeFull",
@@ -20,20 +19,30 @@ const SIDEBAR_SIZE_TITLE_KEYS = {
   icon: "settings.appearance.sidebar.sizeIconOnly",
 };
 
-const SIDEBAR_SIZE_CONTROL_INNER =
-  '<div class="roprime-sidebar-size-box"><div class="roprime-sidebar-size-rail"><input id="{{id}}" class="roprime-sidebar-size-slider" type="range" min="0" max="100" step="0.1" value="0" data-i18n-aria-label="settings.appearance.sidebar.sizeTitle" /></div><div class="roprime-sidebar-size-footer"><div class="roprime-sidebar-size-ticks"><button class="roprime-sidebar-size-tick" type="button" data-size-mode="full"><span data-i18n="settings.appearance.sidebar.sizeFull"></span></button><button class="roprime-sidebar-size-tick" type="button" data-size-mode="small"><span data-i18n="settings.appearance.sidebar.sizeSmall"></span></button><button class="roprime-sidebar-size-tick" type="button" data-size-mode="icon"><span data-i18n="settings.appearance.sidebar.sizeIconOnly"></span></button></div><button type="button" class="roprime-sidebar-configure-btn" data-roprime-open-sidebar-content data-i18n="settings.appearance.sidebar.configureContent"></button></div></div>';
+function el(tag, className) {
+  const node = document.createElement(tag);
+  if (className) node.className = className;
+  return node;
+}
+
+function setI18n(node, key) {
+  if (!key) return node;
+  node._rpI18n = key;
+  node.classList.add("roprime-i18n");
+  node.textContent = accountSettingsPaneT(key);
+  return node;
+}
+
+function setI18nAria(node, key) {
+  if (!key) return;
+  node.setAttribute("data-i18n-aria-label", key);
+  node.setAttribute("aria-label", accountSettingsPaneT(key));
+}
 
 export function buildSidebarSizeControlHtml(
   sliderId = "roprime-sidebar-size-slider",
 ) {
-  const inner = SIDEBAR_SIZE_CONTROL_INNER.replace(
-    /\{\{id\}\}/g,
-    sliderId,
-  ).replace(/motion\.div/g, "div");
-  return `<div class="roprime-sidebar-size-control">${inner}</div>`.replace(
-    /motion\.div/g,
-    "div",
-  );
+  return `<div class="roprime-sidebar-size-control"><div class="roprime-sidebar-size-box"><div class="roprime-sidebar-size-rail"><input id="${sliderId}" class="roprime-sidebar-size-slider" type="range" min="0" max="100" step="0.1" value="0" data-i18n-aria-label="settings.appearance.sidebar.sizeTitle" /></div><div class="roprime-sidebar-size-footer"><div class="roprime-sidebar-size-ticks"><button class="roprime-sidebar-size-tick" type="button" data-size-mode="full"><span data-i18n="settings.appearance.sidebar.sizeFull"></span></button><button class="roprime-sidebar-size-tick" type="button" data-size-mode="small"><span data-i18n="settings.appearance.sidebar.sizeSmall"></span></button><button class="roprime-sidebar-size-tick" type="button" data-size-mode="icon"><span data-i18n="settings.appearance.sidebar.sizeIconOnly"></span></button></div><button type="button" class="roprime-sidebar-configure-btn" data-roprime-open-sidebar-content data-i18n="settings.appearance.sidebar.configureContent"></button></div></div></div>`;
 }
 
 function sidebarItemLabel(item) {
@@ -42,47 +51,74 @@ function sidebarItemLabel(item) {
   return translated && translated !== key ? translated : item.label;
 }
 
-function buildSidebarContentRowHtml(item, mode, sizeMode) {
-  const label = sidebarItemLabel(item);
-  const sizeAttr = ` data-roprime-sidebar-size="${sizeMode}"`;
-  if (mode === "add") {
-    return `<div class="roprime-sidebar-content-row is-removed-item" data-roprime-sidebar-content-row="${item.id}"><span class="roprime-sidebar-content-row-label">${label}</span><button type="button" class="roprime-sidebar-content-add" data-roprime-sidebar-add="${item.id}"${sizeAttr} data-i18n-aria-label="settings.appearance.sidebar.contentRestoreItem">${ADD_ICON_SVG}</button></div>`;
-  }
-  return `<div class="roprime-sidebar-content-row" data-roprime-sidebar-content-row="${item.id}"><span class="roprime-sidebar-content-row-label">${label}</span><button type="button" class="roprime-sidebar-content-delete" data-roprime-sidebar-delete="${item.id}"${sizeAttr} data-i18n-aria-label="settings.appearance.sidebar.contentRemoveItem">${DELETE_ICON_SVG}</button></div>`;
+function buildSidebarContentRow(item, mode, isAdd) {
+  const row = el(
+    "div",
+    isAdd
+      ? "roprime-sidebar-content-row is-removed-item"
+      : "roprime-sidebar-content-row",
+  );
+  row.dataset.roprimeSidebarContentRow = item.id;
+
+  const label = el("span", "roprime-sidebar-content-row-label");
+  label.textContent = sidebarItemLabel(item);
+
+  const btn = createControlButton(null, {
+    literalText: isAdd ? "Add" : "Delete",
+  });
+  btn.type = "button";
+  btn.classList.add(
+    "roprime-sidebar-content-action-btn",
+    isAdd ? "roprime-sidebar-content-add" : "roprime-sidebar-content-delete",
+  );
+  if (isAdd) btn.dataset.roprimeSidebarAdd = item.id;
+  else btn.dataset.roprimeSidebarDelete = item.id;
+  btn.dataset.roprimeSidebarSize = mode;
+  setI18nAria(
+    btn,
+    isAdd
+      ? "settings.appearance.sidebar.contentRestoreItem"
+      : "settings.appearance.sidebar.contentRemoveItem",
+  );
+
+  row.append(label, btn);
+  return row;
 }
 
-function buildSidebarContentSectionHtml(sizeMode) {
+function buildSidebarContentSection(sizeMode) {
   const mode = normalizeSidebarSizeMode(sizeMode);
   const titleKey =
     SIDEBAR_SIZE_TITLE_KEYS[mode] || SIDEBAR_SIZE_TITLE_KEYS.full;
   const items = discoverSidebarNavItems(mode);
-  if (!items.length) {
-    return "";
-  }
+  if (!items.length) return null;
+
   const visible = items.filter((item) => !isSidebarItemHidden(item.id, mode));
   const hidden = items.filter((item) => isSidebarItemHidden(item.id, mode));
-  const parts = visible.map((item) =>
-    buildSidebarContentRowHtml(item, "remove", mode),
+
+  const section = el("div", "roprime-sidebar-content-size-section");
+  section.dataset.roprimeSidebarSizeSection = mode;
+  section.appendChild(
+    setI18n(el("h4", "roprime-sidebar-content-size-title"), titleKey),
   );
+
+  const rows = el("div", "roprime-sidebar-content-size-rows");
+  for (const item of visible) rows.appendChild(buildSidebarContentRow(item, mode, false));
   if (hidden.length) {
-    parts.push(
-      '<div class="roprime-sidebar-content-divider" role="separator"></div>',
-    );
-    parts.push(
-      ...hidden.map((item) => buildSidebarContentRowHtml(item, "add", mode)),
-    );
+    const divider = el("div", "roprime-sidebar-content-divider");
+    divider.setAttribute("role", "separator");
+    rows.appendChild(divider);
+    for (const item of hidden) rows.appendChild(buildSidebarContentRow(item, mode, true));
   }
-  return `
-		<div class="roprime-sidebar-content-size-section" data-roprime-sidebar-size-section="${mode}">
-			<h4 class="roprime-sidebar-content-size-title" data-i18n="${titleKey}"></h4>
-			<div class="roprime-sidebar-content-size-rows">${parts.join("")}</div>
-		</div>`;
+  section.appendChild(rows);
+  return section;
 }
 
-export function buildSidebarContentListHtml(sizeMode = getActiveSidebarSize()) {
-  const section = buildSidebarContentSectionHtml(sizeMode);
+function buildSidebarContentList(sizeMode = getActiveSidebarSize()) {
+  const section = buildSidebarContentSection(sizeMode);
   if (!section) {
-    return `<p class="roprime-sidebar-content-empty" data-i18n="settings.appearance.sidebar.contentEmptyHint"></p>`;
+    const empty = el("p", "roprime-sidebar-content-empty");
+    setI18n(empty, "settings.appearance.sidebar.contentEmptyHint");
+    return empty;
   }
   return section;
 }
@@ -90,7 +126,8 @@ export function buildSidebarContentListHtml(sizeMode = getActiveSidebarSize()) {
 export function refreshSidebarContentList(inner) {
   const list = inner.querySelector("[data-roprime-sidebar-content-list]");
   if (!(list instanceof HTMLElement)) return;
-  list.innerHTML = buildSidebarContentListHtml();
+  list.textContent = "";
+  list.appendChild(buildSidebarContentList());
   bindSidebarContentList(inner);
 }
 

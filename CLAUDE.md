@@ -25,4 +25,3 @@ RoPrime is a browser extension for roblox.com that provides design-change featur
 
 - Do Not Guess: If a task requirement or a build failure is ambiguous, ask the user for clarification immediately.
 - Idempotency: Ensure scripts and your code changes can run multiple times without breaking the environment.
-- Never use innerHtml - Use dom.js or native dom manipulation solutions.

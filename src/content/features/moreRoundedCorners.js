@@ -21,7 +21,6 @@ const MORE_ROUNDED_CORNERS_CSS = `
   overflow: hidden;
 }
 
-#vertical-menu,
 .menu-vertical {
   scroll-behavior: smooth;
   border-radius: 8px;

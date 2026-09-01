@@ -37,6 +37,7 @@ export const SETTINGS_CONFIG = {
             title: "settings.notifications.update.title",
             description: "settings.notifications.update.description",
             byDefault: true,
+            hideWhenStoreInstall: true,
           },
         ],
       },
@@ -167,6 +168,7 @@ export const SETTINGS_CONFIG = {
         title: "settings.appearance.friendStyling.title",
         description: "settings.appearance.friendStyling.description",
         byDefault: false,
+        hide: true,
       },
       {
         type: "toggle",

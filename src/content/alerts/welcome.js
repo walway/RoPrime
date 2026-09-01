@@ -1,3 +1,4 @@
+import { appendParsedMarkup } from "../ui/dom.js";
 import {
   getStorageApi,
   isExtensionContextInvalidatedError,
@@ -112,7 +113,7 @@ function showWelcomeModal() {
   root.setAttribute("role", "dialog");
   root.setAttribute("aria-modal", "true");
   root.setAttribute("aria-labelledby", "roprime-welcome-title");
-  root.innerHTML = buildWelcomeMarkup();
+  appendParsedMarkup(root, buildWelcomeMarkup());
 
   const dismiss = () => {
     persistWelcomeDismissed();

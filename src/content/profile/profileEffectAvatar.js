@@ -78,10 +78,24 @@ export async function fetchAuthUserHeadshot(userId) {
   }
 }
 
-export function buildRobloxAvatarHeadshotHtml(profile) {
-  const alt = profile.displayName.replace(/"/g, "&quot;");
-  const src = profile.imageUrl.replace(/"/g, "&quot;");
-  return `<div class="user-profile-header-details-avatar-container avatar-headshot-lg roprime-effect-shop-avatar"><div class="avatar avatar-card-fullbody" data-testid="avatar-card-container"><span class="thumbnail-2d-container avatar-card-image"><img src="${src}" alt="${alt}" title="${alt}" loading="lazy" /></span></div></div>`;
+export function buildRobloxAvatarHeadshotElement(profile) {
+  const container = document.createElement("div");
+  container.className =
+    "user-profile-header-details-avatar-container avatar-headshot-lg roprime-effect-shop-avatar";
+  const avatar = document.createElement("div");
+  avatar.className = "avatar avatar-card-fullbody";
+  avatar.dataset.testid = "avatar-card-container";
+  const thumb = document.createElement("span");
+  thumb.className = "thumbnail-2d-container avatar-card-image";
+  const img = document.createElement("img");
+  img.src = profile.imageUrl;
+  img.alt = profile.displayName;
+  img.title = profile.displayName;
+  img.loading = "lazy";
+  thumb.appendChild(img);
+  avatar.appendChild(thumb);
+  container.appendChild(avatar);
+  return container;
 }
 
 export async function hydrateProfilePictureEffectAvatars(shop) {
@@ -91,7 +105,7 @@ export async function hydrateProfilePictureEffectAvatars(shop) {
   const profile = await fetchAuthUserHeadshot(userId);
   if (!profile) return;
 
-  const avatarHtml = buildRobloxAvatarHeadshotHtml(profile);
+  const avatarNode = buildRobloxAvatarHeadshotElement(profile);
 
   for (const card of shop.querySelectorAll("[data-roprime-profile-effect]")) {
     if (!(card instanceof HTMLElement)) continue;
@@ -108,6 +122,7 @@ export async function hydrateProfilePictureEffectAvatars(shop) {
       wrap.className = "roprime-profile-effect-avatar-wrap";
       preview.appendChild(wrap);
     }
-    wrap.innerHTML = avatarHtml;
+    wrap.textContent = "";
+    wrap.appendChild(avatarNode.cloneNode(true));
   }
 }

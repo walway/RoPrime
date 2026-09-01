@@ -20,7 +20,7 @@ dotenv.config({ path: join(root, ".env") });
 
 const distDir = join(root, "dist");
 const bundleDir = join(distDir, "_build");
-const platforms = ["chrome", "firefox"];
+const platforms = ["chrome", "firefox", "edge", "opera"];
 
 const supabaseUrl = String(process.env.SUPABASE_URL || "").trim();
 const supabaseAnonKey = String(
@@ -252,7 +252,7 @@ for (const platform of platforms) {
 rmSync(bundleDir, { recursive: true, force: true });
 
 console.log("Build complete.");
-console.log("Successfully generated dist/chrome and dist/firefox builds.");
+console.log("Successfully generated dist/chrome, dist/firefox, dist/edge, and dist/opera builds.");
 console.warn(
   "WARNING!!! DON'T FORGET TO UPDATE VERSION IN chrome.json AND firefox.json BEFORE RELEASE.",
 );

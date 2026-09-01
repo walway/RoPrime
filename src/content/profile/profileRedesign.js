@@ -6,6 +6,10 @@ import {
   removeRoPrimeProfileTabContent,
   syncProfileAvatarRenderer,
 } from "./profileAvatarRenderer.js";
+import {
+  removeProfileWearingCards,
+  syncProfileWearingCards,
+} from "./profileWearingCards.js";
 
 export const RP_PROFILE_REDESIGN_STYLE_ID = "roprime-profile-redesign-style";
 
@@ -25,19 +29,100 @@ const PROFILE_REDESIGN_CSS = `
   display: none !important;
 }
 
-.profile-tab-content:not([data-roprime-profile-tab-content]) {
-  display: none !important;
+.roprime-profile-tab-layout {
+  display: flex;
+  align-items: stretch;
+  gap: 20px;
+  width: 100%;
 }
 
 .roprime-profile-avatar-preview {
   width: 50%;
   max-width: 50%;
+  flex: 0 0 50%;
   height: 420px;
   min-height: 420px;
   margin-bottom: 24px;
   border-radius: 12px;
   overflow: hidden;
   position: relative;
+}
+
+.roprime-profile-wearing-cards {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.roprime-profile-wearing-title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--color-content-emphasis, #fff);
+}
+
+.roprime-profile-wearing-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 420px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.roprime-profile-wearing-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: var(--color-surface-200, rgba(255, 255, 255, 0.06));
+  text-decoration: none;
+  color: inherit;
+}
+
+.roprime-profile-wearing-card:hover {
+  background: var(--color-surface-300, rgba(255, 255, 255, 0.1));
+}
+
+.roprime-profile-wearing-thumb {
+  width: 56px;
+  height: 56px;
+  flex-shrink: 0;
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--color-surface-100, rgba(0, 0, 0, 0.2));
+}
+
+.roprime-profile-wearing-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.roprime-profile-wearing-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.roprime-profile-wearing-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-content-emphasis, #fff);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.roprime-profile-wearing-type {
+  font-size: 12px;
+  color: var(--color-content-default, rgba(255, 255, 255, 0.72));
 }
 
 .roprime-profile-avatar-preview .thumbnail-loader {
@@ -62,6 +147,8 @@ const scheduleBubbleSync = debounce(syncBubbleLength, 100);
 const scheduleProfileShellSync = debounce(() => {
   ensureRoPrimeProfileTabContent();
   void syncProfileAvatarRenderer();
+  const tabContent = document.querySelector("[data-roprime-profile-tab-content]");
+  if (tabContent instanceof HTMLElement) void syncProfileWearingCards(tabContent);
   syncBubbleLength();
 }, 120);
 
@@ -105,6 +192,7 @@ function removeProfileRedesignStyle() {
   document.getElementById(RP_PROFILE_REDESIGN_STYLE_ID)?.remove();
   document.documentElement.style.removeProperty(BUBBLE_LENGTH_VAR);
   removeRoPrimeProfileTabContent();
+  removeProfileWearingCards();
 }
 
 function injectProfileRedesignStyle() {

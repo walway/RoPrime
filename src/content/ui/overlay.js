@@ -1,4 +1,4 @@
-import { getExtensionResourceUrl } from "../core/core.js";
+import { getExtensionResourceUrl, settingsT } from "../core/core.js";
 import { resolveDuplicateRoPrimeBeforeDownload } from "../core/conflicts.js";
 import {
   getDefaultDownloadSource,
@@ -6,6 +6,8 @@ import {
   getDownloadUrl,
   persistVersionUpdateDismissed,
 } from "../core/version.js";
+import { appendParsedMarkup } from "./dom.js";
+import { applyPlainOrRichText } from "./richText.js";
 import { createDropdown } from "./dropdown.js";
 
 const OVERLAY_ROOT_ID = "roprime-overlay-root";
@@ -147,13 +149,16 @@ export function showRoPrimeOverlay({
     root.setAttribute("role", "dialog");
     root.setAttribute("aria-modal", "true");
     root.setAttribute("aria-labelledby", "roprime-overlay-heading");
-    root.innerHTML = buildOverlayMarkup({
-      headerName,
-      iconUrl,
-      heading,
-      description,
-      buttonText,
-    });
+    appendParsedMarkup(
+      root,
+      buildOverlayMarkup({
+        headerName,
+        iconUrl,
+        heading,
+        description,
+        buttonText,
+      }),
+    );
 
     const close = (accepted) => {
       removeOverlayIfPresent();
@@ -208,7 +213,15 @@ export function showMaliciousPluginOverlay(pluginName, onDelete) {
   });
 }
 
+function formatVersionUpdateText(template, currentVersion, latestVersion) {
+  return String(template || "")
+    .replaceAll("{currentVersion}", String(currentVersion))
+    .replaceAll("{latestVersion}", String(latestVersion));
+}
+
 function buildVersionUpdateOverlayMarkup({ currentVersion, latestVersion }) {
+  const title = escapeHtml(settingsT("settings.versionUpdate.title"));
+
   return `
 <div
   data-state="open"
@@ -248,11 +261,9 @@ function buildVersionUpdateOverlayMarkup({ currentVersion, latestVersion }) {
         id="roprime-overlay-heading"
         class="text-heading-small padding-x-xxlarge padding-y-none text-align-x-center flex flex-col"
       >
-        A new version of RoPrime is available
+        ${title}
       </h2>
-      <p class="text-body-medium padding-x-xxlarge padding-y-none text-align-x-center roprime-overlay-description">
-        You are on ${escapeHtml(currentVersion)}. Version ${escapeHtml(latestVersion)} is now available.
-      </p>
+      <p class="text-body-medium padding-x-xxlarge padding-y-none text-align-x-center roprime-overlay-description roprime-version-update-description"></p>
     </div>
     <div class="padding-x-xlarge padding-bottom-xlarge roprime-version-overlay-actions">
       <div class="roprime-version-overlay-dropdown-host"></div>
@@ -319,10 +330,25 @@ export function showVersionUpdateOverlay({
     root.setAttribute("role", "dialog");
     root.setAttribute("aria-modal", "true");
     root.setAttribute("aria-labelledby", "roprime-overlay-heading");
-    root.innerHTML = buildVersionUpdateOverlayMarkup({
-      currentVersion,
-      latestVersion,
-    });
+    appendParsedMarkup(
+      root,
+      buildVersionUpdateOverlayMarkup({
+        currentVersion,
+        latestVersion,
+      }),
+    );
+
+    const descriptionEl = root.querySelector(".roprime-version-update-description");
+    if (descriptionEl instanceof HTMLElement) {
+      applyPlainOrRichText(
+        descriptionEl,
+        formatVersionUpdateText(
+          settingsT("settings.versionUpdate.description"),
+          currentVersion,
+          latestVersion,
+        ),
+      );
+    }
 
     const dropdownHost = root.querySelector(
       ".roprime-version-overlay-dropdown-host",

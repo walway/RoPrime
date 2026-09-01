@@ -1,5 +1,4 @@
-import { getExtensionResourceUrl } from "../core/core.js";
-import { parseUserProfileIdFromLocation } from "../core/core.js";
+import { getExtensionResourceUrl, parseUserProfileIdFromLocation } from "../core/core.js";
 
 const RP_PROFILE_TAB_CONTENT_ATTR = "data-roprime-profile-tab-content";
 const RP_AVATAR_PREVIEW_ATTR = "data-roprime-avatar-preview";
@@ -91,6 +90,7 @@ export async function syncProfileAvatarRenderer() {
     const ok = await mod.mountAvatarPreview(preview, userId);
     if (ok) {
       preview.dataset.roprimeAvatarMounted = "1";
+      void syncProfileWearingCards(tabContent);
     } else {
       delete preview.dataset.roprimeAvatarMounting;
     }

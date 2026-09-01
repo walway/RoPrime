@@ -46,8 +46,20 @@ function buildRickRollFaq() {
   panel.className = "padding-bottom-medium text-body-medium content-default";
   setHidden(panel, true);
   panel.style.whiteSpace = "pre-wrap";
-  panel.innerHTML =
-    '<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ?si=z3oFdFY3HE3Dkufe" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>';
+  const iframe = document.createElement("iframe");
+  iframe.width = "560";
+  iframe.height = "315";
+  iframe.src =
+    "https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ?si=z3oFdFY3HE3Dkufe";
+  iframe.title = "YouTube video player";
+  iframe.setAttribute("frameborder", "0");
+  iframe.setAttribute(
+    "allow",
+    "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share",
+  );
+  iframe.referrerPolicy = "strict-origin-when-cross-origin";
+  iframe.allowFullscreen = true;
+  panel.appendChild(iframe);
 
   wrapper.append(toggle, panel);
 

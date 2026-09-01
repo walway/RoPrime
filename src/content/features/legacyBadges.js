@@ -206,19 +206,6 @@ const CUSTOM_BADGES = {
   ],
 };
 
-const SEE_MORE_BUTTON =
-  '<button type="button" class="btn-fixed-width btn-secondary-xs btn-more see-all-link" data-roprime-see-more>See More</button>';
-
-const BADGES_HTML = `<div class="profile-badges ${ROOT_CLASS}">
-<div class="css-17g81zd-collectionCarouselContainer">
-	<div class="container-header badge-list-header">
-		<h2 class="content-emphasis text-heading-small padding-none inline-block roprime-legacy-badges-title">Roblox Badges</h2>
-  		{$SEE_MORE_BUTTON}
-	</div>
-	<div class="roprime-legacy-badges-rows">{$BADGE_ROWS}</div>
-</div>
-</div>`;
-
 let applyPromise = null;
 let profileObserver = null;
 let watchTimer = null;
@@ -283,48 +270,88 @@ function isValidBadgeEntry(badge) {
   return Boolean(badge?.title && badge?.label && badge?.alt && badge?.imageUrl);
 }
 
-function buildBadgeTile(badge) {
+function buildBadgeTileElement(badge) {
   const imageSrc = resolveBadgeImageUrl(badge.imageUrl);
-  return `<div class="css-izzd58-carouselItem">
-		<div>
-			<div class="base-tile">
-				<a class="flex flex-col" href="${ROBLOX_BADGES_URL}#${badge.hash}" title="${badge.title}" style="width: 150px;">
-					<div class="base-tile-thumbnail-wrapper"><span class="thumbnail-2d-container base-tile-thumbnail radius-medium"><img class="" src="${imageSrc}" alt="${badge.alt}"></span></div>
-					<div class="base-tile-title content-emphasis text-title-medium padding-top-medium">${badge.label}</div>
-					<div class="base-tile-metadata content-default text-body-medium padding-top-xsmall"></div>
-				</a>  
-			</div>
-		</div>
-	</div>`;
+  const item = document.createElement("div");
+  item.className = "css-izzd58-carouselItem";
+  const outer = document.createElement("div");
+  const tile = document.createElement("div");
+  tile.className = "base-tile";
+  const link = document.createElement("a");
+  link.className = "flex flex-col";
+  link.href = `${ROBLOX_BADGES_URL}#${badge.hash}`;
+  link.title = badge.title;
+  link.style.width = "150px";
+  const thumbWrap = document.createElement("div");
+  thumbWrap.className = "base-tile-thumbnail-wrapper";
+  const thumb = document.createElement("span");
+  thumb.className = "thumbnail-2d-container base-tile-thumbnail radius-medium";
+  const img = document.createElement("img");
+  img.src = imageSrc;
+  img.alt = badge.alt;
+  thumb.appendChild(img);
+  thumbWrap.appendChild(thumb);
+  const title = document.createElement("div");
+  title.className =
+    "base-tile-title content-emphasis text-title-medium padding-top-medium";
+  title.textContent = badge.label;
+  const meta = document.createElement("div");
+  meta.className =
+    "base-tile-metadata content-default text-body-medium padding-top-xsmall";
+  link.append(thumbWrap, title, meta);
+  tile.appendChild(link);
+  outer.appendChild(tile);
+  item.appendChild(outer);
+  return item;
 }
 
-function buildBadgeRows(badges) {
-  const rows = [];
-  for (let i = 0; i < badges.length; i += BADGES_PER_ROW) {
-    const extra = i >= BADGES_PER_ROW ? " roprime-legacy-badges-row-extra" : "";
-    rows.push(
-      `<div class="roprime-legacy-badges-row${extra}">${badges
-        .slice(i, i + BADGES_PER_ROW)
-        .map(buildBadgeTile)
-        .join("")}</div>`,
-    );
+function buildBadgesRoot(badges) {
+  const root = document.createElement("div");
+  root.className = `profile-badges ${ROOT_CLASS}`;
+  const container = document.createElement("div");
+  container.className = "css-17g81zd-collectionCarouselContainer";
+  const header = document.createElement("div");
+  header.className = "container-header badge-list-header";
+  const heading = document.createElement("h2");
+  heading.className =
+    "content-emphasis text-heading-small padding-none inline-block roprime-legacy-badges-title";
+  heading.textContent = "Roblox Badges";
+  header.appendChild(heading);
+  if (badges.length > BADGES_PER_ROW) {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className =
+      "btn-fixed-width btn-secondary-xs btn-more see-all-link";
+    button.dataset.roprimeSeeMore = "1";
+    button.textContent = "See More";
+    header.appendChild(button);
   }
-  return rows.join("");
+  const rows = document.createElement("div");
+  rows.className = "roprime-legacy-badges-rows";
+  container.append(header, rows);
+  root.appendChild(container);
+  renderBadgeRows(root, badges);
+  return root;
 }
 
-function buildBadgesHtml(badges) {
-  const hasMore = badges.length > BADGES_PER_ROW;
-  return BADGES_HTML.replace(
-    "{$SEE_MORE_BUTTON}",
-    hasMore ? SEE_MORE_BUTTON : "",
-  ).replace("{$BADGE_ROWS}", buildBadgeRows(badges));
+function insertBadges(tabContent, badges) {
+  tabContent.prepend(buildBadgesRoot(badges));
 }
 
 function renderBadgeRows(root, badges) {
   const rowsContainer = root.querySelector(".roprime-legacy-badges-rows");
   if (!(rowsContainer instanceof HTMLElement)) return;
 
-  rowsContainer.innerHTML = buildBadgeRows(badges);
+  rowsContainer.textContent = "";
+  for (let i = 0; i < badges.length; i += BADGES_PER_ROW) {
+    const extra = i >= BADGES_PER_ROW ? " roprime-legacy-badges-row-extra" : "";
+    const row = document.createElement("div");
+    row.className = `roprime-legacy-badges-row${extra}`;
+    for (const badge of badges.slice(i, i + BADGES_PER_ROW)) {
+      row.appendChild(buildBadgeTileElement(badge));
+    }
+    rowsContainer.appendChild(row);
+  }
 
   const button = root.querySelector("[data-roprime-see-more]");
   if (button instanceof HTMLButtonElement) {
@@ -391,10 +418,6 @@ function removeLegacyBadges() {
   }
 }
 
-function insertBadges(tabContent, html) {
-  tabContent.insertAdjacentHTML("afterbegin", html);
-}
-
 function stopProfileWatch() {
   if (watchTimer != null) {
     window.clearTimeout(watchTimer);
@@ -459,7 +482,7 @@ async function applyLegacyBadgesNow() {
   if (!(tabContentNow instanceof HTMLElement)) return false;
 
   ensureStyles();
-  insertBadges(tabContentNow, buildBadgesHtml(badges));
+  insertBadges(tabContentNow, badges);
 
   const root = tabContentNow.querySelector(`.${ROOT_CLASS}`);
   if (!(root instanceof HTMLElement)) return false;

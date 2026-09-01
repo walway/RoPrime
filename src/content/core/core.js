@@ -15,7 +15,6 @@ export const RP_PARAM_KEY_NEW = "roprime-new";
 export const RP_DEFAULT_PAGE = "appearance";
 export const RP_SUPPORTED_PAGES = new Set([
   "appearance",
-  "design", // legacy alias → appearance
   "home",
   "settings",
   "other",
@@ -24,9 +23,6 @@ export const RP_SUPPORTED_PAGES = new Set([
   "sidebar-content",
   "privacy",
 ]);
-const RP_PAGE_ALIASES = {
-  design: "appearance",
-};
 export const RP_SETTINGS_KEY = "rpSettings";
 export const RP_SETTINGS_FLAT_INNER_ID = "rp-settings-flat-inner";
 export const RP_SETTINGS_INNER_ID = RP_SETTINGS_FLAT_INNER_ID;
@@ -393,12 +389,6 @@ export function serializeSettingsPayload() {
         ? settingsState.customCss
         : "",
     customCssCautionAccepted: !!settingsState.customCssCautionAccepted,
-    cosmeticsEnabled: !!settingsState.cosmeticsEnabled,
-    profileEffectsLayoutView: ["grid", "list", "wide"].includes(
-      settingsState.profileEffectsLayoutView,
-    )
-      ? settingsState.profileEffectsLayoutView
-      : "grid",
     ownedProfileEffects: Array.isArray(settingsState.ownedProfileEffects)
       ? settingsState.ownedProfileEffects.filter(
           (id) => typeof id === "string" && id.trim(),
@@ -417,8 +407,6 @@ export function serializeSettingsPayload() {
       typeof settingsState.profileEffectsEquippedByUser === "object"
         ? settingsState.profileEffectsEquippedByUser
         : {},
-    profileEffectsSupportNoticeAccepted:
-      !!settingsState.profileEffectsSupportNoticeAccepted,
     searchBanEnabled: !!settingsState.searchBanEnabled,
     searchBannedWords: normalizeSearchBannedWords(
       settingsState.searchBannedWords,
@@ -601,8 +589,9 @@ export function getCurrentrp() {
     params.get(RP_PARAM_KEY_NEW) ||
     ""
   ).toLowerCase();
+  if (route === "design") return "appearance";
   if (!RP_SUPPORTED_PAGES.has(route)) return null;
-  return RP_PAGE_ALIASES[route] || route;
+  return route;
 }
 
 export function buildPluginUrl(page = RP_DEFAULT_PAGE) {

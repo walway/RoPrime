@@ -77,7 +77,7 @@ html
 .menu-vertical,
 .menu-secondary-container,
 .menu-secondary {
-  overflow: visible;
+  overflow: visible !important;
 }
 
 .private-message-page > :nth-child(4) > :first-child {

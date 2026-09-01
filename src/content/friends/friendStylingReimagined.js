@@ -2,6 +2,7 @@ import {
   RP_FRIEND_STYLING_REIMAGNED_STYLE_ID,
   settingsState,
 } from "../core/core.js";
+import { appendParsedMarkup } from "../ui/dom.js";
 
 const FRIEND_STYLING_REIMAGNED_CSS = `
 .friend-carousel-container {
@@ -323,7 +324,10 @@ function renderFriendsPanel(data) {
   }
 
   const previewFriends = data.friends.slice(0, 8);
-  panel.innerHTML = `
+  panel.textContent = "";
+  appendParsedMarkup(
+    panel,
+    `
     <div class="roprime-friends-reimagined-header">
       <h2>Friends</h2>
       <button type="button" class="roprime-friends-pip-btn">Open Friends Window</button>
@@ -335,7 +339,8 @@ function renderFriendsPanel(data) {
     <div class="roprime-friends-preview-list">
       ${previewFriends.map((friend) => buildFriendPreviewCard(friend)).join("")}
     </div>
-  `.trim();
+  `.trim(),
+  );
 
   panel
     .querySelector(".roprime-friends-pip-btn")
@@ -362,7 +367,8 @@ async function openFriendsPictureInPicture(data) {
     const style = pipWindow.document.createElement("style");
     style.textContent = PIP_WINDOW_CSS;
     pipWindow.document.head.appendChild(style);
-    pipWindow.document.body.innerHTML = buildPipMarkup(data);
+    pipWindow.document.body.textContent = "";
+    appendParsedMarkup(pipWindow.document.body, buildPipMarkup(data));
 
     pipWindow.addEventListener("pagehide", () => {
       if (pipWindowRef === pipWindow) pipWindowRef = null;

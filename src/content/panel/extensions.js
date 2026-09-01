@@ -8,6 +8,8 @@ import {
 import { fetchExtensionIconUrl } from "../lib/cws-images.js";
 import { runWhenIdle } from "../features/runWhenIdle.js";
 import { showMaliciousPluginOverlay } from "../ui/overlay.js";
+import { attachTooltip } from "../ui/tooltip.js";
+import { appendParsedMarkup, createSvgIcon } from "../ui/dom.js";
 import { fetchExtensionsRegistry } from "./registry.js";
 import {
   createToggle,
@@ -107,7 +109,8 @@ function setExtensionsMenuActive(active) {
 
 function setExtensionsLoading(tiles) {
   if (!(tiles instanceof HTMLElement)) return;
-  tiles.innerHTML = EXTENSIONS_LOADING_MARKUP;
+  tiles.textContent = "";
+  appendParsedMarkup(tiles, EXTENSIONS_LOADING_MARKUP);
 }
 
 function clearExtensionsTiles(tiles) {
@@ -308,17 +311,30 @@ function ensureExtensionsPanel(host) {
   if (!(panel instanceof HTMLElement)) {
     panel = document.createElement("div");
     panel.id = PANEL_ID;
-    panel.innerHTML = `
-      <div class="setting-section">
-        <div class="container-header">
-          <h2 class="setting-section-header">Extensions</h2>
-        </div>
-          <div class="roprime-extensions-tiles" data-roprime-extensions-tiles="1"></div>
-      </div>
-    `.trim();
+    const section = document.createElement("div");
+    section.className = "setting-section";
+    const header = document.createElement("div");
+    header.className = "container-header";
+    const h2 = document.createElement("h2");
+    h2.className = "setting-section-header";
+    h2.textContent = "Extensions";
+    header.appendChild(h2);
+    const tiles = document.createElement("div");
+    tiles.className = "roprime-extensions-tiles";
+    tiles.dataset.roprimeExtensionsTiles = "1";
+    section.append(header, tiles);
+    panel.appendChild(section);
     host.appendChild(panel);
   } else if (panel.parentElement !== host) {
     host.appendChild(panel);
+  }
+  const sectionHeader = panel.querySelector(".setting-section-header");
+  if (
+    sectionHeader instanceof HTMLElement &&
+    !sectionHeader.dataset.roprimeTooltipBound
+  ) {
+    sectionHeader.dataset.roprimeTooltipBound = "1";
+    attachTooltip(sectionHeader, { text: "Test", placement: "top" });
   }
   panel.style.display = "block";
   return panel;
@@ -443,14 +459,15 @@ async function refreshExtensionsTiles(tiles) {
     infoBtn.className = "btn-control-md roprime-ext-btn roprime-ext-btn-ghost";
     infoBtn.setAttribute("aria-label", "Info");
     infoBtn.title = "Info";
-    infoBtn.innerHTML = `
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="31 199 22 22" aria-hidden="true" focusable="false">
-          <g id="messages-hover">
-            <path d="M45 199h-6c-4.4 0-8 3.6-8 8v14h14c4.4 0 8-3.6 8-8v-6c0-4.5-3.6-8-8-8m6 14c0 3.3-2.7 6-6 6H33v-12c0-3.3 2.7-6 6-6h6c3.3 0 6 2.7 6 6z" class="st0"></path>
-            <path d="M47 209H37c-.6 0-1 .4-1 1 0 .5.4.9.9 1H47c.6 0 1-.4 1-1s-.4-1-1-1M47 205H37c-.6 0-1 .4-1 1 0 .5.4.9.9 1H47c.6 0 1-.4 1-1s-.4-1-1-1M42 213h-5c-.6 0-1 .4-1 1s.4 1 1 1h5c.6 0 1-.4 1-1s-.4-1-1-1" class="st0"></path>
-          </g>
-        </svg>
-      `.trim();
+    infoBtn.appendChild(
+      createSvgIcon(
+        [
+          "M45 199h-6c-4.4 0-8 3.6-8 8v14h14c4.4 0 8-3.6 8-8v-6c0-4.5-3.6-8-8-8m6 14c0 3.3-2.7 6-6 6H33v-12c0-3.3 2.7-6 6-6h6c3.3 0 6 2.7 6 6z",
+          "M47 209H37c-.6 0-1 .4-1 1 0 .5.4.9.9 1H47c.6 0 1-.4 1-1s-.4-1-1-1M47 205H37c-.6 0-1 .4-1 1 0 .5.4.9.9 1H47c.6 0 1-.4 1-1s-.4-1-1-1M42 213h-5c-.6 0-1 .4-1 1s.4 1 1 1h5c.6 0 1-.4 1-1s-.4-1-1-1",
+        ],
+        { viewBox: "31 199 22 22" },
+      ),
+    );
     infoBtn.addEventListener("click", () => {
       const enabledText = item.enabled ? "Enabled" : "Disabled";
       window.alert(
@@ -501,9 +518,18 @@ async function refreshExtensionsTiles(tiles) {
       : "btn-control-md roprime-ext-btn";
     settingsBtn.setAttribute("aria-label", "Settings");
     settingsBtn.title = "Settings";
-    settingsBtn.innerHTML = `
-      <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiSvgIcon-root MuiSvgIcon-fontSizeMedium svg-icon css-o5v4k8" tabindex="-1" viewBox="0 0 24 24" style="width: 18px; height: 18px;"><path d="M19 19H5V5h7V3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14c1.1 0 2-.9 2-2v-7h-2zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3z"/></svg>
-      `.trim();
+    settingsBtn.appendChild(
+      createSvgIcon(
+        [
+          "M19 19H5V5h7V3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14c1.1 0 2-.9 2-2v-7h-2zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3z",
+        ],
+        {
+          viewBox: "0 0 24 24",
+          className:
+            "MuiSvgIcon-root MuiSvgIcon-fontSizeMedium svg-icon css-o5v4k8",
+        },
+      ),
+    );
 
     if (settingsClass) {
       settingsBtn.disabled = false;

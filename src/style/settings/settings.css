@@ -154,8 +154,13 @@ html.roprime-account-settings-open #user-account > #roprime-settings-host {
   gap: 6px;
 }
 
-#roprime-settings-host li.roprime-settings-search-item .roprime-settings-nav-icon {
+#roprime-settings-host li.roprime-settings-search-item .input-group-btn {
+  flex: 0 0 auto;
   margin-left: 9px;
+}
+
+.input-addon-btn {
+  margin-left: 8px;
 }
 
 #roprime-settings-host .roprime-settings-search {
@@ -507,28 +512,6 @@ html.roprime-account-settings-open #user-account > #roprime-settings-host {
   opacity: 0.72;
 }
 
-#roprime-settings-host .roprime-sidebar-content-delete,
-#roprime-settings-host .roprime-sidebar-content-add {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  padding: 0;
-  border: 0;
-  border-radius: 8px;
-  background: transparent;
-  cursor: pointer;
-}
-
-#roprime-settings-host .roprime-sidebar-content-delete {
-  color: #ef4444;
-}
-
-#roprime-settings-host .roprime-sidebar-content-add {
-  color: #22c55e;
-}
-
 #roprime-settings-host .roprime-sidebar-content-empty {
   margin: 12px 0 0;
   color: var(--color-content-default);
@@ -595,19 +578,30 @@ html.roprime-account-settings-open #user-account > #roprime-settings-host {
   outline-offset: 1px;
 }
 #roprime-settings-host .roprime-search-hint {
-  padding: 10px 12px;
-  font-size: 12px;
-  font-weight: 600;
+  font-size: 15px;
+}
+
+#roprime-settings-host .roprime-settings-search-group {
+  display: flex;
+  align-items: center;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+#roprime-settings-host .roprime-settings-search-group .input-group-btn {
+  flex: 0 0 auto;
 }
 
 #roprime-settings-host .roprime-settings-search {
+  margin-left: 15px;
   height: 20px;
   padding: 8px;
   font-size: 12px;
   border: transparent;
   background: transparent !important;
   outline: none;
-  margin-left: 25px;
+  flex: 1 1 auto;
+  min-width: 0;
 }
 
 #roprime-settings-host [data-roprime-element-name] {

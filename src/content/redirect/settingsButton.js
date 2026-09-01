@@ -11,6 +11,7 @@ import {
   RP_PARAM_KEY,
   shouldRunRoPrimeOnCurrentPage,
 } from "../core/core.js";
+import { createSvgIcon } from "../ui/dom.js";
 import { openRoPrimeSettingsOnAccountPage } from "../settings/settingsPage.js";
 
 const ROPRIME_ACCOUNT_MENU_LABEL = "RoPrime Settings";
@@ -449,13 +450,16 @@ function buildExtensionsTabLi(menuList) {
   iconWrap.style.height = "16px";
   iconWrap.style.marginRight = "8px";
   iconWrap.style.flex = "0 0 auto";
-  iconWrap.innerHTML = `
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="30 732 24 20" aria-hidden="true" focusable="false" style="width:16px;height:16px;display:block;">
-      <g id="my-place-on">
-        <path d="M53,736h-4.4l-1.7-3.4c-0.2-0.3-0.5-0.6-0.9-0.6h-8c-0.4,0-0.7,0.2-0.9,0.6l-1.7,3.4H31c-0.6,0-1,0.4-1,1v14   c0,0.6,0.4,1,1,1h22c0.6,0,1-0.4,1-1v-14C54,736.4,53.6,736,53,736z M35,740c0,0.6-0.4,1-1,1s-1-0.4-1-1v-1c0-0.6,0.4-1,1-1   s1,0.4,1,1V740z M44.7,738h-5.4l-2-1.3l1.3-2.7h6.8l1.3,2.7L44.7,738z M51,740c0,0.6-0.4,1-1,1s-1-0.4-1-1v-1c0-0.6,0.4-1,1-1   s1,0.4,1,1V740z" fill="currentColor"></path>
-      </g>
-    </svg>
-  `.trim();
+  const iconSvg = createSvgIcon(
+    [
+      "M53,736h-4.4l-1.7-3.4c-0.2-0.3-0.5-0.6-0.9-0.6h-8c-0.4,0-0.7,0.2-0.9,0.6l-1.7,3.4H31c-0.6,0-1,0.4-1,1v14   c0,0.6,0.4,1,1,1h22c0.6,0,1-0.4,1-1v-14C54,736.4,53.6,736,53,736z M35,740c0,0.6-0.4,1-1,1s-1-0.4-1-1v-1c0-0.6,0.4-1,1-1   s1,0.4,1,1V740z M44.7,738h-5.4l-2-1.3l1.3-2.7h6.8l1.3,2.7L44.7,738z M51,740c0,0.6-0.4,1-1,1s-1-0.4-1-1v-1c0-0.6,0.4-1,1-1   s1,0.4,1,1V740z",
+    ],
+    { viewBox: "30 732 24 20" },
+  );
+  iconSvg.style.width = "16px";
+  iconSvg.style.height = "16px";
+  iconSvg.style.display = "block";
+  iconWrap.appendChild(iconSvg);
 
   const span = document.createElement("span");
   span.classList.add("font-caption-header");

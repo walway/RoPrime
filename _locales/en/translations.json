@@ -102,6 +102,10 @@
         "description": "Show a notification when a newer version of RoPrime is available."
       }
     },
+    "versionUpdate": {
+      "title": "A new version of RoPrime is available",
+      "description": "You are on {currentVersion}. Version {latestVersion} is now available. \n\n We recommend downloading RoPrime from any store so you don't have to update manually."
+    },
     "sync": {
       "title": "Synchronization",
       "description": "Copy, export, or import RoPrime settings as JSON file. You can edit the JSON in the preview.",

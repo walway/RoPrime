@@ -76,6 +76,15 @@ export function normalizeVersionManifest(raw) {
   };
 }
 
+export function detectBrowserDownloadSource() {
+  const ua = navigator.userAgent || "";
+  if (/opr\//i.test(ua) || /opera/i.test(ua)) return "opera";
+  if (/firefox/i.test(ua)) return "firefox";
+  if (/edg/i.test(ua)) return "edge";
+  if (/chrome/i.test(ua)) return "chrome";
+  return "github";
+}
+
 export function getDownloadOptions(config = {}) {
   return DOWNLOAD_SOURCE_OPTIONS.map((entry) => ({
     value: entry.value,
@@ -85,7 +94,15 @@ export function getDownloadOptions(config = {}) {
 }
 
 export function getDefaultDownloadSource(config = {}) {
-  return getDownloadOptions(config)[0]?.value || "";
+  const options = getDownloadOptions(config);
+  if (!options.length) return "";
+
+  const preferred = detectBrowserDownloadSource();
+  const preferredOption = options.find((entry) => entry.value === preferred);
+  if (preferredOption) return preferredOption.value;
+
+  const githubOption = options.find((entry) => entry.value === "github");
+  return githubOption?.value || options[0].value;
 }
 
 export function getDownloadUrl(config = {}, source = "") {

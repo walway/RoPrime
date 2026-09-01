@@ -5,6 +5,7 @@ import {
   settingsState,
   shouldRunRoPrimeOnCurrentPage,
 } from "../core/core.js";
+import { appendParsedMarkup } from "../ui/dom.js";
 import { setHidden } from "../ui/visibility.js";
 
 export const RP_SEARCH_BAN_ERROR_ID = "roprime-search-ban-error";
@@ -123,7 +124,7 @@ function applySearchBanBlock() {
 
   if (document.getElementById(RP_SEARCH_BAN_ERROR_ID)) return;
 
-  contentRoot.insertAdjacentHTML("beforeend", DISCOVER_ERROR_HTML);
+  appendParsedMarkup(contentRoot, DISCOVER_ERROR_HTML);
 }
 
 function clearSearchBanBlock() {

@@ -1,11 +1,4 @@
-const TOOLTIP_CLASSES = {
-  popper:
-    "MuiPopper-root MuiTooltip-popper MuiTooltip-popperInteractive MuiTooltip-popperArrow web-blox-css-mui-l66bl4",
-  tooltip:
-    "MuiTooltip-tooltip web-blox-css-tss-t4ajt1-Typography-tooltip MuiTooltip-tooltipArrow web-blox-css-mui-1x77lqp",
-  arrow:
-    "MuiTooltip-arrow web-blox-css-tss-1deuxot-Tooltip-arrow web-blox-css-mui-1urvb1y",
-};
+const TOOLTIP_Z_INDEX = "2147483647";
 
 function placementClass(placement) {
   return placement === "top"
@@ -37,24 +30,38 @@ function positionTooltip(popper, anchor, placement) {
   popper.dataset.popperPlacement = placement === "top" ? "top" : "bottom";
 }
 
+function applyTooltipSurfaceStyles(node) {
+  Object.assign(node.style, {
+    background: "var(--color-surface-200, #393b3d)",
+    color: "var(--color-content-emphasis, #f7f7f8)",
+    padding: "6px 12px",
+    borderRadius: "8px",
+    fontSize: "14px",
+    lineHeight: "1.4",
+    maxWidth: "280px",
+    boxShadow:
+      "var(--shadow-transient-high, 0 8px 24px rgba(0, 0, 0, 0.35))",
+    pointerEvents: "none",
+  });
+}
+
 export function createTooltip(options = {}) {
   const { text = "", placement = "bottom" } = options;
 
   const popper = document.createElement("div");
   popper.role = "tooltip";
-  popper.className = TOOLTIP_CLASSES.popper;
+  popper.className =
+    "MuiPopper-root MuiTooltip-popper MuiTooltip-popperInteractive MuiTooltip-popperArrow";
   popper.style.opacity = "0";
   popper.style.pointerEvents = "none";
+  popper.style.zIndex = TOOLTIP_Z_INDEX;
 
   const tooltip = document.createElement("div");
-  tooltip.className = `${TOOLTIP_CLASSES.tooltip} ${placementClass(placement)}`;
+  tooltip.className = `MuiTooltip-tooltip ${placementClass(placement)}`;
   tooltip.textContent = text;
+  applyTooltipSurfaceStyles(tooltip);
 
-  const arrow = document.createElement("span");
-  arrow.className = TOOLTIP_CLASSES.arrow;
-  tooltip.appendChild(arrow);
   popper.appendChild(tooltip);
-
   return popper;
 }
 

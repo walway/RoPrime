@@ -10,7 +10,11 @@ import {
   showMaliciousPluginOverlay,
   showVersionUpdateOverlay,
 } from "../ui/overlay.js";
-import { fetchVersionManifest } from "../core/version.js";
+import {
+  detectBrowserDownloadSource,
+  fetchVersionManifest,
+  isInstalledAsPackage,
+} from "../core/version.js";
 import { syncAccountSettingsMenuButton } from "../redirect/settingsButton.js";
 import {
   buildPluginUrl,
@@ -66,9 +70,9 @@ import { syncSidebarContent } from "../sidebar/sidebarContent.js";
 import { sidebarItemLabelKey } from "../sidebar/sidebarItemLabels.js";
 import { ADD_ICON_SVG, DELETE_ICON_SVG } from "../sidebar/sidebarIcons.js";
 import { applyPlainOrRichText } from "../ui/richText.js";
+import { createControlButton, getControlButtonLabel } from "../ui/controlButton.js";
 import { createDropdown } from "../ui/dropdown.js";
 import { setHidden } from "../ui/visibility.js";
-import { createControlButton, getControlButtonLabel } from "../ui/controlButton.js";
 import { createToggle, setToggleChecked } from "../ui/toggle.js";
 import {
   createMarkedSlider,
@@ -356,6 +360,31 @@ function buildMobileNavigationDropdown() {
   return dropdown;
 }
 
+function createSettingsSearchAddon() {
+  const wrap = el("div", "input-group-btn");
+  const button = el("button", "input-addon-btn");
+  button.type = "submit";
+  button.dataset.testid = "navigation-search-input-search-button";
+  button.addEventListener("click", (event) => event.preventDefault());
+  const icon = el("span", "icon-common-search-sm");
+  button.appendChild(icon);
+  wrap.appendChild(button);
+  return wrap;
+}
+
+function createSettingsSearchField() {
+  const group = el("div", "input-group roprime-settings-search-group");
+  group.appendChild(createSettingsSearchAddon());
+  const search = el("input");
+  search.id = "roprime-settings-search";
+  search.type = "search";
+  search.className = "roprime-settings-search";
+  setI18nPlaceholder(search, "settings.search.placeholder");
+  search.autocomplete = "off";
+  group.appendChild(search);
+  return group;
+}
+
 function buildSettingsHostContent(host) {
   const heading = el("h1");
   heading.textContent = "RoPrime Settings";
@@ -375,14 +404,7 @@ function buildSettingsHostContent(host) {
   const searchItem = el("li", "menu-option roprime-settings-search-item");
   searchItem.id = "roprime-settings-search-item";
   searchItem.setAttribute("role", "tab");
-  searchItem.appendChild(createSettingsNavIcon(SETTINGS_NAV_ICONS.search));
-  const search = el("input");
-  search.id = "roprime-settings-search";
-  search.type = "search";
-  search.className = "roprime-settings-search";
-  setI18nPlaceholder(search, "settings.search.placeholder");
-  search.autocomplete = "off";
-  searchItem.appendChild(search);
+  searchItem.appendChild(createSettingsSearchField());
 
   for (const [pageKey, pageCfg] of Object.entries(SETTINGS_CONFIG)) {
     if (pageCfg?.type === "navDivider") {
@@ -1133,11 +1155,14 @@ function buildSidebarContentRow(item, mode, isAdd) {
   row.classList.add(`roprime-sidebar-content-row--${item.id}`);
   const label = el("span", "roprime-sidebar-content-row-label");
   label.textContent = sidebarItemLabel(item);
-  const btn = el(
-    "button",
+  const btn = createControlButton(null, {
+    literalText: isAdd ? "Add" : "Delete",
+  });
+  btn.type = "button";
+  btn.classList.add(
+    "roprime-sidebar-content-action-btn",
     isAdd ? "roprime-sidebar-content-add" : "roprime-sidebar-content-delete",
   );
-  btn.type = "button";
   btn._rpSidebarItemId = item.id;
   btn._rpSidebarSize = mode;
   setI18nAria(
@@ -1146,7 +1171,6 @@ function buildSidebarContentRow(item, mode, isAdd) {
       ? "settings.appearance.sidebar.contentRestoreItem"
       : "settings.appearance.sidebar.contentRemoveItem",
   );
-  appendSvgMarkup(btn, isAdd ? ADD_ICON_SVG : DELETE_ICON_SVG);
   row.append(label, btn);
   return row;
 }
@@ -1807,11 +1831,7 @@ function getExtensionVersion() {
 }
 
 function detectBrowserName() {
-  const ua = navigator.userAgent || "";
-  if (/firefox/i.test(ua)) return "firefox";
-  if (/edg/i.test(ua)) return "edge";
-  if (/chrome/i.test(ua)) return "chrome";
-  return "unknown";
+  return detectBrowserDownloadSource();
 }
 
 function stripUtf8Bom(text) {
@@ -2174,7 +2194,7 @@ function bindOnce(root) {
   );
   if (backSidebarContent instanceof HTMLButtonElement) {
     backSidebarContent.addEventListener("click", () =>
-      navigateToPage("design"),
+      navigateToPage("appearance"),
     );
   }
 
@@ -2500,6 +2520,19 @@ function refreshLayoutAndNav(root) {
   }
 }
 
+async function syncUpdateNotificationsToggleVisibility(root) {
+  const row = root.querySelector(
+    ".roprime-sidebar-inline-toggle--updateNotificationsEnabled",
+  );
+  if (!(row instanceof HTMLElement)) return;
+
+  const fromStore = await isInstalledAsPackage();
+  setHidden(row, fromStore);
+
+  const card = row.closest(".roprime-notifications-panel");
+  if (card instanceof HTMLElement) pruneEmptySeparators(card);
+}
+
 function refreshSettingsUi(root) {
   applyI18n(root);
   syncLanguageMenuLabels(root);
@@ -2557,6 +2590,7 @@ function refreshSettingsUi(root) {
   syncSearchBanSettingsUi(root);
   refreshSearchBanList(root);
   refreshSettingsSyncPreview(root);
+  void syncUpdateNotificationsToggleVisibility(root);
   root.querySelectorAll(".roprime-settings-card").forEach((card) => {
     pruneEmptySeparators(card);
   });

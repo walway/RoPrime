@@ -9,6 +9,7 @@ import {
   shouldRunRoPrimeOnCurrentPage,
 } from "../core/core.js";
 import { dismissFoundationWebDropdown } from "../ui/dropdown.js";
+import { appendParsedMarkup } from "../ui/dom.js";
 import { openRoPrimeSettingsOnAccountPage } from "../settings/settingsPage.js";
 
 const ROPRIME_ENTRY_ATTR = "data-roprime-foundation-menu-entry";
@@ -346,7 +347,7 @@ function ensureInjectedButton(group, entryAttr, buttonHtml) {
 
   let button = group.querySelector(`button[${entryAttr}="1"]`);
   if (!(button instanceof HTMLButtonElement)) {
-    group.insertAdjacentHTML("beforeend", buttonHtml);
+    appendParsedMarkup(group, buttonHtml);
     button = group.querySelector(`button[${entryAttr}="1"]`);
   }
   return button instanceof HTMLButtonElement ? button : null;

@@ -13,14 +13,6 @@ function syncToggleVisual(toggle, checked) {
   button.setAttribute("aria-checked", checked ? "true" : "false");
 }
 
-function buildToggleButtonMarkup() {
-  return `
-    <span class="toggle-flip"></span>
-    <span class="toggle-on"></span>
-    <span class="toggle-off"></span>
-  `.trim();
-}
-
 export function createToggle(options = {}) {
   const {
     id,
@@ -40,7 +32,14 @@ export function createToggle(options = {}) {
   if (id) button.id = id;
   if (disabled) button.disabled = true;
   if (ariaLabel) button.setAttribute("aria-label", ariaLabel);
-  button.innerHTML = buildToggleButtonMarkup();
+
+  const flip = document.createElement("span");
+  flip.className = "toggle-flip";
+  const on = document.createElement("span");
+  on.className = "toggle-on";
+  const off = document.createElement("span");
+  off.className = "toggle-off";
+  button.append(flip, on, off);
   wrap.appendChild(button);
   syncToggleVisual(wrap, checked);
 
