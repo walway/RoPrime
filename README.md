@@ -23,8 +23,7 @@ RoPrime is absolutely free browser extension that makes the **Roblox website** f
 You can customize Roblox with a bunch of features to your liking. Here's some features:
 
 - 🎨 Roblox’s UI design style
-- 📐 Adjust your sidebar - Full, compact, or icon-only available
-- 🧩 Choose what appears in the sidebar
+- 📐 Customize your sidebar - Full, small, or icon-only modes available
 - 👥 Reimagined friend list styling
 - 🏃 Fast and lightweight
 - ✏️ Rename wording (Groups/Communities, Catalog/Marketplace)
