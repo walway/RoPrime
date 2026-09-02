@@ -13,7 +13,8 @@
     "esbuild": "npm:esbuild@0.28.2",
     "adm-zip": "npm:adm-zip@0.6.0",
     "dotenv": "npm:dotenv@17.4.2",
-    "dompurify": "npm:dompurify@3.2.6"
+    "dompurify": "npm:dompurify@3.2.6",
+    "web-ext": "npm:web-ext@^10.6.0"
   },
   "exclude": ["dist", "node_modules"]
 }
