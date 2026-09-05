@@ -29,6 +29,9 @@ export const ROBLOX_THEMES_CLASSES = [
   "circuit-rush-theme",
   "inferno-blast-theme",
   "quantum-pulse-theme",
+
+  // Special
+  "classic-theme",
 ];
 
 const DYNAMIC_THEMES = [
@@ -130,6 +133,17 @@ const CALM_THEMES = [
     name: "Quantum Pulse",
     darkColor: "rgb(93, 14, 93)",
     lightColor: "rgb(251, 200, 248)",
+  },
+];
+
+// Add Classic theme here -
+
+const SPECIAL_THEMES = [
+  {
+    id: "classic-theme",
+    name: "Classic",
+    darkColor: "rgb(255, 73, 73)",
+    lightColor: "rgb(255, 73, 73)",
   },
 ];
 

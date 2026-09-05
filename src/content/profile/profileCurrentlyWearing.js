@@ -300,7 +300,6 @@ function renderWearingCards(host, assets, thumbnails, details) {
   cachedPayload = { assets, thumbnails, details };
   currentPage = 1;
   host.setAttribute(RP_WEARING_ATTR, "1");
-  // Bind host for renderCurrentPage via querySelector.
   renderCurrentPage();
 }
 
