@@ -14,6 +14,7 @@ const SMALL_NEW_NAV_BASE_CSS = [
   ".width-\\[288px\\]:not(.roprime-settings-rail), .width-\\[289px\\]:not(.roprime-settings-rail),",
   '[class~="width-[288px]"]:not(.roprime-settings-rail), [class~="width-[289px]"]:not(.roprime-settings-rail)',
   "{ width: 200px !important; min-width: 0 !important; max-width: 200px !important; }",
+  "@media (min-width: 1141px) { .no-gutter-ads.logged-in.left-nav-new-width, body.left-nav-new-width { --left-nav-reserved-width: 200px; } }",
 ].join("\n");
 
 const SMALL_NAV_LABEL_REPLACEMENTS = [
