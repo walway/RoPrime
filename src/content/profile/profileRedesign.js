@@ -3,13 +3,15 @@ import { debounce } from "../core/debounce.js";
 import { isUserProfilePage } from "./profileEffectsDisplay.js";
 import {
   ensureRoPrimeProfileTabContent,
+  findProfilePlatformHost,
+  findRoPrimeProfileTabContent,
   removeRoPrimeProfileTabContent,
   syncProfileAvatarRenderer,
 } from "./profileAvatarRenderer.js";
 import {
   removeProfileWearingCards,
   syncProfileWearingCards,
-} from "./profileWearingCards.js";
+} from "./profileCurrentlyWearing.js";
 
 export const RP_PROFILE_REDESIGN_STYLE_ID = "roprime-profile-redesign-style";
 
@@ -47,110 +49,21 @@ const PROFILE_REDESIGN_CSS = `
   overflow: hidden;
   position: relative;
 }
-
-.roprime-profile-wearing-cards {
-  flex: 1 1 auto;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  margin-bottom: 24px;
-}
-
-.roprime-profile-wearing-title {
-  margin: 0;
-  font-size: 18px;
-  font-weight: 700;
-  color: var(--color-content-emphasis, #fff);
-}
-
-.roprime-profile-wearing-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  max-height: 420px;
-  overflow-y: auto;
-  padding-right: 4px;
-}
-
-.roprime-profile-wearing-card {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 10px 12px;
-  border-radius: 12px;
-  background: var(--color-surface-200, rgba(255, 255, 255, 0.06));
-  text-decoration: none;
-  color: inherit;
-}
-
-.roprime-profile-wearing-card:hover {
-  background: var(--color-surface-300, rgba(255, 255, 255, 0.1));
-}
-
-.roprime-profile-wearing-thumb {
-  width: 56px;
-  height: 56px;
-  flex-shrink: 0;
-  border-radius: 10px;
-  overflow: hidden;
-  background: var(--color-surface-100, rgba(0, 0, 0, 0.2));
-}
-
-.roprime-profile-wearing-thumb img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-.roprime-profile-wearing-meta {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  min-width: 0;
-}
-
-.roprime-profile-wearing-name {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--color-content-emphasis, #fff);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.roprime-profile-wearing-type {
-  font-size: 12px;
-  color: var(--color-content-default, rgba(255, 255, 255, 0.72));
-}
-
-.roprime-profile-avatar-preview .thumbnail-loader {
-  margin-top: 0;
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 2;
-}
-
-.roprime-profile-avatar-preview .thumbnail-span {
-  display: block;
-  width: 100%;
-  height: 100%;
-}
 `;
 
 let observer = null;
-const scheduleBubbleSync = debounce(syncBubbleLength, 100);
-const scheduleProfileShellSync = debounce(() => {
-  ensureRoPrimeProfileTabContent();
+let observedRoot = null;
+
+const scheduleBubbleSync = debounce(syncBubbleLength, 200);
+const scheduleProfileShellSync = debounce(runProfileShellSync, 250);
+
+function runProfileShellSync() {
+  const tabContent = ensureRoPrimeProfileTabContent();
+  if (!tabContent) return;
   void syncProfileAvatarRenderer();
-  const tabContent = document.querySelector("[data-roprime-profile-tab-content]");
-  if (tabContent instanceof HTMLElement) void syncProfileWearingCards(tabContent);
+  void syncProfileWearingCards(tabContent);
   syncBubbleLength();
-}, 120);
+}
 
 function countBubbleLines(element) {
   const view = element.ownerDocument?.defaultView;
@@ -205,6 +118,56 @@ function injectProfileRedesignStyle() {
   style.textContent = PROFILE_REDESIGN_CSS;
 }
 
+function mutationsNeedShellSync(mutations) {
+  for (const mutation of mutations) {
+    if (mutation.type !== "childList") continue;
+    for (const node of mutation.addedNodes) {
+      if (!(node instanceof Element)) continue;
+      // Ignore our own wearing/pager churn.
+      if (
+        node.matches?.(
+          "[data-roprime-profile-tab-content], [data-roprime-wearing-cards], [data-roprime-profile-tab-layout], .roprime-profile-avatar-preview, .pager-holder, .item-card",
+        ) ||
+        node.querySelector?.(
+          "[data-roprime-profile-tab-content], [data-roprime-wearing-cards], .roprime-profile-avatar-preview",
+        )
+      ) {
+        continue;
+      }
+      return true;
+    }
+    for (const node of mutation.removedNodes) {
+      if (!(node instanceof Element)) continue;
+      if (
+        node.matches?.(
+          "[data-roprime-profile-tab-content], .profile-platform-container, .rovalra-status-bubble",
+        )
+      ) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+function onPlatformMutations(mutations) {
+  const shell = findRoPrimeProfileTabContent();
+  const host = findProfilePlatformHost();
+  if (!host) {
+    scheduleProfileShellSync();
+    return;
+  }
+  if (!shell || !host.contains(shell)) {
+    scheduleProfileShellSync();
+    return;
+  }
+  if (mutationsNeedShellSync(mutations)) {
+    scheduleProfileShellSync();
+  } else {
+    scheduleBubbleSync();
+  }
+}
+
 export function syncProfileRedesign() {
   if (
     !shouldRunRoPrimeOnCurrentPage() ||
@@ -217,6 +180,7 @@ export function syncProfileRedesign() {
 
   if (observer) {
     injectProfileRedesignStyle();
+    attachObserverToHost();
     scheduleProfileShellSync();
     return;
   }
@@ -229,23 +193,30 @@ function disconnectObserver() {
   scheduleProfileShellSync.cancel();
   observer?.disconnect();
   observer = null;
+  observedRoot = null;
   removeProfileRedesignStyle();
+}
+
+function attachObserverToHost() {
+  if (!observer) return;
+  const host = findProfilePlatformHost() || document.body;
+  if (!host || observedRoot === host) return;
+  observer.disconnect();
+  observedRoot = host;
+  observer.observe(host, {
+    childList: true,
+    subtree: true,
+  });
 }
 
 function connectObserver() {
   if (observer) return;
 
-  observer = new MutationObserver(() => {
-    scheduleProfileShellSync();
-  });
+  observer = new MutationObserver(onPlatformMutations);
 
   if (!document.body) return;
 
-  observer.observe(document.body, {
-    childList: true,
-    subtree: true,
-    characterData: true,
-  });
+  attachObserverToHost();
   injectProfileRedesignStyle();
   scheduleProfileShellSync();
 }
@@ -273,6 +244,5 @@ export function installProfileRedesignObserver() {
   }
 }
 
-import { registerFeature } from '../features/registry.js';
+import { registerFeature } from "../features/registry.js";
 registerFeature(syncProfileRedesign);
-

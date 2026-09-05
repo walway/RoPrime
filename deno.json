@@ -5,15 +5,15 @@
     "build": "deno run -A tasks/build.js"
   },
   "imports": {
-    "@supabase/supabase-js": "npm:@supabase/supabase-js@2.112.4",
+    "@supabase/supabase-js": "npm:@supabase/supabase-js@2.115.0",
     "prism-code-editor/setups": "npm:prism-code-editor@5.3.0/setups",
     "prism-code-editor/languages/css": "npm:prism-code-editor@5.3.0/languages/css",
     "prism-code-editor/prism/languages/css": "npm:prism-code-editor@5.3.0/prism/languages/css",
-    "roavatar-renderer": "npm:roavatar-renderer@1.6.4",
+    "roavatar-renderer": "npm:roavatar-renderer@1.6.5",
     "esbuild": "npm:esbuild@0.28.2",
     "adm-zip": "npm:adm-zip@0.6.0",
     "dotenv": "npm:dotenv@17.4.2",
-    "dompurify": "npm:dompurify@3.2.6",
+    "dompurify": "npm:dompurify@3.4.14",
     "web-ext": "npm:web-ext@^10.6.0"
   },
   "exclude": ["dist", "node_modules"]

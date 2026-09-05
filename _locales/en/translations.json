@@ -71,7 +71,7 @@
       },
       "profileRedesign": {
         "title": "Profile Redesign",
-        "description": "Show all profile sections at once and adjust the header layout on profile pages."
+        "description": "Show all profile sections at once and adjust the header layout on profile pages. \n\n RoPrime uses [RoAvatar](https://github.com/steinann/RoAvatar) for Avatar Preview."
       }
     },
     "home": {

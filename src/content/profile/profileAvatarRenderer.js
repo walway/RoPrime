@@ -1,4 +1,5 @@
 import { getExtensionResourceUrl, parseUserProfileIdFromLocation } from "../core/core.js";
+import { syncProfileWearingCards } from "./profileCurrentlyWearing.js";
 
 const RP_PROFILE_TAB_CONTENT_ATTR = "data-roprime-profile-tab-content";
 const RP_AVATAR_PREVIEW_ATTR = "data-roprime-avatar-preview";
@@ -16,13 +17,16 @@ function loadAvatarPreviewModule() {
   return modulePromise;
 }
 
-export function findProfilePlatformInner() {
+export function findProfilePlatformHost() {
   const platform = document.querySelector(".profile-platform-container");
   if (!(platform instanceof HTMLElement)) return null;
-  const outer = platform.querySelector(":scope > div");
-  if (!(outer instanceof HTMLElement)) return null;
-  const inner = outer.querySelector(":scope > div");
-  return inner instanceof HTMLElement ? inner : null;
+  const host = platform.querySelector(":scope > div");
+  return host instanceof HTMLElement ? host : null;
+}
+
+/** @deprecated Use findProfilePlatformHost */
+export function findProfilePlatformInner() {
+  return findProfilePlatformHost();
 }
 
 export function findRoPrimeProfileTabContent() {
@@ -30,21 +34,24 @@ export function findRoPrimeProfileTabContent() {
 }
 
 export function ensureRoPrimeProfileTabContent() {
-  const host = findProfilePlatformInner();
+  const host = findProfilePlatformHost();
   if (!host) return null;
 
   let tabContent = findRoPrimeProfileTabContent();
-  if (!(tabContent instanceof HTMLElement)) {
+  if (!(tabContent instanceof HTMLElement) || !host.contains(tabContent)) {
     tabContent = document.createElement("div");
     tabContent.className = "profile-tab-content padding-top-xxlarge";
     tabContent.setAttribute(RP_PROFILE_TAB_CONTENT_ATTR, "1");
-    host.appendChild(tabContent);
+    host.prepend(tabContent);
+  } else {
+    tabContent.setAttribute(RP_PROFILE_TAB_CONTENT_ATTR, "1");
   }
 
   let preview = tabContent.querySelector(`[${RP_AVATAR_PREVIEW_ATTR}]`);
   if (!(preview instanceof HTMLElement)) {
     preview = document.createElement("div");
-    preview.className = "roprime-profile-avatar-preview profile-avatar-background-empty-state";
+    preview.className =
+      "roprime-profile-avatar-preview profile-avatar-background-empty-state";
     preview.setAttribute(RP_AVATAR_PREVIEW_ATTR, "1");
     tabContent.prepend(preview);
   }

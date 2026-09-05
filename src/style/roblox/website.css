@@ -103,3 +103,46 @@ html
 * display: none !important;
 * }
 */
+
+/* Fix for Verified Badge in the new player search redesign */
+
+.player-search-verified-badge {
+  height: 16px !important;
+  width: 16px !important;
+}
+
+.css-1myerb2-imgWrapper {
+  margin-left: 2px;
+}
+
+.container-fluid {
+  margin-left: 12px;
+  background: transparent;
+  color: transparent;
+  background-color: transparent;
+}
+
+/* Roblox App Design Mode */
+
+/* .rbx-header {
+  background-color: transparent !important;
+  border-bottom: transparent !important;
+  border-left: var(--color-navigation-background) 81px solid !important;
+  box-shadow: inset 1px 0 var(--stroke-default) !important; 
+}
+
+.navbar-header {
+  margin-left: 13px;
+}
+
+.nav li {
+  display: none !important;
+}
+
+#navbar-settings {
+  display: none !important;
+}
+
+#nav-robux-amount {
+  display: none !important;
+} */

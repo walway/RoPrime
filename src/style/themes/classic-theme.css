@@ -1,0 +1,133 @@
+.classic-theme {
+    --config-text-font: "Comic Neue Angular";
+    --font-weight-300: 700;
+    --font-weight-400: 700;
+    --font-weight-500: 700;
+    --font-weight-600: 700;
+    --font-weight-700: 700;
+    --font-weight-800: 700;
+    --typography-body-large-font: var(--font-weight-400)var(--font-size-400)/var(--line-height-140)var(--config-text-font);
+    --typography-body-medium-font: var(--font-weight-400)var(--font-size-350)/var(--line-height-140)var(--config-text-font);
+    --typography-body-small-font: var(--font-weight-400)var(--font-size-300)/var(--line-height-140)var(--config-text-font);
+    --typography-caption-large-font: var(--font-weight-600)var(--font-size-350)/var(--line-height-140)var(--config-text-font);
+    --typography-caption-medium-font: var(--font-weight-600)var(--font-size-300)/var(--line-height-140)var(--config-text-font);
+    --typography-caption-small-font: var(--font-weight-600)var(--font-size-250)/var(--line-height-140)var(--config-text-font);
+    --typography-display-large-font: var(--font-weight-700)var(--font-size-2000)/var(--line-height-120)var(--config-text-font);
+    --typography-display-medium-font: var(--font-weight-700)var(--font-size-1400)/var(--line-height-120)var(--config-text-font);
+    --typography-display-small-font: var(--font-weight-700)var(--font-size-1000)/var(--line-height-120)var(--config-text-font);
+    --typography-heading-large-font: var(--font-weight-700)var(--font-size-700)/var(--line-height-120)var(--config-text-font);
+    --typography-heading-medium-font: var(--font-weight-700)var(--font-size-600)/var(--line-height-120)var(--config-text-font);
+    --typography-heading-small-font: var(--font-weight-700)var(--font-size-500)/var(--line-height-120)var(--config-text-font);
+    --typography-label-large-font: var(--font-weight-600)var(--font-size-400)/var(--line-height-100)var(--config-text-font);
+    --typography-label-medium-font: var(--font-weight-600)var(--font-size-350)/var(--line-height-100)var(--config-text-font);
+    --typography-label-small-font: var(--font-weight-600)var(--font-size-300)/var(--line-height-100)var(--config-text-font);
+    --typography-title-large-font: var(--font-weight-700)var(--font-size-400)/var(--line-height-140)var(--config-text-font);
+    --typography-title-medium-font: var(--font-weight-700)var(--font-size-350)/var(--line-height-140)var(--config-text-font);
+    --typography-title-small-font: var(--font-weight-700)var(--font-size-300)/var(--line-height-140)var(--config-text-font)
+}
+
+
+.classic-theme:not(:-webkit-any(.age-kids-theme,.age-kids-variant1-theme)) .rbx-header {
+    background-color: var(--color-navigation-background);
+    border-color: var(--color-navigation-background)
+}
+
+.classic-theme:not(:-moz-any(.age-kids-theme,.age-kids-variant1-theme)) .rbx-header {
+    background-color: var(--color-navigation-background);
+    border-color: var(--color-navigation-background)
+}
+
+.classic-theme:not(:-webkit-any(.age-kids-theme,.age-kids-variant1-theme)) .rbx-header {
+    background-color: var(--color-navigation-background);
+    border-color: var(--color-navigation-background)
+}
+
+.classic-theme:not(:-moz-any(.age-kids-theme,.age-kids-variant1-theme)) .rbx-header {
+    background-color: var(--color-navigation-background);
+    border-color: var(--color-navigation-background)
+}
+
+.classic-theme:not(:is(.age-kids-theme,.age-kids-variant1-theme)) .rbx-header {
+    background-color: var(--color-navigation-background);
+    border-color: var(--color-navigation-background)
+}
+
+.classic-theme:not(:-webkit-any(.age-kids-theme,.age-kids-variant1-theme)) .rbx-header .icon-logo {
+    background-image: url(https://images.rbxcdn.com/b48b9cc9bf67813b.svg);
+}
+
+.classic-theme:not(:-moz-any(.age-kids-theme,.age-kids-variant1-theme)) .rbx-header .icon-logo {
+    background-image: url(https://images.rbxcdn.com/b48b9cc9bf67813b.svg)
+}
+
+.classic-theme:not(:-webkit-any(.age-kids-theme,.age-kids-variant1-theme)) .rbx-header .icon-logo {
+    background-image: url(https://images.rbxcdn.com/b48b9cc9bf67813b.svg);
+}
+
+.classic-theme:not(:-moz-any(.age-kids-theme,.age-kids-variant1-theme)) .rbx-header .icon-logo {
+    background-image: url(https://images.rbxcdn.com/b48b9cc9bf67813b.svg)
+}
+
+.classic-theme:not(:is(.age-kids-theme,.age-kids-variant1-theme)) .rbx-header .icon-logo {
+    background-image: url(https://images.rbxcdn.com/b48b9cc9bf67813b.svg);
+}
+
+.classic-theme:not(:-webkit-any(.age-kids-theme,.age-kids-variant1-theme)) .rbx-header .navbar-search {
+    background-color: transparent
+}
+
+.classic-theme:not(:-moz-any(.age-kids-theme,.age-kids-variant1-theme)) .rbx-header .navbar-search {
+    background-color: transparent
+}
+
+.classic-theme:not(:-webkit-any(.age-kids-theme,.age-kids-variant1-theme)) .rbx-header .navbar-search {
+    background-color: transparent
+}
+
+.classic-theme:not(:-moz-any(.age-kids-theme,.age-kids-variant1-theme)) .rbx-header .navbar-search {
+    background-color: transparent
+}
+
+.classic-theme:not(:is(.age-kids-theme,.age-kids-variant1-theme)) .rbx-header .navbar-search {
+    background-color: transparent
+}
+
+.classic-theme:not(:-webkit-any(.age-kids-theme,.age-kids-variant1-theme)) .left-nav {
+    background-color: var(--color-navigation-background)
+}
+
+.classic-theme:not(:-moz-any(.age-kids-theme,.age-kids-variant1-theme)) .left-nav {
+    background-color: var(--color-navigation-background)
+}
+
+.classic-theme:not(:-webkit-any(.age-kids-theme,.age-kids-variant1-theme)) .left-nav {
+    background-color: var(--color-navigation-background)
+}
+
+.classic-theme:not(:-moz-any(.age-kids-theme,.age-kids-variant1-theme)) .left-nav {
+    background-color: var(--color-navigation-background)
+}
+
+.classic-theme:not(:is(.age-kids-theme,.age-kids-variant1-theme)) .left-nav {
+    background-color: var(--color-navigation-background);
+}
+
+.classic-theme:not(:-webkit-any(.age-kids-theme,.age-kids-variant1-theme)) .rbx-left-col {
+    background-color: var(--color-navigation-background)
+}
+
+.classic-theme:not(:-moz-any(.age-kids-theme,.age-kids-variant1-theme)) .rbx-left-col {
+    background-color: var(--color-navigation-background)
+}
+
+.classic-theme:not(:-webkit-any(.age-kids-theme,.age-kids-variant1-theme)) .rbx-left-col {
+    background-color: var(--color-navigation-background)
+}
+
+.classic-theme:not(:-moz-any(.age-kids-theme,.age-kids-variant1-theme)) .rbx-left-col {
+    background-color: var(--color-navigation-background)
+}
+
+.classic-theme:not(:is(.age-kids-theme,.age-kids-variant1-theme)) .rbx-left-col {
+    background-color: var(--color-navigation-background)
+}

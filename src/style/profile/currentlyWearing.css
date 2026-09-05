@@ -1,0 +1,62 @@
+.roprime-profile-wearing-cards {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.roprime-wearing-item-list {
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    overflow: visible;
+}
+  
+.roprime-wearing-item-list > .list-item.item-card {
+    width: auto !important;
+    max-width: none !important;
+    margin: 0 !important;
+    float: none !important;
+}
+  
+.roprime-profile-wearing-cards .pager-holder {
+    display: flex;
+    justify-content: center;
+    margin-top: 8px;
+}
+  
+.roprime-profile-avatar-preview .thumbnail-loader {
+    margin-top: 0;
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+}
+  
+.roprime-profile-avatar-preview .thumbnail-span {
+    display: block !important;
+    width: 100% !important;
+    height: 100% !important;
+}
+
+
+.roprime-profile-wearing-cards .hlist:before,
+.roprime-profile-wearing-cards .hlist:after {
+    display: none !important;
+}
+
+.roprime-profile-wearing-cards .creator-name {
+    display: inline !important;
+}
+
+.roprime-profile-wearing-cards .text-link {
+    display: inline !important;
+}

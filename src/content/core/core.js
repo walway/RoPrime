@@ -12,7 +12,7 @@ export const RP_ALWAYS_SHOW_CLOSE_STYLE_ID = "roprime-always-show-close-style";
 export const RP_CUSTOM_CSS_STYLE_ID = "roprime-custom-css-style";
 export const RP_PARAM_KEY = "roprime";
 export const RP_PARAM_KEY_NEW = "roprime-new";
-export const RP_DEFAULT_PAGE = "appearance";
+export const RP_DEFAULT_PAGE = "info";
 export const RP_SUPPORTED_PAGES = new Set([
   "appearance",
   "home",

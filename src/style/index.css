@@ -1,5 +1,6 @@
 @import "./ui/toggle.css";
 @import "./account/app-theme.css";
+@import "./themes/classic-theme.css";
 @import "./settings/extensions-panel.css";
 @import "./settings/overlay.css";
 @import "./alerts/version.css";
@@ -10,6 +11,7 @@
 @import "./profile/cosmetics-shop.css";
 @import "./profile/page-effects.css";
 @import "./profile/carousel-effects.css";
+@import "./profile/currentlyWearing.css";
 @import "./profile/friend-list-effects.css";
 @import "./profile/friends-reimagined.css";
 
