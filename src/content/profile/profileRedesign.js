@@ -2,9 +2,9 @@ import { settingsState, shouldRunRoPrimeOnCurrentPage } from "../core/core.js";
 import { debounce } from "../core/debounce.js";
 import { isUserProfilePage } from "./profileEffectsDisplay.js";
 import {
-  ensureRoPrimeProfileTabContent,
+  ensureRoPrimeProfileTabLayout,
   findProfilePlatformHost,
-  findRoPrimeProfileTabContent,
+  findRoPrimeProfileTabLayout,
   removeRoPrimeProfileTabContent,
   syncProfileAvatarRenderer,
 } from "./profileAvatarRenderer.js";
@@ -58,10 +58,11 @@ const scheduleBubbleSync = debounce(syncBubbleLength, 200);
 const scheduleProfileShellSync = debounce(runProfileShellSync, 250);
 
 function runProfileShellSync() {
-  const tabContent = ensureRoPrimeProfileTabContent();
-  if (!tabContent) return;
+  const layout = ensureRoPrimeProfileTabLayout();
+  if (!layout) return;
+  // Empty shells first; avatar/wearing fill in as they load.
   void syncProfileAvatarRenderer();
-  void syncProfileWearingCards(tabContent);
+  void syncProfileWearingCards(layout);
   syncBubbleLength();
 }
 
@@ -126,10 +127,10 @@ function mutationsNeedShellSync(mutations) {
       // Ignore our own wearing/pager churn.
       if (
         node.matches?.(
-          "[data-roprime-profile-tab-content], [data-roprime-wearing-cards], [data-roprime-profile-tab-layout], .roprime-profile-avatar-preview, .pager-holder, .item-card",
+          "[data-roprime-profile-tab-layout], [data-roprime-wearing-cards], .roprime-profile-avatar-preview, .pager-holder, .item-card, .thumbnail-loader, .avatar-loading-shimmer-overlay",
         ) ||
         node.querySelector?.(
-          "[data-roprime-profile-tab-content], [data-roprime-wearing-cards], .roprime-profile-avatar-preview",
+          "[data-roprime-profile-tab-layout], [data-roprime-wearing-cards], .roprime-profile-avatar-preview",
         )
       ) {
         continue;
@@ -140,7 +141,7 @@ function mutationsNeedShellSync(mutations) {
       if (!(node instanceof Element)) continue;
       if (
         node.matches?.(
-          "[data-roprime-profile-tab-content], .profile-platform-container, .rovalra-status-bubble",
+          "[data-roprime-profile-tab-layout], .profile-platform-container, .profile-header-overlay, .rovalra-status-bubble",
         )
       ) {
         return true;
@@ -151,13 +152,13 @@ function mutationsNeedShellSync(mutations) {
 }
 
 function onPlatformMutations(mutations) {
-  const shell = findRoPrimeProfileTabContent();
+  const shell = findRoPrimeProfileTabLayout();
   const host = findProfilePlatformHost();
   if (!host) {
     scheduleProfileShellSync();
     return;
   }
-  if (!shell || !host.contains(shell)) {
+  if (!shell || !document.querySelector(".profile-platform-container")?.contains(shell)) {
     scheduleProfileShellSync();
     return;
   }

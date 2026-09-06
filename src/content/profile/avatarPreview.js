@@ -21,6 +21,8 @@ let currentAvatarSource = null;
 let currentAvatarType = AvatarType.R15;
 let currentViewMode = "3d";
 let renderSeq = 0;
+/** @type {{ close: () => void } | null} */
+let activeLoader = null;
 
 const AVATAR_DETAILS_URL = "https://avatar.roblox.com/v2/avatar/users";
 const AVATAR_MODEL_URL = "https://avatar.roblox.com/v4/avatar/users";
@@ -28,9 +30,12 @@ const AVATAR_THUMBNAIL_URL = "https://thumbnails.roblox.com/v1/users/avatar";
 const extensionApi = globalThis.browser || globalThis.chrome;
 const AVATAR_ROTATION_SPEED = -1;
 const PREVIEW_HEIGHT = 420;
-const LOADER_MAX_VISIBLE_MS = 2000;
+const RENDER_SUCCESS_TIMEOUT_MS = 45000;
 const BUTTON_CLASS =
   "foundation-web-button relative clip group/interactable focus-visible:outline-focus disabled:outline-none cursor-pointer relative flex items-center justify-center stroke-none padding-y-none select-none radius-medium text-label-large height-1200 padding-x-medium bg-action-standard content-action-standard";
+
+const LOADER_SPINNER_ATTR = "data-roprime-avatar-loader";
+const LOADER_SHIMMER_ATTR = "data-roprime-avatar-shimmer";
 
 function normalizeFetchHeaders(input) {
   const output = {};
@@ -165,9 +170,14 @@ function cloneJson(value) {
   return JSON.parse(JSON.stringify(value));
 }
 
-function clearPreviewHost(host) {
+function clearPreviewContent(host) {
   if (!(host instanceof HTMLElement)) return;
-  host.textContent = "";
+  for (const child of [...host.children]) {
+    if (child instanceof HTMLElement && child.dataset.roprimeAvatarControl === "1") {
+      continue;
+    }
+    child.remove();
+  }
 }
 
 function createButton(label) {
@@ -234,55 +244,68 @@ function appendPreviewControls(host) {
   return { viewButton, rigButton };
 }
 
-function createLoadingStage() {
-  const loadingStage = document.createElement("div");
-  loadingStage.className =
-    "thumbnail-2d-container avatar-loading-shimmer-overlay no-background-thumbnail thumbnail-span";
-  loadingStage.style.position = "relative";
-  loadingStage.style.width = "100%";
-  loadingStage.style.height = "100%";
-  loadingStage.style.pointerEvents = "none";
-  loadingStage.style.display = "block";
-  return loadingStage;
+function clearLoadingIndicators(host = currentHost) {
+  if (activeLoader) {
+    activeLoader.close();
+    activeLoader = null;
+  }
+  if (!(host instanceof HTMLElement)) return;
+  host
+    .querySelectorAll(`[${LOADER_SPINNER_ATTR}], [${LOADER_SHIMMER_ATTR}]`)
+    .forEach((node) => node.remove());
 }
 
-function appendSpinnerLoader(target, marginTop = "0px") {
+function show3DLoader(host) {
+  clearLoadingIndicators(host);
+  if (!(host instanceof HTMLElement)) return { close: () => {} };
+
   const loader = document.createElement("div");
   loader.className = "thumbnail-loader";
-  loader.style.marginTop = marginTop;
+  loader.setAttribute(LOADER_SPINNER_ATTR, "1");
   const spinner = document.createElement("span");
   spinner.className = "spinner spinner-default";
   loader.appendChild(spinner);
-  target.appendChild(loader);
-  return loader;
+  host.appendChild(loader);
+
+  let closed = false;
+  const handle = {
+    close: () => {
+      if (closed) return;
+      closed = true;
+      loader.remove();
+      if (activeLoader === handle) activeLoader = null;
+    },
+  };
+  activeLoader = handle;
+  return handle;
 }
 
-function attachTransientLoader(host, localMountSeq, localRenderSeq) {
-  const loadingStage = createLoadingStage();
-  host.appendChild(loadingStage);
+function show2DLoader(host) {
+  clearLoadingIndicators(host);
+  if (!(host instanceof HTMLElement)) return { close: () => {} };
 
-  const spinnerLoader = appendSpinnerLoader(host);
+  const shimmer = document.createElement("div");
+  shimmer.className =
+    "thumbnail-2d-container avatar-loading-shimmer-overlay no-background-thumbnail thumbnail-span";
+  shimmer.setAttribute(LOADER_SHIMMER_ATTR, "1");
+  shimmer.style.position = "relative";
+  shimmer.style.width = "100%";
+  shimmer.style.height = "100%";
+  shimmer.style.pointerEvents = "none";
+  shimmer.style.display = "block";
+  host.appendChild(shimmer);
+
   let closed = false;
-  let timeoutId = 0;
-
-  const close = () => {
-    if (closed) return;
-    closed = true;
-    if (timeoutId) {
-      globalThis.clearTimeout(timeoutId);
-      timeoutId = 0;
-    }
-    spinnerLoader.remove();
-    loadingStage.remove();
+  const handle = {
+    close: () => {
+      if (closed) return;
+      closed = true;
+      shimmer.remove();
+      if (activeLoader === handle) activeLoader = null;
+    },
   };
-
-  timeoutId = globalThis.setTimeout(() => {
-    if (isActiveRender(localMountSeq, localRenderSeq)) {
-      close();
-    }
-  }, LOADER_MAX_VISIBLE_MS);
-
-  return { close };
+  activeLoader = handle;
+  return handle;
 }
 
 function buildAvatarRenderData(source, avatarType) {
@@ -332,16 +355,54 @@ function isActiveRender(localMountSeq, localRenderSeq) {
   return localMountSeq === activeMountSeq && localRenderSeq === renderSeq;
 }
 
+function waitForOutfitRenderSuccess(outfitRenderer) {
+  return new Promise((resolve) => {
+    if (outfitRenderer?.hasFiredFullyRendered) {
+      resolve(true);
+      return;
+    }
+
+    let settled = false;
+    /** @type {{ Disconnect?: () => void } | null} */
+    let successConn = null;
+    /** @type {{ Disconnect?: () => void } | null} */
+    let errorConn = null;
+    let timeoutId = 0;
+
+    const finish = (ok) => {
+      if (settled) return;
+      settled = true;
+      if (timeoutId) globalThis.clearTimeout(timeoutId);
+      try {
+        successConn?.Disconnect?.();
+      } catch {}
+      try {
+        errorConn?.Disconnect?.();
+      } catch {}
+      resolve(ok);
+    };
+
+    try {
+      successConn = outfitRenderer.onRenderSuccess.Connect(() => finish(true));
+      errorConn = outfitRenderer.onError.Connect(() => finish(false));
+    } catch {
+      finish(false);
+      return;
+    }
+
+    timeoutId = globalThis.setTimeout(() => {
+      if (outfitRenderer?.hasFiredFullyRendered) finish(true);
+      else finish(false);
+    }, RENDER_SUCCESS_TIMEOUT_MS);
+  });
+}
+
 async function render3DPreview(localMountSeq, localRenderSeq) {
   if (!(currentHost instanceof HTMLElement) || !currentAvatarSource)
     return false;
 
-  clearPreviewHost(currentHost);
-  const loader = attachTransientLoader(
-    currentHost,
-    localMountSeq,
-    localRenderSeq,
-  );
+  clearPreviewContent(currentHost);
+  const loader = show3DLoader(currentHost);
   appendPreviewControls(currentHost);
 
   destroyCurrentOutfitRenderer();
@@ -349,7 +410,10 @@ async function render3DPreview(localMountSeq, localRenderSeq) {
 
   const ready = await ensureRenderer(currentHost);
   if (!isActiveRender(localMountSeq, localRenderSeq)) return false;
-  if (!ready) return false;
+  if (!ready) {
+    loader.close();
+    return false;
+  }
 
   const rendererElement = RBXRenderer.getRendererElement();
   if (rendererElement instanceof HTMLElement) {
@@ -385,8 +449,13 @@ async function render3DPreview(localMountSeq, localRenderSeq) {
   outfitRenderer.startAnimating();
 
   try {
-    await outfitRenderer.setMainAnimation("idle");
+    void outfitRenderer.setMainAnimation("idle");
+    const rendered = await waitForOutfitRenderSuccess(outfitRenderer);
     if (!isActiveRender(localMountSeq, localRenderSeq)) {
+      return false;
+    }
+    if (!rendered) {
+      loader.close();
       return false;
     }
     enableAvatarSpin();
@@ -416,18 +485,15 @@ async function render2DPreview(localMountSeq, localRenderSeq) {
   destroyCurrentOutfitRenderer();
   if (!isActiveRender(localMountSeq, localRenderSeq)) return false;
 
-  clearPreviewHost(currentHost);
-  const loader = attachTransientLoader(
-    currentHost,
-    localMountSeq,
-    localRenderSeq,
-  );
+  clearPreviewContent(currentHost);
+  const loader = show2DLoader(currentHost);
   appendPreviewControls(currentHost);
 
   let imageUrl = "";
   try {
     imageUrl = await fetchAvatarThumbnailUrl(currentUserId);
   } catch {
+    loader.close();
     return false;
   }
 
@@ -436,25 +502,21 @@ async function render2DPreview(localMountSeq, localRenderSeq) {
   const span = document.createElement("span");
   span.className =
     "thumbnail-2d-container no-background-thumbnail thumbnail-span";
-  span.style.display = "flex";
-  span.style.alignItems = "center";
-  span.style.justifyContent = "center";
-  span.style.width = "100%";
-  span.style.height = "100%";
-  span.style.overflow = "hidden";
-  span.style.pointerEvents = "none";
   const image = document.createElement("img");
-  image.src = imageUrl;
   image.alt = "";
-  image.style.display = "block";
-  image.style.maxWidth = "100%";
-  image.style.maxHeight = "100%";
-  image.style.width = "auto";
-  image.style.height = "auto";
   image.style.objectFit = "contain";
+
+  await new Promise((resolve) => {
+    image.onload = () => resolve();
+    image.onerror = () => resolve();
+    image.src = imageUrl;
+  });
+
+  if (!isActiveRender(localMountSeq, localRenderSeq)) return false;
+
   span.appendChild(image);
   loader.close();
-  clearPreviewHost(currentHost);
+  clearPreviewContent(currentHost);
   currentHost.appendChild(span);
   appendPreviewControls(currentHost);
   return true;
@@ -671,6 +733,19 @@ async function resetRenderer() {
   detachRendererElement();
 }
 
+function stylePreviewHost(host) {
+  host.className =
+    "roprime-profile-avatar-preview profile-avatar-background-empty-state";
+  host.style.position = "relative";
+  host.style.width = "50%";
+  host.style.maxWidth = "50%";
+  host.style.height = `${PREVIEW_HEIGHT}px`;
+  host.style.minHeight = `${PREVIEW_HEIGHT}px`;
+  host.style.marginBottom = "24px";
+  host.style.borderRadius = "12px";
+  host.style.overflow = "hidden";
+}
+
 export async function mountAvatarPreview(host, userId) {
   const seq = ++mountSeq;
   activeMountSeq = seq;
@@ -690,27 +765,27 @@ export async function mountAvatarPreview(host, userId) {
   }
   if (!isActive()) return false;
 
-  host.className =
-    "roprime-profile-avatar-preview profile-avatar-background-empty-state";
-  host.style.position = "relative";
-  host.style.width = "50%";
-  host.style.maxWidth = "50%";
-  host.style.height = `${PREVIEW_HEIGHT}px`;
-  host.style.minHeight = `${PREVIEW_HEIGHT}px`;
-  host.style.marginBottom = "24px";
-  host.style.borderRadius = "12px";
-  host.style.overflow = "hidden";
+  stylePreviewHost(host);
+  clearPreviewContent(host);
+  show3DLoader(host);
+  appendPreviewControls(host);
 
   let avatarSource = null;
   try {
     avatarSource = await fetchAvatarRenderData(userId);
   } catch {
-    if (isActive()) await resetRenderer();
+    if (isActive()) {
+      clearLoadingIndicators(host);
+      await resetRenderer();
+    }
     return false;
   }
   if (!isActive()) return false;
   if (!avatarSource || typeof avatarSource !== "object") {
-    if (isActive()) await resetRenderer();
+    if (isActive()) {
+      clearLoadingIndicators(host);
+      await resetRenderer();
+    }
     return false;
   }
   currentAvatarSource = avatarSource;
@@ -719,6 +794,7 @@ export async function mountAvatarPreview(host, userId) {
 }
 
 export async function unmountAvatarPreview() {
+  clearLoadingIndicators();
   currentHost = null;
   currentUserId = 0;
   currentAvatarSource = null;

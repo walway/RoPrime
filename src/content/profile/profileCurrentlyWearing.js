@@ -1,4 +1,9 @@
 import { parseUserProfileIdFromLocation } from "../core/core.js";
+import {
+  ensureRobloxTranslations,
+  robloxT,
+} from "../core/translations.js";
+import { appendParsedMarkup } from "../ui/dom.js";
 
 const AVATAR_DETAILS_URL = "https://avatar.roblox.com/v2/avatar/users";
 const THUMBNAILS_URL = "https://thumbnails.roblox.com/v1/assets";
@@ -9,6 +14,11 @@ const RP_WEARING_LAYOUT_ATTR = "data-roprime-profile-tab-layout";
 const RP_PAGE_ATTR = "data-roprime-wearing-page";
 
 const PAGE_SIZE = 6;
+const SHIMMER_PLACEHOLDER_COUNT = 6;
+
+
+const VERIFIED_BADGE_MARKUP =
+  '<img src="data:image/svg+xml;charset=utf-8,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'16\' height=\'16\' viewBox=\'0 0 28 28\' fill=\'none\'%3E%3Cg clip-path=\'url(%23clip0_8_46)\'%3E%3Crect x=\'5.88818\' width=\'22.89\' height=\'22.89\' transform=\'rotate(15 5.88818 0)\' fill=\'%230066FF\'/%3E%3Cpath fill-rule=\'evenodd\' clip-rule=\'evenodd\' d=\'M20.543 8.7508L20.549 8.7568C21.15 9.3578 21.15 10.3318 20.549 10.9328L11.817 19.6648L7.45 15.2968C6.85 14.6958 6.85 13.7218 7.45 13.1218L7.457 13.1148C8.058 12.5138 9.031 12.5138 9.633 13.1148L11.817 15.2998L18.367 8.7508C18.968 8.1498 19.942 8.1498 20.543 8.7508Z\' fill=\'white\'/%3E%3C/g%3E%3Cdefs%3E%3CclipPath id=\'clip0_8_46\'%3E%3Crect width=\'28\' height=\'28\' fill=\'white\'/%3E%3C/clipPath%3E%3C/defs%3E%3C/svg%3E" title="Verified Badge" alt="Verified Badge" class="verified-badge-container verified-badge-icon-catalog-item-rendered">';
 
 let syncPromise = null;
 let lastUserId = 0;
@@ -36,13 +46,40 @@ function catalogSlug(name) {
   return slug || "item";
 }
 
+function creatorTypeOf(detail) {
+  return String(detail?.creatorType || "").toLowerCase();
+}
+
+function isCommunityCreator(detail) {
+  const type = creatorTypeOf(detail);
+  return type === "group" || type === "community";
+}
+
+function isRobloxCreator(detail) {
+  const id = Number(detail?.creatorTargetId);
+  const name = String(detail?.creatorName || "").trim().toLowerCase();
+  return id === 1 || name === "roblox";
+}
+
 function creatorProfileUrl(detail) {
   const id = Number(detail?.creatorTargetId);
-  if (!Number.isFinite(id) || id <= 0) return "https://www.roblox.com/users/1/profile";
-  if (String(detail?.creatorType || "").toLowerCase() === "group") {
-    return `https://www.roblox.com/groups/${id}`;
+  if (!Number.isFinite(id) || id <= 0) return "/users/1/profile";
+  if (isCommunityCreator(detail)) {
+    return `/communities/${id}`;
   }
-  return `https://www.roblox.com/users/${id}/profile`;
+  return `/users/${id}/profile`;
+}
+
+function creatorDisplayName(detail) {
+  const name = String(detail?.creatorName || "Roblox").trim() || "Roblox";
+  if (isRobloxCreator(detail) || isCommunityCreator(detail)) return name;
+  return name.startsWith("@") ? name : `@${name}`;
+}
+
+function itemPriceValue(detail) {
+  if (typeof detail?.price === "number") return detail.price;
+  if (typeof detail?.lowestPrice === "number") return detail.lowestPrice;
+  return null;
 }
 
 async function fetchWearingAssets(userId) {
@@ -57,7 +94,6 @@ async function fetchWearingAssets(userId) {
 async function fetchAssetThumbnails(assetIds) {
   if (!assetIds.length) return new Map();
   const map = new Map();
-  // Thumbnails API caps batch size; chunk to stay safe.
   for (let i = 0; i < assetIds.length; i += 100) {
     const chunk = assetIds.slice(i, i + 100);
     const params = new URLSearchParams({
@@ -108,36 +144,136 @@ async function fetchCatalogDetails(assetIds) {
         if (entry?.id) map.set(Number(entry.id), entry);
       }
     } catch {
-      // Keep cards usable without creator/price.
     }
   }
   return map;
 }
 
-function ensureWearingLayout(tabContent) {
-  let layout = tabContent.querySelector(`[${RP_WEARING_LAYOUT_ATTR}]`);
-  if (layout instanceof HTMLElement) return layout;
+function ensureWearingHost(layout) {
+  let parent = layout;
+  if (!(parent instanceof HTMLElement)) {
+    parent = document.querySelector(`[${RP_WEARING_LAYOUT_ATTR}]`);
+  }
+  if (!(parent instanceof HTMLElement)) return null;
 
-  const preview = tabContent.querySelector("[data-roprime-avatar-preview]");
-  const wearing = tabContent.querySelector(`[${RP_WEARING_ATTR}]`);
-  layout = el("div", "roprime-profile-tab-layout");
-  layout.setAttribute(RP_WEARING_LAYOUT_ATTR, "1");
-  if (preview) layout.appendChild(preview);
-  if (wearing) layout.appendChild(wearing);
-  tabContent.prepend(layout);
-  return layout;
-}
-
-function ensureWearingHost(tabContent) {
-  ensureWearingLayout(tabContent);
-  let host = tabContent.querySelector(`[${RP_WEARING_ATTR}]`);
+  let host = parent.querySelector(`[${RP_WEARING_ATTR}]`);
   if (host instanceof HTMLElement) return host;
   host = el("div", "roprime-profile-wearing-cards");
   host.setAttribute(RP_WEARING_ATTR, "1");
-  const layout = tabContent.querySelector(`[${RP_WEARING_LAYOUT_ATTR}]`);
-  if (layout) layout.appendChild(host);
-  else tabContent.appendChild(host);
+  parent.appendChild(host);
   return host;
+}
+
+function buildShimmerPlaceholderCard() {
+  const li = el("li", "list-item item-card");
+  const container = el("div", "item-card-container");
+  const thumbWrap = el("div", "item-card-thumb-container");
+  const thumb2d = el("thumbnail-2d", "item-card-thumb");
+  const span = el("span", "thumbnail-2d-container shimmer");
+  thumb2d.appendChild(span);
+  thumbWrap.appendChild(thumb2d);
+  container.appendChild(thumbWrap);
+  li.appendChild(container);
+  return li;
+}
+
+function renderShimmerPlaceholders(host) {
+  host.textContent = "";
+  const list = el("ul", "hlist item-cards-stackable roprime-wearing-item-list");
+  for (let i = 0; i < SHIMMER_PLACEHOLDER_COUNT; i += 1) {
+    list.appendChild(buildShimmerPlaceholderCard());
+  }
+  host.appendChild(list);
+}
+
+function attachThumbImage(span, imageUrl, name) {
+  span.classList.add("shimmer");
+  if (!imageUrl) {
+    span.classList.remove("shimmer");
+    return;
+  }
+
+  const img = el("img");
+  img.alt = name;
+  img.title = name;
+  img.loading = "lazy";
+
+  const clearShimmer = () => {
+    span.classList.remove("shimmer");
+  };
+  img.addEventListener("load", clearShimmer, { once: true });
+  img.addEventListener("error", clearShimmer, { once: true });
+  img.src = imageUrl;
+  if (img.complete) clearShimmer();
+  span.appendChild(img);
+}
+
+function buildCreatorRow(detail) {
+  const creator = el("div", "text-overflow item-card-creator");
+  const wrap = el("span", "text-overflow");
+  const byLabel = robloxT("Feature.Avatar.Label.By", "By");
+  wrap.appendChild(document.createTextNode(`${byLabel}`));
+
+  const displayName = creatorDisplayName(detail);
+  if (isCommunityCreator(detail)) {
+    wrap.appendChild(document.createTextNode(displayName));
+  } else {
+    const creatorLink = el("a", "creator-name text-link");
+    creatorLink.href = creatorProfileUrl(detail);
+    creatorLink.textContent = displayName;
+    wrap.appendChild(creatorLink);
+  }
+
+  creator.appendChild(wrap);
+
+  if (detail?.creatorHasVerifiedBadge) {
+    appendParsedMarkup(creator, VERIFIED_BADGE_MARKUP);
+  }
+
+  return creator;
+}
+
+function buildPriceRow(detail) {
+  const priceRow = el(
+    "div",
+    "text-overflow item-card-price font-header-2 text-subheader margin-top-none",
+  );
+
+  const price = itemPriceValue(detail);
+  const priceStatus = String(detail?.priceStatus || "").trim();
+  const statusLower = priceStatus.toLowerCase();
+  const isFreeStatus = statusLower === "free";
+  const isOffSaleStatus =
+    statusLower === "offsale" ||
+    statusLower === "off sale" ||
+    statusLower === "off-sale" ||
+    detail?.isOffSale === true;
+
+  if (typeof price === "number" && price > 0) {
+    priceRow.appendChild(el("span", "icon-robux-16x16"));
+    const amount = el("span", "text-robux-tile");
+    amount.textContent = String(price);
+    priceRow.appendChild(amount);
+    return priceRow;
+  }
+
+  const label = el("span", "text-label");
+  const status = el("span", "text-overflow font-caption-body");
+
+  if (price === 0 || isFreeStatus) {
+    status.classList.add("text-robux-tile");
+    status.textContent = robloxT("Feature.Build.Label.Free", "Free");
+  } else if (isOffSaleStatus || !priceStatus) {
+    status.textContent = robloxT("Feature.Build.Label.OffSale", "Off sale");
+  } else if (priceStatus) {
+    status.textContent = priceStatus;
+  } else {
+    status.textContent = robloxT("Feature.Build.Label.OffSale", "Off sale");
+  }
+
+  label.appendChild(status);
+  priceRow.appendChild(label);
+  return priceRow;
 }
 
 function buildItemCard(asset, imageUrl, detail) {
@@ -151,17 +287,10 @@ function buildItemCard(asset, imageUrl, detail) {
 
   const thumbWrap = el("div", "item-card-thumb-container");
   const thumb2d = el("thumbnail-2d", "item-card-thumb");
-  const span = el("span", "thumbnail-2d-container");
+  const span = el("span", "thumbnail-2d-container shimmer");
   span.setAttribute("thumbnail-type", "Asset");
   span.setAttribute("thumbnail-target-id", String(asset.id));
-  if (imageUrl) {
-    const img = el("img");
-    img.src = imageUrl;
-    img.alt = name;
-    img.title = name;
-    img.loading = "lazy";
-    span.appendChild(img);
-  }
+  attachThumbImage(span, imageUrl, name);
   thumb2d.appendChild(span);
   thumbWrap.append(
     thumb2d,
@@ -177,52 +306,8 @@ function buildItemCard(asset, imageUrl, detail) {
 
   link.append(thumbWrap, nameEl);
   container.appendChild(link);
-
-  const creatorName = detail?.creatorName || "Roblox";
-  const creator = el("div", "text-overflow item-card-label");
-  const by = el("span");
-  by.textContent = "By";
-  const creatorLink = el("a", "creator-name text-overflow text-link");
-  creatorLink.href = creatorProfileUrl(detail);
-  creatorLink.textContent = creatorName;
-  creator.append(by, document.createTextNode(" "), creatorLink);
-  container.appendChild(creator);
-
-  const priceRow = el("div", "text-overflow item-card-price");
-  const priceStatus = detail?.priceStatus;
-  const price = detail?.price;
-  const isFree =
-    String(priceStatus || "").toLowerCase() === "free" || price === 0;
-  const hasNumericPrice =
-    typeof price === "number" && price > 0 && !priceStatus;
-
-  if (priceStatus && !hasNumericPrice) {
-    const label = el("span", "text-label");
-    const status = el("span", "text-overflow font-caption-body");
-    if (isFree) status.classList.add("text-robux-tile");
-    status.textContent = priceStatus;
-    label.appendChild(status);
-    priceRow.appendChild(label);
-  } else if (isFree && !hasNumericPrice) {
-    const label = el("span", "text-label");
-    const status = el("span", "text-overflow font-caption-body text-robux-tile");
-    status.textContent = "Free";
-    label.appendChild(status);
-    priceRow.appendChild(label);
-  } else if (hasNumericPrice) {
-    priceRow.appendChild(el("span", "icon-robux-16x16"));
-    const amount = el("span", "text-robux-tile");
-    amount.textContent = String(price);
-    priceRow.appendChild(amount);
-  } else {
-    const label = el("span", "text-label");
-    const status = el("span", "text-overflow font-caption-body");
-    status.textContent = "Off Sale";
-    label.appendChild(status);
-    priceRow.appendChild(label);
-  }
-
-  container.appendChild(priceRow);
+  container.appendChild(buildCreatorRow(detail));
+  container.appendChild(buildPriceRow(detail));
   li.appendChild(container);
   return li;
 }
@@ -303,17 +388,28 @@ function renderWearingCards(host, assets, thumbnails, details) {
   renderCurrentPage();
 }
 
-export async function syncProfileWearingCards(tabContent) {
-  if (!(tabContent instanceof HTMLElement)) return;
+export async function syncProfileWearingCards(layoutOrTabContent) {
+  const layout =
+    layoutOrTabContent instanceof HTMLElement
+      ? layoutOrTabContent
+      : document.querySelector(`[${RP_WEARING_LAYOUT_ATTR}]`);
+  if (!(layout instanceof HTMLElement)) return;
+
   const userId = parseUserProfileIdFromLocation();
   if (!userId) return;
 
-  const host = ensureWearingHost(tabContent);
-  if (lastUserId === userId && host.childElementCount > 0) return;
+  const host = ensureWearingHost(layout);
+  if (!(host instanceof HTMLElement)) return;
+  if (lastUserId === userId && host.childElementCount > 0 && cachedPayload) {
+    return;
+  }
 
   if (syncPromise) return syncPromise;
   syncPromise = (async () => {
     try {
+      // Empty shimmer shells immediately while data loads.
+      renderShimmerPlaceholders(host);
+      await ensureRobloxTranslations();
       const assets = await fetchWearingAssets(userId);
       const assetIds = assets.map((asset) => Number(asset.id)).filter(Boolean);
       const [thumbnails, details] = await Promise.all([
@@ -336,5 +432,4 @@ export function removeProfileWearingCards() {
   cachedPayload = null;
   currentPage = 1;
   document.querySelector(`[${RP_WEARING_ATTR}]`)?.remove();
-  document.querySelector(`[${RP_WEARING_LAYOUT_ATTR}]`)?.remove();
 }

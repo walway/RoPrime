@@ -1,7 +1,6 @@
 import { getExtensionResourceUrl, parseUserProfileIdFromLocation } from "../core/core.js";
-import { syncProfileWearingCards } from "./profileCurrentlyWearing.js";
 
-const RP_PROFILE_TAB_CONTENT_ATTR = "data-roprime-profile-tab-content";
+export const RP_PROFILE_TAB_LAYOUT_ATTR = "data-roprime-profile-tab-layout";
 const RP_AVATAR_PREVIEW_ATTR = "data-roprime-avatar-preview";
 
 let modulePromise = null;
@@ -17,11 +16,16 @@ function loadAvatarPreviewModule() {
   return modulePromise;
 }
 
-export function findProfilePlatformHost() {
+export function findProfilePlatformContainer() {
   const platform = document.querySelector(".profile-platform-container");
-  if (!(platform instanceof HTMLElement)) return null;
+  return platform instanceof HTMLElement ? platform : null;
+}
+
+export function findProfilePlatformHost() {
+  const platform = findProfilePlatformContainer();
+  if (!platform) return null;
   const host = platform.querySelector(":scope > div");
-  return host instanceof HTMLElement ? host : null;
+  return host instanceof HTMLElement ? host : platform;
 }
 
 /** @deprecated Use findProfilePlatformHost */
@@ -29,31 +33,51 @@ export function findProfilePlatformInner() {
   return findProfilePlatformHost();
 }
 
-export function findRoPrimeProfileTabContent() {
-  return document.querySelector(`[${RP_PROFILE_TAB_CONTENT_ATTR}]`);
+export function findRoPrimeProfileTabLayout() {
+  return document.querySelector(`[${RP_PROFILE_TAB_LAYOUT_ATTR}]`);
 }
 
-export function ensureRoPrimeProfileTabContent() {
-  const host = findProfilePlatformHost();
-  if (!host) return null;
+/** @deprecated Prefer findRoPrimeProfileTabLayout */
+export function findRoPrimeProfileTabContent() {
+  return findRoPrimeProfileTabLayout();
+}
 
-  let tabContent = findRoPrimeProfileTabContent();
-  if (!(tabContent instanceof HTMLElement) || !host.contains(tabContent)) {
-    tabContent = document.createElement("div");
-    tabContent.className = "profile-tab-content padding-top-xxlarge";
-    tabContent.setAttribute(RP_PROFILE_TAB_CONTENT_ATTR, "1");
-    host.prepend(tabContent);
+export function ensureRoPrimeProfileTabLayout() {
+  const platform = findProfilePlatformContainer();
+  if (!platform) return null;
+
+  const overlay = platform.querySelector(".profile-header-overlay");
+  let layout = findRoPrimeProfileTabLayout();
+
+  if (!(layout instanceof HTMLElement) || !platform.contains(layout)) {
+    layout = document.createElement("div");
+    layout.className = "roprime-profile-tab-layout padding-top-xxlarge";
+    layout.setAttribute(RP_PROFILE_TAB_LAYOUT_ATTR, "1");
   } else {
-    tabContent.setAttribute(RP_PROFILE_TAB_CONTENT_ATTR, "1");
+    layout.classList.add("padding-top-xxlarge");
+    layout.setAttribute(RP_PROFILE_TAB_LAYOUT_ATTR, "1");
   }
 
-  let preview = tabContent.querySelector(`[${RP_AVATAR_PREVIEW_ATTR}]`);
+  if (overlay instanceof HTMLElement && platform.contains(overlay)) {
+    if (overlay.nextElementSibling !== layout) {
+      overlay.insertAdjacentElement("afterend", layout);
+    }
+  } else {
+    const host = findProfilePlatformHost();
+    if (host && layout.parentElement !== host) {
+      host.appendChild(layout);
+    } else if (!layout.parentElement) {
+      platform.appendChild(layout);
+    }
+  }
+
+  let preview = layout.querySelector(`[${RP_AVATAR_PREVIEW_ATTR}]`);
   if (!(preview instanceof HTMLElement)) {
     preview = document.createElement("div");
     preview.className =
       "roprime-profile-avatar-preview profile-avatar-background-empty-state";
     preview.setAttribute(RP_AVATAR_PREVIEW_ATTR, "1");
-    tabContent.prepend(preview);
+    layout.prepend(preview);
   }
   preview.style.setProperty(
     "--empty-state-image-light",
@@ -64,11 +88,16 @@ export function ensureRoPrimeProfileTabContent() {
     'url("https://assetdelivery.roblox.com/v1/asset/?id=76787651008882")',
   );
 
-  return tabContent;
+  return layout;
+}
+
+/** @deprecated Prefer ensureRoPrimeProfileTabLayout */
+export function ensureRoPrimeProfileTabContent() {
+  return ensureRoPrimeProfileTabLayout();
 }
 
 export function removeRoPrimeProfileTabContent() {
-  document.querySelector(`[${RP_PROFILE_TAB_CONTENT_ATTR}]`)?.remove();
+  document.querySelector(`[${RP_PROFILE_TAB_LAYOUT_ATTR}]`)?.remove();
   void (async () => {
     try {
       const mod = await loadAvatarPreviewModule();
@@ -80,10 +109,10 @@ export function removeRoPrimeProfileTabContent() {
 }
 
 export async function syncProfileAvatarRenderer() {
-  const tabContent = ensureRoPrimeProfileTabContent();
-  if (!tabContent) return;
+  const layout = ensureRoPrimeProfileTabLayout();
+  if (!layout) return;
 
-  const preview = tabContent.querySelector(`[${RP_AVATAR_PREVIEW_ATTR}]`);
+  const preview = layout.querySelector(`[${RP_AVATAR_PREVIEW_ATTR}]`);
   if (!(preview instanceof HTMLElement)) return;
   if (preview.dataset.roprimeAvatarMounted === "1") return;
   if (preview.dataset.roprimeAvatarMounting === "1") return;
@@ -97,7 +126,6 @@ export async function syncProfileAvatarRenderer() {
     const ok = await mod.mountAvatarPreview(preview, userId);
     if (ok) {
       preview.dataset.roprimeAvatarMounted = "1";
-      void syncProfileWearingCards(tabContent);
     } else {
       delete preview.dataset.roprimeAvatarMounting;
     }

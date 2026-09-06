@@ -32,7 +32,7 @@
 }
   
 .roprime-profile-avatar-preview .thumbnail-loader {
-    margin-top: 0;
+    margin-top: 210px;
     position: absolute;
     inset: 0;
     display: flex;
@@ -53,10 +53,22 @@
     display: none !important;
 }
 
+.roprime-profile-wearing-cards .item-card-creator {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
 .roprime-profile-wearing-cards .creator-name {
     display: inline !important;
 }
 
 .roprime-profile-wearing-cards .text-link {
     display: inline !important;
+}
+
+.roprime-profile-wearing-cards .verified-badge-icon-catalog-item-rendered {
+    width: 16px;
+    height: 16px;
+    flex: 0 0 auto;
 }

@@ -1,5 +1,9 @@
 import { saveSettings, settingsState } from "../core/core.js";
 import {
+  ensureRobloxTranslations,
+  robloxT,
+} from "../core/translations.js";
+import {
   getRobloxUserId,
   peekRobloxUserId,
 } from "../profile/robloxUserId.js";
@@ -136,16 +140,41 @@ const CALM_THEMES = [
   },
 ];
 
-// Add Classic theme here -
-
 const SPECIAL_THEMES = [
+  {
+    id: "",
+    name: "Default",
+    i18nKey: "Feature.Accessibility.AppTheme.Default",
+    darkColor: "rgb(18, 18, 21)",
+    lightColor: "rgb(255, 255, 255)",
+  },
   {
     id: "classic-theme",
     name: "Classic",
+    i18nKey: "Feature.Accessibility.AppTheme.Classic",
     darkColor: "rgb(255, 73, 73)",
     lightColor: "rgb(255, 73, 73)",
   },
 ];
+
+const THEME_I18N_BY_ID = {
+  "": "Feature.Accessibility.AppTheme.Default",
+  "cosmic-dust-theme": "Feature.Accessibility.AppTheme.CosmicDust",
+  "polar-freeze-theme": "Feature.Accessibility.AppTheme.PolarFreeze",
+  "super-charge-theme": "Feature.Accessibility.AppTheme.SuperCharge",
+  "electric-lime-theme": "Feature.Accessibility.AppTheme.ElectricLime",
+  "lava-glow-theme": "Feature.Accessibility.AppTheme.LavaGlow",
+  "star-burst-theme": "Feature.Accessibility.AppTheme.StarBurst",
+  "pixel-pop-theme": "Feature.Accessibility.AppTheme.PixelPop",
+  "nebula-drift-theme": "Feature.Accessibility.AppTheme.NebulaDrift",
+  "nitro-frost-theme": "Feature.Accessibility.AppTheme.NitroFrost",
+  "circuit-rush-theme": "Feature.Accessibility.AppTheme.CircuitRush",
+  "kinetic-energy-theme": "Feature.Accessibility.AppTheme.KineticEnergy",
+  "inferno-blast-theme": "Feature.Accessibility.AppTheme.InfernoBlast",
+  "hyper-plum-theme": "Feature.Accessibility.AppTheme.HyperPlum",
+  "quantum-pulse-theme": "Feature.Accessibility.AppTheme.QuantumPulse",
+  "classic-theme": "Feature.Accessibility.AppTheme.Classic",
+};
 
 const TAB_SELECTED_CLASS =
   "bg-inverse-surface-0 content-inverse-emphasis relative clip group/interactable focus-visible:outline-focus disabled:outline-none cursor-pointer relative flex justify-center items-center radius-circle stroke-none padding-left-small padding-right-small height-600 text-label-small";
@@ -183,6 +212,9 @@ function getSavedThemeClass() {
 }
 
 function paletteForTheme(themeClass) {
+  if (SPECIAL_THEMES.some((theme) => theme.id && theme.id === themeClass)) {
+    return "special";
+  }
   if (CALM_THEMES.some((theme) => theme.id && theme.id === themeClass)) {
     return "calm";
   }
@@ -190,7 +222,15 @@ function paletteForTheme(themeClass) {
 }
 
 function themesForPalette(palette) {
-  return palette === "calm" ? CALM_THEMES : DYNAMIC_THEMES;
+  if (palette === "calm") return CALM_THEMES;
+  if (palette === "special") return SPECIAL_THEMES;
+  return DYNAMIC_THEMES;
+}
+
+function themeDisplayName(theme) {
+  const key = theme.i18nKey || THEME_I18N_BY_ID[theme.id] || "";
+  if (!key) return theme.name;
+  return robloxT(key, theme.name);
 }
 
 function isRobloxLightTheme(body = document.body) {
@@ -333,7 +373,7 @@ function createThemeCard(theme) {
   const name = document.createElement("span");
   name.className =
     "fill basis-0 min-width-0 text-no-wrap text-truncate-end text-body-medium content-default";
-  name.textContent = theme.name;
+  name.textContent = themeDisplayName(theme);
 
   button.append(swatch, name);
   button.addEventListener("click", () => {
@@ -360,14 +400,20 @@ function buildThemePanel() {
   titleRow.className = "flex items-center gap-small";
   const title = document.createElement("span");
   title.className = "text-title-medium content-emphasis";
-  title.textContent = "App theme";
+  title.textContent = robloxT(
+    "Feature.Accessibility.Heading.DeviceAppTheme",
+    "App theme",
+  );
   const badge = document.createElement("div");
   badge.className =
     "foundation-web-badge flex items-center select-none gap-[var(--size-150)] radius-circle height-600 width-[fit-content] padding-x-small bg-shift-200 content-emphasis stroke-none";
   const badgeText = document.createElement("span");
   badgeText.className =
     "text-no-wrap text-truncate-split text-label-small padding-y-xsmall padding-x-xxsmall content-emphasis";
-  badgeText.textContent = "New";
+  badgeText.textContent = robloxT(
+    "Feature.Accessibility.Label.AppThemeBadgeNew",
+    "New",
+  );
   badge.appendChild(badgeText);
   titleRow.append(title, badge);
 
@@ -380,9 +426,25 @@ function buildThemePanel() {
   const tabs = document.createElement("div");
   tabs.className = "flex flex-wrap gap-small";
   tabs.setAttribute("role", "group");
-  tabs.setAttribute("aria-label", "App theme");
+  tabs.setAttribute(
+    "aria-label",
+    robloxT("Feature.Accessibility.Heading.DeviceAppTheme", "App theme"),
+  );
   tabs.setAttribute("data-roprime-theme-tabs", "1");
-  tabs.append(createTabButton("Dynamic", "dynamic"), createTabButton("Calm", "calm"));
+  tabs.append(
+    createTabButton(
+      robloxT("Feature.Accessibility.AppTheme.CategoryDynamic", "Dynamic"),
+      "dynamic",
+    ),
+    createTabButton(
+      robloxT("Feature.Accessibility.AppTheme.CategoryCalm", "Calm"),
+      "calm",
+    ),
+    createTabButton(
+      robloxT("Feature.Accessibility.AppTheme.CategorySpecial", "Special"),
+      "special",
+    ),
+  );
 
   const grid = document.createElement("div");
   grid.className = "grid gap-medium [grid-template-columns:repeat(2,minmax(0,1fr))]";
@@ -401,6 +463,35 @@ function refreshThemePanelUi() {
   const host = document.getElementById(APP_THEME_HOST_ID);
   if (!(host instanceof HTMLElement)) return;
 
+  const title = host.querySelector(".text-title-medium.content-emphasis");
+  if (title) {
+    title.textContent = robloxT(
+      "Feature.Accessibility.Heading.DeviceAppTheme",
+      "App theme",
+    );
+  }
+  const badgeText = host.querySelector(
+    ".foundation-web-badge .text-label-small",
+  );
+  if (badgeText) {
+    badgeText.textContent = robloxT(
+      "Feature.Accessibility.Label.AppThemeBadgeNew",
+      "New",
+    );
+  }
+
+  const tabLabels = {
+    dynamic: robloxT(
+      "Feature.Accessibility.AppTheme.CategoryDynamic",
+      "Dynamic",
+    ),
+    calm: robloxT("Feature.Accessibility.AppTheme.CategoryCalm", "Calm"),
+    special: robloxT(
+      "Feature.Accessibility.AppTheme.CategorySpecial",
+      "Special",
+    ),
+  };
+
   host.querySelectorAll("[data-roprime-theme-palette]").forEach((node) => {
     if (!(node instanceof HTMLButtonElement)) return;
     const palette = node.getAttribute("data-roprime-theme-palette") || "dynamic";
@@ -411,7 +502,17 @@ function refreshThemePanelUi() {
     } else {
       node.removeAttribute("aria-pressed");
     }
+    const label = node.querySelector(".text-truncate-end");
+    if (label && tabLabels[palette]) label.textContent = tabLabels[palette];
   });
+
+  const tabs = host.querySelector("[data-roprime-theme-tabs]");
+  if (tabs instanceof HTMLElement) {
+    tabs.setAttribute(
+      "aria-label",
+      robloxT("Feature.Accessibility.Heading.DeviceAppTheme", "App theme"),
+    );
+  }
 
   const grid = host.querySelector("[data-roprime-theme-grid]");
   if (!(grid instanceof HTMLElement)) return;
@@ -578,9 +679,12 @@ async function ensureFreeThemesInitialized() {
   initPromise = (async () => {
     if (!(document.body instanceof HTMLBodyElement)) return;
 
+    await ensureRobloxTranslations();
+
     if (plusMembership !== true) {
       activateFreeThemes();
       injectThemePanel();
+      refreshThemePanelUi();
     }
 
     const eligible = await verifyFreeThemesEligibility();
@@ -588,6 +692,7 @@ async function ensureFreeThemesInitialized() {
 
     activateFreeThemes();
     injectThemePanel();
+    refreshThemePanelUi();
   })();
 
   return initPromise;
