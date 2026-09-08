@@ -705,7 +705,13 @@ async function ensureRenderer(host) {
   RBXRenderer.createLoadingIcon = false;
 
   const success = await RBXRenderer.fullSetup(true, true);
-  if (!success) return false;
+
+  console.log(`Success. Result:`, success);
+
+  if (!success) {
+    console.log(`Failed. May run multiple instances.`);
+    return false;
+  }
 
   RBXRenderer.setBackgroundColor(0xbbbbbb);
   RBXRenderer.setRendererSize(width, PREVIEW_HEIGHT);
