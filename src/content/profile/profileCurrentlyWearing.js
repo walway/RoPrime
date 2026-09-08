@@ -1,13 +1,12 @@
 import { parseUserProfileIdFromLocation } from "../core/core.js";
-import {
-  ensureRobloxTranslations,
-  robloxT,
-} from "../core/translations.js";
+import { ensureRobloxTranslations, robloxT } from "../core/translations.js";
 import { appendParsedMarkup } from "../ui/dom.js";
 
 const AVATAR_DETAILS_URL = "https://avatar.roblox.com/v2/avatar/users";
+const AVATAR_MODEL_URL = "https://avatar.roblox.com/v4/avatar/users";
 const THUMBNAILS_URL = "https://thumbnails.roblox.com/v1/assets";
-const CATALOG_DETAILS_URL = "https://catalog.roblox.com/v1/catalog/items/details";
+const CATALOG_DETAILS_URL =
+  "https://catalog.roblox.com/v1/catalog/items/details";
 
 const RP_WEARING_ATTR = "data-roprime-wearing-cards";
 const RP_WEARING_LAYOUT_ATTR = "data-roprime-profile-tab-layout";
@@ -16,15 +15,15 @@ const RP_PAGE_ATTR = "data-roprime-wearing-page";
 const PAGE_SIZE = 6;
 const SHIMMER_PLACEHOLDER_COUNT = 6;
 
-
 const VERIFIED_BADGE_MARKUP =
-  '<img src="data:image/svg+xml;charset=utf-8,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'16\' height=\'16\' viewBox=\'0 0 28 28\' fill=\'none\'%3E%3Cg clip-path=\'url(%23clip0_8_46)\'%3E%3Crect x=\'5.88818\' width=\'22.89\' height=\'22.89\' transform=\'rotate(15 5.88818 0)\' fill=\'%230066FF\'/%3E%3Cpath fill-rule=\'evenodd\' clip-rule=\'evenodd\' d=\'M20.543 8.7508L20.549 8.7568C21.15 9.3578 21.15 10.3318 20.549 10.9328L11.817 19.6648L7.45 15.2968C6.85 14.6958 6.85 13.7218 7.45 13.1218L7.457 13.1148C8.058 12.5138 9.031 12.5138 9.633 13.1148L11.817 15.2998L18.367 8.7508C18.968 8.1498 19.942 8.1498 20.543 8.7508Z\' fill=\'white\'/%3E%3C/g%3E%3Cdefs%3E%3CclipPath id=\'clip0_8_46\'%3E%3Crect width=\'28\' height=\'28\' fill=\'white\'/%3E%3C/clipPath%3E%3C/defs%3E%3C/svg%3E" title="Verified Badge" alt="Verified Badge" class="verified-badge-container verified-badge-icon-catalog-item-rendered">';
+  "<img src=\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 28 28' fill='none'%3E%3Cg clip-path='url(%23clip0_8_46)'%3E%3Crect x='5.88818' width='22.89' height='22.89' transform='rotate(15 5.88818 0)' fill='%230066FF'/%3E%3Cpath fill-rule='evenodd' clip-rule='evenodd' d='M20.543 8.7508L20.549 8.7568C21.15 9.3578 21.15 10.3318 20.549 10.9328L11.817 19.6648L7.45 15.2968C6.85 14.6958 6.85 13.7218 7.45 13.1218L7.457 13.1148C8.058 12.5138 9.031 12.5138 9.633 13.1148L11.817 15.2998L18.367 8.7508C18.968 8.1498 19.942 8.1498 20.543 8.7508Z' fill='white'/%3E%3C/g%3E%3Cdefs%3E%3CclipPath id='clip0_8_46'%3E%3Crect width='28' height='28' fill='white'/%3E%3C/clipPath%3E%3C/defs%3E%3C/svg%3E\" title=\"Verified Badge\" alt=\"Verified Badge\" class=\"verified-badge-container verified-badge-icon-catalog-item-rendered\">";
 
 let syncPromise = null;
 let lastUserId = 0;
 /** @type {{ assets: any[], thumbnails: Map<number, string>, details: Map<number, any> } | null} */
 let cachedPayload = null;
 let currentPage = 1;
+let cachedCsrfToken = "";
 
 function el(tag, className) {
   const node = document.createElement(tag);
@@ -32,11 +31,26 @@ function el(tag, className) {
   return node;
 }
 
+function decodeHtmlEntities(value) {
+  return String(value || "")
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&#x([0-9a-f]+);/gi, (_, hex) =>
+      String.fromCharCode(parseInt(hex, 16)),
+    )
+    .replace(/&#(\d+);/g, (_, code) => String.fromCharCode(Number(code)));
+}
+
 function getCsrfToken() {
-  const meta =
-    document.querySelector('meta[name="csrf-token"]') ||
-    document.querySelector('meta[name="data-token"]');
-  return meta?.getAttribute("content") || "";
+  if (cachedCsrfToken) return cachedCsrfToken;
+  const meta = document.querySelector('meta[name="csrf-token"]');
+  const raw =
+    meta?.getAttribute("data-token") || meta?.getAttribute("content") || "";
+  cachedCsrfToken = decodeHtmlEntities(raw).trim();
+  return cachedCsrfToken;
 }
 
 function catalogSlug(name) {
@@ -57,38 +71,146 @@ function isCommunityCreator(detail) {
 
 function isRobloxCreator(detail) {
   const id = Number(detail?.creatorTargetId);
-  const name = String(detail?.creatorName || "").trim().toLowerCase();
+  const name = String(detail?.creatorName || "")
+    .trim()
+    .toLowerCase();
   return id === 1 || name === "roblox";
+}
+
+function isPrivateItem(detail) {
+  return !detail || !detail.id;
 }
 
 function creatorProfileUrl(detail) {
   const id = Number(detail?.creatorTargetId);
   if (!Number.isFinite(id) || id <= 0) return "/users/1/profile";
   if (isCommunityCreator(detail)) {
-    return `/communities/${id}`;
+    const slug = catalogSlug(detail?.creatorName || "community");
+    return `/communities/${id}/${slug}`;
   }
   return `/users/${id}/profile`;
 }
 
 function creatorDisplayName(detail) {
-  const name = String(detail?.creatorName || "Roblox").trim() || "Roblox";
-  if (isRobloxCreator(detail) || isCommunityCreator(detail)) return name;
+  const name = String(detail?.creatorName || "").trim();
+  if (!name) return "Roblox";
+  if (isCommunityCreator(detail)) {
+    const groupLabel = robloxT("Label.Group", "Group");
+    return `${name} (${groupLabel})`;
+  }
+  if (isRobloxCreator(detail)) return name;
   return name.startsWith("@") ? name : `@${name}`;
 }
 
 function itemPriceValue(detail) {
   if (typeof detail?.price === "number") return detail.price;
   if (typeof detail?.lowestPrice === "number") return detail.lowestPrice;
+  if (typeof detail?.lowestResalePrice === "number") {
+    return detail.lowestResalePrice;
+  }
   return null;
 }
 
+function normalizeRestrictionToken(value) {
+  return String(value || "")
+    .toLowerCase()
+    .replace(/[\s_-]/g, "");
+}
+
+function restrictionTokens(detail) {
+  const tokens = new Set();
+  if (!detail) return tokens;
+  if (detail.isLimitedUnique === true) tokens.add("limitedunique");
+  if (detail.isLimited === true) tokens.add("limited");
+  const restrictions = detail.itemRestrictions;
+  if (!Array.isArray(restrictions)) return tokens;
+  for (const entry of restrictions) {
+    const token = normalizeRestrictionToken(entry);
+    if (token) tokens.add(token);
+  }
+  return tokens;
+}
+
+function isLimitedUnique(detail) {
+  return restrictionTokens(detail).has("limitedunique");
+}
+
+function isLimited(detail) {
+  const tokens = restrictionTokens(detail);
+  return tokens.has("limited") && !tokens.has("limitedunique");
+}
+
+function appendRestrictionIcon(thumbWrap, detail) {
+  if (isLimitedUnique(detail)) {
+    thumbWrap.appendChild(
+      el("span", "restriction-icon icon-limited-unique-label"),
+    );
+    return;
+  }
+  if (isLimited(detail)) {
+    thumbWrap.appendChild(el("span", "restriction-icon icon-limited-label"));
+  }
+}
+
+function pushUniqueAsset(list, seen, asset) {
+  const id = Number(asset?.id ?? asset?.assetId);
+  if (!Number.isFinite(id) || id <= 0 || seen.has(id)) return;
+  seen.add(id);
+  list.push({
+    id,
+    name: asset?.name || asset?.assetName || `Item ${id}`,
+    assetType: asset?.assetType,
+  });
+}
+
 async function fetchWearingAssets(userId) {
+  const list = [];
+  const seen = new Set();
+
+  try {
+    const v4Response = await fetch(
+      `${AVATAR_MODEL_URL}/${userId}?selectionTypes=0&selectionTypes=1&selectionTypes=2&selectionTypes=3&selectionTypes=4&selectionTypes=5`,
+      { credentials: "include" },
+    );
+    if (v4Response.ok) {
+      const data = await v4Response.json();
+      for (const asset of data?.avatarModel?.assets || []) {
+        pushUniqueAsset(list, seen, asset);
+      }
+
+      const configs = data?.avatarConfigurations || {};
+      const backgroundAsset = configs.background?.backgroundAsset;
+      if (backgroundAsset) pushUniqueAsset(list, seen, backgroundAsset);
+
+      for (const emote of configs.emotes || []) {
+        pushUniqueAsset(list, seen, emote);
+      }
+
+      const frame = configs.profileFrame;
+      if (frame && typeof frame === "object") {
+        pushUniqueAsset(
+          list,
+          seen,
+          frame.asset || frame.profileFrameAsset || frame,
+        );
+      }
+
+      if (list.length) return list;
+    }
+  } catch {}
+
   const response = await fetch(`${AVATAR_DETAILS_URL}/${userId}/avatar`, {
     credentials: "include",
   });
   if (!response.ok) return [];
   const data = await response.json();
-  return Array.isArray(data?.assets) ? data.assets : [];
+  for (const asset of data?.assets || []) {
+    pushUniqueAsset(list, seen, asset);
+  }
+  for (const emote of data?.emotes || []) {
+    pushUniqueAsset(list, seen, emote);
+  }
+  return list;
 }
 
 async function fetchAssetThumbnails(assetIds) {
@@ -116,35 +238,55 @@ async function fetchAssetThumbnails(assetIds) {
   return map;
 }
 
-async function fetchCatalogDetails(assetIds) {
-  const map = new Map();
-  if (!assetIds.length) return map;
-
+async function postCatalogDetails(items, csrf, allowRetry = true) {
   const headers = {
     "Content-Type": "application/json",
     Accept: "application/json",
   };
-  const csrf = getCsrfToken();
   if (csrf) headers["X-CSRF-TOKEN"] = csrf;
+
+  const response = await fetch(CATALOG_DETAILS_URL, {
+    method: "POST",
+    credentials: "include",
+    headers,
+    body: JSON.stringify({ items }),
+  });
+
+  if (response.status === 403 && allowRetry) {
+    const nextToken = response.headers.get("x-csrf-token");
+    if (nextToken) {
+      cachedCsrfToken = nextToken;
+      return postCatalogDetails(items, nextToken, false);
+    }
+  }
+
+  return response;
+}
+
+async function fetchCatalogDetails(assetIds) {
+  const map = new Map();
+  if (!assetIds.length) return map;
+
+  let csrf = getCsrfToken();
 
   for (let i = 0; i < assetIds.length; i += 30) {
     const chunk = assetIds.slice(i, i + 30);
     try {
-      const response = await fetch(CATALOG_DETAILS_URL, {
-        method: "POST",
-        credentials: "include",
-        headers,
-        body: JSON.stringify({
-          items: chunk.map((id) => ({ itemType: "Asset", id })),
-        }),
-      });
+      const response = await postCatalogDetails(
+        chunk.map((id) => ({ itemType: "Asset", id })),
+        csrf,
+      );
       if (!response.ok) continue;
+      const nextToken = response.headers.get("x-csrf-token");
+      if (nextToken) {
+        cachedCsrfToken = nextToken;
+        csrf = nextToken;
+      }
       const data = await response.json();
       for (const entry of data?.data || []) {
         if (entry?.id) map.set(Number(entry.id), entry);
       }
-    } catch {
-    }
+    } catch {}
   }
   return map;
 }
@@ -214,15 +356,19 @@ function buildCreatorRow(detail) {
   const byLabel = robloxT("Feature.Avatar.Label.By", "By");
   wrap.appendChild(document.createTextNode(`${byLabel}`));
 
-  const displayName = creatorDisplayName(detail);
-  if (isCommunityCreator(detail)) {
-    wrap.appendChild(document.createTextNode(displayName));
-  } else {
-    const creatorLink = el("a", "creator-name text-link");
-    creatorLink.href = creatorProfileUrl(detail);
-    creatorLink.textContent = displayName;
-    wrap.appendChild(creatorLink);
+  if (isPrivateItem(detail)) {
+    const privateLabel = el("span", "creator-name text-label");
+    privateLabel.textContent = robloxT("Label.Private", "Private");
+    wrap.appendChild(privateLabel);
+    creator.appendChild(wrap);
+    return creator;
   }
+
+  const displayName = creatorDisplayName(detail);
+  const creatorLink = el("a", "creator-name text-link");
+  creatorLink.href = creatorProfileUrl(detail);
+  creatorLink.textContent = displayName;
+  wrap.appendChild(creatorLink);
 
   creator.appendChild(wrap);
 
@@ -242,12 +388,33 @@ function buildPriceRow(detail) {
   const price = itemPriceValue(detail);
   const priceStatus = String(detail?.priceStatus || "").trim();
   const statusLower = priceStatus.toLowerCase();
-  const isFreeStatus = statusLower === "free";
+  const normalizedStatus = normalizeRestrictionToken(priceStatus);
+  const isFreeStatus = normalizedStatus === "free";
   const isOffSaleStatus =
-    statusLower === "offsale" ||
+    normalizedStatus === "offsale" ||
     statusLower === "off sale" ||
-    statusLower === "off-sale" ||
     detail?.isOffSale === true;
+
+  if (isFreeStatus) {
+    const label = el("span", "text-label");
+    const status = el(
+      "span",
+      "text-overflow font-caption-body text-robux-tile",
+    );
+    status.textContent = robloxT("Feature.Build.Label.Free", "Free");
+    label.appendChild(status);
+    priceRow.appendChild(label);
+    return priceRow;
+  }
+
+  if (isOffSaleStatus) {
+    const label = el("span", "text-label");
+    const status = el("span", "text-overflow font-caption-body");
+    status.textContent = robloxT("Feature.Build.Label.OffSale", "Off sale");
+    label.appendChild(status);
+    priceRow.appendChild(label);
+    return priceRow;
+  }
 
   if (typeof price === "number" && price > 0) {
     priceRow.appendChild(el("span", "icon-robux-16x16"));
@@ -257,20 +424,30 @@ function buildPriceRow(detail) {
     return priceRow;
   }
 
-  const label = el("span", "text-label");
-  const status = el("span", "text-overflow font-caption-body");
-
-  if (price === 0 || isFreeStatus) {
-    status.classList.add("text-robux-tile");
+  if (price === 0) {
+    const label = el("span", "text-label");
+    const status = el(
+      "span",
+      "text-overflow font-caption-body text-robux-tile",
+    );
     status.textContent = robloxT("Feature.Build.Label.Free", "Free");
-  } else if (isOffSaleStatus || !priceStatus) {
-    status.textContent = robloxT("Feature.Build.Label.OffSale", "Off sale");
-  } else if (priceStatus) {
-    status.textContent = priceStatus;
-  } else {
-    status.textContent = robloxT("Feature.Build.Label.OffSale", "Off sale");
+    label.appendChild(status);
+    priceRow.appendChild(label);
+    return priceRow;
   }
 
+  if (priceStatus) {
+    const label = el("span", "text-label");
+    const status = el("span", "text-overflow font-caption-body");
+    status.textContent = priceStatus;
+    label.appendChild(status);
+    priceRow.appendChild(label);
+    return priceRow;
+  }
+
+  const label = el("span", "text-label");
+  const status = el("span", "text-overflow font-caption-body");
+  status.textContent = robloxT("Feature.Build.Label.OffSale", "Off sale");
   label.appendChild(status);
   priceRow.appendChild(label);
   return priceRow;
@@ -292,11 +469,8 @@ function buildItemCard(asset, imageUrl, detail) {
   span.setAttribute("thumbnail-target-id", String(asset.id));
   attachThumbImage(span, imageUrl, name);
   thumb2d.appendChild(span);
-  thumbWrap.append(
-    thumb2d,
-    el("span", "restriction-icon ng-hide"),
-    el("span", "icon--label"),
-  );
+  thumbWrap.appendChild(thumb2d);
+  appendRestrictionIcon(thumbWrap, detail);
 
   const nameEl = el("div", "item-card-name");
   nameEl.title = name;
@@ -407,7 +581,6 @@ export async function syncProfileWearingCards(layoutOrTabContent) {
   if (syncPromise) return syncPromise;
   syncPromise = (async () => {
     try {
-      // Empty shimmer shells immediately while data loads.
       renderShimmerPlaceholders(host);
       await ensureRobloxTranslations();
       const assets = await fetchWearingAssets(userId);
@@ -431,5 +604,6 @@ export function removeProfileWearingCards() {
   lastUserId = 0;
   cachedPayload = null;
   currentPage = 1;
+  cachedCsrfToken = "";
   document.querySelector(`[${RP_WEARING_ATTR}]`)?.remove();
 }
