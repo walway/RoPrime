@@ -60,7 +60,7 @@ const scheduleProfileShellSync = debounce(runProfileShellSync, 250);
 function runProfileShellSync() {
   const layout = ensureRoPrimeProfileTabLayout();
   if (!layout) return;
-  // Empty shells first; avatar/wearing fill in as they load.
+  // Inject empty placeholders first.
   void syncProfileAvatarRenderer();
   void syncProfileWearingCards(layout);
   syncBubbleLength();
@@ -124,7 +124,7 @@ function mutationsNeedShellSync(mutations) {
     if (mutation.type !== "childList") continue;
     for (const node of mutation.addedNodes) {
       if (!(node instanceof Element)) continue;
-      // Ignore our own wearing/pager churn.
+      // Ignore our own Currently Wearing churn
       if (
         node.matches?.(
           "[data-roprime-profile-tab-layout], [data-roprime-wearing-cards], .roprime-profile-avatar-preview, .pager-holder, .item-card, .thumbnail-loader, .avatar-loading-shimmer-overlay",
