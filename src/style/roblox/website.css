@@ -146,3 +146,13 @@ html
 #nav-robux-amount {
   display: none !important;
 } */
+
+/* Replicate in-game emotes wheel */
+
+.emotes-radial-thumb > span {
+  background-color: transparent !important;
+}
+
+.emotes-radial-thumb:has(.shimmer) {
+  display: none !important;
+}
