@@ -523,7 +523,7 @@ function refreshThemePanelUi() {
 }
 
 function hideNativeAppThemeSections(container) {
-  container.querySelectorAll(".app-theme-section").forEach((section) => {
+  container.querySelectorAll(".flex.flex-col.gap-large").forEach((section) => {
     if (!(section instanceof HTMLElement)) return;
     if (section.getAttribute(APP_THEME_ATTR) === "1") return;
     const settingSection = section.closest(".setting-section");
