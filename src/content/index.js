@@ -42,6 +42,7 @@ import "./memes/rickRoll.js";
 import "./account/freeThemes.js";
 import "./sidebar/robloxEvents.js";
 import "./profile/profileRedesign.js";
+import "./account/classicIcon.js";
 
 const extensionApi = globalThis.browser || globalThis.chrome;
 
