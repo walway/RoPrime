@@ -168,7 +168,7 @@ export const SETTINGS_CONFIG = {
         title: "settings.appearance.friendStyling.title",
         description: "settings.appearance.friendStyling.description",
         byDefault: false,
-        hide: true,
+        hide: false,
       },
       {
         type: "toggle",
