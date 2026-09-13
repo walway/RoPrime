@@ -88,7 +88,9 @@ function getDracoDecoderBanner() {
   if (!existsSync(src)) {
     throw new Error("Missing resources/vendor/draco_decoder.js");
   }
-  return `${readFileSync(src, "utf8")}\n`;
+  return `${readFileSync(src, "utf8")}
+  globalThis.DracoDecoderModule = DracoDecoderModule;
+`;
 }
 
 function prepareLottieAssets() {

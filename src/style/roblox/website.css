@@ -166,3 +166,9 @@ html
 .react-chat-osa-inline-card {
   border-radius: 15px;
 }
+
+/* Fix action buttons corner radius on hover */
+
+.bg-action-link > div {
+  border-radius: var(--radius-medium);
+}

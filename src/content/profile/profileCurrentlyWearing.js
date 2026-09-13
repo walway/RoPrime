@@ -103,11 +103,19 @@ function creatorDisplayName(detail) {
 }
 
 function itemPriceValue(detail) {
-  if (typeof detail?.price === "number") return detail.price;
-  if (typeof detail?.lowestPrice === "number") return detail.lowestPrice;
-  if (typeof detail?.lowestResalePrice === "number") {
+  if (typeof detail?.price === "number" && detail.price > 0) {
+    return detail.price;
+  }
+  if (typeof detail?.lowestPrice === "number" && detail.lowestPrice > 0) {
+    return detail.lowestPrice;
+  }
+  if (
+    typeof detail?.lowestResalePrice === "number" &&
+    detail.lowestResalePrice > 0
+  ) {
     return detail.lowestResalePrice;
   }
+  if (typeof detail?.price === "number") return detail.price;
   return null;
 }
 
@@ -407,20 +415,20 @@ function buildPriceRow(detail) {
     return priceRow;
   }
 
+  if (typeof price === "number" && price > 0) {
+    priceRow.appendChild(el("span", "icon-robux-16x16"));
+    const amount = el("span", "text-robux-tile");
+    amount.textContent = String(price);
+    priceRow.appendChild(amount);
+    return priceRow;
+  }
+
   if (isOffSaleStatus) {
     const label = el("span", "text-label");
     const status = el("span", "text-overflow font-caption-body");
     status.textContent = robloxT("Feature.Build.Label.OffSale", "Off sale");
     label.appendChild(status);
     priceRow.appendChild(label);
-    return priceRow;
-  }
-
-  if (typeof price === "number" && price > 0) {
-    priceRow.appendChild(el("span", "icon-robux-16x16"));
-    const amount = el("span", "text-robux-tile");
-    amount.textContent = String(price);
-    priceRow.appendChild(amount);
     return priceRow;
   }
 
