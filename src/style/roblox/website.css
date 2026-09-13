@@ -164,8 +164,5 @@ html
 }
 
 .react-chat-osa-inline-card {
-  border-radius: 15px; /* I'm sitting and thinking - 15px or 20px?
-                          Gemini says - go with 15px if you want a clean, modern look, or 20px if you want a softer, friendlier vibe.
-                          Well Gemini is not that smart so i would go for 15px for more "modern" and "professional" look like Roblox does i guess.
-                        */
+  border-radius: 15px;
 }

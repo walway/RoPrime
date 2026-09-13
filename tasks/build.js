@@ -74,7 +74,7 @@ async function copyDracoDecoder() {
   if (existsSync(dst) && readFileSync(dst, "utf8").length > 1000) return;
 
   const res = await fetch(
-    "https://unpkg.com/roavatar-renderer@1.6.0/dist/draco_decoder.js",
+    "https://unpkg.com/roavatar-renderer@1.7.4/dist/draco_decoder.js",
   );
   if (!res.ok) {
     throw new Error(`Failed to download draco_decoder.js (${res.status})`);
