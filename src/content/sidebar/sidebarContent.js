@@ -438,7 +438,7 @@ function tagSidebarNavItems(nav) {
 }
 
 const SIDEBAR_ITEM_HIDE_CSS =
-  "display:none!important;visibility:hidden!important;height:0!important;min-height:0!important;max-height:0!important;margin:0!important;padding:0!important;overflow:hidden!important;opacity:0!important;pointer-events:none!important;transition:none!important;animation:none!important;";
+  "display:none!important";
 
 function isAllSidebarItemsHiddenForMode(mode) {
   const defs = defsForSidebarSize(mode);

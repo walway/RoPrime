@@ -1,0 +1,7 @@
+#age-badge-container {
+    display: none !important;
+}
+
+html.show-age-badge #age-badge-container {
+    display: flex !important;
+}
