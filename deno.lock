@@ -7,7 +7,7 @@
     "jsr:@std/internal@^1.0.14": "1.0.14",
     "jsr:@std/path@^1.0.6": "1.1.6",
     "npm:@supabase/supabase-js@2.116.0": "2.116.0",
-    "npm:adm-zip@0.6.0": "0.6.0",
+    "npm:adm-zip@0.6.1": "0.6.1",
     "npm:dompurify@3.4.15": "3.4.15",
     "npm:dotenv@17.4.2": "17.4.2",
     "npm:esbuild@0.28.2": "0.28.2",
@@ -434,8 +434,8 @@
         "yauzl"
       ]
     },
-    "adm-zip@0.6.0": {
-      "integrity": "sha512-XleryMhbuksdKtofnWZ9Sk+4CUTbms4Mb/EU32SZwToAyZ5RgVos/ki8n+yr0LWHOGKuakbXTuuYNHLQjhddgg=="
+    "adm-zip@0.6.1": {
+      "integrity": "sha512-Xwrja8nx9e5o2N1my4DsKCeKpdrnACyr1wtbPxBDgGzKzKyE9kRtBFA8mWldI+RVlD7CBZNWY/wQ2+ydwOR6kQ=="
     },
     "agent-base@7.1.4": {
       "integrity": "sha512-MnA+YT8fwfJPgBx3m60MNqakm30XOkyIoH1y6huTQvC0PwZG7ki8NacLBcrPbNoo8vEZy7Jpuk7+jMO+CUovTQ=="
@@ -2000,7 +2000,7 @@
   "workspace": {
     "dependencies": [
       "npm:@supabase/supabase-js@2.116.0",
-      "npm:adm-zip@0.6.0",
+      "npm:adm-zip@0.6.1",
       "npm:dompurify@3.4.15",
       "npm:dotenv@17.4.2",
       "npm:esbuild@0.28.2",
