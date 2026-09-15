@@ -3,7 +3,7 @@
 }
 
 @media (min-width: 991px) {
-  html body .profile-wearing-cards {
+  html body .profile-currently-wearing {
     display: none !important;
   }
 }

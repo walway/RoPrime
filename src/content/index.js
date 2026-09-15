@@ -7,6 +7,7 @@ import {
   shouldRunRoPrimeOnCurrentPage,
   syncAccountSettingsLayoutInset,
 } from "./core/core.js";
+import "./console.js";
 import { syncAllFeatures } from "./features/registry.js";
 import { syncAccountSettingsMenuButton } from "./redirect/settingsButton.js";
 import { initExtensionsPanel } from "./panel/extensions.js";
