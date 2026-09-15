@@ -1,3 +1,19 @@
+.profile-currently-wearing {
+  display: block !important;
+}
+
+@media (min-width: 991px) {
+  html body .profile-wearing-cards {
+    display: none !important;
+  }
+}
+
+@media (max-width: 991px) {
+  .roprime-profile-wearing-cards {
+    display: none !important;
+  }
+}
+
 .roprime-profile-wearing-cards {
   flex: 1 1 auto;
   min-width: 0;

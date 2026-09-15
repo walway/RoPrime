@@ -7,6 +7,8 @@ const AVATAR_MODEL_URL = "https://avatar.roblox.com/v4/avatar/users";
 const THUMBNAILS_URL = "https://thumbnails.roblox.com/v1/assets";
 const CATALOG_DETAILS_URL =
   "https://catalog.roblox.com/v1/catalog/items/details";
+const ECONOMY_ASSET_DETAILS_URL = "https://economy.roblox.com/v2/assets";
+const ASSET_BUNDLES_URL = "https://catalog.roblox.com/v1/assets";
 
 const RP_WEARING_ATTR = "data-roprime-wearing-cards";
 const RP_WEARING_LAYOUT_ATTR = "data-roprime-profile-tab-layout";
@@ -20,7 +22,7 @@ const VERIFIED_BADGE_MARKUP =
 
 let syncPromise = null;
 let lastUserId = 0;
-/** @type {{ assets: any[], thumbnails: Map<number, string>, details: Map<number, any> } | null} */
+/** @type {{ assets: any[], thumbnails: Map<number, string>, details: Map<number, any>, bundleDetailsByAssetId: Map<number, any> } | null} */
 let cachedPayload = null;
 let currentPage = 1;
 let cachedCsrfToken = "";
@@ -78,7 +80,9 @@ function isRobloxCreator(detail) {
 }
 
 function isPrivateItem(detail) {
-  return !detail || !detail.id;
+  if (!detail) return true;
+  if (detail.creatorName) return false;
+  return !detail.id;
 }
 
 function creatorProfileUrl(detail) {
@@ -102,21 +106,14 @@ function creatorDisplayName(detail) {
   return name.startsWith("@") ? name : `@${name}`;
 }
 
-function itemPriceValue(detail) {
-  if (typeof detail?.price === "number" && detail.price > 0) {
-    return detail.price;
-  }
-  if (typeof detail?.lowestPrice === "number" && detail.lowestPrice > 0) {
-    return detail.lowestPrice;
-  }
-  if (
-    typeof detail?.lowestResalePrice === "number" &&
-    detail.lowestResalePrice > 0
-  ) {
-    return detail.lowestResalePrice;
-  }
-  if (typeof detail?.price === "number") return detail.price;
-  return null;
+function positiveNumber(value) {
+  return typeof value === "number" && Number.isFinite(value) && value > 0
+    ? value
+    : null;
+}
+
+function formatRobuxAmount(amount) {
+  return Number(amount).toLocaleString("en-US");
 }
 
 function normalizeRestrictionToken(value) {
@@ -137,6 +134,114 @@ function restrictionTokens(detail) {
     if (token) tokens.add(token);
   }
   return tokens;
+}
+
+function priceStatusToken(detail) {
+  return normalizeRestrictionToken(detail?.priceStatus);
+}
+
+function isFreeStatus(detail) {
+  return priceStatusToken(detail) === "free";
+}
+
+function isOffSaleStatus(detail) {
+  if (!detail) return false;
+  if (detail.isOffSale === true) return true;
+  const token = priceStatusToken(detail);
+  return token === "offsale" || token === "noresellers";
+}
+
+function isCollectibleLike(detail) {
+  if (!detail) return false;
+  if (detail.collectibleItemId) return true;
+  if (detail.hasResellers === true) return true;
+  const tokens = restrictionTokens(detail);
+  return (
+    tokens.has("collectible") ||
+    tokens.has("limited") ||
+    tokens.has("limitedunique")
+  );
+}
+
+function unitsAvailable(detail) {
+  if (typeof detail?.unitsAvailableForConsumption === "number") {
+    return detail.unitsAvailableForConsumption;
+  }
+  if (typeof detail?.unitsAvailable === "number") {
+    return detail.unitsAvailable;
+  }
+  return null;
+}
+
+/**
+ * Mirrors Roblox Catalog.js: use Best Price (resale) when sold out, when
+ * resale is cheaper than Original Price, or ExperiencesDevApiOnly with resellers.
+ * Otherwise use Original Price while quantity remains.
+ */
+function shouldUseResalePrice(detail) {
+  if (!detail) return false;
+
+  const lowestResale = positiveNumber(detail.lowestResalePrice);
+  const lowest = positiveNumber(detail.lowestPrice);
+  const original =
+    typeof detail.price === "number" && Number.isFinite(detail.price)
+      ? detail.price
+      : null;
+  const units = unitsAvailable(detail);
+  const soldOut = units === 0;
+  const hasResale = lowestResale != null || lowest != null;
+  const saleLocation = String(detail.saleLocationType || "");
+
+  if (!isCollectibleLike(detail) && !detail.hasResellers) return false;
+
+  if (saleLocation === "ExperiencesDevApiOnly" && hasResale) return true;
+
+  if (soldOut && hasResale) return true;
+
+  if (
+    lowestResale != null &&
+    original != null &&
+    original > 0 &&
+    lowestResale < original
+  ) {
+    return true;
+  }
+
+  const tokens = restrictionTokens(detail);
+  if (
+    (tokens.has("limited") || tokens.has("limitedunique")) &&
+    (units == null || units === 0) &&
+    hasResale
+  ) {
+    return true;
+  }
+
+  return false;
+}
+
+function itemPriceValue(detail) {
+  if (!detail) return null;
+
+  if (isFreeStatus(detail)) return 0;
+
+  if (isOffSaleStatus(detail) && !shouldUseResalePrice(detail)) {
+    return null;
+  }
+
+  if (shouldUseResalePrice(detail)) {
+    return (
+      positiveNumber(detail.lowestResalePrice) ??
+      positiveNumber(detail.lowestPrice) ??
+      null
+    );
+  }
+
+  if (typeof detail.price === "number" && Number.isFinite(detail.price)) {
+    if (detail.price > 0) return detail.price;
+    if (detail.price === 0) return 0;
+  }
+
+  return null;
 }
 
 function isLimitedUnique(detail) {
@@ -299,6 +404,237 @@ async function fetchCatalogDetails(assetIds) {
   return map;
 }
 
+function mergeEconomyCreatorIntoDetail(detail, economy) {
+  const creator = economy?.Creator;
+  if (!creator) return detail || null;
+
+  const next = detail && typeof detail === "object" ? { ...detail } : {};
+  if (!next.id && economy.AssetId) next.id = Number(economy.AssetId);
+  if (!next.name && economy.Name) next.name = economy.Name;
+
+  if (!next.creatorName && creator.Name) next.creatorName = creator.Name;
+  if (!next.creatorType && creator.CreatorType) {
+    next.creatorType = creator.CreatorType;
+  }
+  if (
+    (next.creatorTargetId == null || next.creatorTargetId === 0) &&
+    creator.CreatorTargetId != null
+  ) {
+    next.creatorTargetId = Number(creator.CreatorTargetId);
+  }
+  if (
+    next.creatorHasVerifiedBadge == null &&
+    creator.HasVerifiedBadge != null
+  ) {
+    next.creatorHasVerifiedBadge = Boolean(creator.HasVerifiedBadge);
+  }
+
+  if (economy.IsLimitedUnique === true) next.isLimitedUnique = true;
+  if (economy.IsLimited === true) next.isLimited = true;
+
+  if (economy.IsForSale === false && next.priceStatus == null) {
+    next.priceStatus = "Off Sale";
+    next.isOffSale = true;
+  }
+  if (
+    economy.IsForSale === true &&
+    next.price == null &&
+    typeof economy.PriceInRobux === "number" &&
+    economy.PriceInRobux > 0
+  ) {
+    next.price = economy.PriceInRobux;
+  }
+
+  return next;
+}
+
+async function enrichDetailsWithEconomy(assetIds, details) {
+  const missing = assetIds.filter((id) => {
+    const detail = details.get(Number(id));
+    return !detail || !detail.id || !detail.creatorName;
+  });
+  if (!missing.length) return details;
+
+  await Promise.all(
+    missing.map(async (id) => {
+      try {
+        const response = await fetch(
+          `${ECONOMY_ASSET_DETAILS_URL}/${id}/details`,
+          { credentials: "include" },
+        );
+        if (!response.ok) return;
+        const economy = await response.json();
+        if (!economy?.AssetId && !economy?.Creator) return;
+        const merged = mergeEconomyCreatorIntoDetail(
+          details.get(Number(id)) || null,
+          economy,
+        );
+        if (merged?.id) details.set(Number(merged.id), merged);
+      } catch {}
+    }),
+  );
+  return details;
+}
+
+function isBodyPartsBundle(bundle) {
+  if (!bundle || typeof bundle !== "object") return false;
+  if (String(bundle.bundleType || "") === "BodyParts") return true;
+  const name = String(bundle.name || "");
+  return /headless horseman|korblox deathspeaker/i.test(name);
+}
+
+function pickPreferredBundle(bundles) {
+  if (!Array.isArray(bundles) || !bundles.length) return null;
+  return bundles.find(isBodyPartsBundle) || bundles[0] || null;
+}
+
+function bundlePriceFromDetails(bundle) {
+  if (!bundle || typeof bundle !== "object") return null;
+
+  const collectible = bundle.collectibleItemDetail;
+  if (collectible && typeof collectible === "object") {
+    const units =
+      typeof collectible.unitsAvailable === "number"
+        ? collectible.unitsAvailable
+        : null;
+    const original = positiveNumber(collectible.price);
+    const resale = positiveNumber(collectible.lowestResalePrice);
+    const lowest = positiveNumber(collectible.lowestPrice);
+    const saleStatus = normalizeRestrictionToken(collectible.saleStatus);
+
+    if (
+      (units === 0 || saleStatus === "offsale") &&
+      (resale != null || lowest != null)
+    ) {
+      return resale ?? lowest;
+    }
+    if (resale != null && original != null && resale < original) return resale;
+    if (original != null) return original;
+    if (lowest != null) return lowest;
+    if (resale != null) return resale;
+  }
+
+  const product = bundle.product;
+  if (product && typeof product === "object") {
+    if (product.isFree === true) return 0;
+    if (product.isForSale === true) {
+      return positiveNumber(product.priceInRobux);
+    }
+    return null;
+  }
+  return null;
+}
+
+function bundlePriceStatus(bundle) {
+  const product = bundle?.product;
+  if (product?.isFree === true) return "Free";
+  if (product?.isForSale === false) {
+    return product.noPriceText || "Off Sale";
+  }
+  const saleStatus = normalizeRestrictionToken(
+    bundle?.collectibleItemDetail?.saleStatus,
+  );
+  if (saleStatus === "offsale") return "Off Sale";
+  return null;
+}
+
+/**
+ * Map assetId -> synthetic detail used only for pricing (bundle original/best price).
+ */
+async function fetchBundlePriceDetailsByAssetId(assetIds) {
+  /** @type {Map<number, any>} */
+  const byAssetId = new Map();
+  if (!assetIds.length) return byAssetId;
+
+  /** @type {Map<number, number[]>} */
+  const bundleIdToAssetIds = new Map();
+
+  await Promise.all(
+    assetIds.map(async (id) => {
+      try {
+        const response = await fetch(`${ASSET_BUNDLES_URL}/${id}/bundles`, {
+          credentials: "include",
+        });
+        if (!response.ok) return;
+        const data = await response.json();
+        const bundle = pickPreferredBundle(
+          Array.isArray(data?.data) ? data.data : [],
+        );
+        if (!bundle?.id) return;
+        const bundleId = Number(bundle.id);
+        if (!Number.isFinite(bundleId) || bundleId <= 0) return;
+        const list = bundleIdToAssetIds.get(bundleId) || [];
+        list.push(Number(id));
+        bundleIdToAssetIds.set(bundleId, list);
+
+        if (bundle.product || bundle.collectibleItemDetail) {
+          byAssetId.set(Number(id), {
+            id: bundleId,
+            name: bundle.name,
+            itemType: "Bundle",
+            price: bundlePriceFromDetails(bundle),
+            priceStatus: bundlePriceStatus(bundle),
+            isOffSale: bundle.product?.isForSale === false,
+            lowestResalePrice:
+              bundle.collectibleItemDetail?.lowestResalePrice ?? null,
+            lowestPrice: bundle.collectibleItemDetail?.lowestPrice ?? null,
+            unitsAvailableForConsumption:
+              bundle.collectibleItemDetail?.unitsAvailable ?? null,
+            hasResellers: bundle.collectibleItemDetail?.hasResellers === true,
+            collectibleItemId:
+              bundle.collectibleItemDetail?.collectibleItemId || null,
+            saleLocationType:
+              bundle.collectibleItemDetail?.saleLocation?.saleLocationType ||
+              null,
+            _bundlePrice: bundlePriceFromDetails(bundle),
+            _fromBundleList: true,
+          });
+        }
+      } catch {}
+    }),
+  );
+
+  await Promise.all(
+    [...bundleIdToAssetIds.keys()].map(async (bundleId) => {
+      try {
+        const response = await fetch(
+          `https://catalog.roblox.com/v1/bundles/${bundleId}/details`,
+          { credentials: "include" },
+        );
+        if (!response.ok) return;
+        const bundle = await response.json();
+        const price = bundlePriceFromDetails(bundle);
+        const status = bundlePriceStatus(bundle);
+        const detail = {
+          id: bundleId,
+          name: bundle.name,
+          itemType: "Bundle",
+          price,
+          priceStatus: status,
+          isOffSale: bundle.product?.isForSale === false,
+          lowestResalePrice:
+            bundle.collectibleItemDetail?.lowestResalePrice ?? null,
+          lowestPrice: bundle.collectibleItemDetail?.lowestPrice ?? null,
+          unitsAvailableForConsumption:
+            bundle.collectibleItemDetail?.unitsAvailable ?? null,
+          hasResellers: bundle.collectibleItemDetail?.hasResellers === true,
+          collectibleItemId:
+            bundle.collectibleItemDetail?.collectibleItemId || null,
+          saleLocationType:
+            bundle.collectibleItemDetail?.saleLocation?.saleLocationType ||
+            null,
+          _bundlePrice: price,
+        };
+        for (const assetId of bundleIdToAssetIds.get(bundleId) || []) {
+          byAssetId.set(assetId, detail);
+        }
+      } catch {}
+    }),
+  );
+
+  return byAssetId;
+}
+
 function ensureWearingHost(layout) {
   let parent = layout;
   if (!(parent instanceof HTMLElement)) {
@@ -395,15 +731,9 @@ function buildPriceRow(detail) {
 
   const price = itemPriceValue(detail);
   const priceStatus = String(detail?.priceStatus || "").trim();
-  const statusLower = priceStatus.toLowerCase();
-  const normalizedStatus = normalizeRestrictionToken(priceStatus);
-  const isFreeStatus = normalizedStatus === "free";
-  const isOffSaleStatus =
-    normalizedStatus === "offsale" ||
-    statusLower === "off sale" ||
-    detail?.isOffSale === true;
+  const normalizedStatus = priceStatusToken(detail);
 
-  if (isFreeStatus) {
+  if (isFreeStatus(detail) || price === 0) {
     const label = el("span", "text-label");
     const status = el(
       "span",
@@ -415,32 +745,19 @@ function buildPriceRow(detail) {
     return priceRow;
   }
 
-  // Limited / Limited Unique (and other resale items) are often Off Sale
-  // but still have a best price via lowestPrice / lowestResalePrice.
   if (typeof price === "number" && price > 0) {
     priceRow.appendChild(el("span", "icon-robux-16x16"));
     const amount = el("span", "text-robux-tile");
-    amount.textContent = String(price);
+    amount.textContent = formatRobuxAmount(price);
     priceRow.appendChild(amount);
     return priceRow;
   }
 
-  if (isOffSaleStatus) {
+  if (isOffSaleStatus(detail) || normalizedStatus === "noresellers") {
     const label = el("span", "text-label");
     const status = el("span", "text-overflow font-caption-body");
-    status.textContent = robloxT("Feature.Build.Label.OffSale", "Off sale");
-    label.appendChild(status);
-    priceRow.appendChild(label);
-    return priceRow;
-  }
-
-  if (price === 0) {
-    const label = el("span", "text-label");
-    const status = el(
-      "span",
-      "text-overflow font-caption-body text-robux-tile",
-    );
-    status.textContent = robloxT("Feature.Build.Label.Free", "Free");
+    status.textContent =
+      priceStatus || robloxT("Feature.Build.Label.OffSale", "Off sale");
     label.appendChild(status);
     priceRow.appendChild(label);
     return priceRow;
@@ -463,7 +780,7 @@ function buildPriceRow(detail) {
   return priceRow;
 }
 
-function buildItemCard(asset, imageUrl, detail) {
+function buildItemCard(asset, imageUrl, detail, bundleDetail = null) {
   const name = detail?.name || asset.name || `Item ${asset.id}`;
   const href = `https://www.roblox.com/catalog/${asset.id}/${catalogSlug(name)}`;
 
@@ -491,7 +808,11 @@ function buildItemCard(asset, imageUrl, detail) {
   link.append(thumbWrap, nameEl);
   container.appendChild(link);
   container.appendChild(buildCreatorRow(detail));
-  container.appendChild(buildPriceRow(detail));
+
+  const priceSource = bundleDetail || detail;
+  const priceRow = buildPriceRow(priceSource);
+  if (priceRow) container.appendChild(priceRow);
+
   li.appendChild(container);
   return li;
 }
@@ -589,7 +910,7 @@ function renderCurrentPage() {
   const host = document.querySelector(`[${RP_WEARING_ATTR}]`);
   if (!(host instanceof HTMLElement) || !cachedPayload) return;
 
-  const { assets, thumbnails, details } = cachedPayload;
+  const { assets, thumbnails, details, bundleDetailsByAssetId } = cachedPayload;
   const pages = totalPages(assets.length);
   currentPage = Math.min(Math.max(1, currentPage), pages);
 
@@ -602,15 +923,31 @@ function renderCurrentPage() {
     if (!asset?.id) continue;
     const id = Number(asset.id);
     list.appendChild(
-      buildItemCard(asset, thumbnails.get(id) || "", details.get(id) || null),
+      buildItemCard(
+        asset,
+        thumbnails.get(id) || "",
+        details.get(id) || null,
+        bundleDetailsByAssetId?.get(id) || null,
+      ),
     );
   }
   host.appendChild(list);
   host.appendChild(buildPager(currentPage, pages));
 }
 
-function renderWearingCards(host, assets, thumbnails, details) {
-  cachedPayload = { assets, thumbnails, details };
+function renderWearingCards(
+  host,
+  assets,
+  thumbnails,
+  details,
+  bundleDetailsByAssetId,
+) {
+  cachedPayload = {
+    assets,
+    thumbnails,
+    details,
+    bundleDetailsByAssetId: bundleDetailsByAssetId || new Map(),
+  };
   currentPage = 1;
   host.setAttribute(RP_WEARING_ATTR, "1");
   renderCurrentPage();
@@ -643,7 +980,16 @@ export async function syncProfileWearingCards(layoutOrTabContent) {
         fetchAssetThumbnails(assetIds),
         fetchCatalogDetails(assetIds),
       ]);
-      renderWearingCards(host, assets, thumbnails, details);
+      await enrichDetailsWithEconomy(assetIds, details);
+      const bundleDetailsByAssetId =
+        await fetchBundlePriceDetailsByAssetId(assetIds);
+      renderWearingCards(
+        host,
+        assets,
+        thumbnails,
+        details,
+        bundleDetailsByAssetId,
+      );
       lastUserId = userId;
     } catch (error) {
       console.warn("Profile wearing cards failed", error);
