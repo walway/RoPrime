@@ -9,6 +9,7 @@ import {
   OutfitRenderer,
   RBXRenderer,
 } from "roavatar-renderer";
+import { isRobloxAuthenticated } from "./robloxUserId.js";
 
 let rendererReady = false;
 let currentOutfitRenderer = null;
@@ -213,6 +214,18 @@ function getAvatarTypeLabel(avatarType) {
   return avatarType === AvatarType.R6 ? "R6" : "R15";
 }
 
+function redirectToLoginForProfile(profileUserId) {
+  const id = Number(profileUserId);
+  if (!Number.isFinite(id) || id <= 0) {
+    window.location.assign("https://www.roblox.com/login");
+    return;
+  }
+  const returnUrl = `https://www.roblox.com/users/${id}/profile`;
+  window.location.assign(
+    `https://www.roblox.com/login?returnUrl=${encodeURIComponent(returnUrl)}`,
+  );
+}
+
 function appendPreviewControls(host) {
   host.querySelectorAll("[data-roprime-avatar-control]").forEach((node) => {
     node.remove();
@@ -225,7 +238,13 @@ function appendPreviewControls(host) {
   viewButton.style.right = "12px";
   viewButton.style.zIndex = "3";
   viewButton.addEventListener("click", () => {
-    currentViewMode = currentViewMode === "3d" ? "2d" : "3d";
+    const nextMode = currentViewMode === "3d" ? "2d" : "3d";
+    // 3D needs an authenticated session; send guests to login and back here.
+    if (nextMode === "3d" && !isRobloxAuthenticated()) {
+      redirectToLoginForProfile(currentUserId);
+      return;
+    }
+    currentViewMode = nextMode;
     void renderCurrentPreview();
   });
 
@@ -528,6 +547,9 @@ async function renderCurrentPreview() {
   const localMountSeq = activeMountSeq;
   const localRenderSeq = ++renderSeq;
   if (!(currentHost instanceof HTMLElement)) return false;
+  if (currentViewMode === "3d" && !isRobloxAuthenticated()) {
+    currentViewMode = "2d";
+  }
   if (currentViewMode === "2d") {
     return render2DPreview(localMountSeq, localRenderSeq);
   }
@@ -791,7 +813,8 @@ export async function mountAvatarPreview(host, userId) {
   currentHost = host;
   currentUserId = userId;
   currentAvatarSource = null;
-  currentViewMode = "3d";
+  // Guests default to 2D; 3D requires login (meta[name=user-data]).
+  currentViewMode = isRobloxAuthenticated() ? "3d" : "2d";
 
   if (!(host instanceof HTMLElement)) return false;
   if (!Number.isFinite(userId) || userId <= 0) return false;
@@ -806,7 +829,8 @@ export async function mountAvatarPreview(host, userId) {
 
   stylePreviewHost(host);
   clearPreviewContent(host);
-  show3DLoader(host);
+  if (currentViewMode === "2d") show2DLoader(host);
+  else show3DLoader(host);
   appendPreviewControls(host);
 
   let avatarSource = null;
