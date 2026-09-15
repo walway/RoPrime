@@ -341,9 +341,9 @@ function navigateToSettingsPage(nextPage) {
   const searchBox = root.querySelector("#roprime-settings-search");
   if (searchBox instanceof HTMLInputElement) searchBox.value = "";
   const nextUrl = buildPluginUrl(nextPage);
-  const currentUrl = `${window.location.pathname}${window.location.search}${window.location.hash}`;
-  if (currentUrl !== nextUrl) window.history.pushState({}, "", nextUrl);
-  window.dispatchEvent(new Event("roprime-location-change"));
+  const currentUrl = `${globalThis.location.pathname}${globalThis.location.search}${globalThis.location.hash}`;
+  if (currentUrl !== nextUrl) globalThis.history.pushState({}, "", nextUrl);
+  globalThis.dispatchEvent(new Event("roprime-location-change"));
 }
 
 function buildMobileNavigationDropdown() {
@@ -1970,7 +1970,7 @@ async function copySettingsExport(root) {
       : accountSettingsPaneT("settings.sync.copyFailed"),
     !copied,
   );
-  window.setTimeout(() => setSyncStatus(root, ""), 2200);
+  globalThis.setTimeout(() => setSyncStatus(root, ""), 2200);
 }
 
 function exportSettingsFile() {
@@ -1985,7 +1985,7 @@ function exportSettingsFile() {
   document.body.appendChild(a);
   a.click();
   a.remove();
-  window.setTimeout(() => URL.revokeObjectURL(url), 1500);
+  globalThis.setTimeout(() => URL.revokeObjectURL(url), 1500);
 }
 
 async function importSettingsText(text) {
@@ -2075,7 +2075,7 @@ function wireToggleElements(root) {
         !checked &&
         settingsState.customCssCautionAccepted
       ) {
-        window.location.reload();
+        globalThis.location.reload();
         return;
       }
       if (key === "cosmeticsEnabled") {
@@ -2231,7 +2231,7 @@ function bindOnce(root) {
       refreshSettingsSyncPreview(root);
       exportSettingsFile();
       setSyncStatus(root, accountSettingsPaneT("settings.sync.exported"));
-      window.setTimeout(() => setSyncStatus(root, ""), 2200);
+      globalThis.setTimeout(() => setSyncStatus(root, ""), 2200);
     });
   const importInput = root.querySelector(".roprime-settings-import-input");
   root
@@ -2255,7 +2255,7 @@ function bindOnce(root) {
           previewLastSaved = nextPreview.value;
         }
         setSyncStatus(root, accountSettingsPaneT("settings.sync.imported"));
-        window.setTimeout(() => setSyncStatus(root, ""), 2200);
+        globalThis.setTimeout(() => setSyncStatus(root, ""), 2200);
       } catch {
         setSyncStatus(
           root,
@@ -2272,7 +2272,7 @@ function bindOnce(root) {
         try {
           previewLastSaved = await resetAllSettingsFromSync(root);
           setSyncStatus(root, accountSettingsPaneT("settings.sync.resetDone"));
-          window.setTimeout(() => setSyncStatus(root, ""), 2200);
+          globalThis.setTimeout(() => setSyncStatus(root, ""), 2200);
         } catch {
           setSyncStatus(
             root,
@@ -2284,8 +2284,8 @@ function bindOnce(root) {
     });
   if (preview instanceof HTMLTextAreaElement) {
     preview.addEventListener("input", () => {
-      window.clearTimeout(previewSaveTimer);
-      previewSaveTimer = window.setTimeout(() => {
+      globalThis.clearTimeout(previewSaveTimer);
+      previewSaveTimer = globalThis.setTimeout(() => {
         const normalized = preview.value;
         if (normalized === previewLastSaved) return;
         if (!normalized.trim()) {
@@ -2296,7 +2296,7 @@ function bindOnce(root) {
                 root,
                 accountSettingsPaneT("settings.sync.resetDone"),
               );
-              window.setTimeout(() => setSyncStatus(root, ""), 2200);
+              globalThis.setTimeout(() => setSyncStatus(root, ""), 2200);
             } catch {
               setSyncStatus(
                 root,
@@ -2312,7 +2312,7 @@ function bindOnce(root) {
             await importSettingsText(normalized);
             previewLastSaved = normalized;
             setSyncStatus(root, accountSettingsPaneT("settings.sync.saved"));
-            window.setTimeout(() => setSyncStatus(root, ""), 1600);
+            globalThis.setTimeout(() => setSyncStatus(root, ""), 1600);
           } catch {
             setSyncStatus(
               root,
@@ -2626,10 +2626,10 @@ export function openRoPrimeSettingsOnAccountPage(page = RP_DEFAULT_PAGE) {
   ensureSettingsHost();
 
   const nextUrl = buildPluginUrl(page);
-  const currentUrl = `${window.location.pathname}${window.location.search}${window.location.hash}`;
+  const currentUrl = `${globalThis.location.pathname}${globalThis.location.search}${globalThis.location.hash}`;
   if (currentUrl !== nextUrl) {
-    window.history.pushState({}, "", nextUrl);
-    window.dispatchEvent(new Event("roprime-location-change"));
+    globalThis.history.pushState({}, "", nextUrl);
+    globalThis.dispatchEvent(new Event("roprime-location-change"));
   }
 
   showRoPrimeSettingsPanel();
@@ -2656,10 +2656,10 @@ export function syncProfileSettingsRoute() {
   const rpPage = getCurrentrp();
   if (rpPage === "developer" && !settingsState.developerPageUnlocked) {
     const nextUrl = buildPluginUrl(RP_DEFAULT_PAGE);
-    const currentUrl = `${window.location.pathname}${window.location.search}${window.location.hash}`;
+    const currentUrl = `${globalThis.location.pathname}${globalThis.location.search}${globalThis.location.hash}`;
     if (currentUrl !== nextUrl) {
-      window.history.replaceState({}, "", nextUrl);
-      window.dispatchEvent(new Event("roprime-location-change"));
+      globalThis.history.replaceState({}, "", nextUrl);
+      globalThis.dispatchEvent(new Event("roprime-location-change"));
     }
   }
 

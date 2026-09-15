@@ -61,7 +61,7 @@ async function hasManagementPermission() {
 function buildAccountUrl(suffixAfterMyAccount) {
   const prefix = getRobloxLocalePathPrefix();
   const suffix = String(suffixAfterMyAccount || "");
-  return `${window.location.origin}${prefix}/my/account${suffix}`;
+  return `${globalThis.location.origin}${prefix}/my/account${suffix}`;
 }
 
 function buildSettingsUrl(entry) {
@@ -470,7 +470,7 @@ async function refreshExtensionsTiles(tiles) {
     );
     infoBtn.addEventListener("click", () => {
       const enabledText = item.enabled ? "Enabled" : "Disabled";
-      window.alert(
+      globalThis.alert(
         `${title}\n\n${description}\n\nStatus: ${enabledText}\nID: ${String(item.id || "")}`,
       );
     });
@@ -537,7 +537,7 @@ async function refreshExtensionsTiles(tiles) {
       settingsBtn.disabled = !settingsUrl;
       settingsBtn.addEventListener("click", () => {
         if (!settingsUrl) return;
-        window.location.assign(settingsUrl);
+        globalThis.location.assign(settingsUrl);
       });
     }
 
@@ -594,7 +594,7 @@ function isOpen() {
 }
 
 function isExtensionsHashRoute() {
-  const hash = (window.location.hash || "").toLowerCase();
+  const hash = (globalThis.location.hash || "").toLowerCase();
   return hash === "#!/extensions" || hash === "#!/plugins";
 }
 
@@ -603,7 +603,7 @@ export function initExtensionsPanel() {
   if (bound) return;
   bound = true;
 
-  window.addEventListener("roprime-open-extensions-panel", () => openPanel());
+  globalThis.addEventListener("roprime-open-extensions-panel", () => openPanel());
 
   document.addEventListener(
     "click",
@@ -634,9 +634,9 @@ export function initExtensionsPanel() {
     setExtensionsMenuActive(false);
   };
 
-  window.addEventListener("popstate", onRoute);
-  window.addEventListener("hashchange", onRoute);
-  window.addEventListener("roprime-location-change", onRoute);
+  globalThis.addEventListener("popstate", onRoute);
+  globalThis.addEventListener("hashchange", onRoute);
+  globalThis.addEventListener("roprime-location-change", onRoute);
   onRoute();
   void scanForMaliciousExtensions();
 }

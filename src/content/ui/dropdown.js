@@ -1,9 +1,151 @@
 let dropdownIdCounter = 0;
 
+const ROPRIME_FOCUS_GUARD_ATTR = "data-roprime-focus-guard";
+const ROPRIME_ARIA_HIDDEN_ATTR = "data-roprime-aria-hidden";
+const ROPRIME_BODY_POINTER_ATTR = "data-roprime-dropdown-body-pointer";
+
+const PAGE_INERT_SELECTORS = [
+  "#image-retry-data",
+  "#http-retry-data",
+  "#navigation-container",
+  "#footer-container",
+  "#chat-container",
+  "#user-agreements-checker-container",
+  "#access-management-upsell-container",
+  "#global-privacy-control-checker-container",
+  "#cookie-banner-wrapper",
+  "#PlaceLauncherStatusPanel",
+  "#downloadInstallerIFrame",
+  "#modal-confirmation",
+];
+
 function createElement(tag, className) {
   const node = document.createElement(tag);
   if (className) node.className = className;
   return node;
+}
+
+function createFocusGuard() {
+  const guard = document.createElement("span");
+  guard.setAttribute("data-radix-focus-guard", "");
+  guard.setAttribute(ROPRIME_FOCUS_GUARD_ATTR, "1");
+  guard.setAttribute("tabindex", "0");
+  guard.setAttribute("data-aria-hidden", "true");
+  guard.setAttribute("aria-hidden", "true");
+  guard.style.outline = "none";
+  guard.style.opacity = "0";
+  guard.style.position = "fixed";
+  guard.style.pointerEvents = "none";
+  return guard;
+}
+
+function blurActiveElementOutside(root, popper) {
+  const active = document.activeElement;
+  if (!(active instanceof HTMLElement)) return;
+  if (root.contains(active) || popper.contains(active)) return;
+  active.blur();
+}
+
+function applyPageInertState() {
+  const body = document.body;
+  if (body instanceof HTMLElement) {
+    if (!body.hasAttribute(ROPRIME_BODY_POINTER_ATTR)) {
+      body.setAttribute(
+        ROPRIME_BODY_POINTER_ATTR,
+        body.style.pointerEvents || "",
+      );
+    }
+    body.style.pointerEvents = "none";
+  }
+
+  for (const selector of PAGE_INERT_SELECTORS) {
+    const node = document.querySelector(selector);
+    if (!(node instanceof HTMLElement)) continue;
+    if (!node.hasAttribute(ROPRIME_ARIA_HIDDEN_ATTR)) {
+      node.setAttribute(
+        ROPRIME_ARIA_HIDDEN_ATTR,
+        [
+          node.hasAttribute("aria-hidden") ? "1" : "0",
+          node.getAttribute("aria-hidden") ?? "",
+          node.hasAttribute("data-aria-hidden") ? "1" : "0",
+          node.getAttribute("data-aria-hidden") ?? "",
+        ].join("\n"),
+      );
+    }
+    node.setAttribute("aria-hidden", "true");
+    node.setAttribute("data-aria-hidden", "true");
+  }
+}
+
+function clearPageInertState() {
+  const openDropdowns = document.querySelectorAll(
+    '[data-roprime-dropdown-open="1"]',
+  );
+  if (openDropdowns.length > 0) return;
+
+  const body = document.body;
+  if (
+    body instanceof HTMLElement &&
+    body.hasAttribute(ROPRIME_BODY_POINTER_ATTR)
+  ) {
+    body.style.pointerEvents =
+      body.getAttribute(ROPRIME_BODY_POINTER_ATTR) || "";
+    body.removeAttribute(ROPRIME_BODY_POINTER_ATTR);
+    if (!body.style.pointerEvents) body.style.removeProperty("pointer-events");
+  }
+
+  for (const node of document.querySelectorAll(
+    `[${ROPRIME_ARIA_HIDDEN_ATTR}]`,
+  )) {
+    if (!(node instanceof HTMLElement)) continue;
+    const raw = node.getAttribute(ROPRIME_ARIA_HIDDEN_ATTR) || "";
+    const [hadAria, ariaValue, hadDataAria, dataAriaValue] = raw.split("\n");
+    node.removeAttribute(ROPRIME_ARIA_HIDDEN_ATTR);
+    if (hadAria === "1") {
+      if (ariaValue === "") node.removeAttribute("aria-hidden");
+      else node.setAttribute("aria-hidden", ariaValue);
+    } else {
+      node.removeAttribute("aria-hidden");
+    }
+    if (hadDataAria === "1") {
+      if (dataAriaValue === "") node.removeAttribute("data-aria-hidden");
+      else node.setAttribute("data-aria-hidden", dataAriaValue);
+    } else {
+      node.removeAttribute("data-aria-hidden");
+    }
+  }
+}
+
+function ensureFocusGuards(root, popper) {
+  const mounts = [];
+  if (document.body) mounts.push(document.body);
+  for (const mount of mounts) {
+    if (!mount.querySelector(`[${ROPRIME_FOCUS_GUARD_ATTR}="start"]`)) {
+      const start = createFocusGuard();
+      start.setAttribute(ROPRIME_FOCUS_GUARD_ATTR, "start");
+      mount.insertBefore(start, mount.firstChild);
+    }
+    if (!mount.querySelector(`[${ROPRIME_FOCUS_GUARD_ATTR}="end"]`)) {
+      const end = createFocusGuard();
+      end.setAttribute(ROPRIME_FOCUS_GUARD_ATTR, "end");
+      mount.appendChild(end);
+    }
+  }
+
+  root.style.pointerEvents = "auto";
+  popper.style.pointerEvents = "auto";
+}
+
+function removeFocusGuardsIfIdle() {
+  const openDropdowns = document.querySelectorAll(
+    '[data-roprime-dropdown-open="1"]',
+  );
+  if (openDropdowns.length > 0) return;
+  for (const guard of document.querySelectorAll(
+    `[${ROPRIME_FOCUS_GUARD_ATTR}]`,
+  )) {
+    guard.remove();
+  }
 }
 
 function normalizeOptions(options) {
@@ -34,7 +176,7 @@ function positionPopper(popper, trigger, { popperZIndex = "1050" } = {}) {
 
   const rect = trigger.getBoundingClientRect();
   const width = Math.max(rect.width, 180);
-  const left = Math.max(8, Math.min(rect.left, window.innerWidth - width - 8));
+  const left = Math.max(8, Math.min(rect.left, globalThis.innerWidth - width - 8));
 
   popper.style.position = "fixed";
   popper.style.left = "0px";
@@ -54,7 +196,7 @@ function positionPopper(popper, trigger, { popperZIndex = "1050" } = {}) {
   popper.style.pointerEvents = "";
   if (wasHidden) popper.hidden = true;
 
-  const spaceBelow = window.innerHeight - rect.bottom;
+  const spaceBelow = globalThis.innerHeight - rect.bottom;
   const openBelow =
     spaceBelow >= popperHeight + 8 || rect.top < popperHeight + 8;
   const top = openBelow
@@ -321,6 +463,10 @@ export function createDropdown({
     listbox.setAttribute("data-state", open ? "open" : "closed");
     popper.hidden = !open;
     if (open) {
+      root.setAttribute("data-roprime-dropdown-open", "1");
+      blurActiveElementOutside(root, popper);
+      ensureFocusGuards(root, popper);
+      applyPageInertState();
       const position = () => positionPopper(popper, trigger, { popperZIndex });
       position();
       requestAnimationFrame(position);
@@ -330,7 +476,10 @@ export function createDropdown({
       );
       setHighlightedIndex(selectedIndex >= 0 ? selectedIndex : 0, false);
     } else {
+      root.removeAttribute("data-roprime-dropdown-open");
       clearHighlight();
+      clearPageInertState();
+      removeFocusGuardsIfIdle();
     }
   };
 
@@ -477,6 +626,24 @@ export function createDropdown({
     positionPopper(popper, trigger, { popperZIndex });
   };
 
+  const onWindowBlur = () => {
+    if (!state.open) return;
+    close();
+  };
+
+  const onVisibilityChange = () => {
+    if (!state.open) return;
+    if (document.visibilityState === "hidden") close();
+  };
+
+  const onFocusIn = (event) => {
+    if (!state.open) return;
+    if (!(event.target instanceof Node)) return;
+    if (root.contains(event.target) || popper.contains(event.target)) return;
+    // Match Roblox/Radix focus-within dismissal when focus leaves the dropdown.
+    close();
+  };
+
   const onTriggerKeyDown = (event) => {
     if (event.key === "ArrowDown") {
       event.preventDefault();
@@ -542,8 +709,11 @@ export function createDropdown({
   trigger.addEventListener("keydown", onTriggerKeyDown);
   popper.addEventListener("keydown", onPopperKeyDown);
   document.addEventListener("pointerdown", onDocumentPointerDown, true);
-  window.addEventListener("resize", onWindowChange);
-  window.addEventListener("scroll", onWindowChange, true);
+  document.addEventListener("focusin", onFocusIn, true);
+  globalThis.addEventListener("resize", onWindowChange);
+  globalThis.addEventListener("scroll", onWindowChange, true);
+  globalThis.addEventListener("blur", onWindowBlur);
+  document.addEventListener("visibilitychange", onVisibilityChange);
 
   renderOptions();
 
@@ -568,8 +738,11 @@ export function createDropdown({
     destroy() {
       close();
       document.removeEventListener("pointerdown", onDocumentPointerDown, true);
-      window.removeEventListener("resize", onWindowChange);
-      window.removeEventListener("scroll", onWindowChange, true);
+      document.removeEventListener("focusin", onFocusIn, true);
+      globalThis.removeEventListener("resize", onWindowChange);
+      globalThis.removeEventListener("scroll", onWindowChange, true);
+      globalThis.removeEventListener("blur", onWindowBlur);
+      document.removeEventListener("visibilitychange", onVisibilityChange);
       popper.remove();
       root.remove();
     },

@@ -169,7 +169,7 @@ function teardownOldNavigationBar() {
   lastNavRenderKey = "";
   hydrateSeq += 1;
   try {
-    delete window.__oldRobloxOldNavigationBar;
+    delete globalThis.__oldRobloxOldNavigationBar;
   } catch {
     /* ignore */
   }
@@ -208,7 +208,7 @@ function stripLegacyInjections() {
 
 function shouldMountOldNavigationBar() {
   if (!document.body) return false;
-  const path = window.location.pathname || "";
+  const path = globalThis.location.pathname || "";
   if (
     /\/login\b/i.test(path) ||
     /^\/(?:[a-z]{2,3}(?:-[a-z0-9]{2,8})?\/)?newlogin\b/i.test(path)
@@ -219,7 +219,7 @@ function shouldMountOldNavigationBar() {
 }
 
 function origin() {
-  return window.location.origin;
+  return globalThis.location.origin;
 }
 
 function communitiesLabel() {
@@ -674,7 +674,7 @@ export function syncOldNavigationBar() {
   root.classList.add("roprime-classic-left-nav-on");
   bindNativeMenuButtonToggle();
 
-  const peekId = Number(window.__roprimeNavUserId) || 0;
+  const peekId = Number(globalThis.__roprimeNavUserId) || 0;
   renderInto(container, peekId || "");
 
   void (async () => {
@@ -687,7 +687,7 @@ export function syncOldNavigationBar() {
     }
     if (userId) {
       try {
-        window.__roprimeNavUserId = userId;
+        globalThis.__roprimeNavUserId = userId;
       } catch {
         /* ignore */
       }
@@ -696,7 +696,7 @@ export function syncOldNavigationBar() {
   })();
 
   try {
-    window.__oldRobloxOldNavigationBar = container;
+    globalThis.__oldRobloxOldNavigationBar = container;
   } catch {
     /* ignore */
   }

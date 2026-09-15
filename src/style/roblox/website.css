@@ -77,7 +77,7 @@ html
 .menu-vertical,
 .menu-secondary-container,
 .menu-secondary {
-  overflow: visible !important;
+  overflow: hidden !important;
 }
 
 .private-message-page > :nth-child(4) > :first-child {
@@ -171,4 +171,10 @@ html
 
 .bg-action-link > div {
   border-radius: var(--radius-medium);
+}
+
+/* Icon-only sidebar animated test */
+
+#wrap {
+  overflow-x: auto;
 }

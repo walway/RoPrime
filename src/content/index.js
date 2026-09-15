@@ -43,6 +43,7 @@ import "./account/freeThemes.js";
 import "./sidebar/robloxEvents.js";
 import "./profile/profileRedesign.js";
 import "./account/classicIcon.js";
+import "./inventory/menuOptions.js";
 
 const extensionApi = globalThis.browser || globalThis.chrome;
 
@@ -81,18 +82,18 @@ function installStorageSyncListener() {
 }
 
 function installHistoryListeners() {
-  const originalPushState = window.history.pushState;
-  const originalReplaceState = window.history.replaceState;
+  const originalPushState = globalThis.history.pushState;
+  const originalReplaceState = globalThis.history.replaceState;
 
-  window.history.pushState = function (...args) {
+  globalThis.history.pushState = function (...args) {
     const result = originalPushState.apply(this, args);
-    window.dispatchEvent(new Event("roprime-location-change"));
+    globalThis.dispatchEvent(new Event("roprime-location-change"));
     return result;
   };
 
-  window.history.replaceState = function (...args) {
+  globalThis.history.replaceState = function (...args) {
     const result = originalReplaceState.apply(this, args);
-    window.dispatchEvent(new Event("roprime-location-change"));
+    globalThis.dispatchEvent(new Event("roprime-location-change"));
     return result;
   };
 
@@ -104,9 +105,9 @@ function installHistoryListeners() {
     }
   };
 
-  window.addEventListener("popstate", handleRouteChange);
-  window.addEventListener("hashchange", handleRouteChange);
-  window.addEventListener("roprime-location-change", handleRouteChange);
+  globalThis.addEventListener("popstate", handleRouteChange);
+  globalThis.addEventListener("hashchange", handleRouteChange);
+  globalThis.addEventListener("roprime-location-change", handleRouteChange);
 }
 
 function bootstrap() {

@@ -220,7 +220,6 @@ if (supabaseUrl) {
   );
 }
 
-rmSync(distDir, { recursive: true, force: true });
 mkdirSync(bundleDir, { recursive: true });
 
 prepareLottieAssets();

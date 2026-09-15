@@ -145,7 +145,7 @@ function applyFriendPresenceClasses() {
 
 function scheduleFriendPresenceRefresh() {
   if (friendStylingRafId !== null) return;
-  friendStylingRafId = window.requestAnimationFrame(() => {
+  friendStylingRafId = globalThis.requestAnimationFrame(() => {
     friendStylingRafId = null;
     if (!settingsState.friendStylingReimagnedEnabled) return;
     applyFriendPresenceClasses();
@@ -186,7 +186,7 @@ function stopFriendStylingObserver() {
     friendStylingObserver = null;
   }
   if (friendStylingRafId !== null) {
-    window.cancelAnimationFrame(friendStylingRafId);
+    globalThis.cancelAnimationFrame(friendStylingRafId);
     friendStylingRafId = null;
   }
 }

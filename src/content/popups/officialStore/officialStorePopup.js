@@ -199,7 +199,7 @@ export function showOfficialStorePopup() {
 
   const continueLink = overlay.querySelector("[data-roprime-store-continue]");
   continueLink?.addEventListener("click", () => {
-    window.setTimeout(removeExisting, 0);
+    globalThis.setTimeout(removeExisting, 0);
   });
 }
 

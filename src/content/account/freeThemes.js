@@ -196,7 +196,7 @@ let activePalette = "dynamic";
 let panelSyncFrame = 0;
 
 function isBrowserPreferencesRoute() {
-  const hash = (window.location.hash || "").toLowerCase();
+  const hash = (globalThis.location.hash || "").toLowerCase();
   return (
     hash.includes("browser-preferences") || hash.includes("browserpreferences")
   );

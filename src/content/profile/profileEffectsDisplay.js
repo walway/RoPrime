@@ -133,8 +133,8 @@ export function installProfilePageEffectObserver() {
   const onRoute = () => {
     syncProfileObserverForRoute();
   };
-  window.addEventListener("roprime-location-change", onRoute);
-  window.addEventListener("popstate", onRoute);
+  globalThis.addEventListener("roprime-location-change", onRoute);
+  globalThis.addEventListener("popstate", onRoute);
 
   if (document.body) syncProfileObserverForRoute();
   else {

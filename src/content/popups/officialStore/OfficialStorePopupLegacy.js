@@ -140,7 +140,7 @@ export function showOfficialStorePopupLegacy() {
   const continueBtn = overlay.querySelector("[data-roprime-store-continue]");
   continueBtn?.addEventListener("click", (event) => {
     event.preventDefault();
-    window.open(STORE_URL, "_blank", "noopener,noreferrer");
+    globalThis.open(STORE_URL, "_blank", "noopener,noreferrer");
     removeExisting();
   });
 }

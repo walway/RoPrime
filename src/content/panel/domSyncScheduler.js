@@ -31,7 +31,7 @@ export function installDomSyncScheduler() {
   }
 
   if (fallbackIntervalId === null) {
-    fallbackIntervalId = window.setInterval(() => {
+    fallbackIntervalId = globalThis.setInterval(() => {
       syncRoPrimeView();
     }, FALLBACK_SYNC_MS);
   }
@@ -42,7 +42,7 @@ export function stopDomSyncScheduler() {
   observer?.disconnect();
   observer = null;
   if (fallbackIntervalId !== null) {
-    window.clearInterval(fallbackIntervalId);
+    globalThis.clearInterval(fallbackIntervalId);
     fallbackIntervalId = null;
   }
 }

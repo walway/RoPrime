@@ -274,7 +274,7 @@ async function syncCardEffects(card, context) {
 
 function schedulePendingCardFlush() {
   if (pendingFlushTimer) return;
-  pendingFlushTimer = window.setTimeout(() => {
+  pendingFlushTimer = globalThis.setTimeout(() => {
     pendingFlushTimer = 0;
     void flushPendingCardSyncs();
   }, SCAN_DEBOUNCE_MS);
@@ -358,8 +358,8 @@ function scanFriendsListAvatars() {
 }
 
 function scheduleAvatarScan() {
-  if (scanDebounceTimer) window.clearTimeout(scanDebounceTimer);
-  scanDebounceTimer = window.setTimeout(() => {
+  if (scanDebounceTimer) globalThis.clearTimeout(scanDebounceTimer);
+  scanDebounceTimer = globalThis.setTimeout(() => {
     scanDebounceTimer = 0;
     scanCarouselAvatars();
     scanFriendsListAvatars();

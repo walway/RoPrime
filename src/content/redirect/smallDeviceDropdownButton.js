@@ -43,7 +43,7 @@ let domObserver = null;
 let clickInstalled = false;
 
 function isExtensionsRouteActive() {
-  const hash = (window.location.hash || "").toLowerCase();
+  const hash = (globalThis.location.hash || "").toLowerCase();
   return (
     hash === "#!/extensions" ||
     hash === "#!/plugins" ||
@@ -232,21 +232,21 @@ function navigateToExtensions(e) {
       history.replaceState(
         history.state,
         "",
-        `${window.location.pathname}${window.location.search}#!/extensions`,
+        `${globalThis.location.pathname}${globalThis.location.search}#!/extensions`,
       );
     } catch {
       /* ignore */
     }
-    if (window.location.hash !== "#!/extensions") {
-      window.location.hash = "#!/extensions";
+    if (globalThis.location.hash !== "#!/extensions") {
+      globalThis.location.hash = "#!/extensions";
     }
-    window.dispatchEvent(new Event("roprime-open-extensions-panel"));
+    globalThis.dispatchEvent(new Event("roprime-open-extensions-panel"));
     syncAllExtensionsEntryAriaSelected();
     return;
   }
   const prefix = getRobloxLocalePathPrefix();
-  window.location.assign(
-    `${window.location.origin}${prefix}/my/account#!/extensions`,
+  globalThis.location.assign(
+    `${globalThis.location.origin}${prefix}/my/account#!/extensions`,
   );
 }
 
@@ -256,13 +256,13 @@ function navigateToRoPrimeSettings(e) {
   dismissFoundationWebDropdown(e.target instanceof Element ? e.target : null);
   if (isMyAccountPath()) {
     if (isOnRoPrimeSettingsPage()) {
-      window.location.reload();
+      globalThis.location.reload();
       return;
     }
     openRoPrimeSettingsOnAccountPage(RP_DEFAULT_PAGE);
     return;
   }
-  window.location.assign(buildRoPrimeSettingsFullUrl());
+  globalThis.location.assign(buildRoPrimeSettingsFullUrl());
 }
 
 function onFoundationMenuClick(ev) {
@@ -432,10 +432,10 @@ function ensureRouteSyncListeners() {
   if (ensureRouteSyncListeners.bound) return;
   ensureRouteSyncListeners.bound = true;
   const sync = () => syncAllExtensionsEntryAriaSelected();
-  window.addEventListener("hashchange", sync);
-  window.addEventListener("popstate", sync);
-  window.addEventListener("roprime-location-change", sync);
-  window.addEventListener("roprime-open-extensions-panel", sync);
+  globalThis.addEventListener("hashchange", sync);
+  globalThis.addEventListener("popstate", sync);
+  globalThis.addEventListener("roprime-location-change", sync);
+  globalThis.addEventListener("roprime-open-extensions-panel", sync);
 }
 ensureRouteSyncListeners.bound = false;
 

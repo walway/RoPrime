@@ -1,74 +1,83 @@
 .roprime-profile-wearing-cards {
-    flex: 1 1 auto;
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    margin-bottom: 24px;
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 24px;
 }
 
 .roprime-wearing-item-list {
-    display: grid !important;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 12px;
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    overflow: visible;
-}
-  
-.roprime-wearing-item-list > .list-item.item-card {
-    width: auto !important;
-    max-width: none !important;
-    margin: 0 !important;
-    float: none !important;
-}
-  
-.roprime-profile-wearing-cards .pager-holder {
-    display: flex;
-    justify-content: center;
-    margin-top: 8px;
-}
-  
-.roprime-profile-avatar-preview .thumbnail-loader {
-    margin-top: 210px;
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 2;
-}
-  
-.roprime-profile-avatar-preview .thumbnail-span {
-    display: block !important;
-    width: 100% !important;
-    height: 100% !important;
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  overflow: visible;
 }
 
+.roprime-wearing-item-list > .list-item.item-card {
+  width: auto !important;
+  max-width: none !important;
+  margin: 0 !important;
+  float: none !important;
+}
+
+.roprime-profile-avatar-preview .thumbnail-loader {
+  margin-top: 210px;
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+}
+
+.roprime-profile-avatar-preview .thumbnail-span {
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+}
 
 .roprime-profile-wearing-cards .hlist:before,
 .roprime-profile-wearing-cards .hlist:after {
-    display: none !important;
+  display: none !important;
 }
 
 .roprime-profile-wearing-cards .item-card-creator {
-    display: flex;
-    align-items: center;
-    gap: 4px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .roprime-profile-wearing-cards .creator-name {
-    display: inline !important;
+  display: inline !important;
 }
 
 .roprime-profile-wearing-cards .text-link {
-    display: inline !important;
+  display: inline !important;
 }
 
 .roprime-profile-wearing-cards .verified-badge-icon-catalog-item-rendered {
-    width: 16px;
-    height: 16px;
-    flex: 0 0 auto;
+  width: 16px;
+  height: 16px;
+  flex: 0 0 auto;
+}
+
+.icon-filled-chevron-large-left-to-line {
+    --svg: url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%2032%2032'%20width%3D'32'%20height%3D'32'%3E%3Cpath%20d%3D'M8%204.5C8.82843%204.5%209.5%205.17157%209.5%206V26C9.5%2026.8284%208.82843%2027.5%208%2027.5C7.17166%2027.4999%206.5%2026.8284%206.5%2026V6C6.5%205.17164%207.17166%204.5001%208%204.5Z'%20fill%3D'black'%2F%3E%20%3Cpath%20d%3D'M22.9395%204.93945C23.5252%204.3537%2024.4748%204.35376%2025.0605%204.93945C25.6463%205.52524%2025.6463%206.47476%2025.0605%207.06055L16.1211%2016L25.0605%2024.9395C25.6463%2025.5252%2025.6463%2026.4748%2025.0605%2027.0605C24.4748%2027.6462%2023.5252%2027.6463%2022.9395%2027.0605L12.9395%2017.0605L12.8359%2016.9463C12.3559%2016.3572%2012.3905%2015.4885%2012.9395%2014.9395L22.9395%204.93945Z'%20fill%3D'black'%2F%3E%3C%2Fsvg%3E");
+}
+
+.icon-filled-chevron-large-left {
+    --svg: url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%2032%2032'%20width%3D'32'%20height%3D'32'%3E%3Cpath%20d%3D'M8.83591%2016.9463C8.35579%2016.3571%208.3904%2015.4885%208.93942%2014.9394L18.9394%204.93942L19.0537%204.83591C19.6428%204.35579%2020.5115%204.3904%2021.0605%204.93942C21.6095%205.48845%2021.6441%206.35711%2021.164%206.94626L21.0605%207.06052L12.1211%2016L21.0605%2024.9394C21.6463%2025.5252%2021.6463%2026.4747%2021.0605%2027.0605C20.4747%2027.6463%2019.5252%2027.6463%2018.9394%2027.0605L8.93942%2017.0605L8.83591%2016.9463Z'%20fill%3D'black'%2F%3E%3C%2Fsvg%3E");
+}
+
+.icon-filled-chevron-large-right {
+    --svg: url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%2032%2032'%20width%3D'32'%20height%3D'32'%3E%3Cpath%20d%3D'M23.164%2016.9463C23.6441%2016.3571%2023.6095%2015.4885%2023.0605%2014.9394L13.0605%204.93942L12.9463%204.83591C12.3571%204.35579%2011.4884%204.3904%2010.9394%204.93942C10.3904%205.48845%2010.3558%206.35711%2010.8359%206.94626L10.9394%207.06052L19.8789%2016L10.9394%2024.9394C10.3536%2025.5252%2010.3536%2026.4747%2010.9394%2027.0605C11.5252%2027.6463%2012.4747%2027.6463%2013.0605%2027.0605L23.0605%2017.0605L23.164%2016.9463Z'%20fill%3D'black'%2F%3E%3C%2Fsvg%3E");
+}
+
+.icon-filled-chevron-large-right-to-line {
+    --svg: url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%2032%2032'%20width%3D'32'%20height%3D'32'%3E%3Cpath%20d%3D'M6.93934%204.93945C7.52514%204.35382%208.4747%204.35372%209.06043%204.93945L19.0604%2014.9395C19.6093%2015.4884%2019.6439%2016.3572%2019.1639%2016.9463L19.0604%2017.0605L9.06043%2027.0605C8.4747%2027.6463%207.52514%2027.6462%206.93934%2027.0605C6.35355%2026.4748%206.35355%2025.5252%206.93934%2024.9395L15.8788%2016L6.93934%207.06055C6.35355%206.47476%206.35355%205.52524%206.93934%204.93945Z'%20fill%3D'black'%2F%3E%3Cpath%20d%3D'M23.9999%204.5C24.8282%204.50016%2025.4999%205.17167%2025.4999%206V26C25.4999%2026.8283%2024.8282%2027.4998%2023.9999%2027.5C23.1715%2027.5%2022.4999%2026.8284%2022.4999%2026V6C22.4999%205.17157%2023.1715%204.5%2023.9999%204.5Z'%20fill%3D'black'%2F%3E%3C%2Fsvg%3E");
 }

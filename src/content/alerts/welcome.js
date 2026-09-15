@@ -31,7 +31,7 @@ function attachDismissStorageListener() {
 }
 
 export function isRobloxHomePage() {
-  const raw = window.location.pathname || "/";
+  const raw = globalThis.location.pathname || "/";
   const normalized = raw.replace(/\/+$/, "") || "/";
   if (normalized === "/home") return true;
   const parts = normalized.split("/").filter(Boolean);

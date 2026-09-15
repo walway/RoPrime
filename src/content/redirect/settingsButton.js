@@ -41,8 +41,8 @@ function disconnectAccountMenuListObserver() {
 
 function queueAccountMenuReconcile() {
   if (reconcilingAccountMenu) return;
-  window.clearTimeout(accountMenuReconcileTimer);
-  accountMenuReconcileTimer = window.setTimeout(() => {
+  globalThis.clearTimeout(accountMenuReconcileTimer);
+  accountMenuReconcileTimer = globalThis.setTimeout(() => {
     accountMenuReconcileTimer = 0;
     reconcileAccountMenuTabs();
   }, 32);
@@ -93,15 +93,15 @@ function uninstallGearMenuObserver() {
     gearMenuObserver = null;
   }
   if (gearMenuDebounceTimer) {
-    window.clearTimeout(gearMenuDebounceTimer);
+    globalThis.clearTimeout(gearMenuDebounceTimer);
     gearMenuDebounceTimer = 0;
   }
 }
 
 function queueGearMenuPopoverReconcile() {
   if (!shouldInjectSettingsPopoverEntry()) return;
-  window.clearTimeout(gearMenuDebounceTimer);
-  gearMenuDebounceTimer = window.setTimeout(() => {
+  globalThis.clearTimeout(gearMenuDebounceTimer);
+  gearMenuDebounceTimer = globalThis.setTimeout(() => {
     gearMenuDebounceTimer = 0;
     injectSettingsPopoverRow();
   }, 60);
@@ -220,7 +220,7 @@ function injectSettingsPopoverRow() {
       if (isMyAccountPath()) {
         openRoPrimeSettingsOnAccountPage(RP_DEFAULT_PAGE);
       } else {
-        window.location.assign(buildRoPrimeSettingsFullUrl());
+        globalThis.location.assign(buildRoPrimeSettingsFullUrl());
       }
     });
 
@@ -240,7 +240,7 @@ function injectSettingsPopoverRow() {
 }
 
 function removeVerticalAccountInjections() {
-  window.clearTimeout(accountMenuReconcileTimer);
+  globalThis.clearTimeout(accountMenuReconcileTimer);
   accountMenuReconcileTimer = 0;
   disconnectAccountMenuListObserver();
   accountMenuListObserver = null;
@@ -266,7 +266,7 @@ function navigateToRoPrimeSettings(e) {
     openRoPrimeSettingsOnAccountPage(RP_DEFAULT_PAGE);
     return;
   }
-  window.location.assign(buildRoPrimeSettingsFullUrl());
+  globalThis.location.assign(buildRoPrimeSettingsFullUrl());
 }
 
 function buildVerticalTabLi() {
@@ -431,15 +431,15 @@ function buildExtensionsTabLi(menuList) {
       history.replaceState(
         history.state,
         "",
-        `${window.location.pathname}${window.location.search}#!/extensions`,
+        `${globalThis.location.pathname}${globalThis.location.search}#!/extensions`,
       );
     } catch {
       /* ignore */
     }
-    if (window.location.hash !== "#!/extensions") {
-      window.location.hash = "#!/extensions";
+    if (globalThis.location.hash !== "#!/extensions") {
+      globalThis.location.hash = "#!/extensions";
     }
-    window.dispatchEvent(new Event("roprime-open-extensions-panel"));
+    globalThis.dispatchEvent(new Event("roprime-open-extensions-panel"));
   });
 
   const iconWrap = document.createElement("span");
@@ -554,7 +554,7 @@ export function syncAccountSettingsMenuButton() {
 
     if (shouldInjectVerticalAccountTab() && !tabOk && accountMenuRetries < 6) {
       accountMenuRetries += 1;
-      window.setTimeout(() => {
+      globalThis.setTimeout(() => {
         if (!isExtensionContextAlive()) return;
         syncAccountSettingsMenuButton();
       }, 450);

@@ -17,5 +17,6 @@
 @import "./profile/friends-reimagined.css";
 
 /* latest */
+@import "./inventory/menuOptions.css";
 @import "./roblox/website.css";
 @import "./roblox/events.css";

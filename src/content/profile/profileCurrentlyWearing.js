@@ -415,6 +415,8 @@ function buildPriceRow(detail) {
     return priceRow;
   }
 
+  // Limited / Limited Unique (and other resale items) are often Off Sale
+  // but still have a best price via lowestPrice / lowestResalePrice.
   if (typeof price === "number" && price > 0) {
     priceRow.appendChild(el("span", "icon-robux-16x16"));
     const amount = el("span", "text-robux-tile");
@@ -498,44 +500,88 @@ function totalPages(assetCount) {
   return Math.max(1, Math.ceil(assetCount / PAGE_SIZE));
 }
 
+function buildPagerIconButton(iconClass, { disabled = false, onClick } = {}) {
+  const button = el(
+    "button",
+    disabled
+      ? "foundation-web-icon-button opacity-[0.5] relative flex items-center justify-center padding-none stroke-none select-none size-1000 radius-medium bg-action-link"
+      : "foundation-web-icon-button relative clip group/interactable focus-visible:outline-focus disabled:outline-none cursor-pointer relative flex items-center justify-center padding-none stroke-none select-none size-1000 radius-medium bg-action-link",
+  );
+  button.type = "button";
+  button.setAttribute("aria-label", "");
+  if (disabled) button.disabled = true;
+
+  const stateLayer = el(
+    "div",
+    "absolute inset-[0] transition-colors group-hover/interactable:bg-[var(--color-state-hover)] group-active/interactable:bg-[var(--color-state-press)] group-disabled/interactable:bg-none",
+  );
+  stateLayer.setAttribute("aria-hidden", "true");
+  stateLayer.setAttribute("data-testid", "foundation-web-state-layer");
+
+  const icon = el("span", `icon ${iconClass} size-600 content-emphasis`);
+  button.append(stateLayer, icon);
+
+  if (!disabled && typeof onClick === "function") {
+    button.addEventListener("click", onClick);
+  }
+  return button;
+}
+
 function buildPager(page, pages) {
-  const holder = el("div", "pager-holder");
-  const ul = el("ul", "pager");
+  const holder = el(
+    "div",
+    "pager-holder flex items-center gap-xsmall buttons-section",
+  );
+  const atStart = page <= 1;
+  const atEnd = page >= pages;
 
-  const prevLi = el("li", "pager-prev");
-  const prevBtn = el("button", "btn-generic-left-sm");
-  prevBtn.type = "button";
-  prevBtn.title = "left";
-  if (page <= 1) prevBtn.disabled = true;
-  prevBtn.appendChild(el("span", "icon-left"));
-  prevBtn.addEventListener("click", () => {
-    if (currentPage <= 1) return;
-    currentPage -= 1;
-    renderCurrentPage();
-  });
-  prevLi.appendChild(prevBtn);
+  holder.appendChild(
+    buildPagerIconButton("icon-filled-chevron-large-left-to-line", {
+      disabled: atStart,
+      onClick: () => {
+        if (currentPage <= 1) return;
+        currentPage = 1;
+        renderCurrentPage();
+      },
+    }),
+  );
+  holder.appendChild(
+    buildPagerIconButton("icon-filled-chevron-large-left", {
+      disabled: atStart,
+      onClick: () => {
+        if (currentPage <= 1) return;
+        currentPage -= 1;
+        renderCurrentPage();
+      },
+    }),
+  );
 
-  const curLi = el("li", "pager-cur");
-  const cur = el("span");
-  cur.setAttribute(RP_PAGE_ATTR, "1");
-  cur.textContent = String(page);
-  curLi.appendChild(cur);
+  const label = el("span", "text-body-large content-muted padding-x-small");
+  label.setAttribute(RP_PAGE_ATTR, "1");
+  label.textContent = `${page} / ${pages}`;
+  holder.appendChild(label);
 
-  const nextLi = el("li", "pager-next");
-  const nextBtn = el("button", "btn-generic-right-sm");
-  nextBtn.type = "button";
-  nextBtn.title = "right";
-  if (page >= pages) nextBtn.disabled = true;
-  nextBtn.appendChild(el("span", "icon-right"));
-  nextBtn.addEventListener("click", () => {
-    if (currentPage >= pages) return;
-    currentPage += 1;
-    renderCurrentPage();
-  });
-  nextLi.appendChild(nextBtn);
+  holder.appendChild(
+    buildPagerIconButton("icon-filled-chevron-large-right", {
+      disabled: atEnd,
+      onClick: () => {
+        if (currentPage >= pages) return;
+        currentPage += 1;
+        renderCurrentPage();
+      },
+    }),
+  );
+  holder.appendChild(
+    buildPagerIconButton("icon-filled-chevron-large-right-to-line", {
+      disabled: atEnd,
+      onClick: () => {
+        if (currentPage >= pages) return;
+        currentPage = pages;
+        renderCurrentPage();
+      },
+    }),
+  );
 
-  ul.append(prevLi, curLi, nextLi);
-  holder.appendChild(ul);
   return holder;
 }
 

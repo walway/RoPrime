@@ -210,7 +210,7 @@ let applyPromise = null;
 let profileObserver = null;
 let watchTimer = null;
 
-function parseUserIdFromUrl(loc = window.location) {
+function parseUserIdFromUrl(loc = globalThis.location) {
   const match = (loc.pathname || "").match(
     /^\/(?:[a-z]{2,3}(?:-[a-z0-9]{2,8})?\/)?users\/(\d+)\/profile(?:\/|$)/i,
   );
@@ -420,7 +420,7 @@ function removeLegacyBadges() {
 
 function stopProfileWatch() {
   if (watchTimer != null) {
-    window.clearTimeout(watchTimer);
+    globalThis.clearTimeout(watchTimer);
     watchTimer = null;
   }
   profileObserver?.disconnect();
@@ -440,7 +440,7 @@ function startProfileWatch() {
       return;
     }
     if (watchTimer != null) return;
-    watchTimer = window.setTimeout(() => {
+    watchTimer = globalThis.setTimeout(() => {
       watchTimer = null;
       void applyLegacyBadges();
     }, 250);
@@ -523,8 +523,8 @@ function onRouteChange() {
 
 if (!globalThis.__roprimeLegacyBadgesInstalled) {
   globalThis.__roprimeLegacyBadgesInstalled = true;
-  window.addEventListener("roprime-location-change", onRouteChange);
-  window.addEventListener("popstate", onRouteChange);
+  globalThis.addEventListener("roprime-location-change", onRouteChange);
+  globalThis.addEventListener("popstate", onRouteChange);
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", onRouteChange, {
       once: true,

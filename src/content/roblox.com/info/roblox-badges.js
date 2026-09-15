@@ -138,7 +138,7 @@
 //	},
 //];
 //
-//function robloxBadgesUrlMatches(loc = window.location) {
+//function robloxBadgesUrlMatches(loc = globalThis.location) {
 //	return /\/info\/roblox-badges(?:\/|$|[?#])/i.test(loc.pathname || "");
 //}
 //
@@ -190,7 +190,7 @@
 // }
 //
 // function scrollToBadge() {
-// 	const hash = decodeURIComponent((window.location.hash || "").replace(/^#/, ""));
+// 	const hash = decodeURIComponent((globalThis.location.hash || "").replace(/^#/, ""));
 // 	if (!hash) return;
 // 	const badgeId = BADGE_IDS[hash.toLowerCase()];
 // 	if (!badgeId) return;
@@ -214,9 +214,9 @@
 //
 // if (!globalThis.isRobloxBadgesInfoPageInjected) {
 // 	globalThis.isRobloxBadgesInfoPageInjected = true;
-// 	window.addEventListener("roprime-location-change", onRouteChange);
-// 	window.addEventListener("popstate", onRouteChange);
-// 	window.addEventListener("hashchange", scrollToBadge);
+// 	globalThis.addEventListener("roprime-location-change", onRouteChange);
+// 	globalThis.addEventListener("popstate", onRouteChange);
+// 	globalThis.addEventListener("hashchange", scrollToBadge);
 // 	if (document.readyState === "loading") {
 // 		document.addEventListener("DOMContentLoaded", onRouteChange, {
 // 			once: true,

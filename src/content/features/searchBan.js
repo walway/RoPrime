@@ -25,7 +25,7 @@ const DISCOVER_ERROR_HTML = `
   </div>
   <button 
     type="button" 
-	onclick="window.location.href='https://roblox.com/home';"
+	onclick="globalThis.location.href='https://roblox.com/home';"
     data-testid="error-refresh-button" 
     class="foundation-web-button relative clip group/interactable focus-visible:outline-focus disabled:outline-none cursor-pointer relative flex items-center justify-center stroke-none padding-y-none select-none radius-medium text-label-medium height-1000 padding-x-medium bg-action-standard content-action-standard" 
     style="text-decoration: none;"
@@ -43,12 +43,12 @@ const DISCOVER_ERROR_HTML = `
 let domObserver = null;
 
 export function isDiscoverSearchPage() {
-  const path = window.location.pathname || "";
+  const path = globalThis.location.pathname || "";
   return /\/discover\/?$/i.test(path);
 }
 
 export function getDiscoverSearchKeyword() {
-  const params = new URLSearchParams(window.location.search);
+  const params = new URLSearchParams(globalThis.location.search);
   for (const key of ["Keyword", "keyword"]) {
     const value = params.get(key);
     if (value == null || value === "") continue;
@@ -225,8 +225,8 @@ export function installSearchBanObserver() {
     }
   };
 
-  window.addEventListener("roprime-location-change", onRoute);
-  window.addEventListener("popstate", onRoute);
+  globalThis.addEventListener("roprime-location-change", onRoute);
+  globalThis.addEventListener("popstate", onRoute);
 }
 
 import { registerFeature } from './registry.js';

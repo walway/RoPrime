@@ -468,14 +468,14 @@ export function saveSettings() {
 }
 
 export function isAccountPage() {
-  const path = window.location.pathname || "";
+  const path = globalThis.location.pathname || "";
   return /^\/(?:[a-z]{2,3}(?:-[a-z0-9]{2,8})?\/)?my\/(?:account|profile)(?:\/|$)/i.test(
     path,
   );
 }
 
 export function isMyAccountPath() {
-  const path = window.location.pathname || "";
+  const path = globalThis.location.pathname || "";
   return /^\/(?:[a-z]{2,3}(?:-[a-z0-9]{2,8})?\/)?my\/account(?:\/|$)/i.test(
     path,
   );
@@ -483,14 +483,14 @@ export function isMyAccountPath() {
 
 export function isNativeMyAccountHashRoute() {
   if (!isMyAccountPath()) return false;
-  const search = window.location.search || "";
+  const search = globalThis.location.search || "";
   if (search.length > 1) return false;
-  const hash = window.location.hash || "";
+  const hash = globalThis.location.hash || "";
   return hash === "" || hash === "#" || hash.startsWith("#!/");
 }
 
 export function getRobloxLocalePathPrefix() {
-  const path = window.location.pathname || "";
+  const path = globalThis.location.pathname || "";
   const m = path.match(/^\/([a-z]{2,3}(?:-[a-z0-9]{2,8})?)\/my\//i);
   return m ? `/${m[1]}` : "";
 }
@@ -501,7 +501,7 @@ export function buildRoPrimeSettingsFullUrl(
 ) {
   const slug =
     typeof page === "string" && page.trim() ? page.trim() : RP_DEFAULT_PAGE;
-  const base = `${window.location.origin}${getRobloxLocalePathPrefix()}/my/account?${RP_PARAM_KEY}=${encodeURIComponent(slug)}`;
+  const base = `${globalThis.location.origin}${getRobloxLocalePathPrefix()}/my/account?${RP_PARAM_KEY}=${encodeURIComponent(slug)}`;
   const h =
     typeof hashFragment === "string" && hashFragment.trim()
       ? hashFragment.trim().startsWith("#")
@@ -521,7 +521,7 @@ export function isOnRoPrimeSettingsPage() {
 
 export function getLegacyRoPrimePageFromUrl() {
   if (!isMyAccountPath()) return null;
-  const params = new URLSearchParams(window.location.search);
+  const params = new URLSearchParams(globalThis.location.search);
   if (params.has(RP_PARAM_KEY_NEW)) return null;
   const route = (params.get(RP_PARAM_KEY) || "").toLowerCase();
   return RP_SUPPORTED_PAGES.has(route) ? route : null;
@@ -529,7 +529,7 @@ export function getLegacyRoPrimePageFromUrl() {
 
 export function isForeignAccountPluginRoute() {
   if (!isAccountPage()) return false;
-  const params = new URLSearchParams(window.location.search);
+  const params = new URLSearchParams(globalThis.location.search);
   if (params.has(RP_PARAM_KEY_NEW)) return !isPluginRoute();
   if (params.has(RP_PARAM_KEY)) {
     const route = (params.get(RP_PARAM_KEY) || "").toLowerCase();
@@ -545,23 +545,23 @@ export function shouldRunRoPrimeOnCurrentPage() {
       return false;
     }
 
-    const host = window.location.hostname.toLowerCase();
+    const host = globalThis.location.hostname.toLowerCase();
     return host === "www.roblox.com" || host === "roblox.com";
   } catch {
     return false;
   }
 }
 
-export function isSupportPage(loc = window.location) {
+export function isSupportPage(loc = globalThis.location) {
   const path = loc.pathname || "";
   return /^\/(?:[a-z]{2,3}(?:-[a-z0-9]{2,8})?\/)?support(?:\/|$)/i.test(path);
 }
 
-export function isUserProfilePage(loc = window.location) {
+export function isUserProfilePage(loc = globalThis.location) {
   return parseUserProfileIdFromLocation(loc) != null;
 }
 
-export function parseUserProfileIdFromLocation(loc = window.location) {
+export function parseUserProfileIdFromLocation(loc = globalThis.location) {
   const path = loc.pathname || "";
   const match = path.match(
     /^\/(?:[a-z]{2,3}(?:-[a-z0-9]{2,8})?\/)?users\/(\d+)\/profile(?:\/|$)/i,
@@ -571,7 +571,7 @@ export function parseUserProfileIdFromLocation(loc = window.location) {
   return Number.isFinite(userId) && userId > 0 ? userId : null;
 }
 
-export function shouldApplySidebarModifications(loc = window.location) {
+export function shouldApplySidebarModifications(loc = globalThis.location) {
   return shouldRunRoPrimeOnCurrentPage() && !isSupportPage(loc);
 }
 
@@ -583,7 +583,7 @@ export function getSidebarMainMarginPx() {
 
 export function getCurrentrp() {
   if (!isMyAccountPath()) return null;
-  const params = new URLSearchParams(window.location.search);
+  const params = new URLSearchParams(globalThis.location.search);
   const route = (
     params.get(RP_PARAM_KEY) ||
     params.get(RP_PARAM_KEY_NEW) ||
@@ -595,7 +595,7 @@ export function getCurrentrp() {
 }
 
 export function buildPluginUrl(page = RP_DEFAULT_PAGE) {
-  const url = new URL(window.location.href);
+  const url = new URL(globalThis.location.href);
   url.searchParams.delete(RP_PARAM_KEY_NEW);
   url.searchParams.set(RP_PARAM_KEY, page);
   return `${url.pathname}${url.search}${url.hash || ""}`;

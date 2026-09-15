@@ -234,8 +234,8 @@ export function installProfileRedesignObserver() {
     syncObserverForRoute();
   };
 
-  window.addEventListener("roprime-location-change", onRoute);
-  window.addEventListener("popstate", onRoute);
+  globalThis.addEventListener("roprime-location-change", onRoute);
+  globalThis.addEventListener("popstate", onRoute);
 
   if (document.body) syncObserverForRoute();
   else {

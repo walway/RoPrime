@@ -398,7 +398,7 @@ export function showVersionUpdateOverlay({
         void (async () => {
           const url = getDownloadUrl(config, selectedSource);
           if (!url) return;
-          window.open(url, "_blank", "noopener,noreferrer");
+          globalThis.open(url, "_blank", "noopener,noreferrer");
           const removedSelf = await resolveDuplicateRoPrimeBeforeDownload();
           if (!removedSelf) close(true);
         })();

@@ -208,8 +208,8 @@ function onDelegatedRoPrimeDropdownClick(ev) {
   ev.preventDefault();
   ev.stopPropagation();
   const settingsUrl = buildRoPrimeSettingsFullUrl();
-  if (isOnRoPrimeSettingsPage()) window.location.reload();
-  else window.location.assign(settingsUrl);
+  if (isOnRoPrimeSettingsPage()) globalThis.location.reload();
+  else globalThis.location.assign(settingsUrl);
 }
 
 function removeRobloxDropdownEntries() {

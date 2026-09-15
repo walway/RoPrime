@@ -665,8 +665,8 @@ export function syncSidebarCollapseMenuIcon() {
 }
 
 function queueSidebarNavResync() {
-  window.clearTimeout(sidebarNavDebounce);
-  sidebarNavDebounce = window.setTimeout(() => {
+  globalThis.clearTimeout(sidebarNavDebounce);
+  sidebarNavDebounce = globalThis.setTimeout(() => {
     sidebarNavDebounce = 0;
     syncSidebarContent({ force: true });
   }, 120);

@@ -44,7 +44,7 @@ export function attachMuiRipple(button) {
       container.appendChild(wave);
       const remove = () => wave.remove();
       wave.addEventListener("animationend", remove, { once: true });
-      window.setTimeout(remove, 700);
+      globalThis.setTimeout(remove, 700);
     },
     { passive: true },
   );
