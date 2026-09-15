@@ -49,6 +49,19 @@ const PROFILE_REDESIGN_CSS = `
   overflow: hidden;
   position: relative;
 }
+
+@media (max-width: 991px) {
+  .roprime-profile-tab-layout {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .roprime-profile-avatar-preview {
+    width: 100%;
+    max-width: 100%;
+    flex: 1 1 auto;
+  }
+}
 `;
 
 let observer = null;

@@ -173,11 +173,7 @@ function unitsAvailable(detail) {
   return null;
 }
 
-/**
- * Mirrors Roblox Catalog.js: use Best Price (resale) when sold out, when
- * resale is cheaper than Original Price, or ExperiencesDevApiOnly with resellers.
- * Otherwise use Original Price while quantity remains.
- */
+/* Catalog.js */
 function shouldUseResalePrice(detail) {
   if (!detail) return false;
 
@@ -207,6 +203,7 @@ function shouldUseResalePrice(detail) {
     return true;
   }
 
+  // Limited / Limited Unique
   const tokens = restrictionTokens(detail);
   if (
     (tokens.has("limited") || tokens.has("limitedunique")) &&
@@ -222,8 +219,10 @@ function shouldUseResalePrice(detail) {
 function itemPriceValue(detail) {
   if (!detail) return null;
 
+  // Free
   if (isFreeStatus(detail)) return 0;
 
+  // Off Sale / No Resellers
   if (isOffSaleStatus(detail) && !shouldUseResalePrice(detail)) {
     return null;
   }
@@ -538,9 +537,6 @@ function bundlePriceStatus(bundle) {
   return null;
 }
 
-/**
- * Map assetId -> synthetic detail used only for pricing (bundle original/best price).
- */
 async function fetchBundlePriceDetailsByAssetId(assetIds) {
   /** @type {Map<number, any>} */
   const byAssetId = new Map();
@@ -723,7 +719,7 @@ function buildCreatorRow(detail) {
   return creator;
 }
 
-function buildPriceRow(detail) {
+function buildPriceRow(detail, { fromBundle = false } = {}) {
   const priceRow = el(
     "div",
     "text-overflow item-card-price font-header-2 text-subheader margin-top-none",
@@ -748,11 +744,15 @@ function buildPriceRow(detail) {
   if (typeof price === "number" && price > 0) {
     priceRow.appendChild(el("span", "icon-robux-16x16"));
     const amount = el("span", "text-robux-tile");
-    amount.textContent = formatRobuxAmount(price);
+    // Add * when item is from the bundle
+    amount.textContent = fromBundle
+      ? `${formatRobuxAmount(price)}*`
+      : formatRobuxAmount(price);
     priceRow.appendChild(amount);
     return priceRow;
   }
 
+  // Off Sale / No Resellers / In the inventory
   if (isOffSaleStatus(detail) || normalizedStatus === "noresellers") {
     const label = el("span", "text-label");
     const status = el("span", "text-overflow font-caption-body");
@@ -809,8 +809,9 @@ function buildItemCard(asset, imageUrl, detail, bundleDetail = null) {
   container.appendChild(link);
   container.appendChild(buildCreatorRow(detail));
 
+  const fromBundle = Boolean(bundleDetail);
   const priceSource = bundleDetail || detail;
-  const priceRow = buildPriceRow(priceSource);
+  const priceRow = buildPriceRow(priceSource, { fromBundle });
   if (priceRow) container.appendChild(priceRow);
 
   li.appendChild(container);

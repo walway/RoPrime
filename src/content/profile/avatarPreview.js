@@ -23,6 +23,8 @@ let currentViewMode = "3d";
 let renderSeq = 0;
 /** @type {{ close: () => void } | null} */
 let activeLoader = null;
+/** @type {ResizeObserver | null} */
+let hostResizeObserver = null;
 
 const AVATAR_DETAILS_URL = "https://avatar.roblox.com/v2/avatar/users";
 const AVATAR_MODEL_URL = "https://avatar.roblox.com/v4/avatar/users";
@@ -685,7 +687,8 @@ async function fetchAvatarRenderData(userId) {
 }
 
 async function ensureRenderer(host) {
-  const width = Math.max(320, host.clientWidth || 420);
+  const measured = host.clientWidth || 0;
+  const width = measured > 0 ? measured : 320;
   const rendererElement = RBXRenderer.getRendererElement();
   if (rendererReady) {
     RBXRenderer.setRendererSize(width, PREVIEW_HEIGHT);
@@ -696,6 +699,7 @@ async function ensureRenderer(host) {
     ) {
       host.appendChild(rendererElement);
     }
+    observeHostResize(host);
     return true;
   }
 
@@ -718,7 +722,34 @@ async function ensureRenderer(host) {
   RBXRenderer.setBackgroundTransparent(true);
   host.appendChild(RBXRenderer.getRendererElement());
   rendererReady = true;
+  observeHostResize(host);
   return true;
+}
+
+function syncRendererSizeToHost(host) {
+  if (!rendererReady || !(host instanceof HTMLElement)) return;
+  const width = Math.max(1, host.clientWidth || 0);
+  if (width < 1) return;
+  try {
+    RBXRenderer.setRendererSize(width, PREVIEW_HEIGHT);
+  } catch {}
+}
+
+function observeHostResize(host) {
+  if (!(host instanceof HTMLElement)) return;
+  if (typeof ResizeObserver === "undefined") return;
+
+  if (hostResizeObserver) {
+    hostResizeObserver.disconnect();
+    hostResizeObserver = null;
+  }
+
+  hostResizeObserver = new ResizeObserver(() => {
+    syncRendererSizeToHost(host);
+  });
+  hostResizeObserver.observe(host);
+  // Catch layout that settles after mount (e.g. mobile full-bleed).
+  syncRendererSizeToHost(host);
 }
 
 function destroyCurrentOutfitRenderer() {
@@ -743,8 +774,10 @@ function stylePreviewHost(host) {
   host.className =
     "roprime-profile-avatar-preview profile-avatar-background-empty-state";
   host.style.position = "relative";
-  host.style.width = "50%";
-  host.style.maxWidth = "50%";
+  // Width is CSS-driven (50% desktop / 100% mobile) so the 3D renderer can
+  // fill to the right edge on narrow viewports.
+  host.style.removeProperty("width");
+  host.style.removeProperty("max-width");
   host.style.height = `${PREVIEW_HEIGHT}px`;
   host.style.minHeight = `${PREVIEW_HEIGHT}px`;
   host.style.marginBottom = "24px";
@@ -801,6 +834,10 @@ export async function mountAvatarPreview(host, userId) {
 
 export async function unmountAvatarPreview() {
   clearLoadingIndicators();
+  if (hostResizeObserver) {
+    hostResizeObserver.disconnect();
+    hostResizeObserver = null;
+  }
   currentHost = null;
   currentUserId = 0;
   currentAvatarSource = null;

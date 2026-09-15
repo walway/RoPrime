@@ -91,7 +91,6 @@ const FRIEND_STYLING_REIMAGNED_CSS = `
 
 const GLOW_TILE_SELECTOR = ".friends-carousel-tile";
 const FRIEND_CAROUSEL_SELECTOR = ".friend-carousel-container";
-const FRIENDS_PANEL_ID = "roprime-friends-reimagined-panel";
 const GLOW_PRESENCE_CLASSES = [
   "rologic-presence-offline",
   "rologic-presence-online",

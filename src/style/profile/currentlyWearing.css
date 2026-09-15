@@ -12,6 +12,17 @@
   .roprime-profile-wearing-cards {
     display: none !important;
   }
+
+  .roprime-profile-tab-layout {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .roprime-profile-avatar-preview {
+    width: 100% !important;
+    max-width: 100% !important;
+    flex: 1 1 auto !important;
+  }
 }
 
 .roprime-profile-wearing-cards {

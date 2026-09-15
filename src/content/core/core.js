@@ -215,7 +215,6 @@ export async function reloadSettingsUiStrings() {
   return loadSettingsUiStrings();
 }
 
-/** Resolve a dotted locale key. Missing translations return the key path. */
 export function settingsT(key) {
   if (typeof key !== "string" || !key) return "";
   const v = lookupDotPath(settingsUiTree, key);
