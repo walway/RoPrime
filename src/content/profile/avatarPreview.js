@@ -9,7 +9,6 @@ import {
   OutfitRenderer,
   RBXRenderer,
 } from "roavatar-renderer";
-import { isRobloxAuthenticated } from "./robloxUserId.js";
 
 let rendererReady = false;
 let currentOutfitRenderer = null;

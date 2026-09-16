@@ -3,6 +3,7 @@ let dropdownIdCounter = 0;
 const ROPRIME_FOCUS_GUARD_ATTR = "data-roprime-focus-guard";
 const ROPRIME_ARIA_HIDDEN_ATTR = "data-roprime-aria-hidden";
 const ROPRIME_BODY_POINTER_ATTR = "data-roprime-dropdown-body-pointer";
+const ROPRIME_DROPDOWN_STYLE_ID = "roprime-dropdown-foundation-style";
 
 const PAGE_INERT_SELECTORS = [
   "#image-retry-data",
@@ -18,6 +19,38 @@ const PAGE_INERT_SELECTORS = [
   "#downloadInstallerIFrame",
   "#modal-confirmation",
 ];
+
+const DROPDOWN_FOUNDATION_CSS = `
+/* While the select is open, kill focus/focus-within emphasis on the trigger. */
+.foundation-web-input.stroke-contrast-alpha[data-state="open"],
+.foundation-web-input.stroke-contrast-alpha[data-state="open"]:focus,
+.foundation-web-input.stroke-contrast-alpha[data-state="open"]:focus-within,
+.foundation-web-input.stroke-system-emphasis[data-state="open"],
+.foundation-web-input.stroke-system-emphasis[data-state="open"]:focus,
+.foundation-web-input.stroke-system-emphasis[data-state="open"]:focus-within {
+  border-color: var(--color-stroke-contrast-alpha) !important;
+  box-shadow: none !important;
+}
+.roprime-dropdown-popper {
+  will-change: transform;
+}
+.roprime-dropdown-popper [data-radix-select-viewport] {
+  overflow: hidden auto;
+  overscroll-behavior: contain;
+}
+`.trim();
+
+function ensureDropdownFoundationStyle() {
+  let style = document.getElementById(ROPRIME_DROPDOWN_STYLE_ID);
+  if (!(style instanceof HTMLStyleElement)) {
+    style = document.createElement("style");
+    style.id = ROPRIME_DROPDOWN_STYLE_ID;
+    (document.head || document.documentElement).appendChild(style);
+  }
+  if (style.textContent !== DROPDOWN_FOUNDATION_CSS) {
+    style.textContent = DROPDOWN_FOUNDATION_CSS;
+  }
+}
 
 function createElement(tag, className) {
   const node = document.createElement(tag);
@@ -169,14 +202,49 @@ function findOptionLabel(options, value) {
   return match?.label || options[0]?.label || "";
 }
 
+function getViewportMetrics() {
+  const vv = globalThis.visualViewport;
+  if (vv) {
+    return {
+      width: vv.width,
+      height: vv.height,
+      offsetLeft: vv.offsetLeft || 0,
+      offsetTop: vv.offsetTop || 0,
+      scale: vv.scale || 1,
+    };
+  }
+  return {
+    width: globalThis.innerWidth,
+    height: globalThis.innerHeight,
+    offsetLeft: 0,
+    offsetTop: 0,
+    scale: 1,
+  };
+}
+
 function positionPopper(popper, trigger, { popperZIndex = "1050" } = {}) {
   if (!(popper instanceof HTMLElement) || !(trigger instanceof HTMLElement)) {
     return;
   }
 
+  const viewport = getViewportMetrics();
   const rect = trigger.getBoundingClientRect();
   const width = Math.max(rect.width, 180);
-  const left = Math.max(8, Math.min(rect.left, globalThis.innerWidth - width - 8));
+  const maxLeft = viewport.offsetLeft + viewport.width - width - 8;
+  const left = Math.max(
+    viewport.offsetLeft + 8,
+    Math.min(rect.left, maxLeft),
+  );
+  const gap = 4;
+  const edgePad = 8;
+  const spaceBelow = Math.max(
+    0,
+    viewport.offsetTop + viewport.height - rect.bottom - gap - edgePad,
+  );
+  const spaceAbove = Math.max(0, rect.top - viewport.offsetTop - gap - edgePad);
+
+  const listbox = popper.querySelector('[role="listbox"]');
+  const menuViewport = popper.querySelector("[data-radix-select-viewport]");
 
   popper.style.position = "fixed";
   popper.style.left = "0px";
@@ -184,8 +252,34 @@ function positionPopper(popper, trigger, { popperZIndex = "1050" } = {}) {
   popper.style.minWidth = "max-content";
   popper.style.width = `${width}px`;
   popper.style.zIndex = String(popperZIndex);
+  popper.style.maxHeight = "";
   popper.style.setProperty("--radix-popper-anchor-width", `${width}px`);
   popper.style.setProperty("--radix-popper-anchor-height", `${rect.height}px`);
+  popper.style.setProperty(
+    "--radix-popper-available-width",
+    `${Math.max(0, viewport.width)}px`,
+  );
+
+  const openBelow = spaceBelow >= spaceAbove;
+  const available = Math.max(120, openBelow ? spaceBelow : spaceAbove);
+  popper.style.setProperty(
+    "--radix-popper-available-height",
+    `${available}px`,
+  );
+  popper.style.setProperty(
+    "--radix-select-content-available-height",
+    `${available}px`,
+  );
+
+  if (listbox instanceof HTMLElement) {
+    listbox.style.maxHeight = `${available}px`;
+    listbox.setAttribute("data-side", openBelow ? "bottom" : "top");
+    listbox.setAttribute("data-align", "start");
+  }
+  if (menuViewport instanceof HTMLElement) {
+    menuViewport.style.maxHeight = `${available}px`;
+    menuViewport.style.overflow = "hidden auto";
+  }
 
   const wasHidden = popper.hidden;
   popper.hidden = false;
@@ -196,14 +290,11 @@ function positionPopper(popper, trigger, { popperZIndex = "1050" } = {}) {
   popper.style.pointerEvents = "";
   if (wasHidden) popper.hidden = true;
 
-  const spaceBelow = globalThis.innerHeight - rect.bottom;
-  const openBelow =
-    spaceBelow >= popperHeight + 8 || rect.top < popperHeight + 8;
   const top = openBelow
-    ? rect.bottom + 4
-    : Math.max(8, rect.top - popperHeight - 4);
+    ? rect.bottom + gap
+    : Math.max(viewport.offsetTop + edgePad, rect.top - popperHeight - gap);
 
-  popper.style.transform = `translate(${left}px, ${top}px)`;
+  popper.style.transform = `translate3d(${Math.round(left)}px, ${Math.round(top)}px, 0)`;
 }
 
 function createMenuItemButton(label) {
@@ -463,7 +554,9 @@ export function createDropdown({
     listbox.setAttribute("data-state", open ? "open" : "closed");
     popper.hidden = !open;
     if (open) {
+      ensureDropdownFoundationStyle();
       root.setAttribute("data-roprime-dropdown-open", "1");
+      trigger.blur();
       blurActiveElementOutside(root, popper);
       ensureFocusGuards(root, popper);
       applyPageInertState();
@@ -480,6 +573,13 @@ export function createDropdown({
       clearHighlight();
       clearPageInertState();
       removeFocusGuardsIfIdle();
+      const active = document.activeElement;
+      if (
+        active instanceof HTMLElement &&
+        (active === trigger || root.contains(active) || popper.contains(active))
+      ) {
+        active.blur();
+      }
     }
   };
 
@@ -621,9 +721,24 @@ export function createDropdown({
     close();
   };
 
-  const onWindowChange = () => {
+  let positionFrame = 0;
+  const schedulePosition = () => {
     if (!state.open) return;
-    positionPopper(popper, trigger, { popperZIndex });
+    if (positionFrame) return;
+    positionFrame = requestAnimationFrame(() => {
+      positionFrame = 0;
+      if (!state.open) return;
+      positionPopper(popper, trigger, { popperZIndex });
+    });
+  };
+
+  const onViewportMove = () => {
+    schedulePosition();
+  };
+
+  const onWindowResize = () => {
+    if (!state.open) return;
+    close();
   };
 
   const onWindowBlur = () => {
@@ -640,8 +755,18 @@ export function createDropdown({
     if (!state.open) return;
     if (!(event.target instanceof Node)) return;
     if (root.contains(event.target) || popper.contains(event.target)) return;
-    // Match Roblox/Radix focus-within dismissal when focus leaves the dropdown.
     close();
+  };
+
+  const onZoomBlock = (event) => {
+    if (!state.open) return;
+    if (event.type === "wheel" && event.ctrlKey) {
+      event.preventDefault();
+      return;
+    }
+    if (event.type === "gesturestart" || event.type === "gesturechange") {
+      event.preventDefault();
+    }
   };
 
   const onTriggerKeyDown = (event) => {
@@ -697,7 +822,6 @@ export function createDropdown({
     if (event.key === "Escape") {
       event.preventDefault();
       close();
-      trigger.focus();
     }
   };
 
@@ -710,10 +834,28 @@ export function createDropdown({
   popper.addEventListener("keydown", onPopperKeyDown);
   document.addEventListener("pointerdown", onDocumentPointerDown, true);
   document.addEventListener("focusin", onFocusIn, true);
-  globalThis.addEventListener("resize", onWindowChange);
-  globalThis.addEventListener("scroll", onWindowChange, true);
+  globalThis.addEventListener("resize", onWindowResize);
+  globalThis.addEventListener("scroll", onViewportMove, true);
   globalThis.addEventListener("blur", onWindowBlur);
   document.addEventListener("visibilitychange", onVisibilityChange);
+  document.addEventListener("wheel", onZoomBlock, {
+    capture: true,
+    passive: false,
+  });
+  document.addEventListener("gesturestart", onZoomBlock, {
+    capture: true,
+    passive: false,
+  });
+  document.addEventListener("gesturechange", onZoomBlock, {
+    capture: true,
+    passive: false,
+  });
+
+  const visualViewport = globalThis.visualViewport;
+  if (visualViewport) {
+    visualViewport.addEventListener("resize", onViewportMove);
+    visualViewport.addEventListener("scroll", onViewportMove);
+  }
 
   renderOptions();
 
@@ -739,10 +881,21 @@ export function createDropdown({
       close();
       document.removeEventListener("pointerdown", onDocumentPointerDown, true);
       document.removeEventListener("focusin", onFocusIn, true);
-      globalThis.removeEventListener("resize", onWindowChange);
-      globalThis.removeEventListener("scroll", onWindowChange, true);
+      globalThis.removeEventListener("resize", onWindowResize);
+      globalThis.removeEventListener("scroll", onViewportMove, true);
       globalThis.removeEventListener("blur", onWindowBlur);
       document.removeEventListener("visibilitychange", onVisibilityChange);
+      document.removeEventListener("wheel", onZoomBlock, true);
+      document.removeEventListener("gesturestart", onZoomBlock, true);
+      document.removeEventListener("gesturechange", onZoomBlock, true);
+      if (visualViewport) {
+        visualViewport.removeEventListener("resize", onViewportMove);
+        visualViewport.removeEventListener("scroll", onViewportMove);
+      }
+      if (positionFrame) {
+        cancelAnimationFrame(positionFrame);
+        positionFrame = 0;
+      }
       popper.remove();
       root.remove();
     },

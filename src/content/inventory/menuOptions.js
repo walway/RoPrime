@@ -19,8 +19,12 @@ function normalizeHref(value) {
 }
 
 export function isInventoryPage() {
-  const path = globalThis.location.pathname || "";
-  return /^\/(?:[a-z]{2}(?:-[a-z]{2})?\/)?users\/inventory\/?$/i.test(path);
+  const loc = globalThis.location;
+  if (!loc) return false;
+  
+  const fullPath = (loc.pathname || "") + (loc.hash || "");
+
+  return /^\/(?:[a-z]{2}(?:-[a-z]{2})?\/)?users\/\d+\/(?:inventory|favorites)/i.test(fullPath);
 }
 
 function currentHash() {

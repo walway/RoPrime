@@ -9,6 +9,7 @@
 @import "./layout/chrome.css";
 @import "./welcome/welcome.css";
 @import "./navigation/old-nav.css";
+@import "./navigation/sidebar.css";
 @import "./profile/cosmetics-shop.css";
 @import "./profile/page-effects.css";
 @import "./profile/carousel-effects.css";
