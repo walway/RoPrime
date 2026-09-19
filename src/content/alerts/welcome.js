@@ -131,7 +131,7 @@ function setPopoverOpen(popover, open) {
   if (popover.id) {
     /* ignore */
   }
-  popover.style.display = open ? "block" : "none";
+  popover.style.display = open ? "block" : "block";
 }
 
 function closeAllPreviewPopovers(preview, except = null) {
@@ -186,9 +186,9 @@ function buildWelcomeMarkup(verityUrl) {
                         </button>
                         <div id="notification-stream-popover" class="${POPOVER_BASE_CLASS}" data-roprime-welcome-popover="notifications" role="tooltip" style="display:none; top:38px; left:20px;">
                           <div class="arrow"></div>
-                          <div class="popover-content" style="margin-right:-60px;">
-                            <div class="notification-stream-base new-notification-stream-2022">
-                              <div class="notification-content-view" style="width:360px; height:270px;">
+                          <div class="popover-content">
+                            <div class="new-notification-stream-2022">
+                              <div class="notification-content-view">
                                 <div class="notification-stream-header">
                                   <span class="text-label font-caption-header">Notifications</span>
                                 </div>
