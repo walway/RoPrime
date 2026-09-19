@@ -314,28 +314,31 @@ let lockedScrollY = 0;
 function lockPageScroll() {
   scrollLockCount += 1;
   if (scrollLockCount > 1) return;
-  lockedScrollY = globalThis.scrollY || 0;
+  lockedScrollY = globalThis.scrollY || document.documentElement.scrollTop || 0;
+  const html = document.documentElement;
   const body = document.body;
   if (!(body instanceof HTMLElement)) return;
+  const scrollbarGap = Math.max(
+    0,
+    globalThis.innerWidth - html.clientWidth,
+  );
+  // Overflow-only lock — avoid position:fixed (that jumps the footer).
+  html.style.overflow = "hidden";
   body.style.overflow = "hidden";
-  body.style.position = "fixed";
-  body.style.top = `-${lockedScrollY}px`;
-  body.style.left = "0";
-  body.style.right = "0";
-  body.style.width = "100%";
+  if (scrollbarGap > 0) {
+    body.style.paddingRight = `${scrollbarGap}px`;
+  }
 }
 
 function unlockPageScroll() {
   scrollLockCount = Math.max(0, scrollLockCount - 1);
   if (scrollLockCount > 0) return;
+  const html = document.documentElement;
   const body = document.body;
   if (!(body instanceof HTMLElement)) return;
+  html.style.removeProperty("overflow");
   body.style.removeProperty("overflow");
-  body.style.removeProperty("position");
-  body.style.removeProperty("top");
-  body.style.removeProperty("left");
-  body.style.removeProperty("right");
-  body.style.removeProperty("width");
+  body.style.removeProperty("padding-right");
   globalThis.scrollTo(0, lockedScrollY);
 }
 

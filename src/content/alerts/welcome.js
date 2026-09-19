@@ -4,11 +4,14 @@ import {
   getStorageApi,
   isExtensionContextInvalidatedError,
 } from "../core/core.js";
+import { getRobloxUserId } from "../profile/robloxUserId.js";
 
 export const RP_HOME_WELCOME_DISMISSED_KEY = "rpHomeWelcomeDismissed";
 
 const WELCOME_ROOT_ID = "roprime-home-welcome-root";
 const CURRENCY_API = "https://economy.roblox.com/v1/user/currency";
+const HEADSHOT_API = "https://thumbnails.roblox.com/v1/users/avatar-headshot";
+const USER_API = "https://users.roblox.com/v1/users";
 const POPOVER_BASE_CLASS =
   "fade popover bottom roprime-welcome-preview-popover";
 const POPOVER_OPEN_CLASS =
@@ -102,13 +105,78 @@ function parseAgeBracketFromPage() {
       label.querySelector(".age-bracket-label-username")?.textContent || "",
     ).trim();
     const img = label.querySelector(
-      ".thumbnail-2d-container.avatar-card-image img, img",
+      ".thumbnail-2d-container.avatar-card-image img, .avatar-card-image img, img",
     );
-    const headshot =
-      img instanceof HTMLImageElement ? String(img.currentSrc || img.src || "").trim() : "";
+    let headshot = "";
+    if (img instanceof HTMLImageElement) {
+      headshot = String(img.currentSrc || img.src || "").trim();
+      if (!headshot || headshot.startsWith("data:")) headshot = "";
+    }
     if (name || headshot) return { name, headshot };
   }
   return { name: "", headshot: "" };
+}
+
+function waitForAgeBracket(timeoutMs = 8000) {
+  const existing = parseAgeBracketFromPage();
+  if (existing.name || existing.headshot) return Promise.resolve(existing);
+
+  return new Promise((resolve) => {
+    let done = false;
+    const finish = (value) => {
+      if (done) return;
+      done = true;
+      observer.disconnect();
+      globalThis.clearTimeout(timer);
+      resolve(value);
+    };
+
+    const observer = new MutationObserver(() => {
+      const next = parseAgeBracketFromPage();
+      if (next.name || next.headshot) finish(next);
+    });
+    observer.observe(document.documentElement, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+      attributeFilter: ["src", "class"],
+    });
+
+    const timer = globalThis.setTimeout(() => {
+      finish(parseAgeBracketFromPage());
+    }, timeoutMs);
+  });
+}
+
+async function fetchProfileFromApi() {
+  const userId = await getRobloxUserId();
+  if (!userId) return { name: "", headshot: "" };
+  let name = "";
+  let headshot = "";
+  try {
+    const userRes = await fetch(`${USER_API}/${userId}`, {
+      credentials: "include",
+    });
+    if (userRes.ok) {
+      const data = await userRes.json();
+      name = String(data?.displayName || data?.name || "").trim();
+    }
+  } catch {
+    /* ignore */
+  }
+  try {
+    const thumbRes = await fetch(
+      `${HEADSHOT_API}?userIds=${encodeURIComponent(String(userId))}&size=150x150&format=Png&isCircular=false`,
+      { credentials: "include" },
+    );
+    if (thumbRes.ok) {
+      const data = await thumbRes.json();
+      headshot = String(data?.data?.[0]?.imageUrl || "").trim();
+    }
+  } catch {
+    /* ignore */
+  }
+  return { name, headshot };
 }
 
 async function fetchRobuxBalance() {
@@ -131,7 +199,7 @@ function setPopoverOpen(popover, open) {
   if (popover.id) {
     /* ignore */
   }
-  popover.style.display = open ? "block" : "block";
+  popover.style.display = open ? "block" : "none";
 }
 
 function closeAllPreviewPopovers(preview, except = null) {
@@ -312,42 +380,59 @@ function wireWelcomePreview(root) {
 function applyAvatar(wrap, headshot, name) {
   if (!(wrap instanceof HTMLElement)) return;
   wrap.textContent = "";
+  wrap.classList.add("thumbnail-2d-container", "avatar-card-image");
   if (!headshot) {
     wrap.classList.add("shimmer");
     return;
   }
+
+  wrap.classList.add("shimmer");
   const img = document.createElement("img");
   img.alt = name || "";
-  img.className = "";
-  wrap.classList.add("shimmer");
-  img.addEventListener(
-    "load",
-    () => {
-      wrap.classList.remove("shimmer");
-    },
-    { once: true },
-  );
-  img.addEventListener(
-    "error",
-    () => {
-      wrap.classList.remove("shimmer");
-    },
-    { once: true },
-  );
+  img.decoding = "async";
+  const reveal = () => {
+    wrap.classList.remove("shimmer");
+  };
+  img.addEventListener("load", reveal, { once: true });
+  img.addEventListener("error", reveal, { once: true });
+  // If cached, load may have already fired before listeners.
   img.src = headshot;
   wrap.appendChild(img);
+  if (img.complete && img.naturalWidth > 0) reveal();
 }
 
 async function hydrateWelcomePreview(root) {
-  const fromPage = parseAgeBracketFromPage();
-  const name = fromPage.name || "";
-  const headshot = fromPage.headshot || "";
+  const avatarWrap = root.querySelector("[data-roprime-welcome-avatar-wrap]");
+  if (avatarWrap instanceof HTMLElement) {
+    avatarWrap.classList.add(
+      "thumbnail-2d-container",
+      "shimmer",
+      "avatar-card-image",
+    );
+    avatarWrap.textContent = "";
+  }
+
+  let fromPage = await waitForAgeBracket(6000);
+  let name = fromPage.name || "";
+  let headshot = fromPage.headshot || "";
+
+  if (!name || !headshot) {
+    const fromApi = await fetchProfileFromApi();
+    name = name || fromApi.name;
+    headshot = headshot || fromApi.headshot;
+  }
+
+  // Age-bracket img can appear after the username — one more pass.
+  if (!headshot) {
+    fromPage = parseAgeBracketFromPage();
+    headshot = fromPage.headshot || headshot;
+    name = name || fromPage.name;
+  }
 
   for (const node of root.querySelectorAll("[data-roprime-welcome-name]")) {
     node.textContent = name;
   }
 
-  const avatarWrap = root.querySelector("[data-roprime-welcome-avatar-wrap]");
   applyAvatar(avatarWrap, headshot, name);
 
   const robuxItem = root.querySelector("[data-roprime-welcome-robux-item]");

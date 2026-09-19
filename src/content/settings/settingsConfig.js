@@ -1,7 +1,6 @@
-/**
- * Use { type: "separator" } inside a card's items to add a separator.
- * Use { type: "navDivider" } to add a divider in the vertical menu.
- */
+
+// Use { type: "separator" } inside a card's items to add a separator
+// Use { type: "navDivider" } to add a divider in the vertical menu
 
 export const SETTINGS_CONFIG = {
   info: {
@@ -281,7 +280,6 @@ function walkConfigItems(items, visit) {
   }
 }
 
-/** Export byDefault values (including toggles nested under cards). */
 export function collectToggleDefaults() {
   const defaults = {};
   for (const page of Object.values(SETTINGS_CONFIG)) {
@@ -295,7 +293,6 @@ export function collectToggleDefaults() {
   return defaults;
 }
 
-/** Page keys from SETTINGS_CONFIG plus non-nav routes (e.g. sidebar-content). */
 export function collectSupportedPages(extra = ["sidebar-content"]) {
   const pages = new Set(
     (Array.isArray(extra) ? extra : []).filter((key) => typeof key === "string"),

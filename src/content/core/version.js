@@ -113,7 +113,12 @@ export function getDownloadUrl(config = {}, source = "") {
 }
 
 async function fetchJson(url) {
-  const response = await fetch(url, { cache: "no-store" });
+  const bust = `t=${Date.now()}`;
+  const joined = url.includes("?") ? `${url}&${bust}` : `${url}?${bust}`;
+  const response = await fetch(joined, {
+    cache: "no-store",
+    headers: { "Cache-Control": "no-cache", Pragma: "no-cache" },
+  });
   if (!response.ok) {
     throw new Error(`version_manifest_fetch_failed:${response.status}`);
   }
@@ -229,8 +234,20 @@ export async function shouldShowVersionUpdate({
     return { show: false, manifest: resolvedManifest, currentVersion };
   }
 
+  // Same major.minor.patch string equality guard (avoids stale CDN oddities).
+  if (
+    String(resolvedManifest.version).trim() ===
+    String(currentVersion).trim()
+  ) {
+    return { show: false, manifest: resolvedManifest, currentVersion };
+  }
+
   const dismissedVersion = await readDismissedVersion();
-  if (dismissedVersion && dismissedVersion === resolvedManifest.version) {
+  if (
+    dismissedVersion &&
+    (dismissedVersion === resolvedManifest.version ||
+      compareVersions(dismissedVersion, resolvedManifest.version) >= 0)
+  ) {
     return { show: false, manifest: resolvedManifest, currentVersion };
   }
 
