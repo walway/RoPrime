@@ -1,5 +1,8 @@
 import { langList } from "../../i18n/i18n-config.js";
-import { collectToggleDefaults } from "../settings/settingsConfig.js";
+import {
+  collectSupportedPages,
+  collectToggleDefaults,
+} from "../settings/settingsConfig.js";
 import { SIDEBAR_FULL_RESERVED_PX } from "../sidebar/sidebarLayout.js";
 
 const extensionApi = globalThis.browser || globalThis.chrome;
@@ -13,17 +16,7 @@ export const RP_CUSTOM_CSS_STYLE_ID = "roprime-custom-css-style";
 export const RP_PARAM_KEY = "roprime";
 export const RP_PARAM_KEY_NEW = "roprime-new";
 export const RP_DEFAULT_PAGE = "info";
-export const RP_SUPPORTED_PAGES = new Set([
-  "appearance",
-  "home",
-  "settings",
-  "other",
-  "info",
-  "developer",
-  "sidebar-content",
-  "privacy",
-  "profile",
-]);
+export const RP_SUPPORTED_PAGES = collectSupportedPages();
 export const RP_SETTINGS_KEY = "rpSettings";
 export const RP_SETTINGS_FLAT_INNER_ID = "rp-settings-flat-inner";
 export const RP_SETTINGS_INNER_ID = RP_SETTINGS_FLAT_INNER_ID;

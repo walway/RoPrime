@@ -987,15 +987,23 @@ function buildSearchBanPanel() {
   );
 
   const controls = el("div", "flex flex-wrap gap-small");
-  const input = el("input");
+  const inputWrap = el(
+    "div",
+    "foundation-web-input flex items-center stroke-standard bg-none height-1200 radius-medium padding-x-medium gap-x-small stroke-contrast-alpha focus-within:stroke-system-emphasis roprime-search-ban-input-wrap",
+  );
+  const input = el(
+    "input",
+    "width-full padding-none bg-none stroke-none outline-none content-emphasis placeholder:content-muted text-body-large placeholder:text-body-large roprime-search-ban-input",
+  );
   input.type = "text";
-  input.classList.add("roprime-search-ban-input");
   setI18nPlaceholder(input, "settings.privacy.searchBan.inputPlaceholder");
   input.autocomplete = "off";
   input.spellcheck = false;
+  inputWrap.appendChild(input);
+
   const addBtn = createControlButton("settings.privacy.searchBan.addWord");
   addBtn.classList.add("roprime-search-ban-add");
-  controls.append(input, addBtn);
+  controls.append(inputWrap, addBtn);
 
   const list = el("div", "roprime-search-ban-list");
   body.append(controls, list);
@@ -1292,6 +1300,11 @@ function applyCustomCssEditorLock(root) {
   const wrap = getEditorWrap();
   if (wrap instanceof HTMLElement) wrap.classList.toggle("is-locked", locked);
   if (cssEditor) {
+    try {
+      cssEditor.setOptions({ readOnly: locked });
+    } catch {
+      /* ignore */
+    }
     cssEditor.textarea.readOnly = locked;
     cssEditor.textarea.setAttribute("aria-readonly", locked ? "true" : "false");
   }
@@ -1416,11 +1429,17 @@ function ensureCssEditor(root) {
       cssEditor.textarea.addEventListener("focus", () => {
         void (async () => {
           if (settingsState.customCssCautionAccepted) {
+            applyCustomCssEditorLock(root);
             syncCustomCssPlaceholder(root);
             return;
           }
           const allowed = await ensureCustomCssCautionAccepted();
-          if (!allowed) cssEditor?.textarea.blur();
+          if (!allowed) {
+            cssEditor?.textarea.blur();
+          } else {
+            applyCustomCssEditorLock(root);
+            cssEditor?.textarea.focus({ preventScroll: true });
+          }
           syncCustomCssPlaceholder(root);
         })();
       });

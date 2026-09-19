@@ -294,3 +294,15 @@ export function collectToggleDefaults() {
   }
   return defaults;
 }
+
+/** Page keys from SETTINGS_CONFIG plus non-nav routes (e.g. sidebar-content). */
+export function collectSupportedPages(extra = ["sidebar-content"]) {
+  const pages = new Set(
+    (Array.isArray(extra) ? extra : []).filter((key) => typeof key === "string"),
+  );
+  for (const [key, page] of Object.entries(SETTINGS_CONFIG)) {
+    if (!key || page?.type === "navDivider") continue;
+    pages.add(key);
+  }
+  return pages;
+}

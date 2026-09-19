@@ -560,22 +560,33 @@ html.roprime-account-settings-open #user-account > #roprime-settings-host {
   font-size: 12px;
 }
 
-#roprime-settings-host .roprime-search-ban-input {
-  flex: 1 1 180px;
+#roprime-settings-host .roprime-search-ban-input-wrap {
+  flex: 1 1 280px;
   min-width: 0;
-  height: 40px;
-  padding: 0 12px;
-  border: 1px solid
-    color-mix(in srgb, var(--color-content-emphasis) 18%, transparent);
-  border-radius: 10px;
-  background: var(--color-surface-100, var(--color-surface-300));
-  color: var(--color-content-default);
+  max-width: 649px;
+  width: 100%;
+}
+
+#roprime-settings-host .roprime-search-ban-input {
+  min-width: 0;
+  height: auto;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  color: inherit;
   font: inherit;
+  outline: none;
+  box-shadow: none;
 }
 
 #roprime-settings-host .roprime-search-ban-input:focus-visible {
-  outline: 2px solid var(--color-focus, #005cc8);
-  outline-offset: 1px;
+  outline: none;
+}
+
+#roprime-settings-host .roprime-search-ban-add {
+  height: 48px !important;
+  align-self: stretch;
 }
 #roprime-settings-host .roprime-search-hint {
   font-size: 15px;

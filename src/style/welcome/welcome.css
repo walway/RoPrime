@@ -1,0 +1,23 @@
+#roprime-home-welcome-root .roprime-welcome-preview-frame {
+    height: 340px;
+    margin: 15px;
+    border: 2px dashed var(--color-shift-400);
+    position: relative;
+    width: 408px;
+    overflow: hidden;
+    contain: layout size style;
+    border-radius: var(--radius-medium);
+}
+
+#roprime-home-welcome-root .nav-robux-balance:nth-child(3) {
+  display: none;
+}
+
+#roprime-home-welcome-root .roprime-welcome-preview-popover:not(.in) {
+  pointer-events: none;
+}
+
+#roprime-home-welcome-root .roprime-welcome-verity {
+  width: 200px;
+  margin-bottom: 190px
+}

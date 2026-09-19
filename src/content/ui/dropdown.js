@@ -21,25 +21,92 @@ const PAGE_INERT_SELECTORS = [
 ];
 
 const DROPDOWN_CSS = `
-.bg-common-backdrop{background-color:var(--color-common-backdrop)}
-.shadow-transient-high{box-shadow:var(--size-0) var(--size-50) var(--size-100) -.5px var(--alpha-color-shadow-subtle),var(--size-0) var(--size-250) var(--size-500) -.75px var(--alpha-color-shadow-subtle),var(--size-0) var(--size-400) var(--size-800) -1px var(--alpha-color-shadow-subtle),var(--size-0) var(--size-1200) var(--size-1400) -1.5px var(--alpha-color-shadow-subtle)}
-.shadow-transient-low{box-shadow:var(--size-0) var(--size-50) var(--size-100) -.5px var(--alpha-color-shadow-subtle),var(--size-0) var(--size-250) var(--size-500) -.75px var(--alpha-color-shadow-subtle)}
-.foundation-web-portal-zindex{z-index:1050}
-.fui-future-shadow-affixed-low{box-shadow:0 0 var(--size-100) 0 var(--fui-future-alpha-color-shadow-subtle),0 0 var(--size-500) 0 var(--fui-future-alpha-color-shadow-subtle)}
-.light-theme,.system-theme,:root{--alpha-color-shadow-subtle:rgba(0,0,0,.08);--fui-future-alpha-color-shadow-subtle:rgba(0,0,0,.08);--fui-future-alpha-color-system-progress:var(--light-mode-system-contrast)}
-.dark-theme{--alpha-color-shadow-subtle:rgba(4,4,8,.25);--fui-future-alpha-color-shadow-subtle:rgba(4,4,8,.25);--fui-future-alpha-color-system-progress:var(--dark-mode-system-contrast)}
-@media (prefers-color-scheme:dark){:is(:root,.system-theme){--alpha-color-shadow-subtle:rgba(4,4,8,.25);--fui-future-alpha-color-shadow-subtle:rgba(4,4,8,.25);--fui-future-alpha-color-system-progress:var(--dark-mode-system-contrast)}}
-:is(:root,.light-theme,.system-theme) .stroke-contrast-alpha{border-color:rgba(27,37,75,.5)}
-.dark-theme .stroke-contrast-alpha{border-color:rgba(208,217,251,.4)}
-@media (prefers-color-scheme:dark){:is(:root,.system-theme) .stroke-contrast-alpha{border-color:rgba(208,217,251,.4)}}
-.foundation-web-input.stroke-contrast-alpha:focus,.foundation-web-input.stroke-contrast-alpha:focus-within,.foundation-web-input.stroke-emphasis:focus,.foundation-web-input.stroke-emphasis:focus-within{border-color:var(--color-system-emphasis);box-shadow:inset 0 0 0 1px var(--color-system-emphasis)}
-.foundation-web-input.stroke-system-alert:focus,.foundation-web-input.stroke-system-alert:focus-within{box-shadow:inset 0 0 0 1px var(--color-system-alert)}
-:is(:root,.light-theme,.system-theme) .roprime-stroke-contrast-alpha{border-color:rgba(27,37,75,.5)}
-.dark-theme .roprime-stroke-contrast-alpha{border-color:rgba(208,217,251,.4)}
-@media (prefers-color-scheme:dark){:is(:root,.system-theme) .roprime-stroke-contrast-alpha{border-color:rgba(208,217,251,.4)}}
-.foundation-web-input.roprime-stroke-contrast-alpha:focus,.foundation-web-input.roprime-stroke-contrast-alpha:focus-within{border-color:var(--color-system-emphasis);box-shadow:inset 0 0 0 1px var(--color-system-emphasis)}
-.roprime-dropdown-popper{will-change:transform}
-.roprime-dropdown-popper [data-radix-select-viewport]{overflow:hidden auto;overscroll-behavior:contain}
+.light-theme, .system-theme, :root {
+  --alpha-color-shadow-subtle: rgba(0,0,0,.08);
+  --fui-future-alpha-color-shadow-subtle: rgba(0,0,0,.08);
+  --fui-future-alpha-color-system-progress: var(--light-mode-system-contrast);
+  --roprime-border-contrast: rgba(27, 37, 75, .5);
+}
+
+.dark-theme {
+  --alpha-color-shadow-subtle: rgba(4,4,8,.25);
+  --fui-future-alpha-color-shadow-subtle: rgba(4,4,8,.25);
+  --fui-future-alpha-color-system-progress: var(--dark-mode-system-contrast);
+  --roprime-border-contrast: rgba(208, 217, 251, .4);
+}
+
+@media (prefers-color-scheme: dark) {
+  :is(:root, .system-theme) {
+    --alpha-color-shadow-subtle: rgba(4,4,8,.25);
+    --fui-future-alpha-color-shadow-subtle: rgba(4,4,8,.25);
+    --fui-future-alpha-color-system-progress: var(--dark-mode-system-contrast);
+    --roprime-border-contrast: rgba(208, 217, 251, .4);
+  }
+}
+
+.bg-common-backdrop {
+  background-color: var(--color-common-backdrop);
+}
+
+.foundation-web-portal-zindex {
+  z-index: 1050;
+}
+
+.shadow-transient-low {
+  box-shadow: var(--size-0) var(--size-50) var(--size-100) -.5px var(--alpha-color-shadow-subtle),
+              var(--size-0) var(--size-250) var(--size-500) -.75px var(--alpha-color-shadow-subtle);
+}
+
+.shadow-transient-high {
+  box-shadow: var(--size-0) var(--size-50) var(--size-100) -.5px var(--alpha-color-shadow-subtle),
+              var(--size-0) var(--size-250) var(--size-500) -.75px var(--alpha-color-shadow-subtle),
+              var(--size-0) var(--size-400) var(--size-800) -1px var(--alpha-color-shadow-subtle),
+              var(--size-0) var(--size-1200) var(--size-1400) -1.5px var(--alpha-color-shadow-subtle);
+}
+
+.fui-future-shadow-affixed-low {
+  box-shadow: 0 0 var(--size-100) 0 var(--fui-future-alpha-color-shadow-subtle),
+              0 0 var(--size-500) 0 var(--fui-future-alpha-color-shadow-subtle);
+}
+
+.stroke-contrast-alpha,
+.roprime-stroke-contrast-alpha {
+  border-color: var(--roprime-border-contrast);
+}
+
+.foundation-web-input.stroke-contrast-alpha:not([data-state="open"]):not(:active):focus,
+.foundation-web-input.stroke-contrast-alpha:not([data-state="open"]):not(:active):focus-within,
+.foundation-web-input.stroke-emphasis:not([data-state="open"]):not(:active):focus,
+.foundation-web-input.stroke-emphasis:not([data-state="open"]):not(:active):focus-within,
+.foundation-web-input.roprime-stroke-contrast-alpha:not([data-state="open"]):not(:active):focus,
+.foundation-web-input.roprime-stroke-contrast-alpha:not([data-state="open"]):not(:active):focus-within {
+  border-color: var(--color-system-emphasis);
+  box-shadow: inset 0 0 0 1px var(--color-system-emphasis);
+}
+
+.foundation-web-input.stroke-system-alert:focus,
+.foundation-web-input.stroke-system-alert:focus-within {
+  box-shadow: inset 0 0 0 1px var(--color-system-alert);
+}
+
+.foundation-web-input.roprime-stroke-contrast-alpha[data-state="open"] {
+  border-color: var(--roprime-border-contrast) !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+.foundation-web-input.roprime-stroke-contrast-alpha[data-state="open"] [data-testid="foundation-web-state-layer"] {
+  background-color: transparent !important;
+}
+
+.roprime-dropdown-popper {
+  will-change: transform;
+}
+
+.roprime-dropdown-popper [data-radix-select-viewport] {
+  overflow: hidden auto;
+  overscroll-behavior: contain;
+}
 `.trim();
 
 function ensureDropdownStyles() {
@@ -620,9 +687,9 @@ export function createDropdown({
     popper.hidden = !open;
     if (open) {
       root.setAttribute("data-roprime-dropdown-open", "1");
-      // Open: no emphasis border class; focus still applied per TASK.
-      trigger.classList.remove(ROPRIME_STROKE_CLASS);
-      trigger.focus({ preventScroll: true });
+      trigger.classList.add(ROPRIME_STROKE_CLASS);
+      // Open: themed stroke via CSS [data-state=open]; keep focus off blue.
+      trigger.blur();
       blurActiveElementOutside(root, popper);
       ensureFocusGuards(root, popper);
       applyPageInertState();
@@ -642,9 +709,12 @@ export function createDropdown({
       clearPageInertState();
       removeFocusGuardsIfIdle();
       unlockPageScroll();
-      // Closed: restore border class + focus so :focus paints emphasis blue.
       trigger.classList.add(ROPRIME_STROKE_CLASS);
-      trigger.focus({ preventScroll: true });
+      // Re-focus after the closing pointer event finishes so blue :focus sticks.
+      const refocus = () => trigger.focus({ preventScroll: true });
+      refocus();
+      requestAnimationFrame(refocus);
+      globalThis.setTimeout(refocus, 0);
     }
   };
 
