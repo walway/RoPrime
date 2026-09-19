@@ -14,7 +14,7 @@
     "npm:opentype.js@1.3.4": "1.3.4",
     "npm:prettier@*": "3.9.6",
     "npm:prism-code-editor@5.4.0": "5.4.0",
-    "npm:roavatar-renderer@^1.8.1": "1.8.1",
+    "npm:roavatar-renderer@^1.9.3": "1.9.3",
     "npm:web-ext@*": "10.6.0",
     "npm:web-ext@^10.6.0": "10.6.0"
   },
@@ -1355,7 +1355,7 @@
         "minimatch"
       ]
     },
-    "n8ao@2.0.1_postprocessing@6.39.4_three@0.185.1": {
+    "n8ao@2.0.1_postprocessing@6.39.5_three@0.185.1": {
       "integrity": "sha512-MoP1QKUdj4/3cKEnhFl917t0eQwWGER1l43ckz5mNOPyYWGRDGQbVoTOQz/VBvy01in6QVNG+AL6Xxx5AjZBYA==",
       "dependencies": [
         "postprocessing",
@@ -1502,8 +1502,8 @@
       ],
       "bin": true
     },
-    "postprocessing@6.39.4_three@0.185.1": {
-      "integrity": "sha512-oAS/PjAbc/xT3OzjUrGsorJ4J064XwhVD2t0OwKLP/E8QwDMUJ0oOv6ZI1SYMtLchv4g0ySEx+JcLy92+48vlA==",
+    "postprocessing@6.39.5_three@0.185.1": {
+      "integrity": "sha512-YmH+t74J2X1lwYjKzK/tgs9C9kqWWPB9JwZiDF5mEf4BdCEAmEFbO8lXBA7NM0/j4g+x6FgD/Tt5/kT7ogbEDA==",
       "dependencies": [
         "three"
       ]
@@ -1558,15 +1558,15 @@
       ],
       "bin": true
     },
-    "react-dom@19.2.8_react@19.2.8": {
-      "integrity": "sha512-rVprimfGBG3DR+Tq0IQG2DT5PxKth1WIGDmj5yPmlzr4YBe7uyE+Du4oVqTDXZSHGGGXRtTJEGSSePyQCMBglQ==",
+    "react-dom@19.3.0_react@19.3.0": {
+      "integrity": "sha512-JDk8dgif51OjFoDE70+OT9ICyYr+69HlmihNwp1+Nsfbna3t5sIiCa9ZJktDmQ4/1b/rn26hIAR2uYXDMr5r0Q==",
       "dependencies": [
         "react",
         "scheduler"
       ]
     },
-    "react@19.2.8": {
-      "integrity": "sha512-PWaYA1L/q9u2u7xYQi+Y3L3Yfnie7XyLeaJICV1MGD6LprsBxcAqGjYyr0eY3p+QdsA+x/Irkt4Qif8D63+Sbw=="
+    "react@19.3.0": {
+      "integrity": "sha512-E8LUcbtBWt20bbl2YoHfx4ZDBdxVTfOKtCZn9cDSJ4l6/nuoApcpIBcj47t2wZoVX8g2ZHuMHbiShgCR1T5Sog=="
     },
     "readable-stream@2.3.8": {
       "integrity": "sha512-8p0AUk4XODgIewSi0l8Epjs+EVnWiK7NoDIEGU0HhE7+ZyY8D1IMY7odu5lRrFXGg71L15KG8QrPmum45RTtdA==",
@@ -1607,8 +1607,8 @@
     "resolve-from@4.0.0": {
       "integrity": "sha512-pb/MYmXstAkysRFx8piNI1tGFNQIFA3vkE3Gq4EuA1dF6gHp/+vgZqsCGJapvy8N3Q+4o7FwvquPJcnZ7RYy4g=="
     },
-    "roavatar-renderer@1.8.1": {
-      "integrity": "sha512-IEDz93ew7385/d5T4rF8ipxaaf+BbjBR5ZQkWIfQ6WlYBu+zZ7IqN+M3ypSY5hFUWAM3EfyTHFapPeAZ6zkFzg==",
+    "roavatar-renderer@1.9.3": {
+      "integrity": "sha512-nLn9B+7C0teSBQYmafWGAy/w29iaapX0o7ng+xekDLOyJ6KtcHhmhINHgwYTXbdVKe47V9HYndSgvvB8MXucWw==",
       "dependencies": [
         "fzstd",
         "n8ao",
@@ -1634,8 +1634,8 @@
     "sax@1.6.1": {
       "integrity": "sha512-42tBVwLWnaQvW5zc4HbZrTuWccECCZfBi92FDuwtqxasH+JbPB3/FOKb1m222K42R4WxuxzzMsTswfzgtSu64Q=="
     },
-    "scheduler@0.27.0": {
-      "integrity": "sha512-eNv+WrVbKu1f3vbYJT/xtiF5syA5HPIMtf9IgY/nKg0sWqzAUEvqY/xm7OcZc/qafLx/iO9FgOmeSAp4v5ti/Q=="
+    "scheduler@0.28.0": {
+      "integrity": "sha512-juorfCmIkIw8tT+p5BXSm6PJjQF/ycEYmKyzURCIt/RaZIhL+PulbQ9Yu2z1HdOJDdqDTlxA1+xKBmHXJsczAw=="
     },
     "semver@7.8.5": {
       "integrity": "sha512-Y7/KDsb8LjooZpwaqGyulO6DQlksgCncchHGk+sZIY4SBvUocMBEFH5Ur1fI4dV+Jvl0w6cjvucaIi40puRioA==",
@@ -2005,7 +2005,7 @@
       "npm:dotenv@17.4.2",
       "npm:esbuild@0.28.2",
       "npm:prism-code-editor@5.4.0",
-      "npm:roavatar-renderer@^1.8.1",
+      "npm:roavatar-renderer@^1.9.3",
       "npm:web-ext@^10.6.0"
     ]
   }

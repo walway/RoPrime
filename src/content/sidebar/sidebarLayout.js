@@ -5,9 +5,6 @@ export const SIDEBAR_FULL_RESERVED_PX =
 
 export function buildSidebarFullLayoutCss() {
   return `
-.rollercoaster-background {
-  margin-left: ${SIDEBAR_FULL_RESERVED_PX}px !important;
-}
 .left-nav {
   padding-right: ${SIDEBAR_FULL_TOUCH_PADDING_PX}px !important;
   box-sizing: border-box !important;

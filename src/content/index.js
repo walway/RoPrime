@@ -44,6 +44,8 @@ import "./sidebar/robloxEvents.js";
 import "./profile/profileRedesign.js";
 import "./account/classicIcon.js";
 import "./inventory/menuOptions.js";
+import "./ui/accountSwitcher.js";
+import "./ui/loginPage.js";
 
 const extensionApi = globalThis.browser || globalThis.chrome;
 

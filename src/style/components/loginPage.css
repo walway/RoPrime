@@ -1,0 +1,42 @@
+.signup-v2-card {
+    width: 373px;
+}
+
+#login-form-error {
+    margin-left: -13px !important;
+    color: var(--color-system-alert) !important;
+    margin-top: 15px !important;
+}
+
+.otp-login-button,
+.cross-device-login-button {
+    border: transparent !important;
+    border-color: transparent !important;
+    border-radius: var(--radius-medium) !important;
+}
+
+.login-form > .foundation-web-input > input {
+    margin-top: 9px;
+}
+
+.forgot-credentials-link {
+    margin-top: 20px !important;
+    margin-bottom: -4px !important;
+}
+
+.login-form > .foundation-web-input {
+    margin-bottom: 15px;
+}
+
+.login-form > .btn-full-width {
+    border-radius: var(--radius-medium) !important;
+    background-color: var(--color-action-emphasis-background) !important;
+    border: transparent !important;
+}
+
+.login-form > .foundation-web-input {
+    margin-bottom: 20px !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    width: 100% !important;
+}
