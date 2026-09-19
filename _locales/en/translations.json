@@ -70,6 +70,14 @@
         "title": "Hide Age Rate Badge",
         "description": "Hides new age rate badge, it is SELECT and KIDS sign near Roblox logo at the left top side."
       },
+      "loginPage": {
+        "title": "Login Page Redesign",
+        "description": "Redesigns login page to look like new sign up page. This is completely safe as it manipulates login page to replace colors."
+      },
+      "accountSwitcher": {
+        "title": "Account Switch Page Redesign",
+        "description": "Redesigns account switch page to look new. This is completely safe as it manipulates account switch page to replace colors."
+      },
       "profileRedesign": {
         "title": "Profile Redesign",
         "description": "Show all profile sections at once and adjust the header layout on profile pages. \n\n RoPrime uses [RoAvatar](https://github.com/steinann/RoAvatar) for Avatar Preview."

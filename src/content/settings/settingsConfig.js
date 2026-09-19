@@ -176,21 +176,13 @@ export const SETTINGS_CONFIG = {
         title: "settings.appearance.loginPage.title",
         description: "settings.appearance.loginPage.description",
         byDefault: false,
-        skipI18n: true,
-        literalTitle: "Login Page Redesign",
-        literalDescription:
-          "Redesigns login page to look like new sign up page. This is completely safe as it manipulates login page to replace colors.",
       },
       {
         type: "toggle",
         key: "accountSwitcherRedesignEnabled",
         title: "settings.appearance.accountSwitcher.title",
         description: "settings.appearance.accountSwitcher.description",
-        byDefault: false,
-        skipI18n: true,
-        literalTitle: "Account Switch Page Redesign",
-        literalDescription:
-          "Redesigns account switch page to look new. This is completely safe as it manipulates account switch page to replace colors.",
+        byDefault: true,
       },
     ],
   },

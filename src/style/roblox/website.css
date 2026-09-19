@@ -13,6 +13,11 @@ html
   }
 }
 
+/* Deprecated */
+#rovalra-free-roblox-plus-themes-notice {
+  display: none;
+}
+
 .icon-presence.icon-studio {
   position: relative;
   z-index: 2;

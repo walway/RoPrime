@@ -22,6 +22,7 @@ export const RP_SUPPORTED_PAGES = new Set([
   "developer",
   "sidebar-content",
   "privacy",
+  "profile",
 ]);
 export const RP_SETTINGS_KEY = "rpSettings";
 export const RP_SETTINGS_FLAT_INNER_ID = "rp-settings-flat-inner";
