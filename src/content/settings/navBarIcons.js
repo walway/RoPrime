@@ -12,6 +12,7 @@ export const SETTINGS_NAV_ICONS = {
   other: "extension",
   info: "info",
   developer: "code",
+  profile: "person",
 };
 
 let materialSymbolsReady = false;

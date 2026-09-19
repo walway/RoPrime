@@ -172,25 +172,39 @@ export const SETTINGS_CONFIG = {
       },
       {
         type: "toggle",
+        key: "loginPageRedesignEnabled",
+        title: "settings.appearance.loginPage.title",
+        description: "settings.appearance.loginPage.description",
+        byDefault: false,
+        skipI18n: true,
+        literalTitle: "Login Page Redesign",
+        literalDescription:
+          "Redesigns login page to look like new sign up page. This is completely safe as it manipulates login page to replace colors.",
+      },
+      {
+        type: "toggle",
+        key: "accountSwitcherRedesignEnabled",
+        title: "settings.appearance.accountSwitcher.title",
+        description: "settings.appearance.accountSwitcher.description",
+        byDefault: false,
+        skipI18n: true,
+        literalTitle: "Account Switch Page Redesign",
+        literalDescription:
+          "Redesigns account switch page to look new. This is completely safe as it manipulates account switch page to replace colors.",
+      },
+    ],
+  },
+  profile: {
+    title: "settings.nav.profile",
+    icon: "person",
+    items: [
+      {
+        type: "toggle",
         key: "profileRedesignEnabled",
         title: "settings.appearance.profileRedesign.title",
         description: "settings.appearance.profileRedesign.description",
         byDefault: true,
       },
-      {
-        type: "toggle",
-        key: "",
-        title: "Login Page Redesign",
-        description: "Redesigns login page to look like new sign up page. This is completely safe as it manipulates login page to replace colors.",
-        byDefault: false,
-      },
-            {
-        type: "toggle",
-        key: "",
-        title: "Account Switch Page Redesign",
-        description: "Redesigns account switch page to look new. This is completely safe as it manipulates account switch page to replace colors.",
-        byDefault: false,
-      }
     ],
   },
   home: {

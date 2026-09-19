@@ -374,6 +374,8 @@ export function serializeSettingsPayload() {
     hideAgeBadgeEnabled: !!settingsState.hideAgeBadgeEnabled,
     hideExperiencesAdsEnabled: !!settingsState.hideExperiencesAdsEnabled,
     profileRedesignEnabled: !!settingsState.profileRedesignEnabled,
+    loginPageRedesignEnabled: !!settingsState.loginPageRedesignEnabled,
+    accountSwitcherRedesignEnabled: !!settingsState.accountSwitcherRedesignEnabled,
     developerPageUnlocked: !!settingsState.developerPageUnlocked,
     sidebarSize: settingsState.sidebarSize || "full",
     sidebarCollapseMenuEnabled: !!settingsState.sidebarCollapseMenuEnabled,

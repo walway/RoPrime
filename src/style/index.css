@@ -4,6 +4,7 @@
 @import "./themes/classic-theme.css";
 @import "./components/loginPage.css";
 @import "./components/accountSwitcher.css";
+@import "./components/dropdown.css";
 @import "./settings/extensions-panel.css";
 @import "./settings/overlay.css";
 @import "./alerts/version.css";

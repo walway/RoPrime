@@ -9,6 +9,10 @@ import {
   OutfitRenderer,
   RBXRenderer,
 } from "roavatar-renderer";
+import {
+  getRobloxUserId,
+  isRobloxAuthenticated,
+} from "./robloxUserId.js";
 
 let rendererReady = false;
 let currentOutfitRenderer = null;
@@ -216,11 +220,11 @@ function getAvatarTypeLabel(avatarType) {
 function redirectToLoginForProfile(profileUserId) {
   const id = Number(profileUserId);
   if (!Number.isFinite(id) || id <= 0) {
-    window.location.assign("https://www.roblox.com/login");
+    globalThis.location.assign("https://www.roblox.com/login");
     return;
   }
   const returnUrl = `https://www.roblox.com/users/${id}/profile`;
-  window.location.assign(
+  globalThis.location.assign(
     `https://www.roblox.com/login?returnUrl=${encodeURIComponent(returnUrl)}`,
   );
 }
@@ -769,7 +773,7 @@ function observeHostResize(host) {
     syncRendererSizeToHost(host);
   });
   hostResizeObserver.observe(host);
-  // Catch layout that settles after mount (e.g. mobile full-bleed).
+  // Catch layout for mobile
   syncRendererSizeToHost(host);
 }
 
@@ -812,13 +816,17 @@ export async function mountAvatarPreview(host, userId) {
   currentHost = host;
   currentUserId = userId;
   currentAvatarSource = null;
-  // Guests default to 2D; 3D requires login (meta[name=user-data]).
-  currentViewMode = isRobloxAuthenticated() ? "3d" : "2d";
 
   if (!(host instanceof HTMLElement)) return false;
   if (!Number.isFinite(userId) || userId <= 0) return false;
 
   const isActive = () => seq === activeMountSeq;
+  try {
+    await getRobloxUserId();
+  } catch {}
+  // Non-autheticated users are default to 2d and 3D requires authetication
+  currentViewMode = isRobloxAuthenticated() ? "3d" : "2d";
+  if (!isActive()) return false;
 
   if (rendererReady) {
     if (!isActive()) return false;

@@ -1,91 +1,86 @@
 import {
   RP_FRIEND_STYLING_REIMAGNED_STYLE_ID,
   settingsState,
+  shouldRunRoPrimeOnCurrentPage,
 } from "../core/core.js";
+import { registerFeature } from "../features/registry.js";
 
 const FRIEND_STYLING_REIMAGNED_CSS = `
 .friend-carousel-container {
-    margin-bottom: 18px !important;
-    overflow: visible !important;
-    border-radius: 16px !important;
-    background: var(--color-surface-300) !important;
-    border: 1px solid rgba(255, 255, 255, 0.08) !important;
-    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.26) !important;
+  margin-bottom: 18px !important;
+  overflow: visible !important;
+  border-radius: 16px !important;
+  background: var(--color-surface-300) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.26) !important;
 }
 
 .friend-carousel-container .react-friends-carousel-container {
-    padding: 12px 12px 10px 12px !important;
+  padding: 12px 12px 10px 12px !important;
 }
 
 .friend-carousel-container .friends-carousel-container,
 .friend-carousel-container .friends-carousel-list-container-not-full,
 .friend-carousel-container .friends-carousel-list-container {
-    overflow: visible !important;
-    position: relative !important;
+  overflow: visible !important;
+  position: relative !important;
 }
 
 .friend-carousel-container .container-header.people-list-header {
-    margin-bottom: 8px !important;
+  margin-bottom: 8px !important;
 }
 
 .friend-carousel-container .container-header.people-list-header h2 {
-    margin: 0 !important;
+  margin: 0 !important;
 }
 
 .friend-carousel-container .avatar-card-image {
-    position: relative !important;
-    border-radius: 9999px !important;
-    overflow: visible !important;
+  position: relative !important;
+  border-radius: 9999px !important;
+  overflow: visible !important;
 }
 
 .friend-carousel-container .avatar-card-image::before {
-    content: "";
-    position: absolute;
-    inset: -2px;
-    border-radius: 9999px;
-    background: var(--color-surface-300);
-    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.1);
-    z-index: 0;
+  content: "";
+  position: absolute;
+  inset: -2px;
+  border-radius: 9999px;
+  background: var(--color-surface-300);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.1);
+  z-index: 0;
 }
 
 .friend-carousel-container .avatar-card-image::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    border-radius: 9999px;
-    background: #070b10;
-    z-index: 1;
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  background: #070b10;
+  z-index: 1;
 }
 
 .friend-carousel-container .avatar-card-image img {
-    position: relative !important;
-    border-radius: 9999px !important;
-    z-index: 2 !important;
+  position: relative !important;
+  border-radius: 9999px !important;
+  z-index: 2 !important;
 }
 
 .friend-carousel-container .online .icon-online,
-.friend-carousel-container .icon-online {
-    position: relative !important;
-    z-index: 4 !important;
-}
-
+.friend-carousel-container .icon-online,
 .friend-carousel-container .game .icon-game,
-.friend-carousel-container .icon-game {
-    position: relative !important;
-    z-index: 4 !important;
-}
+.friend-carousel-container .icon-game,
 .friend-carousel-container .studio .icon-studio,
 .friend-carousel-container .icon-studio {
-    position: relative !important;
-    z-index: 4 !important;
+  position: relative !important;
+  z-index: 4 !important;
 }
 
 .friend-carousel-container .rologic-presence-offline .avatar-card-image::before,
 .friend-carousel-container .rologic-presence-online .avatar-card-image::before,
 .friend-carousel-container .rologic-presence-game .avatar-card-image::before,
 .friend-carousel-container .rologic-presence-studio .avatar-card-image::before {
-    background: var(--color-surface-300) !important;
-    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.1) !important;
+  background: var(--color-surface-300) !important;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.1) !important;
 }
 `.trim();
 
@@ -100,18 +95,6 @@ const GLOW_PRESENCE_CLASSES = [
 
 let friendStylingObserver = null;
 let friendStylingRafId = null;
-let friendsDataCache = null;
-let friendsFetchInFlight = null;
-let pipWindowRef = null;
-
-function escapeHtml(value) {
-  return String(value)
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
-}
 
 function getPresenceClass(tile) {
   const presenceIcon = tile.querySelector('[data-testid="presence-icon"]');
@@ -125,8 +108,9 @@ function getPresenceClass(tile) {
     .join(" ")
     .toLowerCase();
   if (presenceText.includes("studio")) return "rologic-presence-studio";
-  if (presenceText.includes("game") || presenceText.includes("playing"))
+  if (presenceText.includes("game") || presenceText.includes("playing")) {
     return "rologic-presence-game";
+  }
   if (presenceText.includes("online")) return "rologic-presence-online";
   return "rologic-presence-offline";
 }
@@ -191,14 +175,17 @@ function stopFriendStylingObserver() {
 }
 
 export function updateFriendStylingReimagnedVisibility() {
+  if (!shouldRunRoPrimeOnCurrentPage()) {
+    stopFriendStylingObserver();
+    document.getElementById(RP_FRIEND_STYLING_REIMAGNED_STYLE_ID)?.remove();
+    return;
+  }
+
   const existingStyle = document.getElementById(
     RP_FRIEND_STYLING_REIMAGNED_STYLE_ID,
   );
   if (!settingsState.friendStylingReimagnedEnabled) {
     stopFriendStylingObserver();
-    removeFriendsPanel();
-    closeFriendsPipWindow();
-    friendsDataCache = null;
     if (existingStyle instanceof HTMLStyleElement) existingStyle.remove();
     document.querySelectorAll(GLOW_TILE_SELECTOR).forEach((tile) => {
       if (!(tile instanceof HTMLElement)) return;
@@ -212,14 +199,13 @@ export function updateFriendStylingReimagnedVisibility() {
   if (!(style instanceof HTMLStyleElement)) {
     style = document.createElement("style");
     style.id = RP_FRIEND_STYLING_REIMAGNED_STYLE_ID;
-    style.textContent = FRIEND_STYLING_REIMAGNED_CSS;
     document.documentElement.appendChild(style);
   }
-
-  if (style.textContent !== FRIEND_STYLING_REIMAGNED_CSS)
+  if (style.textContent !== FRIEND_STYLING_REIMAGNED_CSS) {
     style.textContent = FRIEND_STYLING_REIMAGNED_CSS;
-  if (style.parentElement !== document.documentElement)
-    document.documentElement.appendChild(style);
+  }
   startFriendStylingObserver();
   scheduleFriendPresenceRefresh();
 }
+
+registerFeature(updateFriendStylingReimagnedVisibility);

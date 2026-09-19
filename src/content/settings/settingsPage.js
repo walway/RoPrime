@@ -68,7 +68,6 @@ import {
 } from "../sidebar/sidebarContent.js";
 import { syncSidebarContent } from "../sidebar/sidebarContent.js";
 import { sidebarItemLabelKey } from "../sidebar/sidebarItemLabels.js";
-import { ADD_ICON_SVG, DELETE_ICON_SVG } from "../sidebar/sidebarIcons.js";
 import { applyPlainOrRichText } from "../ui/richText.js";
 import { createControlButton, getControlButtonLabel } from "../ui/controlButton.js";
 import { createDropdown } from "../ui/dropdown.js";
@@ -677,8 +676,15 @@ function createSidebarInlineToggleRow(item) {
   setSettingTitle(title, item);
   copy.appendChild(title);
   if (item.description) {
-    const desc = el("div", "text-body-large content-default roprime-i18n");
-    setI18n(desc, item.description);
+    const desc = el("div", "text-body-large content-default");
+    if (item.skipI18n || item.literalDescription) {
+      desc.textContent = String(
+        item.literalDescription || item.description || "",
+      );
+    } else {
+      desc.classList.add("roprime-i18n");
+      setI18n(desc, item.description);
+    }
     copy.appendChild(desc);
   }
 
@@ -1728,14 +1734,17 @@ function buildSearchBanRow(word) {
   row._rpSearchBanWord = word;
   const label = el("span", "roprime-sidebar-content-row-label");
   label.textContent = word;
-  const btn = el(
-    "button",
-    "roprime-sidebar-content-delete roprime-search-ban-remove",
-  );
+  const btn = createControlButton(null, {
+    literalText: "Delete",
+  });
   btn.type = "button";
+  btn.classList.add(
+    "roprime-sidebar-content-action-btn",
+    "roprime-sidebar-content-delete",
+    "roprime-search-ban-remove",
+  );
   btn._rpSearchBanWord = word;
   setI18nAria(btn, "settings.privacy.searchBan.removeWord");
-  appendSvgMarkup(btn, DELETE_ICON_SVG);
   row.append(label, btn);
   return row;
 }

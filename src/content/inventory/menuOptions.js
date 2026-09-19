@@ -20,7 +20,20 @@ function normalizeHref(value) {
 
 export function isInventoryPage() {
   const path = globalThis.location.pathname || "";
-  return /^\/(?:[a-z]{2}(?:-[a-z]{2})?\/)?users\/inventory\/?$/i.test(path);
+  return /^\/(?:[a-z]{2,3}(?:-[a-z0-9]{2,8})?\/)?users\/inventory\/?$/i.test(
+    path,
+  );
+}
+
+export function isFavoritesPage() {
+  const path = globalThis.location.pathname || "";
+  return /^\/(?:[a-z]{2,3}(?:-[a-z0-9]{2,8})?\/)?users\/\d+\/favorites(?:\/|$)/i.test(
+    path,
+  );
+}
+
+export function isInventoryOrFavoritesPage() {
+  return isInventoryPage() || isFavoritesPage();
 }
 
 function currentHash() {
@@ -355,12 +368,23 @@ function syncMenuOptions() {
     cleanupInjectedMenuOptions();
     return;
   }
-  if (!isInventoryPage()) {
+  if (!isInventoryOrFavoritesPage()) {
     cleanupInjectedMenuOptions();
+    document.documentElement.classList.remove(
+      "roprime-inventory-page",
+      "roprime-favorites-page",
+    );
     return;
   }
 
-  document.documentElement.classList.add("roprime-inventory-page");
+  document.documentElement.classList.toggle(
+    "roprime-inventory-page",
+    isInventoryPage(),
+  );
+  document.documentElement.classList.toggle(
+    "roprime-favorites-page",
+    isFavoritesPage(),
+  );
   for (const entry of findMenuOptionsWithSecondary(document)) {
     ensureSecondaryForMenuOption(entry.menuOption, entry.native, entry.items);
   }

@@ -1,0 +1,5 @@
+@media (prefers-color-scheme: dark) {
+    :is(:root,.system-theme) .stroke-contrast-alpha {
+        border-color: rgba(208, 217, 251, .4);
+    }
+}

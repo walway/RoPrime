@@ -3,8 +3,6 @@ let dropdownIdCounter = 0;
 const ROPRIME_FOCUS_GUARD_ATTR = "data-roprime-focus-guard";
 const ROPRIME_ARIA_HIDDEN_ATTR = "data-roprime-aria-hidden";
 const ROPRIME_BODY_POINTER_ATTR = "data-roprime-dropdown-body-pointer";
-const ROPRIME_DROPDOWN_STYLE_ID = "roprime-dropdown-foundation-style";
-
 const PAGE_INERT_SELECTORS = [
   "#image-retry-data",
   "#http-retry-data",
@@ -19,38 +17,6 @@ const PAGE_INERT_SELECTORS = [
   "#downloadInstallerIFrame",
   "#modal-confirmation",
 ];
-
-const DROPDOWN_FOUNDATION_CSS = `
-/* While the select is open, kill focus/focus-within emphasis on the trigger. */
-.foundation-web-input.stroke-contrast-alpha[data-state="open"],
-.foundation-web-input.stroke-contrast-alpha[data-state="open"]:focus,
-.foundation-web-input.stroke-contrast-alpha[data-state="open"]:focus-within,
-.foundation-web-input.stroke-system-emphasis[data-state="open"],
-.foundation-web-input.stroke-system-emphasis[data-state="open"]:focus,
-.foundation-web-input.stroke-system-emphasis[data-state="open"]:focus-within {
-  border-color: var(--color-stroke-contrast-alpha) !important;
-  box-shadow: none !important;
-}
-.roprime-dropdown-popper {
-  will-change: transform;
-}
-.roprime-dropdown-popper [data-radix-select-viewport] {
-  overflow: hidden auto;
-  overscroll-behavior: contain;
-}
-`.trim();
-
-function ensureDropdownFoundationStyle() {
-  let style = document.getElementById(ROPRIME_DROPDOWN_STYLE_ID);
-  if (!(style instanceof HTMLStyleElement)) {
-    style = document.createElement("style");
-    style.id = ROPRIME_DROPDOWN_STYLE_ID;
-    (document.head || document.documentElement).appendChild(style);
-  }
-  if (style.textContent !== DROPDOWN_FOUNDATION_CSS) {
-    style.textContent = DROPDOWN_FOUNDATION_CSS;
-  }
-}
 
 function createElement(tag, className) {
   const node = document.createElement(tag);
@@ -222,26 +188,86 @@ function getViewportMetrics() {
   };
 }
 
-function positionPopper(popper, trigger, { popperZIndex = "1050" } = {}) {
+function getParentClampRect(trigger, root) {
+  const parent =
+    (root instanceof HTMLElement && root.parentElement) ||
+    (trigger instanceof HTMLElement && trigger.offsetParent) ||
+    null;
+  if (parent instanceof HTMLElement) {
+    return parent.getBoundingClientRect();
+  }
+  const viewport = getViewportMetrics();
+  return {
+    left: viewport.offsetLeft,
+    right: viewport.offsetLeft + viewport.width,
+    top: viewport.offsetTop,
+    bottom: viewport.offsetTop + viewport.height,
+    width: viewport.width,
+    height: viewport.height,
+  };
+}
+
+let scrollLockCount = 0;
+let lockedScrollY = 0;
+
+function lockPageScroll() {
+  scrollLockCount += 1;
+  if (scrollLockCount > 1) return;
+  lockedScrollY = globalThis.scrollY || 0;
+  const body = document.body;
+  if (!(body instanceof HTMLElement)) return;
+  body.style.overflow = "hidden";
+  body.style.position = "fixed";
+  body.style.top = `-${lockedScrollY}px`;
+  body.style.left = "0";
+  body.style.right = "0";
+  body.style.width = "100%";
+}
+
+function unlockPageScroll() {
+  scrollLockCount = Math.max(0, scrollLockCount - 1);
+  if (scrollLockCount > 0) return;
+  const body = document.body;
+  if (!(body instanceof HTMLElement)) return;
+  body.style.removeProperty("overflow");
+  body.style.removeProperty("position");
+  body.style.removeProperty("top");
+  body.style.removeProperty("left");
+  body.style.removeProperty("right");
+  body.style.removeProperty("width");
+  globalThis.scrollTo(0, lockedScrollY);
+}
+
+function positionPopper(popper, trigger, { popperZIndex = "1050", clampRoot = null } = {}) {
   if (!(popper instanceof HTMLElement) || !(trigger instanceof HTMLElement)) {
     return;
   }
 
   const viewport = getViewportMetrics();
   const rect = trigger.getBoundingClientRect();
-  const width = Math.max(rect.width, 180);
-  const maxLeft = viewport.offsetLeft + viewport.width - width - 8;
-  const left = Math.max(
-    viewport.offsetLeft + 8,
-    Math.min(rect.left, maxLeft),
+  const parentRect = getParentClampRect(trigger, clampRoot);
+  const width = Math.min(
+    Math.max(rect.width, 180),
+    Math.max(120, parentRect.width || rect.width),
   );
+
+  const minLeft = parentRect.left;
+  const maxLeft = Math.max(minLeft, parentRect.right - width);
+  const left = Math.max(minLeft, Math.min(rect.left, maxLeft));
+
   const gap = 4;
   const edgePad = 8;
   const spaceBelow = Math.max(
     0,
-    viewport.offsetTop + viewport.height - rect.bottom - gap - edgePad,
+    Math.min(viewport.offsetTop + viewport.height, parentRect.bottom) -
+      rect.bottom -
+      gap -
+      edgePad,
   );
-  const spaceAbove = Math.max(0, rect.top - viewport.offsetTop - gap - edgePad);
+  const spaceAbove = Math.max(
+    0,
+    rect.top - Math.max(viewport.offsetTop, parentRect.top) - gap - edgePad,
+  );
 
   const listbox = popper.querySelector('[role="listbox"]');
   const menuViewport = popper.querySelector("[data-radix-select-viewport]");
@@ -257,11 +283,11 @@ function positionPopper(popper, trigger, { popperZIndex = "1050" } = {}) {
   popper.style.setProperty("--radix-popper-anchor-height", `${rect.height}px`);
   popper.style.setProperty(
     "--radix-popper-available-width",
-    `${Math.max(0, viewport.width)}px`,
+    `${Math.max(0, parentRect.width)}px`,
   );
 
   const openBelow = spaceBelow >= spaceAbove;
-  const available = Math.max(120, openBelow ? spaceBelow : spaceAbove);
+  const available = Math.max(80, openBelow ? spaceBelow : spaceAbove);
   popper.style.setProperty(
     "--radix-popper-available-height",
     `${available}px`,
@@ -292,7 +318,10 @@ function positionPopper(popper, trigger, { popperZIndex = "1050" } = {}) {
 
   const top = openBelow
     ? rect.bottom + gap
-    : Math.max(viewport.offsetTop + edgePad, rect.top - popperHeight - gap);
+    : Math.max(
+        Math.max(viewport.offsetTop, parentRect.top) + edgePad,
+        rect.top - popperHeight - gap,
+      );
 
   popper.style.transform = `translate3d(${Math.round(left)}px, ${Math.round(top)}px, 0)`;
 }
@@ -382,7 +411,7 @@ function buildPopperMarkup() {
 function createTriggerButton(initialLabel) {
   const button = createElement(
     "button",
-    "relative clip group/interactable outline-none foundation-web-input flex items-center justify-between width-full cursor-pointer bg-none stroke-standard radius-medium height-1000 padding-x-medium text-body-medium stroke-contrast-alpha focus-within:stroke-system-emphasis content-default",
+    "relative clip group/interactable outline-none foundation-web-input flex items-center justify-between width-full cursor-pointer bg-none stroke-standard radius-medium height-1000 padding-x-medium text-body-medium stroke-contrast-alpha content-default",
   );
   button.type = "button";
   button.setAttribute("role", "combobox");
@@ -554,13 +583,14 @@ export function createDropdown({
     listbox.setAttribute("data-state", open ? "open" : "closed");
     popper.hidden = !open;
     if (open) {
-      ensureDropdownFoundationStyle();
       root.setAttribute("data-roprime-dropdown-open", "1");
       trigger.blur();
       blurActiveElementOutside(root, popper);
       ensureFocusGuards(root, popper);
       applyPageInertState();
-      const position = () => positionPopper(popper, trigger, { popperZIndex });
+      lockPageScroll();
+      const position = () =>
+        positionPopper(popper, trigger, { popperZIndex, clampRoot: root });
       position();
       requestAnimationFrame(position);
       const visible = getVisibleOptions();
@@ -573,13 +603,8 @@ export function createDropdown({
       clearHighlight();
       clearPageInertState();
       removeFocusGuardsIfIdle();
-      const active = document.activeElement;
-      if (
-        active instanceof HTMLElement &&
-        (active === trigger || root.contains(active) || popper.contains(active))
-      ) {
-        active.blur();
-      }
+      unlockPageScroll();
+      trigger.focus({ preventScroll: true });
     }
   };
 
@@ -728,7 +753,7 @@ export function createDropdown({
     positionFrame = requestAnimationFrame(() => {
       positionFrame = 0;
       if (!state.open) return;
-      positionPopper(popper, trigger, { popperZIndex });
+      positionPopper(popper, trigger, { popperZIndex, clampRoot: root });
     });
   };
 

@@ -13,6 +13,10 @@ export function peekRobloxUserId() {
   return cachedAuthUserId;
 }
 
+export function isRobloxAuthenticated() {
+  return peekRobloxUserId() != null;
+}
+
 export function invalidateRobloxUserIdCache() {
   cachedAuthUserId = null;
   authCacheAt = 0;
