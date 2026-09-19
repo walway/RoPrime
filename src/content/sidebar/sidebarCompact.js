@@ -85,6 +85,14 @@ body .no-gutter-ads.logged-in.left-nav-new-width {
 .roblox-events {
   display: none !important;
 }
+li a[href*="/spotlight/the-hunt-roblox-20"] {
+    display: none !important;
+    visibility: hidden !important;
+    height: 0 !important;
+    width: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
 .padding-top-xsmall  {
   display: none !important;
 }

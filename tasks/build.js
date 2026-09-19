@@ -164,10 +164,10 @@ function copyBundleToPlatform(platformDistDir) {
     cpSync(src, join(platformDistDir, file));
   }
   if (!existsSync(join(platformDistDir, "content.js"))) {
-    throw new Error("Missing bundled content.js after esbuild.");
+    throw new Error("Missing content.js after esbuild.");
   }
   if (!existsSync(join(platformDistDir, "avatar-preview.js"))) {
-    throw new Error("Missing bundled avatar-preview.js after esbuild.");
+    throw new Error("Missing avatar-preview.js after esbuild.");
   }
 }
 
@@ -216,7 +216,7 @@ if (supabaseUrl) {
   console.log("Supabase profile effects: enabled for this build.");
 } else {
   console.warn(
-    "No SUPABASE_URL in .env — purchases will not sync to Supabase. See supabase/README.md.",
+    "No SUPABASE_URL in .env — purchases will not sync to Supabase.",
   );
 }
 

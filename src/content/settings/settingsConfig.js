@@ -146,13 +146,6 @@ export const SETTINGS_CONFIG = {
             description: "settings.appearance.oldNavigation.description",
             byDefault: false,
           },
-          {
-            type: "toggle",
-            key: "robloxEventsEnabled",
-            title: "settings.appearance.sidebar.eventsTitle",
-            description: "settings.appearance.sidebar.eventsDescription",
-            byDefault: true,
-          },
         ],
       },
       {
@@ -182,8 +175,22 @@ export const SETTINGS_CONFIG = {
         key: "profileRedesignEnabled",
         title: "settings.appearance.profileRedesign.title",
         description: "settings.appearance.profileRedesign.description",
+        byDefault: true,
+      },
+      {
+        type: "toggle",
+        key: "",
+        title: "Login Page Redesign",
+        description: "Redesigns login page to look like new sign up page. This is completely safe as it manipulates login page to replace colors.",
         byDefault: false,
       },
+            {
+        type: "toggle",
+        key: "",
+        title: "Account Switch Page Redesign",
+        description: "Redesigns account switch page to look new. This is completely safe as it manipulates account switch page to replace colors.",
+        byDefault: false,
+      }
     ],
   },
   home: {
