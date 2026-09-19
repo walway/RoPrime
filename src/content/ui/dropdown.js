@@ -691,7 +691,6 @@ export function createDropdown({
     if (open) {
       root.setAttribute("data-roprime-dropdown-open", "1");
       trigger.classList.add(ROPRIME_STROKE_CLASS);
-      // Open: themed stroke via CSS [data-state=open]; keep focus off blue.
       trigger.blur();
       blurActiveElementOutside(root, popper);
       ensureFocusGuards(root, popper);

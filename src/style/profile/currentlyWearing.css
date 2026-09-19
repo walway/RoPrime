@@ -1,3 +1,7 @@
+.rovalra-container {
+  display: none !important;
+}
+
 .profile-currently-wearing {
   display: block !important;
 }

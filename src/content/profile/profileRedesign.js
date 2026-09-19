@@ -31,6 +31,11 @@ const PROFILE_REDESIGN_CSS = `
   display: none !important;
 }
 
+.profile-tab-content,
+#showcase-content {
+  display: block !important;
+}
+
 .roprime-profile-tab-layout {
   display: flex;
   align-items: stretch;
