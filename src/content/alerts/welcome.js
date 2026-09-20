@@ -332,7 +332,7 @@ function buildWelcomeMarkup(verityUrl) {
           </div>
         </div>
       </div>
-      <p>We hope you will enjoy our extension and will rate us 5 stars on store.</p>
+      <p>We hope you will enjoy our extension and will rate us 5 stars on store!</p>
     </div>
     <div class="padding-x-xlarge padding-bottom-xlarge flex gap-medium justify-end">
       <button type="button" class="foundation-web-button relative clip group/interactable focus-visible:outline-focus disabled:outline-none cursor-pointer relative flex items-center justify-center stroke-none padding-y-none select-none radius-medium text-label-large height-1200 padding-x-medium bg-action-emphasis content-action-emphasis roprime-welcome-ok">
