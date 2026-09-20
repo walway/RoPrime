@@ -34,18 +34,18 @@ let sidebarSizeBeforeCollapseMenu = null;
 const SIDEBAR_ITEM_AVAILABLE_SIZES = {
   "profile-with-avatar": ["full", "small", "icon"],
   home: ["full", "small", "icon"],
+  "profile-no-avatar": ["full", "small", "icon"],
+  "roblox-plus": ["full", "small", "icon"],
   messages: ["full", "small", "icon"],
   friends: ["full", "small", "icon"],
   avatar: ["full", "small", "icon"],
   inventory: ["full", "small", "icon"],
+  favorites: ["full", "small", "icon"],
   trades: ["full", "small", "icon"],
   communities: ["full", "small", "icon"],
   blog: ["full", "small", "icon"],
-  "buy-gift-cards": ["full", "small", "icon"],
   "official-store-button": ["full", "small", "icon"],
-  "profile-no-avatar": ["full", "small", "icon"],
-  "roblox-plus": ["full", "small", "icon"],
-  favorites: ["full", "small", "icon"],
+  "buy-gift-cards": ["full", "small", "icon"],
   "roblox-plus-ad": ["full", "small"],
   "game-events": ["full", "small"],
 };
@@ -60,6 +60,16 @@ export const SIDEBAR_NAV_ITEM_DEFS = [
     id: "home",
     label: "Home",
     find: findHomeLink,
+  },
+  {
+    id: "profile-no-avatar",
+    label: "Profile",
+    find: findProfileWithoutAvatar,
+  },
+  {
+    id: "roblox-plus",
+    label: "Roblox Plus",
+    find: findRobloxPlusLink,
   },
   {
     id: "messages",
@@ -82,6 +92,12 @@ export const SIDEBAR_NAV_ITEM_DEFS = [
     find: findInventoryLink,
   },
   {
+    id: "favorites",
+    label: "Favorites",
+    find: findFavoritesItem,
+    conditional: true,
+  },
+  {
     id: "trades",
     label: "Trades",
     find: findTradesLink,
@@ -97,31 +113,15 @@ export const SIDEBAR_NAV_ITEM_DEFS = [
     find: findBlogLink,
   },
   {
-    id: "buy-gift-cards",
-    label: "Buy Gift Cards",
-    find: findBuyGiftCardsLink,
-  },
-  {
     id: "official-store-button",
     label: "Official Store",
     find: findOfficialStoreButton,
     conditional: true,
   },
   {
-    id: "profile-no-avatar",
-    label: "Profile",
-    find: findProfileWithoutAvatar,
-  },
-  {
-    id: "roblox-plus",
-    label: "Roblox Plus",
-    find: findRobloxPlusLink,
-  },
-  {
-    id: "favorites",
-    label: "Favorites",
-    find: findFavoritesItem,
-    conditional: true,
+    id: "buy-gift-cards",
+    label: "Buy Gift Cards",
+    find: findBuyGiftCardsLink,
   },
   {
     id: "roblox-plus-ad",
