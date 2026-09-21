@@ -242,7 +242,7 @@ function appendPreviewControls(host) {
   viewButton.style.zIndex = "3";
   viewButton.addEventListener("click", () => {
     const nextMode = currentViewMode === "3d" ? "2d" : "3d";
-    // 3D needs an authenticated session; send guests to login and back here.
+    // Non-autheticated users are default to 2d and 3D requires authetication
     if (nextMode === "3d" && !isRobloxAuthenticated()) {
       redirectToLoginForProfile(currentUserId);
       return;
@@ -799,8 +799,6 @@ function stylePreviewHost(host) {
   host.className =
     "roprime-profile-avatar-preview profile-avatar-background-empty-state";
   host.style.position = "relative";
-  // Width is CSS-driven (50% desktop / 100% mobile) so the 3D renderer can
-  // fill to the right edge on narrow viewports.
   host.style.removeProperty("width");
   host.style.removeProperty("max-width");
   host.style.height = `${PREVIEW_HEIGHT}px`;

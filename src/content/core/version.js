@@ -112,11 +112,57 @@ export function getDownloadUrl(config = {}, source = "") {
   return options[0]?.url || "";
 }
 
+async function fetchJsonViaBackground(url) {
+  const response = await new Promise((resolve, reject) => {
+    if (!extensionApi?.runtime?.sendMessage) {
+      reject(new Error("extension_runtime_unavailable"));
+      return;
+    }
+    extensionApi.runtime.sendMessage(
+      {
+        type: "ROPRIME_FETCH",
+        url,
+        method: "GET",
+        credentials: "omit",
+        headers: { "Cache-Control": "no-cache", Pragma: "no-cache" },
+      },
+      (resp) => {
+        const lastError = extensionApi.runtime?.lastError?.message;
+        if (lastError) {
+          reject(new Error(lastError));
+          return;
+        }
+        resolve(resp);
+      },
+    );
+  });
+  if (!response?.ok) {
+    throw new Error(String(response?.error || "background_fetch_failed"));
+  }
+  if (Number(response.status) >= 400) {
+    throw new Error(`version_manifest_fetch_failed:${response.status}`);
+  }
+  const binary = atob(String(response.bodyBase64 || ""));
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i += 1) bytes[i] = binary.charCodeAt(i);
+  const text = new TextDecoder("utf-8").decode(bytes);
+  return JSON.parse(text);
+}
+
 async function fetchJson(url) {
   const bust = `t=${Date.now()}`;
   const joined = url.includes("?") ? `${url}&${bust}` : `${url}?${bust}`;
+
+  // Content scripts cannot CORS raw.githubusercontent.com — proxy via background.
+  try {
+    return await fetchJsonViaBackground(joined);
+  } catch {
+    // Fall through for non-extension / background-unavailable contexts.
+  }
+
   const response = await fetch(joined, {
     cache: "no-store",
+    credentials: "omit",
     headers: { "Cache-Control": "no-cache", Pragma: "no-cache" },
   });
   if (!response.ok) {

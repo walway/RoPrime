@@ -133,7 +133,7 @@
       "resetFailed": "Could not reset settings."
     },
     "info": {
-      "title": "RoPrime",
+      "title": "RoPrime {Version}",
       "body": "RoPrime adds useful design-focused features to the Roblox website. There are also thousands of small fixes. \n\n You can support development of the extension [by donating through gamepasses](https://www.roblox.com/games/98302704001954/YOU-CANT-ESCAPE-this-GAME#!/store)! There will be exclusive Profile Badges for the donators soon. \n\n [X](https://x.com/redprvcise) \n [GitHub](https://github.com/walway/RoPrime) \n [Discord server](https://discord.gg/NjkRz5hUJH)"
     },
     "developer": {

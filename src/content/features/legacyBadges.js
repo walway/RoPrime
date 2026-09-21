@@ -335,7 +335,13 @@ function buildBadgesRoot(badges) {
 }
 
 function insertBadges(tabContent, badges) {
-  tabContent.prepend(buildBadgesRoot(badges));
+  const root = buildBadgesRoot(badges);
+  const carousel = tabContent.querySelector(".profile-carousel");
+  if (carousel instanceof HTMLElement) {
+    carousel.parentElement?.insertBefore(root, carousel);
+    return;
+  }
+  tabContent.appendChild(root);
 }
 
 function renderBadgeRows(root, badges) {

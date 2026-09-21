@@ -289,89 +289,44 @@ function getViewportMetrics() {
   };
 }
 
-function getParentClampRect(trigger, root) {
-  const parent =
-    (root instanceof HTMLElement && root.parentElement) ||
-    (trigger instanceof HTMLElement && trigger.offsetParent) ||
-    null;
-  if (parent instanceof HTMLElement) {
-    return parent.getBoundingClientRect();
-  }
-  const viewport = getViewportMetrics();
-  return {
-    left: viewport.offsetLeft,
-    right: viewport.offsetLeft + viewport.width,
-    top: viewport.offsetTop,
-    bottom: viewport.offsetTop + viewport.height,
-    width: viewport.width,
-    height: viewport.height,
-  };
-}
-
-let scrollLockCount = 0;
-let lockedScrollY = 0;
-
-function lockPageScroll() {
-  scrollLockCount += 1;
-  if (scrollLockCount > 1) return;
-  lockedScrollY = globalThis.scrollY || document.documentElement.scrollTop || 0;
-  const html = document.documentElement;
-  const body = document.body;
-  if (!(body instanceof HTMLElement)) return;
-  const scrollbarGap = Math.max(
-    0,
-    globalThis.innerWidth - html.clientWidth,
-  );
-  // Overflow-only lock — avoid position:fixed (that jumps the footer).
-  html.style.overflow = "hidden";
-  body.style.overflow = "hidden";
-  if (scrollbarGap > 0) {
-    body.style.paddingRight = `${scrollbarGap}px`;
-  }
-}
-
-function unlockPageScroll() {
-  scrollLockCount = Math.max(0, scrollLockCount - 1);
-  if (scrollLockCount > 0) return;
-  const html = document.documentElement;
-  const body = document.body;
-  if (!(body instanceof HTMLElement)) return;
-  html.style.removeProperty("overflow");
-  body.style.removeProperty("overflow");
-  body.style.removeProperty("padding-right");
-  globalThis.scrollTo(0, lockedScrollY);
-}
-
-function positionPopper(popper, trigger, { popperZIndex = "1050", clampRoot = null } = {}) {
+function positionPopper(popper, trigger, { popperZIndex = "1050" } = {}) {
   if (!(popper instanceof HTMLElement) || !(trigger instanceof HTMLElement)) {
     return;
   }
 
   const viewport = getViewportMetrics();
   const rect = trigger.getBoundingClientRect();
-  const parentRect = getParentClampRect(trigger, clampRoot);
-  const width = Math.min(
-    Math.max(rect.width, 180),
-    Math.max(120, parentRect.width || rect.width),
-  );
 
-  const minLeft = parentRect.left;
-  const maxLeft = Math.max(minLeft, parentRect.right - width);
-  const left = Math.max(minLeft, Math.min(rect.left, maxLeft));
-
+  const width = Math.max(rect.width, 1);
   const gap = 4;
   const edgePad = 8;
+
+  const viewLeft = viewport.offsetLeft;
+  const viewRight = viewport.offsetLeft + viewport.width;
+  const viewMin = viewLeft + edgePad;
+  const viewMax = Math.max(viewMin, viewRight - width - edgePad);
+
+  const attachMin = rect.left - width;
+  const attachMax = rect.right;
+  let minLeft = Math.max(viewMin, attachMin);
+  let maxLeft = Math.min(viewMax, attachMax);
+  if (minLeft > maxLeft) {
+    minLeft = attachMin;
+    maxLeft = attachMax;
+  }
+
+  const stickyKey = "_rpStickyShiftX";
+  const stickyShift = Number(popper[stickyKey]) || 0;
+  let left = rect.left + stickyShift;
+  if (left < minLeft) left = minLeft;
+  if (left > maxLeft) left = maxLeft;
+  popper[stickyKey] = left - rect.left;
+
   const spaceBelow = Math.max(
     0,
-    Math.min(viewport.offsetTop + viewport.height, parentRect.bottom) -
-      rect.bottom -
-      gap -
-      edgePad,
+    viewport.offsetTop + viewport.height - rect.bottom - gap - edgePad,
   );
-  const spaceAbove = Math.max(
-    0,
-    rect.top - Math.max(viewport.offsetTop, parentRect.top) - gap - edgePad,
-  );
+  const spaceAbove = Math.max(0, rect.top - viewport.offsetTop - gap - edgePad);
 
   const listbox = popper.querySelector('[role="listbox"]');
   const menuViewport = popper.querySelector("[data-radix-select-viewport]");
@@ -379,19 +334,16 @@ function positionPopper(popper, trigger, { popperZIndex = "1050", clampRoot = nu
   popper.style.position = "fixed";
   popper.style.left = "0px";
   popper.style.top = "0px";
-  popper.style.minWidth = "max-content";
+  popper.style.minWidth = `${width}px`;
   popper.style.width = `${width}px`;
   popper.style.zIndex = String(popperZIndex);
   popper.style.maxHeight = "";
   popper.style.setProperty("--radix-popper-anchor-width", `${width}px`);
   popper.style.setProperty("--radix-popper-anchor-height", `${rect.height}px`);
-  popper.style.setProperty(
-    "--radix-popper-available-width",
-    `${Math.max(0, parentRect.width)}px`,
-  );
+  popper.style.setProperty("--radix-popper-available-width", `${width}px`);
 
   const openBelow = spaceBelow >= spaceAbove;
-  const available = Math.max(80, openBelow ? spaceBelow : spaceAbove);
+  const available = Math.max(120, openBelow ? spaceBelow : spaceAbove);
   popper.style.setProperty(
     "--radix-popper-available-height",
     `${available}px`,
@@ -422,10 +374,7 @@ function positionPopper(popper, trigger, { popperZIndex = "1050", clampRoot = nu
 
   const top = openBelow
     ? rect.bottom + gap
-    : Math.max(
-        Math.max(viewport.offsetTop, parentRect.top) + edgePad,
-        rect.top - popperHeight - gap,
-      );
+    : rect.top - popperHeight - gap;
 
   popper.style.transform = `translate3d(${Math.round(left)}px, ${Math.round(top)}px, 0)`;
 }
@@ -695,9 +644,7 @@ export function createDropdown({
       blurActiveElementOutside(root, popper);
       ensureFocusGuards(root, popper);
       applyPageInertState();
-      lockPageScroll();
-      const position = () =>
-        positionPopper(popper, trigger, { popperZIndex, clampRoot: root });
+      const position = () => positionPopper(popper, trigger, { popperZIndex });
       position();
       requestAnimationFrame(position);
       const visible = getVisibleOptions();
@@ -710,9 +657,8 @@ export function createDropdown({
       clearHighlight();
       clearPageInertState();
       removeFocusGuardsIfIdle();
-      unlockPageScroll();
       trigger.classList.add(ROPRIME_STROKE_CLASS);
-      // Re-focus after the closing pointer event finishes so blue :focus sticks.
+
       const refocus = () => trigger.focus({ preventScroll: true });
       refocus();
       requestAnimationFrame(refocus);
@@ -860,7 +806,7 @@ export function createDropdown({
       close();
       return;
     }
-    // Closed but still focused after close: clear focus on outside click.
+
     if (!inside && document.activeElement === trigger) {
       trigger.blur();
     }
@@ -873,7 +819,7 @@ export function createDropdown({
     positionFrame = requestAnimationFrame(() => {
       positionFrame = 0;
       if (!state.open) return;
-      positionPopper(popper, trigger, { popperZIndex, clampRoot: root });
+      positionPopper(popper, trigger, { popperZIndex });
     });
   };
 

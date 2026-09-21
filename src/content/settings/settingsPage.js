@@ -128,9 +128,13 @@ function appendSvgMarkup(parent, markup) {
   }
 }
 
+function resolveI18nPlaceholders(text) {
+  return String(text || "").replaceAll("{Version}", getExtensionVersion());
+}
+
 function applyI18nText(node, text) {
   if (!(node instanceof HTMLElement)) return;
-  applyPlainOrRichText(node, text);
+  applyPlainOrRichText(node, resolveI18nPlaceholders(text));
 }
 
 function setI18n(node, key) {
@@ -351,6 +355,7 @@ function buildMobileNavigationDropdown() {
     options: getMobileNavigationOptions(),
     wrapperClass: "mobile-navigation-dropdown",
     includeFormGroup: false,
+    useViewportClamp: true,
     onChange: (page) => {
       if (page === "developer" && !isDeveloperPageUnlocked()) return;
       navigateToSettingsPage(page);
