@@ -25,5 +25,13 @@
     "settingsPath": "__roprime__",
     "malicious": "false",
     "noToggle": true
+  },
+  {
+    "key": "RoAvatar - Roblox Avatar Editor Improved",
+    "id": "ifjleokejkklabhcfhppncfdbkmakhdp",
+    "class": "",
+    "settingsPath": "https://roblox.com/roavatar",
+    "malicious": "false",
+    "noToggle": false
   }
 ]

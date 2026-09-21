@@ -410,6 +410,7 @@ async function refreshExtensionsTiles(tiles) {
     const tile = document.createElement("div");
     tile.className = "roprime-ext-tile";
     tile.setAttribute("data-installed", "1");
+    if (plugin.scanned) tile.setAttribute("data-scanned", "1");
 
     const top = document.createElement("div");
     top.className = "roprime-ext-tile-top";
@@ -612,11 +613,41 @@ export function initExtensionsPanel() {
       if (!isOpen()) return;
       if (event.target.closest(`#${PANEL_ID}`)) return;
       if (event.target.closest(`[${MENU_ENTRY_ATTR}="1"]`)) return;
+
       const menuLink = event.target.closest(
         'ul[role="tablist"] a.menu-option-content',
       );
-      if (!menuLink) return;
+      const foundationItem = event.target.closest(
+        "button.foundation-web-menu-item",
+      );
+      const isNativeFoundationNav =
+        foundationItem instanceof HTMLButtonElement &&
+        !foundationItem.hasAttribute(MENU_ENTRY_ATTR) &&
+        !foundationItem.hasAttribute(
+          "data-roprime-foundation-extensions-entry",
+        ) &&
+        !foundationItem.hasAttribute("data-roprime-foundation-menu-entry");
+
+      if (!menuLink && !isNativeFoundationNav) return;
+
       closePanel();
+      const hash = (globalThis.location.hash || "").toLowerCase();
+      if (hash === "#!/extensions" || hash === "#!/plugins") {
+        try {
+          history.replaceState(
+            history.state,
+            "",
+            `${globalThis.location.pathname}${globalThis.location.search}#!/info`,
+          );
+        } catch {
+          try {
+            globalThis.location.hash = "#!/info";
+          } catch {
+            /* ignore */
+          }
+        }
+        globalThis.dispatchEvent(new Event("roprime-location-change"));
+      }
     },
     true,
   );

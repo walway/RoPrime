@@ -36,7 +36,109 @@ function normalizeExtensionItem(x) {
     installType: String(x?.installType || "")
       .trim()
       .toLowerCase(),
+    hostPermissions: Array.isArray(x?.hostPermissions)
+      ? x.hostPermissions.map((entry) => String(entry || ""))
+      : [],
+    permissions: Array.isArray(x?.permissions)
+      ? x.permissions.map((entry) => String(entry || ""))
+      : [],
   };
+}
+
+function collectMatchPatterns(...groups) {
+  const patterns = [];
+  const pushAll = (value) => {
+    if (!value) return;
+    if (Array.isArray(value)) {
+      for (const entry of value) pushAll(entry);
+      return;
+    }
+    if (typeof value === "string") {
+      patterns.push(value);
+      return;
+    }
+    if (typeof value === "object") {
+      for (const nested of Object.values(value)) pushAll(nested);
+    }
+  };
+  for (const group of groups) pushAll(group);
+  return patterns;
+}
+
+function patternsTouchRoblox(patterns) {
+  const blob = (Array.isArray(patterns) ? patterns : [])
+    .map((entry) => String(entry || ""))
+    .join("\n")
+    .toLowerCase();
+  if (!blob) return false;
+  return /(?:^|[*./])roblox\.com\b|rbxcdn\.com\b/.test(
+    blob,
+  );
+}
+
+function managementEntryTouchesRoblox(raw) {
+  if (!raw || typeof raw !== "object") return false;
+  return patternsTouchRoblox(
+    collectMatchPatterns(
+      raw.hostPermissions,
+      raw.permissions,
+      raw.optionalHostPermissions,
+      raw.optionalPermissions,
+    ),
+  );
+}
+
+function permissionWarningsTouchRoblox(warnings) {
+  const blob = (Array.isArray(warnings) ? warnings : [])
+    .map((entry) => String(entry || ""))
+    .join("\n")
+    .toLowerCase();
+  if (!blob) return false;
+  return /roblox\.com|rbxcdn\.com|roblox\.cn|robloxlabs\.com|roblox\.studio|\.rbx\.com\b/.test(
+    blob,
+  );
+}
+
+function getPermissionWarningsById(extensionId) {
+  const id = String(extensionId || "").trim();
+  if (
+    !id ||
+    typeof extensionApi?.management?.getPermissionWarningsById !== "function"
+  ) {
+    return Promise.resolve([]);
+  }
+  return new Promise((resolve) => {
+    try {
+      extensionApi.management.getPermissionWarningsById(id, (warnings) => {
+        asLastErrorMessage();
+        resolve(Array.isArray(warnings) ? warnings : []);
+      });
+    } catch {
+      resolve([]);
+    }
+  });
+}
+
+function collectManifestMatchPatterns(manifest) {
+  const contentMatches = [];
+  for (const script of Array.isArray(manifest?.content_scripts)
+    ? manifest.content_scripts
+    : []) {
+    contentMatches.push(script?.matches, script?.include_globs);
+  }
+  return collectMatchPatterns(
+    manifest?.host_permissions,
+    manifest?.optional_host_permissions,
+    manifest?.permissions,
+    manifest?.optional_permissions,
+    contentMatches,
+    manifest?.externally_connectable?.matches,
+  );
+}
+
+function manifestTouchesRoblox(manifest) {
+  if (!manifest || typeof manifest !== "object") return false;
+  return patternsTouchRoblox(collectManifestMatchPatterns(manifest));
 }
 
 function findAllByKey(items, key) {
@@ -81,7 +183,9 @@ function getManifestIconPath(manifest) {
 
 async function fetchExtensionManifestInfo(extensionId, pageLang = "") {
   const id = String(extensionId || "").trim();
-  if (!id) return { name: "", description: "", iconPath: "" };
+  if (!id) {
+    return { name: "", description: "", iconPath: "", touchesRoblox: false };
+  }
 
   const manifestUrl = `chrome-extension://${id}/manifest.json`;
   try {
@@ -100,6 +204,7 @@ async function fetchExtensionManifestInfo(extensionId, pageLang = "") {
         description:
           localized.description || String(manifest?.description || "").trim(),
         iconPath: getManifestIconPath(manifest),
+        touchesRoblox: manifestTouchesRoblox(manifest),
       };
     }
   } catch {}
@@ -108,13 +213,19 @@ async function fetchExtensionManifestInfo(extensionId, pageLang = "") {
     extensionApi.management.get(id, (item) => {
       const lastErr = asLastErrorMessage();
       if (lastErr || !item) {
-        return resolve({ name: "", description: "", iconPath: "" });
+        return resolve({
+          name: "",
+          description: "",
+          iconPath: "",
+          touchesRoblox: false,
+        });
       }
 
       resolve({
         name: String(item.name || "").trim(),
         description: String(item.description || "").trim(),
         iconPath: "",
+        touchesRoblox: false,
       });
     });
   });
@@ -236,6 +347,7 @@ extensionApi.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
           const installed = items || [];
           const pageLang = String(message?.pageLang || "").trim();
+          const selfId = String(extensionApi?.runtime?.id || "");
 
           Promise.all(
             registry.map(async (entry) => {
@@ -259,10 +371,75 @@ extensionApi.runtime.onMessage.addListener((message, sender, sendResponse) => {
               };
             }),
           )
-            .then((results) => {
+            .then(async (registryResults) => {
+              const plugins = registryResults.filter(Boolean);
+              const seenIds = new Set(
+                plugins.map((plugin) => String(plugin?.item?.id || "")),
+              );
+
+              const scanned = await Promise.all(
+                installed.map(async (raw) => {
+                  const base = normalizeExtensionItem(raw);
+                  if (!base.id || base.id === selfId) return null;
+                  if (seenIds.has(base.id)) return null;
+                  if (String(raw?.type || "").toLowerCase() === "theme") {
+                    return null;
+                  }
+
+                  let touches = managementEntryTouchesRoblox(raw);
+                  if (!touches) {
+                    touches = permissionWarningsTouchRoblox(
+                      await getPermissionWarningsById(base.id),
+                    );
+                  }
+
+                  let manifestInfo = {
+                    name: "",
+                    description: "",
+                    iconPath: "",
+                    touchesRoblox: false,
+                  };
+                  if (!touches) {
+                    manifestInfo = await fetchExtensionManifestInfo(
+                      base.id,
+                      pageLang,
+                    );
+                    if (!manifestInfo.touchesRoblox) return null;
+                  } else {
+                    try {
+                      manifestInfo = await fetchExtensionManifestInfo(
+                        base.id,
+                        pageLang,
+                      );
+                    } catch {
+                      /* ignore */
+                    }
+                  }
+
+                  seenIds.add(base.id);
+                  return {
+                    key: base.name || base.id,
+                    id: "",
+                    class: "",
+                    settingsPath: "",
+                    malicious: false,
+                    noToggle: false,
+                    scanned: true,
+                    item: {
+                      ...base,
+                      name: manifestInfo.name || base.name,
+                      description:
+                        manifestInfo.description ||
+                        String(raw.description || ""),
+                      iconPath: manifestInfo.iconPath || "",
+                    },
+                  };
+                }),
+              );
+
               sendResponse({
                 ok: true,
-                plugins: results.filter(Boolean),
+                plugins: [...plugins, ...scanned.filter(Boolean)],
               });
             })
             .catch((err) => {

@@ -223,6 +223,53 @@ function wireFoundationMenuInteractions(group) {
   });
 }
 
+function leaveExtensionsRoute() {
+  try {
+    sessionStorage.removeItem("roprimeExtensionsPanelOpen");
+  } catch {
+    /* ignore */
+  }
+  const hash = (globalThis.location.hash || "").toLowerCase();
+  if (hash === "#!/extensions" || hash === "#!/plugins") {
+    try {
+      history.replaceState(
+        history.state,
+        "",
+        `${globalThis.location.pathname}${globalThis.location.search}#!/info`,
+      );
+    } catch {
+      try {
+        globalThis.location.hash = "#!/info";
+      } catch {
+        /* ignore */
+      }
+    }
+  }
+  globalThis.dispatchEvent(new Event("roprime-location-change"));
+  syncAllExtensionsEntryAriaSelected();
+  syncMobileAccountDropdownLabel();
+}
+
+function syncMobileAccountDropdownLabel() {
+  const wantExtensions = isExtensionsRouteActive();
+  for (const root of document.querySelectorAll(".mobile-navigation-dropdown")) {
+    if (!(root instanceof HTMLElement)) continue;
+    if (root.closest("#roprime-settings-host")) continue;
+    const title = root.querySelector(
+      'button[role="combobox"] .foundation-web-menu-item-title',
+    );
+    if (!(title instanceof HTMLElement)) continue;
+    if (wantExtensions) {
+      if (title.textContent !== EXTENSIONS_LABEL) {
+        title.textContent = EXTENSIONS_LABEL;
+      }
+      title.dataset.roprimeExtensionsLabel = "1";
+    } else if (title.dataset.roprimeExtensionsLabel === "1") {
+      delete title.dataset.roprimeExtensionsLabel;
+    }
+  }
+}
+
 function navigateToExtensions(e) {
   e.preventDefault();
   e.stopPropagation();
@@ -242,6 +289,7 @@ function navigateToExtensions(e) {
     }
     globalThis.dispatchEvent(new Event("roprime-open-extensions-panel"));
     syncAllExtensionsEntryAriaSelected();
+    syncMobileAccountDropdownLabel();
     return;
   }
   const prefix = getRobloxLocalePathPrefix();
@@ -280,6 +328,16 @@ function onFoundationMenuClick(ev) {
   const settingsButton = ev.target.closest(`button[${ROPRIME_ENTRY_ATTR}="1"]`);
   if (settingsButton instanceof HTMLButtonElement) {
     navigateToRoPrimeSettings(ev);
+    return;
+  }
+
+  const nativeItem = ev.target.closest("button.foundation-web-menu-item");
+  if (
+    nativeItem instanceof HTMLButtonElement &&
+    isExtensionsRouteActive() &&
+    nativeItem.closest(".foundation-web-menu")
+  ) {
+    leaveExtensionsRoute();
   }
 }
 
@@ -431,7 +489,10 @@ function injectFoundationWebMenuEntries() {
 function ensureRouteSyncListeners() {
   if (ensureRouteSyncListeners.bound) return;
   ensureRouteSyncListeners.bound = true;
-  const sync = () => syncAllExtensionsEntryAriaSelected();
+  const sync = () => {
+    syncAllExtensionsEntryAriaSelected();
+    syncMobileAccountDropdownLabel();
+  };
   globalThis.addEventListener("hashchange", sync);
   globalThis.addEventListener("popstate", sync);
   globalThis.addEventListener("roprime-location-change", sync);
@@ -445,6 +506,7 @@ function ensureDomObserver() {
     domObserver = new MutationObserver(() => {
       try {
         injectFoundationWebMenuEntries();
+        syncMobileAccountDropdownLabel();
       } catch (e) {
         if (!isExtensionContextInvalidatedError(e)) throw e;
       }
@@ -487,6 +549,7 @@ export function syncRobloxFoundationWebMenuButton() {
     ensureDomObserver();
     injectFoundationWebMenuEntries();
     syncAllExtensionsEntryAriaSelected();
+    syncMobileAccountDropdownLabel();
   } catch (e) {
     if (isExtensionContextInvalidatedError(e)) return;
     throw e;

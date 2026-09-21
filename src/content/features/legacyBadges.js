@@ -334,14 +334,57 @@ function buildBadgesRoot(badges) {
   return root;
 }
 
+const PLACEMENT_ANCHOR_SELECTORS = [
+  ".profile-communities",
+  ".profile-experiences",
+  ".react-friends-carousel-container",
+  ".profile-favorite-experiences",
+  ".profile-currently-wearing",
+];
+
+function findPlacementAnchor(tabContent) {
+  if (!(tabContent instanceof HTMLElement)) return null;
+  for (const selector of PLACEMENT_ANCHOR_SELECTORS) {
+    const el = tabContent.querySelector(selector);
+    if (el instanceof HTMLElement && el.isConnected) return el;
+  }
+  return null;
+}
+
+function isPlacedBelowAnchor(legacyRoot, anchor) {
+  return (
+    legacyRoot instanceof HTMLElement &&
+    anchor instanceof HTMLElement &&
+    legacyRoot.isConnected &&
+    legacyRoot.previousElementSibling === anchor
+  );
+}
+
+/** Insert below communities / experiences / …, or at the top if none exist. */
+function placeLegacyBadges(legacyRoot, tabContent) {
+  if (!(legacyRoot instanceof HTMLElement)) return false;
+  const host =
+    tabContent instanceof HTMLElement
+      ? tabContent
+      : findTabContent() || legacyRoot.parentElement;
+  if (!(host instanceof HTMLElement)) return false;
+
+  const anchor = findPlacementAnchor(host);
+  if (anchor instanceof HTMLElement && anchor.parentElement) {
+    if (isPlacedBelowAnchor(legacyRoot, anchor)) return true;
+    anchor.parentElement.insertBefore(legacyRoot, anchor.nextSibling);
+    return isPlacedBelowAnchor(legacyRoot, anchor) || legacyRoot.isConnected;
+  }
+
+  if (host.firstElementChild === legacyRoot) return true;
+  host.insertBefore(legacyRoot, host.firstChild);
+  return legacyRoot.isConnected && host.contains(legacyRoot);
+}
+
 function insertBadges(tabContent, badges) {
   const root = buildBadgesRoot(badges);
-  const carousel = tabContent.querySelector(".profile-carousel");
-  if (carousel instanceof HTMLElement) {
-    carousel.parentElement?.insertBefore(root, carousel);
-    return;
-  }
-  tabContent.appendChild(root);
+  placeLegacyBadges(root, tabContent);
+  return root;
 }
 
 function renderBadgeRows(root, badges) {
@@ -435,19 +478,25 @@ function stopProfileWatch() {
 
 function startProfileWatch() {
   const userId = parseUserIdFromUrl();
-  if (profileObserver || !userId || findExistingBadges(userId)?.isConnected) {
-    return;
-  }
+  if (profileObserver || !userId) return;
 
   profileObserver = new MutationObserver(() => {
     const currentUserId = parseUserIdFromUrl();
-    if (!currentUserId || findExistingBadges(currentUserId)?.isConnected) {
+    if (!currentUserId) {
       stopProfileWatch();
       return;
     }
     if (watchTimer != null) return;
     watchTimer = globalThis.setTimeout(() => {
       watchTimer = null;
+      const existing = findExistingBadges(currentUserId);
+      if (existing instanceof HTMLElement && existing.isConnected) {
+        const tab = findTabContent();
+        if (tab && placeLegacyBadges(existing, tab)) {
+          // Keep watching
+        }
+        return;
+      }
       void applyLegacyBadges();
     }, 250);
   });
@@ -464,7 +513,9 @@ async function applyLegacyBadgesNow() {
 
   const existing = findExistingBadges(userId);
   if (existing instanceof HTMLElement && existing.isConnected) {
-    stopProfileWatch();
+    const tab = findTabContent();
+    if (tab) placeLegacyBadges(existing, tab);
+    startProfileWatch();
     return true;
   }
 
@@ -480,7 +531,10 @@ async function applyLegacyBadgesNow() {
   if (!badges.length) return false;
 
   if (findExistingBadges(userId)?.isConnected) {
-    stopProfileWatch();
+    const again = findExistingBadges(userId);
+    const tab = findTabContent();
+    if (again && tab) placeLegacyBadges(again, tab);
+    startProfileWatch();
     return true;
   }
 
@@ -488,14 +542,12 @@ async function applyLegacyBadgesNow() {
   if (!(tabContentNow instanceof HTMLElement)) return false;
 
   ensureStyles();
-  insertBadges(tabContentNow, badges);
-
-  const root = tabContentNow.querySelector(`.${ROOT_CLASS}`);
+  const root = insertBadges(tabContentNow, badges);
   if (!(root instanceof HTMLElement)) return false;
 
   root.dataset.roprimeUserId = String(userId);
   wireSeeMoreToggle(root);
-  stopProfileWatch();
+  startProfileWatch();
   return true;
 }
 
@@ -516,12 +568,8 @@ function onRouteChange() {
   }
 
   const userId = parseUserIdFromUrl();
-  void applyLegacyBadges().then((applied) => {
-    if (
-      !applied &&
-      userId === parseUserIdFromUrl() &&
-      !findExistingBadges(userId)
-    ) {
+  void applyLegacyBadges().then(() => {
+    if (userId === parseUserIdFromUrl() && !findExistingBadges(userId)) {
       startProfileWatch();
     }
   });

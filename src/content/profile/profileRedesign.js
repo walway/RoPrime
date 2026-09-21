@@ -75,12 +75,31 @@ let observedRoot = null;
 const scheduleBubbleSync = debounce(syncBubbleLength, 200);
 const scheduleProfileShellSync = debounce(runProfileShellSync, 250);
 
+function reorderProfileExperiences() {
+  const experiences = document.querySelector(".profile-experiences");
+  if (!(experiences instanceof HTMLElement)) return;
+
+  const communities = document.querySelector(".profile-communities");
+  const legacyBadges = document.querySelector(".roprime-legacy-badges");
+  const bottom = document.querySelector(".profile-bottom");
+
+  const anchor =
+    (communities instanceof HTMLElement && communities) ||
+    (legacyBadges instanceof HTMLElement && legacyBadges) ||
+    (bottom instanceof HTMLElement && bottom) ||
+    null;
+  if (!anchor || experiences === anchor) return;
+  if (experiences.nextElementSibling === anchor) return;
+  anchor.parentElement?.insertBefore(experiences, anchor);
+}
+
 function runProfileShellSync() {
   const layout = ensureRoPrimeProfileTabLayout();
   if (!layout) return;
-  // Inject empty placeholders first.
+  // Inject empty placeholders first
   void syncProfileAvatarRenderer();
   void syncProfileWearingCards(layout);
+  reorderProfileExperiences();
   syncBubbleLength();
 }
 
@@ -142,7 +161,6 @@ function mutationsNeedShellSync(mutations) {
     if (mutation.type !== "childList") continue;
     for (const node of mutation.addedNodes) {
       if (!(node instanceof Element)) continue;
-      // Ignore our own Currently Wearing churn
       if (
         node.matches?.(
           "[data-roprime-profile-tab-layout], [data-roprime-wearing-cards], .roprime-profile-avatar-preview, .pager-holder, .item-card, .thumbnail-loader, .avatar-loading-shimmer-overlay",
