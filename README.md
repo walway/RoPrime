@@ -22,16 +22,18 @@
 RoPrime is absolutely free browser extension that makes the **Roblox website** feel cleaner and adds new features while upgrading its new design.<br>
 You can customize Roblox with a bunch of features to your liking. Here's some features:
 
-- 🎨 Roblox’s UI design style
-- 📐 Customize your sidebar - Full, small, or icon-only modes available
-- 👥 Reimagined friend list styling
-- 🏃 Fast and lightweight
-- ✏️ Rename wording (Groups/Communities, Catalog/Marketplace)
-- 🖼️ Profile page & picture effects
-- 🎛️ Custom CSS injection
+- 🎨 Roblox’s  design style
+- 📐 Fully customizable Sidebar
+- 👥 Friend Styling Reimagined
+- 👨 Profile Redesign with Avatar Preview at the center instead of the top of the page
+- ✏️ Rename wording (Communities/Groups, Marketplace/Catalog, Charts/Discover, Experiences/Games)
+- 🪒 More rounded corners
+- 🎛️ Custom CSS
 - 🔄 Sync settings easily
 - 🌓 Light and dark theme support for Normal, Select and Kids Roblox
 - 🌎 Multilanguage
+
+And more!
 <br>
 
 ## 🚀 Install RoPrime
@@ -46,7 +48,7 @@ You can customize Roblox with a bunch of features to your liking. Here's some fe
 
 ## 🫂 Contribute to the extension
 
-Found a bug or have an idea? [Open an issue](https://github.com/walway/RoPrime/issues) or start a [discussion](https://github.com/walway/RoPrime/discussions). Pull requests are welcome.
+Found a bug or have an idea? [Open an issue](https://github.com/walway/RoPrime/issues) or start a [discussion](https://github.com/walway/RoPrime/discussions). [Pull requests](https://github.com/walway/RoPrime/fork) are welcome.
 
 ## ❤️ Supporters
 
@@ -68,7 +70,17 @@ Found a bug or have an idea? [Open an issue](https://github.com/walway/RoPrime/i
 Thanks to **meflamey** for the Bengali translation<br>
 Thanks to **Ryan Lua** for helping fund the Chrome Developer account
 
-<h2 id="contribution">🌍 Localization</h2> <ol> <li><a>New localization will be released soon</li>
+<h2 id="contribution">🌍 Localization</h2> 
+<p>Help translate the extension into your language by following these steps:</p>
+<ol>
+  <li><strong>Fork</strong> the extension <a href="https://github.com/walway/RoPrime/fork" target="_blank" rel="noopener">here</a>.</li>
+  <li>Open the <code>_locales</code> folder.</li>
+  <li>Create a new folder named after your language's <a href="https://wikipedia.org/wiki/List_of_ISO_639_language_codes" target="_blank" rel="noopener">ISO-639 language code</a> (if it doesn't exist already).</li>
+  <li>Inside your new folder, <strong>copy all files</strong> from the <code>en</code> folder to use as your translation template.</li>
+  <li>Open the copied files and <strong>translate the text strings</strong> into your language.</li>
+  <li>Navigate to <code>src/i18n/i18n-config.js</code> and add your <strong>language code</strong> and its <strong>native language name</strong> to the configuration.</li>
+  <li><strong>Commit</strong> and submit your translations.</li>
+</ol>
 
 <br>
 

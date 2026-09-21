@@ -1,16 +1,24 @@
-
 v1.5
 - New Profile Redesign feature
 - Free Roblox Plus themes
 - New Roblox Badges feature
 - RoPrime Settings page redesign
-- New extensions watching feature
+- Firefox support
+- Mobile support
+- New Extensions panel
+- New More rounded corners feature
+- New Login Page Redesign feature
+- New Account Switch Page Redesign feature
+- New Expand Sidebar on Hover Sidebar feature
+- New Full to Icon Only Collapse Button Sidebar feature
+- New Old Navigation Bar Sidebar feature
 
+- Fixed Search in RoPrime Settings showing each search result without spaces
 - Fixed dropdown button appearing in other dropdowns
 - Fixed Roblox logo always big with Always Show Close Button
+- Fixed Expand button not appearing with Full to Icon Only Collapse Button
 - Fixed Profiles with Always Show Close Button
 - Fixed dropdown button for users having roblox website under parental controls
-- Dropdown button is now 10th/9th in the list
 - Fixed profile picture animation flickering after trying to replay it
 - Fixed presence status icons in group members viewer
 - Fixed memory leak on settings page
