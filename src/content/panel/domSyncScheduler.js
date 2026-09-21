@@ -1,48 +1,48 @@
-import { debounce } from "../core/debounce.js";
-import { syncRoPrimeView } from "./panel.js";
+import { debounce } from '../core/debounce.js'
+import { syncRoPrimeView } from './panel.js'
 
-const DOM_SYNC_DEBOUNCE_MS = 800;
-const FALLBACK_SYNC_MS = 15000;
+const DOM_SYNC_DEBOUNCE_MS = 800
+const FALLBACK_SYNC_MS = 15000
 
-let observer = null;
-let fallbackIntervalId = null;
+let observer = null
+let fallbackIntervalId = null
 
 const scheduleSync = debounce(() => {
-  syncRoPrimeView();
-}, DOM_SYNC_DEBOUNCE_MS);
+    syncRoPrimeView()
+}, DOM_SYNC_DEBOUNCE_MS)
 
 export function installDomSyncScheduler() {
-  if (observer) return;
+    if (observer) return
 
-  observer = new MutationObserver(() => {
-    scheduleSync();
-  });
+    observer = new MutationObserver(() => {
+        scheduleSync()
+    })
 
-  const startObserver = () => {
-    if (!document.body) return;
-    observer.observe(document.body, { childList: true, subtree: true });
-  };
+    const startObserver = () => {
+        if (!document.body) return
+        observer.observe(document.body, { childList: true, subtree: true })
+    }
 
-  if (document.body) startObserver();
-  else {
-    document.addEventListener("DOMContentLoaded", startObserver, {
-      once: true,
-    });
-  }
+    if (document.body) startObserver()
+    else {
+        document.addEventListener('DOMContentLoaded', startObserver, {
+            once: true,
+        })
+    }
 
-  if (fallbackIntervalId === null) {
-    fallbackIntervalId = globalThis.setInterval(() => {
-      syncRoPrimeView();
-    }, FALLBACK_SYNC_MS);
-  }
+    if (fallbackIntervalId === null) {
+        fallbackIntervalId = globalThis.setInterval(() => {
+            syncRoPrimeView()
+        }, FALLBACK_SYNC_MS)
+    }
 }
 
 export function stopDomSyncScheduler() {
-  scheduleSync.cancel();
-  observer?.disconnect();
-  observer = null;
-  if (fallbackIntervalId !== null) {
-    globalThis.clearInterval(fallbackIntervalId);
-    fallbackIntervalId = null;
-  }
+    scheduleSync.cancel()
+    observer?.disconnect()
+    observer = null
+    if (fallbackIntervalId !== null) {
+        globalThis.clearInterval(fallbackIntervalId)
+        fallbackIntervalId = null
+    }
 }

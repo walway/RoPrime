@@ -1,9 +1,9 @@
 export const langList = {
-  en: "English",
-};
+    en: 'English',
+}
 
 export const subsets = {
-  en: "en",
-};
+    en: 'en',
+}
 
-export const defaultLang = "en";
+export const defaultLang = 'en'

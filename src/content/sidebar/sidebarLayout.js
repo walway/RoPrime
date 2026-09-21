@@ -1,10 +1,9 @@
-export const SIDEBAR_FULL_WIDTH_PX = 289;
-export const SIDEBAR_FULL_TOUCH_PADDING_PX = 20;
-export const SIDEBAR_FULL_RESERVED_PX =
-  SIDEBAR_FULL_WIDTH_PX + SIDEBAR_FULL_TOUCH_PADDING_PX;
+export const SIDEBAR_FULL_WIDTH_PX = 289
+export const SIDEBAR_FULL_TOUCH_PADDING_PX = 20
+export const SIDEBAR_FULL_RESERVED_PX = SIDEBAR_FULL_WIDTH_PX + SIDEBAR_FULL_TOUCH_PADDING_PX
 
 export function buildSidebarFullLayoutCss() {
-  return `
+    return `
 .left-nav {
   padding-right: ${SIDEBAR_FULL_TOUCH_PADDING_PX}px !important;
   box-sizing: border-box !important;
@@ -21,5 +20,5 @@ export function buildSidebarFullLayoutCss() {
 .left-nav.fixed .simplebar-content {
   max-width: ${SIDEBAR_FULL_WIDTH_PX}px !important;
 }
-`.trim();
+`.trim()
 }

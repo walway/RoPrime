@@ -1,219 +1,215 @@
-import { appendParsedMarkup } from "../ui/dom.js";
-import {
-  getExtensionResourceUrl,
-  getStorageApi,
-  isExtensionContextInvalidatedError,
-} from "../core/core.js";
-import { getRobloxUserId } from "../profile/robloxUserId.js";
+import { appendParsedMarkup } from '../ui/dom.js'
+import { getExtensionResourceUrl, getStorageApi, isExtensionContextInvalidatedError } from '../core/core.js'
+import { getRobloxUserId } from '../profile/robloxUserId.js'
 
-export const RP_HOME_WELCOME_DISMISSED_KEY = "rpHomeWelcomeDismissed";
+export const RP_HOME_WELCOME_DISMISSED_KEY = 'rpHomeWelcomeDismissed'
 
-const WELCOME_ROOT_ID = "roprime-home-welcome-root";
-const CURRENCY_API = "https://economy.roblox.com/v1/user/currency";
-const HEADSHOT_API = "https://thumbnails.roblox.com/v1/users/avatar-headshot";
-const USER_API = "https://users.roblox.com/v1/users";
-const POPOVER_BASE_CLASS =
-  "fade popover bottom roprime-welcome-preview-popover";
-const POPOVER_OPEN_CLASS =
-  "fade in popover bottom roprime-welcome-preview-popover";
-const extensionApi = globalThis.browser || globalThis.chrome;
+const WELCOME_ROOT_ID = 'roprime-home-welcome-root'
+const CURRENCY_API = 'https://economy.roblox.com/v1/user/currency'
+const HEADSHOT_API = 'https://thumbnails.roblox.com/v1/users/avatar-headshot'
+const USER_API = 'https://users.roblox.com/v1/users'
+const POPOVER_BASE_CLASS = 'fade popover bottom roprime-welcome-preview-popover'
+const POPOVER_OPEN_CLASS = 'fade in popover bottom roprime-welcome-preview-popover'
+const extensionApi = globalThis.browser || globalThis.chrome
 
-let welcomeKeydownHandler = null;
-let storageDismissListenerAttached = false;
-let welcomeDismissedCache = null;
+let welcomeKeydownHandler = null
+let storageDismissListenerAttached = false
+let welcomeDismissedCache = null
 
 function attachDismissStorageListener() {
-  if (storageDismissListenerAttached) return;
-  if (!extensionApi?.storage?.onChanged) return;
-  storageDismissListenerAttached = true;
-  extensionApi.storage.onChanged.addListener((changes, area) => {
-    try {
-      if (area !== "local") return;
-      if (changes[RP_HOME_WELCOME_DISMISSED_KEY]?.newValue === true) {
-        welcomeDismissedCache = true;
-        removeWelcomeIfPresent();
-      }
-    } catch (error) {
-      if (!isExtensionContextInvalidatedError(error)) throw error;
-    }
-  });
+    if (storageDismissListenerAttached) return
+    if (!extensionApi?.storage?.onChanged) return
+    storageDismissListenerAttached = true
+    extensionApi.storage.onChanged.addListener((changes, area) => {
+        try {
+            if (area !== 'local') return
+            if (changes[RP_HOME_WELCOME_DISMISSED_KEY]?.newValue === true) {
+                welcomeDismissedCache = true
+                removeWelcomeIfPresent()
+            }
+        } catch (error) {
+            if (!isExtensionContextInvalidatedError(error)) throw error
+        }
+    })
 }
 
 export function isRobloxHomePage() {
-  const raw = globalThis.location.pathname || "/";
-  const normalized = raw.replace(/\/+$/, "") || "/";
-  if (normalized === "/home") return true;
-  const parts = normalized.split("/").filter(Boolean);
-  return parts.length > 0 && parts[parts.length - 1].toLowerCase() === "home";
+    const raw = globalThis.location.pathname || '/'
+    const normalized = raw.replace(/\/+$/, '') || '/'
+    if (normalized === '/home') return true
+    const parts = normalized.split('/').filter(Boolean)
+    return parts.length > 0 && parts[parts.length - 1].toLowerCase() === 'home'
 }
 
 function removeWelcomeIfPresent() {
-  if (welcomeKeydownHandler) {
-    document.removeEventListener("keydown", welcomeKeydownHandler, true);
-    welcomeKeydownHandler = null;
-  }
-  document.getElementById(WELCOME_ROOT_ID)?.remove();
+    if (welcomeKeydownHandler) {
+        document.removeEventListener('keydown', welcomeKeydownHandler, true)
+        welcomeKeydownHandler = null
+    }
+    document.getElementById(WELCOME_ROOT_ID)?.remove()
 }
 
 function appendWelcomeWhenBodyReady(root) {
-  const mount = () => {
-    if (!document.body) return false;
-    document.body.appendChild(root);
-    return true;
-  };
-  if (mount()) return;
-
-  const observer = new MutationObserver(() => {
-    if (!isRobloxHomePage()) {
-      observer.disconnect();
-      return;
+    const mount = () => {
+        if (!document.body) return false
+        document.body.appendChild(root)
+        return true
     }
-    if (mount()) observer.disconnect();
-  });
-  observer.observe(document.documentElement, {
-    childList: true,
-    subtree: true,
-  });
+    if (mount()) return
+
+    const observer = new MutationObserver(() => {
+        if (!isRobloxHomePage()) {
+            observer.disconnect()
+            return
+        }
+        if (mount()) observer.disconnect()
+    })
+    observer.observe(document.documentElement, {
+        childList: true,
+        subtree: true,
+    })
 }
 
 function persistWelcomeDismissed() {
-  welcomeDismissedCache = true;
-  try {
-    const storage = getStorageApi();
-    if (storage) storage.set({ [RP_HOME_WELCOME_DISMISSED_KEY]: true });
-  } catch {
-    /* ignore */
-  }
+    welcomeDismissedCache = true
+    try {
+        const storage = getStorageApi()
+        if (storage) storage.set({ [RP_HOME_WELCOME_DISMISSED_KEY]: true })
+    } catch {
+        /* ignore */
+    }
 }
 
 function formatUsd(robux) {
-  const amount = Math.max(0, Number(robux) || 0) * 0.0125;
-  return amount.toLocaleString(undefined, {
-    style: "currency",
-    currency: "USD",
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  });
+    const amount = Math.max(0, Number(robux) || 0) * 0.0125
+    return amount.toLocaleString(undefined, {
+        style: 'currency',
+        currency: 'USD',
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+    })
 }
 
 function parseAgeBracketFromPage() {
-  const labels = document.querySelectorAll("body .age-bracket-label");
-  for (const label of labels) {
-    if (!(label instanceof HTMLElement)) continue;
-    if (label.closest(`#${WELCOME_ROOT_ID}`)) continue;
-    const name = String(
-      label.querySelector(".age-bracket-label-username")?.textContent || "",
-    ).trim();
-    const img = label.querySelector(
-      ".thumbnail-2d-container.avatar-card-image img, .avatar-card-image img, img",
-    );
-    let headshot = "";
-    if (img instanceof HTMLImageElement) {
-      headshot = String(img.currentSrc || img.src || "").trim();
-      if (!headshot || headshot.startsWith("data:")) headshot = "";
+    const labels = document.querySelectorAll('body .age-bracket-label')
+    for (const label of labels) {
+        if (!(label instanceof HTMLElement)) continue
+        if (label.closest(`#${WELCOME_ROOT_ID}`)) continue
+        const name = String(
+            label.querySelector('.age-bracket-label-username')?.textContent || '',
+        ).trim()
+        const img = label.querySelector(
+            '.thumbnail-2d-container.avatar-card-image img, .avatar-card-image img, img',
+        )
+        let headshot = ''
+        if (img instanceof HTMLImageElement) {
+            headshot = String(img.currentSrc || img.src || '').trim()
+            if (!headshot || headshot.startsWith('data:')) headshot = ''
+        }
+        if (name || headshot) return { name, headshot }
     }
-    if (name || headshot) return { name, headshot };
-  }
-  return { name: "", headshot: "" };
+    return { name: '', headshot: '' }
 }
 
 function waitForAgeBracket(timeoutMs = 8000) {
-  const existing = parseAgeBracketFromPage();
-  if (existing.name || existing.headshot) return Promise.resolve(existing);
+    const existing = parseAgeBracketFromPage()
+    if (existing.name || existing.headshot) return Promise.resolve(existing)
 
-  return new Promise((resolve) => {
-    let done = false;
-    const finish = (value) => {
-      if (done) return;
-      done = true;
-      observer.disconnect();
-      globalThis.clearTimeout(timer);
-      resolve(value);
-    };
+    return new Promise((resolve) => {
+        let done = false
+        const finish = (value) => {
+            if (done) return
+            done = true
+            observer.disconnect()
+            globalThis.clearTimeout(timer)
+            resolve(value)
+        }
 
-    const observer = new MutationObserver(() => {
-      const next = parseAgeBracketFromPage();
-      if (next.name || next.headshot) finish(next);
-    });
-    observer.observe(document.documentElement, {
-      childList: true,
-      subtree: true,
-      attributes: true,
-      attributeFilter: ["src", "class"],
-    });
+        const observer = new MutationObserver(() => {
+            const next = parseAgeBracketFromPage()
+            if (next.name || next.headshot) finish(next)
+        })
+        observer.observe(document.documentElement, {
+            childList: true,
+            subtree: true,
+            attributes: true,
+            attributeFilter: ['src', 'class'],
+        })
 
-    const timer = globalThis.setTimeout(() => {
-      finish(parseAgeBracketFromPage());
-    }, timeoutMs);
-  });
+        const timer = globalThis.setTimeout(() => {
+            finish(parseAgeBracketFromPage())
+        }, timeoutMs)
+    })
 }
 
 async function fetchProfileFromApi() {
-  const userId = await getRobloxUserId();
-  if (!userId) return { name: "", headshot: "" };
-  let name = "";
-  let headshot = "";
-  try {
-    const userRes = await fetch(`${USER_API}/${userId}`, {
-      credentials: "include",
-    });
-    if (userRes.ok) {
-      const data = await userRes.json();
-      name = String(data?.displayName || data?.name || "").trim();
+    const userId = await getRobloxUserId()
+    if (!userId) return { name: '', headshot: '' }
+    let name = ''
+    let headshot = ''
+    try {
+        const userRes = await fetch(`${USER_API}/${userId}`, {
+            credentials: 'include',
+        })
+        if (userRes.ok) {
+            const data = await userRes.json()
+            name = String(data?.displayName || data?.name || '').trim()
+        }
+    } catch {
+        /* ignore */
     }
-  } catch {
-    /* ignore */
-  }
-  try {
-    const thumbRes = await fetch(
-      `${HEADSHOT_API}?userIds=${encodeURIComponent(String(userId))}&size=150x150&format=Png&isCircular=false`,
-      { credentials: "include" },
-    );
-    if (thumbRes.ok) {
-      const data = await thumbRes.json();
-      headshot = String(data?.data?.[0]?.imageUrl || "").trim();
+    try {
+        const thumbRes = await fetch(
+            `${HEADSHOT_API}?userIds=${encodeURIComponent(String(userId))}&size=150x150&format=Png&isCircular=false`,
+            { credentials: 'include' },
+        )
+        if (thumbRes.ok) {
+            const data = await thumbRes.json()
+            headshot = String(data?.data?.[0]?.imageUrl || '').trim()
+        }
+    } catch {
+        /* ignore */
     }
-  } catch {
-    /* ignore */
-  }
-  return { name, headshot };
+    return { name, headshot }
 }
 
 async function fetchRobuxBalance() {
-  try {
-    const currencyRes = await fetch(CURRENCY_API, { credentials: "include" });
-    if (!currencyRes.ok) return 0;
-    const data = await currencyRes.json();
-    const value = Number(data?.robux);
-    return Number.isFinite(value) && value > 0 ? Math.floor(value) : 0;
-  } catch {
-    return 0;
-  }
+    try {
+        const currencyRes = await fetch(CURRENCY_API, { credentials: 'include' })
+        if (!currencyRes.ok) return 0
+        const data = await currencyRes.json()
+        const value = Number(data?.robux)
+        return Number.isFinite(value) && value > 0 ? Math.floor(value) : 0
+    } catch {
+        return 0
+    }
 }
 
 function setPopoverOpen(popover, open) {
-  if (!(popover instanceof HTMLElement)) return;
-  popover.className = open ? POPOVER_OPEN_CLASS : POPOVER_BASE_CLASS;
-  const key = popover.getAttribute("data-roprime-welcome-popover");
-  if (key) popover.setAttribute("data-roprime-welcome-popover", key);
-  if (popover.id) {
-    /* ignore */
-  }
-  popover.style.display = open ? "block" : "none";
+    if (!(popover instanceof HTMLElement)) return
+    popover.className = open ? POPOVER_OPEN_CLASS : POPOVER_BASE_CLASS
+    const key = popover.getAttribute('data-roprime-welcome-popover')
+    if (key) popover.setAttribute('data-roprime-welcome-popover', key)
+    if (popover.id) {
+        /* ignore */
+    }
+    popover.style.display = open ? 'block' : 'none'
 }
 
 function closeAllPreviewPopovers(preview, except = null) {
-  for (const popover of preview.querySelectorAll(
-    ".roprime-welcome-preview-popover",
-  )) {
-    if (popover === except) continue;
-    setPopoverOpen(popover, false);
-  }
+    for (
+        const popover of preview.querySelectorAll(
+            '.roprime-welcome-preview-popover',
+        )
+    ) {
+        if (popover === except) continue
+        setPopoverOpen(popover, false)
+    }
 }
 
 function buildWelcomeMarkup(verityUrl) {
-  const veritySrc = verityUrl || "";
-  return `
+    const veritySrc = verityUrl || ''
+    return `
 <div data-state="open" class="foundation-web-dialog-overlay padding-medium foundation-web-portal-zindex bg-common-backdrop" style="pointer-events: auto;" data-roprime-welcome-dismiss="backdrop">
   <div role="dialog" data-state="open" class="relative radius-large bg-surface-100 stroke-muted stroke-standard foundation-web-dialog-content shadow-transient-high" data-size="Medium" tabindex="-1" style="pointer-events: auto;">
     <div class="absolute foundation-web-dialog-close-container">
@@ -262,7 +258,9 @@ function buildWelcomeMarkup(verityUrl) {
                                 </div>
                                 <div class="notification-stream-body">
                                   <div class="container-empty roprime-welcome-verity-empty">
-                                    <img class="roprime-welcome-verity" data-roprime-welcome-verity alt="" ${veritySrc ? `src="${veritySrc}"` : ""} />
+                                    <img class="roprime-welcome-verity" data-roprime-welcome-verity alt="" ${
+        veritySrc ? `src="${veritySrc}"` : ''
+    } />
                                   </div>
                                 </div>
                               </div>
@@ -344,212 +342,212 @@ function buildWelcomeMarkup(verityUrl) {
     </div>
   </div>
 </div>
-`;
+`
 }
 
 function wireWelcomePreview(root) {
-  const preview = root.querySelector(".roprime-welcome-preview-frame");
-  if (!(preview instanceof HTMLElement)) return;
+    const preview = root.querySelector('.roprime-welcome-preview-frame')
+    if (!(preview instanceof HTMLElement)) return
 
-  preview.addEventListener("click", (event) => {
-    const settingsLink = event.target?.closest?.(
-      "a.roprime-welcome-settings-link",
-    );
-    if (settingsLink instanceof HTMLAnchorElement) {
-      persistWelcomeDismissed();
-      return;
-    }
+    preview.addEventListener('click', (event) => {
+        const settingsLink = event.target?.closest?.(
+            'a.roprime-welcome-settings-link',
+        )
+        if (settingsLink instanceof HTMLAnchorElement) {
+            persistWelcomeDismissed()
+            return
+        }
 
-    const trigger = event.target?.closest?.(
-      "[data-roprime-welcome-popover-trigger]",
-    );
-    if (!(trigger instanceof HTMLElement)) return;
-    event.preventDefault();
-    event.stopPropagation();
-    const key = trigger.getAttribute("data-roprime-welcome-popover-trigger");
-    const popover = preview.querySelector(
-      `[data-roprime-welcome-popover="${key}"]`,
-    );
-    if (!(popover instanceof HTMLElement)) return;
-    const willOpen = !popover.classList.contains("in");
-    closeAllPreviewPopovers(preview, willOpen ? popover : null);
-    setPopoverOpen(popover, willOpen);
-  });
+        const trigger = event.target?.closest?.(
+            '[data-roprime-welcome-popover-trigger]',
+        )
+        if (!(trigger instanceof HTMLElement)) return
+        event.preventDefault()
+        event.stopPropagation()
+        const key = trigger.getAttribute('data-roprime-welcome-popover-trigger')
+        const popover = preview.querySelector(
+            `[data-roprime-welcome-popover="${key}"]`,
+        )
+        if (!(popover instanceof HTMLElement)) return
+        const willOpen = !popover.classList.contains('in')
+        closeAllPreviewPopovers(preview, willOpen ? popover : null)
+        setPopoverOpen(popover, willOpen)
+    })
 }
 
 function applyAvatar(wrap, headshot, name) {
-  if (!(wrap instanceof HTMLElement)) return;
-  wrap.textContent = "";
-  wrap.classList.add("thumbnail-2d-container", "avatar-card-image");
-  if (!headshot) {
-    wrap.classList.add("shimmer");
-    return;
-  }
+    if (!(wrap instanceof HTMLElement)) return
+    wrap.textContent = ''
+    wrap.classList.add('thumbnail-2d-container', 'avatar-card-image')
+    if (!headshot) {
+        wrap.classList.add('shimmer')
+        return
+    }
 
-  wrap.classList.add("shimmer");
-  const img = document.createElement("img");
-  img.alt = name || "";
-  img.decoding = "async";
-  const reveal = () => {
-    wrap.classList.remove("shimmer");
-  };
-  img.addEventListener("load", reveal, { once: true });
-  img.addEventListener("error", reveal, { once: true });
-  // If cached, load may have already fired before listeners.
-  img.src = headshot;
-  wrap.appendChild(img);
-  if (img.complete && img.naturalWidth > 0) reveal();
+    wrap.classList.add('shimmer')
+    const img = document.createElement('img')
+    img.alt = name || ''
+    img.decoding = 'async'
+    const reveal = () => {
+        wrap.classList.remove('shimmer')
+    }
+    img.addEventListener('load', reveal, { once: true })
+    img.addEventListener('error', reveal, { once: true })
+    // If cached, load may have already fired before listeners.
+    img.src = headshot
+    wrap.appendChild(img)
+    if (img.complete && img.naturalWidth > 0) reveal()
 }
 
 async function hydrateWelcomePreview(root) {
-  const avatarWrap = root.querySelector("[data-roprime-welcome-avatar-wrap]");
-  if (avatarWrap instanceof HTMLElement) {
-    avatarWrap.classList.add(
-      "thumbnail-2d-container",
-      "shimmer",
-      "avatar-card-image",
-    );
-    avatarWrap.textContent = "";
-  }
+    const avatarWrap = root.querySelector('[data-roprime-welcome-avatar-wrap]')
+    if (avatarWrap instanceof HTMLElement) {
+        avatarWrap.classList.add(
+            'thumbnail-2d-container',
+            'shimmer',
+            'avatar-card-image',
+        )
+        avatarWrap.textContent = ''
+    }
 
-  let fromPage = await waitForAgeBracket(6000);
-  let name = fromPage.name || "";
-  let headshot = fromPage.headshot || "";
+    let fromPage = await waitForAgeBracket(6000)
+    let name = fromPage.name || ''
+    let headshot = fromPage.headshot || ''
 
-  if (!name || !headshot) {
-    const fromApi = await fetchProfileFromApi();
-    name = name || fromApi.name;
-    headshot = headshot || fromApi.headshot;
-  }
+    if (!name || !headshot) {
+        const fromApi = await fetchProfileFromApi()
+        name = name || fromApi.name
+        headshot = headshot || fromApi.headshot
+    }
 
-  // Age-bracket img can appear after the username — one more pass.
-  if (!headshot) {
-    fromPage = parseAgeBracketFromPage();
-    headshot = fromPage.headshot || headshot;
-    name = name || fromPage.name;
-  }
+    // Age-bracket img can appear after the username — one more pass.
+    if (!headshot) {
+        fromPage = parseAgeBracketFromPage()
+        headshot = fromPage.headshot || headshot
+        name = name || fromPage.name
+    }
 
-  for (const node of root.querySelectorAll("[data-roprime-welcome-name]")) {
-    node.textContent = name;
-  }
+    for (const node of root.querySelectorAll('[data-roprime-welcome-name]')) {
+        node.textContent = name
+    }
 
-  applyAvatar(avatarWrap, headshot, name);
+    applyAvatar(avatarWrap, headshot, name)
 
-  const robuxItem = root.querySelector("[data-roprime-welcome-robux-item]");
-  if (!(robuxItem instanceof HTMLElement)) return;
+    const robuxItem = root.querySelector('[data-roprime-welcome-robux-item]')
+    if (!(robuxItem instanceof HTMLElement)) return
 
-  robuxItem.hidden = true;
-  const robux = await fetchRobuxBalance();
-  if (robux <= 0) {
-    robuxItem.hidden = true;
-    return;
-  }
+    robuxItem.hidden = true
+    const robux = await fetchRobuxBalance()
+    if (robux <= 0) {
+        robuxItem.hidden = true
+        return
+    }
 
-  robuxItem.hidden = false;
-  for (const node of root.querySelectorAll("[data-roprime-welcome-robux]")) {
-    node.textContent = String(robux);
-  }
-  const usdNode = root.querySelector("[data-roprime-welcome-usd]");
-  if (usdNode instanceof HTMLElement) {
-    usdNode.textContent = `(${formatUsd(robux)})`;
-  }
-  const robuxBtn = robuxItem.querySelector("button");
-  if (robuxBtn instanceof HTMLElement) {
-    robuxBtn.setAttribute("aria-label", `Robux: ${robux}`);
-  }
+    robuxItem.hidden = false
+    for (const node of root.querySelectorAll('[data-roprime-welcome-robux]')) {
+        node.textContent = String(robux)
+    }
+    const usdNode = root.querySelector('[data-roprime-welcome-usd]')
+    if (usdNode instanceof HTMLElement) {
+        usdNode.textContent = `(${formatUsd(robux)})`
+    }
+    const robuxBtn = robuxItem.querySelector('button')
+    if (robuxBtn instanceof HTMLElement) {
+        robuxBtn.setAttribute('aria-label', `Robux: ${robux}`)
+    }
 }
 
 function showWelcomeModal() {
-  if (document.getElementById(WELCOME_ROOT_ID)) return;
+    if (document.getElementById(WELCOME_ROOT_ID)) return
 
-  const root = document.createElement("div");
-  root.id = WELCOME_ROOT_ID;
-  root.setAttribute("role", "dialog");
-  root.setAttribute("aria-modal", "true");
-  root.setAttribute("aria-labelledby", "roprime-welcome-title");
+    const root = document.createElement('div')
+    root.id = WELCOME_ROOT_ID
+    root.setAttribute('role', 'dialog')
+    root.setAttribute('aria-modal', 'true')
+    root.setAttribute('aria-labelledby', 'roprime-welcome-title')
 
-  const iconUrl = getExtensionResourceUrl("resources/roprime-icon.png") || "";
-  const verityUrl = getExtensionResourceUrl("resources/badges/memes/Verity.webp") || "";
-  appendParsedMarkup(root, buildWelcomeMarkup(verityUrl));
+    const iconUrl = getExtensionResourceUrl('resources/roprime-icon.png') || ''
+    const verityUrl = getExtensionResourceUrl('resources/badges/memes/Verity.webp') || ''
+    appendParsedMarkup(root, buildWelcomeMarkup(verityUrl))
 
-  const iconImg = root.querySelector("[data-roprime-welcome-icon]");
-  if (iconImg instanceof HTMLImageElement && iconUrl) {
-    iconImg.src = iconUrl;
-  }
-  const verityImg = root.querySelector("[data-roprime-welcome-verity]");
-  if (verityImg instanceof HTMLImageElement && verityUrl) {
-    verityImg.src = verityUrl;
-  }
+    const iconImg = root.querySelector('[data-roprime-welcome-icon]')
+    if (iconImg instanceof HTMLImageElement && iconUrl) {
+        iconImg.src = iconUrl
+    }
+    const verityImg = root.querySelector('[data-roprime-welcome-verity]')
+    if (verityImg instanceof HTMLImageElement && verityUrl) {
+        verityImg.src = verityUrl
+    }
 
-  wireWelcomePreview(root);
-  void hydrateWelcomePreview(root);
+    wireWelcomePreview(root)
+    void hydrateWelcomePreview(root)
 
-  const dismiss = () => {
-    persistWelcomeDismissed();
-    removeWelcomeIfPresent();
-  };
+    const dismiss = () => {
+        persistWelcomeDismissed()
+        removeWelcomeIfPresent()
+    }
 
-  root.querySelector(".roprime-welcome-ok")?.addEventListener("click", dismiss);
-  root
-    .querySelector(".roprime-welcome-close")
-    ?.addEventListener("click", dismiss);
-  root
-    .querySelector("[data-roprime-welcome-dismiss='backdrop']")
-    ?.addEventListener("click", (event) => {
-      if (event.target === event.currentTarget) dismiss();
-    });
+    root.querySelector('.roprime-welcome-ok')?.addEventListener('click', dismiss)
+    root
+        .querySelector('.roprime-welcome-close')
+        ?.addEventListener('click', dismiss)
+    root
+        .querySelector("[data-roprime-welcome-dismiss='backdrop']")
+        ?.addEventListener('click', (event) => {
+            if (event.target === event.currentTarget) dismiss()
+        })
 
-  welcomeKeydownHandler = (event) => {
-    if (event.key === "Escape") dismiss();
-  };
-  document.addEventListener("keydown", welcomeKeydownHandler, true);
+    welcomeKeydownHandler = (event) => {
+        if (event.key === 'Escape') dismiss()
+    }
+    document.addEventListener('keydown', welcomeKeydownHandler, true)
 
-  appendWelcomeWhenBodyReady(root);
+    appendWelcomeWhenBodyReady(root)
 }
 
 export function syncHomeWelcomeModal() {
-  attachDismissStorageListener();
-  if (!isRobloxHomePage()) {
-    removeWelcomeIfPresent();
-    return;
-  }
+    attachDismissStorageListener()
+    if (!isRobloxHomePage()) {
+        removeWelcomeIfPresent()
+        return
+    }
 
-  if (welcomeDismissedCache === true) {
-    removeWelcomeIfPresent();
-    return;
-  }
-  if (welcomeDismissedCache === false) {
-    showWelcomeModal();
-    return;
-  }
+    if (welcomeDismissedCache === true) {
+        removeWelcomeIfPresent()
+        return
+    }
+    if (welcomeDismissedCache === false) {
+        showWelcomeModal()
+        return
+    }
 
-  const storage = getStorageApi();
-  if (!storage) {
-    welcomeDismissedCache = false;
-    showWelcomeModal();
-    return;
-  }
+    const storage = getStorageApi()
+    if (!storage) {
+        welcomeDismissedCache = false
+        showWelcomeModal()
+        return
+    }
 
-  try {
-    storage.get([RP_HOME_WELCOME_DISMISSED_KEY], (result) => {
-      try {
-        if (extensionApi?.runtime?.lastError) {
-          if (isRobloxHomePage()) showWelcomeModal();
-          return;
-        }
-        if (!isRobloxHomePage()) return;
-        if (result?.[RP_HOME_WELCOME_DISMISSED_KEY] === true) {
-          welcomeDismissedCache = true;
-          removeWelcomeIfPresent();
-          return;
-        }
-        welcomeDismissedCache = false;
-        showWelcomeModal();
-      } catch {
-        /* ignore */
-      }
-    });
-  } catch {
-    if (isRobloxHomePage()) showWelcomeModal();
-  }
+    try {
+        storage.get([RP_HOME_WELCOME_DISMISSED_KEY], (result) => {
+            try {
+                if (extensionApi?.runtime?.lastError) {
+                    if (isRobloxHomePage()) showWelcomeModal()
+                    return
+                }
+                if (!isRobloxHomePage()) return
+                if (result?.[RP_HOME_WELCOME_DISMISSED_KEY] === true) {
+                    welcomeDismissedCache = true
+                    removeWelcomeIfPresent()
+                    return
+                }
+                welcomeDismissedCache = false
+                showWelcomeModal()
+            } catch {
+                /* ignore */
+            }
+        })
+    } catch {
+        if (isRobloxHomePage()) showWelcomeModal()
+    }
 }

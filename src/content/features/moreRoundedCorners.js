@@ -1,8 +1,7 @@
-import { settingsState, shouldRunRoPrimeOnCurrentPage } from "../core/core.js";
-import { registerFeature } from "./registry.js";
+import { settingsState, shouldRunRoPrimeOnCurrentPage } from '../core/core.js'
+import { registerFeature } from './registry.js'
 
-export const RP_MORE_ROUNDED_CORNERS_STYLE_ID =
-  "roprime-more-rounded-corners-style";
+export const RP_MORE_ROUNDED_CORNERS_STYLE_ID = 'roprime-more-rounded-corners-style'
 
 const MORE_ROUNDED_CORNERS_CSS = `
 .carousel-item,
@@ -55,26 +54,26 @@ li[href="#!/shoes/right-shoe"],
 li[href="#!/tops/jackets"] {
   border-radius: 0 0 8px 8px;
 }
-`.trim();
+`.trim()
 
 export function syncMoreRoundedCorners() {
-  if (!shouldRunRoPrimeOnCurrentPage()) return;
+    if (!shouldRunRoPrimeOnCurrentPage()) return
 
-  const existing = document.getElementById(RP_MORE_ROUNDED_CORNERS_STYLE_ID);
-  if (!settingsState.moreRoundedCornersEnabled) {
-    existing?.remove();
-    return;
-  }
+    const existing = document.getElementById(RP_MORE_ROUNDED_CORNERS_STYLE_ID)
+    if (!settingsState.moreRoundedCornersEnabled) {
+        existing?.remove()
+        return
+    }
 
-  let style = existing;
-  if (!(style instanceof HTMLStyleElement)) {
-    style = document.createElement("style");
-    style.id = RP_MORE_ROUNDED_CORNERS_STYLE_ID;
-    (document.head || document.documentElement).appendChild(style);
-  }
-  if (style.textContent !== MORE_ROUNDED_CORNERS_CSS) {
-    style.textContent = MORE_ROUNDED_CORNERS_CSS;
-  }
+    let style = existing
+    if (!(style instanceof HTMLStyleElement)) {
+        style = document.createElement('style')
+        style.id = RP_MORE_ROUNDED_CORNERS_STYLE_ID
+        ;(document.head || document.documentElement).appendChild(style)
+    }
+    if (style.textContent !== MORE_ROUNDED_CORNERS_CSS) {
+        style.textContent = MORE_ROUNDED_CORNERS_CSS
+    }
 }
 
-registerFeature(syncMoreRoundedCorners);
+registerFeature(syncMoreRoundedCorners)

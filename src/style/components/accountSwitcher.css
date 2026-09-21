@@ -1,43 +1,43 @@
 .account-selection {
-  background-color: transparent !important;
-  border-radius: var(--radius-medium) !important;
-  transition: all .1s linear;
+    background-color: transparent !important;
+    border-radius: var(--radius-medium) !important;
+    transition: all .1s linear;
 }
 
 .account-selection:hover {
-  background-color: var(--color-state-hover) !important;
+    background-color: var(--color-state-hover) !important;
 }
 
 .account-selection:active {
-  background-color: var(--color-state-press) !important;
+    background-color: var(--color-state-press) !important;
 }
 
 .account-switcher-section {
-  background-color: var(--color-surface-100) !important;
-  border-radius: var(--radius-large);
+    background-color: var(--color-surface-100) !important;
+    border-radius: var(--radius-large);
 }
 
 .account-switcher-list .account-selection-list-item {
-  width: 100%;
-  height: unset !important;
+    width: 100%;
+    height: unset !important;
 }
 
 .account-switcher-icon-add {
-  display: none !important;
+    display: none !important;
 }
 
 .roprime-account-switcher-hover .spinner {
-  display: none !important;
+    display: none !important;
 }
 
 .account-switcher-header > button {
-  outline: none;
-  margin-top: 4px !important;
-  float: right !important;
+    outline: none;
+    margin-top: 4px !important;
+    float: right !important;
 }
 
 .account-switcher-header > h4 {
-  justify-content: center;
-  display: flex;
-  margin-left: 32px;
+    justify-content: center;
+    display: flex;
+    margin-left: 32px;
 }

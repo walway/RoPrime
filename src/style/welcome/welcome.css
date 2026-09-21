@@ -7,27 +7,27 @@
     overflow: hidden;
     contain: layout size style;
     border-radius: var(--radius-medium);
-  }
+}
 
 #roprime-home-welcome-root .icon-robux-28x28 {
-  background-position: 0 0;
+    background-position: 0 0;
 }
 
 #nav-robux-balance > span.text-label:nth-of-type(2) {
-  display: none !important;
+    display: none !important;
 }
 
 #roprime-home-welcome-root .roprime-welcome-preview-popover:not(.in) {
-  pointer-events: none;
+    pointer-events: none;
 }
 
 #roprime-home-welcome-root .roprime-welcome-verity {
-  width: 200px;
-  user-select: none;
-  margin-bottom: 0px;
+    width: 200px;
+    user-select: none;
+    margin-bottom: 0px;
 }
 
 #roprime-home-welcome-root .notification-stream-body {
-  width: 300px;
-  height: 230px;
+    width: 300px;
+    height: 230px;
 }

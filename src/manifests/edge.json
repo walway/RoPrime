@@ -1,56 +1,56 @@
 {
-  "manifest_version": 3,
-  "name": "__MSG_extName__",
-  "version": "1.5.0",
-  "default_locale": "en",
-  "description": "__MSG_extDescription__",
-  "permissions": ["storage", "management"],
-  "host_permissions": [
-    "*://*.roblox.com/*",
-    "*://*.rbxcdn.com/*",
-    "https://raw.githubusercontent.com/*",
-    "https://chromewebstore.googleapis.com/*",
-    "https://lh3.googleusercontent.com/*"
-  ],
-  "background": {
-    "service_worker": "background.js"
-  },
-  "action": {
-    "default_title": "__MSG_extActionTitle__"
-  },
-  "icons": {
-    "16": "resources/icons/icon16.png",
-    "32": "resources/icons/icon32.png",
-    "48": "resources/icons/icon48.png",
-    "64": "resources/icons/icon64.png",
-    "128": "resources/icons/icon128.png"
-  },
-  "web_accessible_resources": [
-    {
-      "resources": [
-        "resources/vendor/draco_decoder.js",
-        "resources/vendor/material-symbols-outlined.ttf",
-        "avatar-preview.js",
-        "resources/roprime-icon.png",
-        "resources/Verity.webp",
-        "resources/RblxPlusLogo.webp",
-        "resources/logo.svg",
-        "resources/EventLogo2024.svg",
-        "resources/icons/*",
-        "_locales/**/*",
-        "src/strings/**/*",
-        "resources/data/*",
-        "resources/badges/*"
-      ],
-      "matches": ["*://www.roblox.com/*", "*://roblox.com/*"]
-    }
-  ],
-  "content_scripts": [
-    {
-      "matches": ["*://www.roblox.com/*", "*://roblox.com/*"],
-      "js": ["content.js"],
-      "css": ["src/style/index.css"],
-      "run_at": "document_start"
-    }
-  ]
+    "manifest_version": 3,
+    "name": "__MSG_extName__",
+    "version": "1.5.0",
+    "default_locale": "en",
+    "description": "__MSG_extDescription__",
+    "permissions": ["storage", "management"],
+    "host_permissions": [
+        "*://*.roblox.com/*",
+        "*://*.rbxcdn.com/*",
+        "https://raw.githubusercontent.com/*",
+        "https://chromewebstore.googleapis.com/*",
+        "https://lh3.googleusercontent.com/*"
+    ],
+    "background": {
+        "service_worker": "background.js"
+    },
+    "action": {
+        "default_title": "__MSG_extActionTitle__"
+    },
+    "icons": {
+        "16": "resources/icons/icon16.png",
+        "32": "resources/icons/icon32.png",
+        "48": "resources/icons/icon48.png",
+        "64": "resources/icons/icon64.png",
+        "128": "resources/icons/icon128.png"
+    },
+    "web_accessible_resources": [
+        {
+            "resources": [
+                "resources/vendor/draco_decoder.js",
+                "resources/vendor/material-symbols-outlined.ttf",
+                "avatar-preview.js",
+                "resources/roprime-icon.png",
+                "resources/Verity.webp",
+                "resources/RblxPlusLogo.webp",
+                "resources/logo.svg",
+                "resources/EventLogo2024.svg",
+                "resources/icons/*",
+                "_locales/**/*",
+                "src/strings/**/*",
+                "resources/data/*",
+                "resources/badges/*"
+            ],
+            "matches": ["*://www.roblox.com/*", "*://roblox.com/*"]
+        }
+    ],
+    "content_scripts": [
+        {
+            "matches": ["*://www.roblox.com/*", "*://roblox.com/*"],
+            "js": ["content.js"],
+            "css": ["src/style/index.css"],
+            "run_at": "document_start"
+        }
+    ]
 }

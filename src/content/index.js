@@ -1,156 +1,156 @@
 import {
-  isExtensionContextInvalidatedError,
-  loadSettings,
-  loadSettingsUiStrings,
-  RP_SETTINGS_KEY,
-  reloadSettingsUiStrings,
-  shouldRunRoPrimeOnCurrentPage,
-  syncAccountSettingsLayoutInset,
-} from "./core/core.js";
-import { syncAllFeatures } from "./features/registry.js";
-import { syncAccountSettingsMenuButton } from "./redirect/settingsButton.js";
-import { initExtensionsPanel } from "./panel/extensions.js";
-import "./features/legacyBadges.js";
-import "./roblox.com/info/roblox-badges.js";
-import { syncHomeWelcomeModal } from "./alerts/welcome.js";
-import { syncVersionUpdateAlert } from "./alerts/versionAlert.js";
+    isExtensionContextInvalidatedError,
+    loadSettings,
+    loadSettingsUiStrings,
+    reloadSettingsUiStrings,
+    RP_SETTINGS_KEY,
+    shouldRunRoPrimeOnCurrentPage,
+    syncAccountSettingsLayoutInset,
+} from './core/core.js'
+import { syncAllFeatures } from './features/registry.js'
+import { syncAccountSettingsMenuButton } from './redirect/settingsButton.js'
+import { initExtensionsPanel } from './panel/extensions.js'
+import './features/legacyBadges.js'
+import './roblox.com/info/roblox-badges.js'
+import { syncHomeWelcomeModal } from './alerts/welcome.js'
+import { syncVersionUpdateAlert } from './alerts/versionAlert.js'
 import {
-  applyChartsRename,
-  applyCommunityRename,
-  applyExperiencesRename,
-  applyMarketplaceRename,
-  updateRenameLoop,
-} from "./features/rename.js";
-import { installSearchBanObserver } from "./features/searchBan.js";
-import { installDomSyncScheduler } from "./panel/domSyncScheduler.js";
-import "./panel/panel.js";
-import { installFriendCarouselEffects } from "./profile/friendCarouselEffects.js";
-import { installProfilePageEffectObserver } from "./profile/profileEffectsDisplay.js";
-import { installProfileRedesignObserver } from "./profile/profileRedesign.js";
-import { normalizeEquippedProfileEffects } from "./settings/profileSettings.js";
-import { syncProfileSettingsRoute } from "./settings/profileSettings.js";
-import "./sidebar/sidebarContent.js";
-import "./sidebar/sidebarFullTouch.js";
-import { initFreeRobloxThemes } from "./account/freeThemes.js";
-import "./home/hideExperiencesAds.js";
-import "./features/customCss.js";
-import "./features/moreRoundedCorners.js";
-import "./features/searchBan.js";
-import "./profile/friendCarouselEffects.js";
-import "./profile/profileEffectsDisplay.js";
-import "./memes/rickRoll.js";
-import "./account/freeThemes.js";
-import "./sidebar/robloxEvents.js";
-import "./profile/profileRedesign.js";
-import "./account/classicIcon.js";
-import "./inventory/menuOptions.js";
-import "./ui/accountSwitcher.js";
-import "./ui/loginPage.js";
+    applyChartsRename,
+    applyCommunityRename,
+    applyExperiencesRename,
+    applyMarketplaceRename,
+    updateRenameLoop,
+} from './features/rename.js'
+import { installSearchBanObserver } from './features/searchBan.js'
+import { installDomSyncScheduler } from './panel/domSyncScheduler.js'
+import './panel/panel.js'
+import { installFriendCarouselEffects } from './profile/friendCarouselEffects.js'
+import { installProfilePageEffectObserver } from './profile/profileEffectsDisplay.js'
+import { installProfileRedesignObserver } from './profile/profileRedesign.js'
+import { normalizeEquippedProfileEffects } from './settings/profileSettings.js'
+import { syncProfileSettingsRoute } from './settings/profileSettings.js'
+import './sidebar/sidebarContent.js'
+import './sidebar/sidebarFullTouch.js'
+import { initFreeRobloxThemes } from './account/freeThemes.js'
+import './home/hideExperiencesAds.js'
+import './features/customCss.js'
+import './features/moreRoundedCorners.js'
+import './features/searchBan.js'
+import './profile/friendCarouselEffects.js'
+import './profile/profileEffectsDisplay.js'
+import './memes/rickRoll.js'
+import './account/freeThemes.js'
+import './sidebar/robloxEvents.js'
+import './profile/profileRedesign.js'
+import './account/classicIcon.js'
+import './inventory/menuOptions.js'
+import './ui/accountSwitcher.js'
+import './ui/loginPage.js'
 
-const extensionApi = globalThis.browser || globalThis.chrome;
+const extensionApi = globalThis.browser || globalThis.chrome
 
 function runSyncPass() {
-  syncAllFeatures();
-  syncProfileSettingsRoute();
-  syncAccountSettingsMenuButton();
-  syncAccountSettingsLayoutInset();
-  syncHomeWelcomeModal();
-  syncVersionUpdateAlert();
+    syncAllFeatures()
+    syncProfileSettingsRoute()
+    syncAccountSettingsMenuButton()
+    syncAccountSettingsLayoutInset()
+    syncHomeWelcomeModal()
+    syncVersionUpdateAlert()
 }
 
 function installStorageSyncListener() {
-  if (!extensionApi?.storage?.onChanged) return;
-  extensionApi.storage.onChanged.addListener((changes, area) => {
-    try {
-      if (area !== "local" || !changes[RP_SETTINGS_KEY]) return;
-      loadSettings().finally(() => {
-        void (async () => {
-          try {
-            if (normalizeEquippedProfileEffects()) {
-              const { saveSettings } = await import("./core/core.js");
-              saveSettings();
-            }
-            await reloadSettingsUiStrings();
-            runSyncPass();
-          } catch (e) {
-            if (!isExtensionContextInvalidatedError(e)) throw e;
-          }
-        })();
-      });
-    } catch (e) {
-      if (!isExtensionContextInvalidatedError(e)) throw e;
-    }
-  });
+    if (!extensionApi?.storage?.onChanged) return
+    extensionApi.storage.onChanged.addListener((changes, area) => {
+        try {
+            if (area !== 'local' || !changes[RP_SETTINGS_KEY]) return
+            loadSettings().finally(() => {
+                void (async () => {
+                    try {
+                        if (normalizeEquippedProfileEffects()) {
+                            const { saveSettings } = await import('./core/core.js')
+                            saveSettings()
+                        }
+                        await reloadSettingsUiStrings()
+                        runSyncPass()
+                    } catch (e) {
+                        if (!isExtensionContextInvalidatedError(e)) throw e
+                    }
+                })()
+            })
+        } catch (e) {
+            if (!isExtensionContextInvalidatedError(e)) throw e
+        }
+    })
 }
 
 function installHistoryListeners() {
-  const originalPushState = globalThis.history.pushState;
-  const originalReplaceState = globalThis.history.replaceState;
+    const originalPushState = globalThis.history.pushState
+    const originalReplaceState = globalThis.history.replaceState
 
-  globalThis.history.pushState = function (...args) {
-    const result = originalPushState.apply(this, args);
-    globalThis.dispatchEvent(new Event("roprime-location-change"));
-    return result;
-  };
-
-  globalThis.history.replaceState = function (...args) {
-    const result = originalReplaceState.apply(this, args);
-    globalThis.dispatchEvent(new Event("roprime-location-change"));
-    return result;
-  };
-
-  const handleRouteChange = () => {
-    try {
-      runSyncPass();
-    } catch (e) {
-      if (!isExtensionContextInvalidatedError(e)) throw e;
+    globalThis.history.pushState = function (...args) {
+        const result = originalPushState.apply(this, args)
+        globalThis.dispatchEvent(new Event('roprime-location-change'))
+        return result
     }
-  };
 
-  globalThis.addEventListener("popstate", handleRouteChange);
-  globalThis.addEventListener("hashchange", handleRouteChange);
-  globalThis.addEventListener("roprime-location-change", handleRouteChange);
+    globalThis.history.replaceState = function (...args) {
+        const result = originalReplaceState.apply(this, args)
+        globalThis.dispatchEvent(new Event('roprime-location-change'))
+        return result
+    }
+
+    const handleRouteChange = () => {
+        try {
+            runSyncPass()
+        } catch (e) {
+            if (!isExtensionContextInvalidatedError(e)) throw e
+        }
+    }
+
+    globalThis.addEventListener('popstate', handleRouteChange)
+    globalThis.addEventListener('hashchange', handleRouteChange)
+    globalThis.addEventListener('roprime-location-change', handleRouteChange)
 }
 
 function bootstrap() {
-  if (!shouldRunRoPrimeOnCurrentPage()) return;
+    if (!shouldRunRoPrimeOnCurrentPage()) return
 
-  installStorageSyncListener();
-  loadSettings().finally(() => {
-    void (async () => {
-      try {
-        if (normalizeEquippedProfileEffects()) {
-          const { saveSettings } = await import("./core/core.js");
-          saveSettings();
-        }
-        await loadSettingsUiStrings();
-        installHistoryListeners();
-        installSearchBanObserver();
-        installProfilePageEffectObserver();
-        installProfileRedesignObserver();
-        installFriendCarouselEffects();
-        installDomSyncScheduler();
-        initExtensionsPanel();
-        if (shouldRunRoPrimeOnCurrentPage()) {
-          updateRenameLoop();
-        }
-        void initFreeRobloxThemes();
-        runSyncPass();
-        if (shouldRunRoPrimeOnCurrentPage()) {
-          applyCommunityRename(document.body);
-          applyMarketplaceRename(document.body);
-          applyChartsRename(document.body);
-          applyExperiencesRename(document.body);
-        }
-      } catch (e) {
-        if (!isExtensionContextInvalidatedError(e)) throw e;
-      }
-    })();
-  });
+    installStorageSyncListener()
+    loadSettings().finally(() => {
+        void (async () => {
+            try {
+                if (normalizeEquippedProfileEffects()) {
+                    const { saveSettings } = await import('./core/core.js')
+                    saveSettings()
+                }
+                await loadSettingsUiStrings()
+                installHistoryListeners()
+                installSearchBanObserver()
+                installProfilePageEffectObserver()
+                installProfileRedesignObserver()
+                installFriendCarouselEffects()
+                installDomSyncScheduler()
+                initExtensionsPanel()
+                if (shouldRunRoPrimeOnCurrentPage()) {
+                    updateRenameLoop()
+                }
+                void initFreeRobloxThemes()
+                runSyncPass()
+                if (shouldRunRoPrimeOnCurrentPage()) {
+                    applyCommunityRename(document.body)
+                    applyMarketplaceRename(document.body)
+                    applyChartsRename(document.body)
+                    applyExperiencesRename(document.body)
+                }
+            } catch (e) {
+                if (!isExtensionContextInvalidatedError(e)) throw e
+            }
+        })()
+    })
 }
 
-if (document.readyState === "loading") {
-  document.addEventListener("DOMContentLoaded", bootstrap, { once: true });
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', bootstrap, { once: true })
 } else {
-  bootstrap();
+    bootstrap()
 }

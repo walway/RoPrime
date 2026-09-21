@@ -1,37 +1,37 @@
-import { getExtensionResourceUrl } from "../core/core.js";
+import { getExtensionResourceUrl } from '../core/core.js'
 
-const RP_MATERIAL_SYMBOLS_STYLE_ID = "roprime-material-symbols-font";
+const RP_MATERIAL_SYMBOLS_STYLE_ID = 'roprime-material-symbols-font'
 
 export const SETTINGS_NAV_ICONS = {
-  search: "search",
-  appearance: "palette",
-  design: "palette",
-  home: "home",
-  settings: "settings",
-  privacy: "shield",
-  other: "extension",
-  info: "info",
-  developer: "code",
-  profile: "person",
-};
+    search: 'search',
+    appearance: 'palette',
+    design: 'palette',
+    home: 'home',
+    settings: 'settings',
+    privacy: 'shield',
+    other: 'extension',
+    info: 'info',
+    developer: 'code',
+    profile: 'person',
+}
 
-let materialSymbolsReady = false;
+let materialSymbolsReady = false
 
 export function ensureMaterialSymbolsFont() {
-  if (materialSymbolsReady) return;
-  if (document.getElementById(RP_MATERIAL_SYMBOLS_STYLE_ID)) {
-    materialSymbolsReady = true;
-    return;
-  }
+    if (materialSymbolsReady) return
+    if (document.getElementById(RP_MATERIAL_SYMBOLS_STYLE_ID)) {
+        materialSymbolsReady = true
+        return
+    }
 
-  const fontUrl = getExtensionResourceUrl(
-    "resources/vendor/material-symbols-outlined.ttf",
-  );
-  if (!fontUrl) return;
+    const fontUrl = getExtensionResourceUrl(
+        'resources/vendor/material-symbols-outlined.ttf',
+    )
+    if (!fontUrl) return
 
-  const style = document.createElement("style");
-  style.id = RP_MATERIAL_SYMBOLS_STYLE_ID;
-  style.textContent = `
+    const style = document.createElement('style')
+    style.id = RP_MATERIAL_SYMBOLS_STYLE_ID
+    style.textContent = `
 @font-face {
   font-family: "Material Symbols Outlined";
   font-style: normal;
@@ -54,16 +54,16 @@ export function ensureMaterialSymbolsFont() {
   font-feature-settings: "liga";
   -webkit-font-smoothing: antialiased;
 }
-`;
-  (document.head || document.documentElement).appendChild(style);
-  materialSymbolsReady = true;
+`
+    ;(document.head || document.documentElement).appendChild(style)
+    materialSymbolsReady = true
 }
 
 export function createSettingsNavIcon(symbolName) {
-  ensureMaterialSymbolsFont();
-  const icon = document.createElement("span");
-  icon.className = "material-symbols-outlined roprime-settings-nav-icon";
-  icon.textContent = symbolName;
-  icon.setAttribute("aria-hidden", "true");
-  return icon;
+    ensureMaterialSymbolsFont()
+    const icon = document.createElement('span')
+    icon.className = 'material-symbols-outlined roprime-settings-nav-icon'
+    icon.textContent = symbolName
+    icon.setAttribute('aria-hidden', 'true')
+    return icon
 }

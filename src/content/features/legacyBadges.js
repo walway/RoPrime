@@ -1,589 +1,569 @@
-import { getExtensionResourceUrl } from "../core/core.js";
-import { setHidden } from "../ui/visibility.js";
+import { getExtensionResourceUrl } from '../core/core.js'
+import { setHidden } from '../ui/visibility.js'
 
-const ROBLOX_BADGES_API =
-  "https://accountinformation.roblox.com/v1/users/{userId}/roblox-badges";
-const ROBLOX_BADGES_URL = "https://www.roblox.com/info/roblox-badges";
-const BADGES_PER_ROW = 6;
-const ROOT_CLASS = "roprime-legacy-badges";
-const STYLE_ID = "roprime-legacy-badges-style";
+const ROBLOX_BADGES_API = 'https://accountinformation.roblox.com/v1/users/{userId}/roblox-badges'
+const ROBLOX_BADGES_URL = 'https://www.roblox.com/info/roblox-badges'
+const BADGES_PER_ROW = 6
+const ROOT_CLASS = 'roprime-legacy-badges'
+const STYLE_ID = 'roprime-legacy-badges-style'
 
-const BADGE_DISPLAY_ORDER = [18, 1, 12, 2, 8, 6, 7, 17, 3, 4, 5, 14];
+const BADGE_DISPLAY_ORDER = [18, 1, 12, 2, 8, 6, 7, 17, 3, 4, 5, 14]
 
 const BADGE_DISPLAY = {
-  12: {
-    hash: "Badge12",
-    title: "Veteran Badge",
-    label: "Veteran Badge",
-    alt: "veteran",
-    imageUrl: "resources/badges/veteran.svg",
-  },
-  1: {
-    hash: "Badge1",
-    title: "Administator Badge",
-    label: "Administator Badge",
-    alt: "Admin",
-    imageUrl: "resources/badges/admin.svg",
-  },
-  2: {
-    hash: "Badge2",
-    title: "Friendship Badge",
-    label: "Friendship Badge",
-    alt: "Friendship",
-    imageUrl: "resources/badges/friendship.svg",
-  },
-  6: {
-    hash: "Badge6",
-    title: "Homestead Badge",
-    label: "Homestead Badge",
-    alt: "Homestead",
-    imageUrl: "resources/badges/homestead.svg",
-  },
-  7: {
-    hash: "Badge7",
-    title: "Bricksmith Badge",
-    label: "Bricksmith Badge",
-    alt: "Bricksmith",
-    imageUrl: "resources/badges/bricksmith.svg",
-  },
-  4: {
-    hash: "Badge4",
-    title: "Warrior",
-    label: "Warrior",
-    alt: "Warrior",
-    imageUrl: "resources/badges/warrior.svg",
-  },
-  3: {
-    hash: "Badge3",
-    title: "Combat Initiation",
-    label: "Combat Initiation",
-    alt: "Combat Initiation",
-    imageUrl: "resources/badges/combat.svg",
-  },
-  5: {
-    hash: "Badge5",
-    title: "Bloxxer Badge",
-    label: "Bloxxer Badge",
-    alt: "Bloxxer",
-    imageUrl: "resources/badges/bloxxer.svg",
-  },
-  18: {
-    hash: "Badge18",
-    title: "Welcome To The Club",
-    label: "Welcome To The Club",
-    alt: "Welcome To The Club",
-    imageUrl: "resources/badges/welcome-to-the-club.svg",
-  },
-  14: {
-    hash: "Badge14",
-    title: "Ambassador Badge",
-    label: "Ambassador Badge",
-    alt: "Ambassador",
-    imageUrl: "resources/badges/ambassador.svg",
-  },
-  8: {
-    hash: "Badge8",
-    title: "Inviter Badge",
-    label: "Inviter Badge",
-    alt: "Inviter",
-    imageUrl: "resources/badges/inviter.svg",
-  },
-  17: {
-    hash: "Badge17",
-    title: "Official Model Maker",
-    label: "Official Model Maker",
-    alt: "Official Model Maker",
-    imageUrl: "resources/badges/official-model-maker.svg",
-  },
-};
+    12: {
+        hash: 'Badge12',
+        title: 'Veteran Badge',
+        label: 'Veteran Badge',
+        alt: 'veteran',
+        imageUrl: 'resources/badges/veteran.svg',
+    },
+    1: {
+        hash: 'Badge1',
+        title: 'Administator Badge',
+        label: 'Administator Badge',
+        alt: 'Admin',
+        imageUrl: 'resources/badges/admin.svg',
+    },
+    2: {
+        hash: 'Badge2',
+        title: 'Friendship Badge',
+        label: 'Friendship Badge',
+        alt: 'Friendship',
+        imageUrl: 'resources/badges/friendship.svg',
+    },
+    6: {
+        hash: 'Badge6',
+        title: 'Homestead Badge',
+        label: 'Homestead Badge',
+        alt: 'Homestead',
+        imageUrl: 'resources/badges/homestead.svg',
+    },
+    7: {
+        hash: 'Badge7',
+        title: 'Bricksmith Badge',
+        label: 'Bricksmith Badge',
+        alt: 'Bricksmith',
+        imageUrl: 'resources/badges/bricksmith.svg',
+    },
+    4: {
+        hash: 'Badge4',
+        title: 'Warrior',
+        label: 'Warrior',
+        alt: 'Warrior',
+        imageUrl: 'resources/badges/warrior.svg',
+    },
+    3: {
+        hash: 'Badge3',
+        title: 'Combat Initiation',
+        label: 'Combat Initiation',
+        alt: 'Combat Initiation',
+        imageUrl: 'resources/badges/combat.svg',
+    },
+    5: {
+        hash: 'Badge5',
+        title: 'Bloxxer Badge',
+        label: 'Bloxxer Badge',
+        alt: 'Bloxxer',
+        imageUrl: 'resources/badges/bloxxer.svg',
+    },
+    18: {
+        hash: 'Badge18',
+        title: 'Welcome To The Club',
+        label: 'Welcome To The Club',
+        alt: 'Welcome To The Club',
+        imageUrl: 'resources/badges/welcome-to-the-club.svg',
+    },
+    14: {
+        hash: 'Badge14',
+        title: 'Ambassador Badge',
+        label: 'Ambassador Badge',
+        alt: 'Ambassador',
+        imageUrl: 'resources/badges/ambassador.svg',
+    },
+    8: {
+        hash: 'Badge8',
+        title: 'Inviter Badge',
+        label: 'Inviter Badge',
+        alt: 'Inviter',
+        imageUrl: 'resources/badges/inviter.svg',
+    },
+    17: {
+        hash: 'Badge17',
+        title: 'Official Model Maker',
+        label: 'Official Model Maker',
+        alt: 'Official Model Maker',
+        imageUrl: 'resources/badges/official-model-maker.svg',
+    },
+}
 
 const CUSTOM_BADGES = {
-  447170745: [
-    {
-      title: "HELLO",
-      label: "HELLO",
-      alt: "HELLO",
-      imageUrl:
-        "https://tr.rbxcdn.com/180DAY-bae15f4fd078a8cb4229bee3c0bfebf3/420/420/Decal/Webp/noFilter",
-    },
-    {
-      title: "HELLO",
-      label: "HELLO",
-      alt: "HELLO",
-      imageUrl:
-        "https://tr.rbxcdn.com/180DAY-bae15f4fd078a8cb4229bee3c0bfebf3/420/420/Decal/Webp/noFilter",
-    },
-    {
-      title: "HELLO",
-      label: "HELLO",
-      alt: "HELLO",
-      imageUrl:
-        "https://tr.rbxcdn.com/180DAY-bae15f4fd078a8cb4229bee3c0bfebf3/420/420/Decal/Webp/noFilter",
-    },
-    {
-      title: "HELLO",
-      label: "HELLO",
-      alt: "HELLO",
-      imageUrl:
-        "https://tr.rbxcdn.com/180DAY-bae15f4fd078a8cb4229bee3c0bfebf3/420/420/Decal/Webp/noFilter",
-    },
-    {
-      title: "HELLO",
-      label: "HELLO",
-      alt: "HELLO",
-      imageUrl:
-        "https://tr.rbxcdn.com/180DAY-bae15f4fd078a8cb4229bee3c0bfebf3/420/420/Decal/Webp/noFilter",
-    },
-    {
-      title: "HELLO",
-      label: "HELLO",
-      alt: "HELLO",
-      imageUrl:
-        "https://tr.rbxcdn.com/180DAY-bae15f4fd078a8cb4229bee3c0bfebf3/420/420/Decal/Webp/noFilter",
-    },
-  ],
+    447170745: [
+        {
+            title: 'HELLO',
+            label: 'HELLO',
+            alt: 'HELLO',
+            imageUrl: 'https://tr.rbxcdn.com/180DAY-bae15f4fd078a8cb4229bee3c0bfebf3/420/420/Decal/Webp/noFilter',
+        },
+        {
+            title: 'HELLO',
+            label: 'HELLO',
+            alt: 'HELLO',
+            imageUrl: 'https://tr.rbxcdn.com/180DAY-bae15f4fd078a8cb4229bee3c0bfebf3/420/420/Decal/Webp/noFilter',
+        },
+        {
+            title: 'HELLO',
+            label: 'HELLO',
+            alt: 'HELLO',
+            imageUrl: 'https://tr.rbxcdn.com/180DAY-bae15f4fd078a8cb4229bee3c0bfebf3/420/420/Decal/Webp/noFilter',
+        },
+        {
+            title: 'HELLO',
+            label: 'HELLO',
+            alt: 'HELLO',
+            imageUrl: 'https://tr.rbxcdn.com/180DAY-bae15f4fd078a8cb4229bee3c0bfebf3/420/420/Decal/Webp/noFilter',
+        },
+        {
+            title: 'HELLO',
+            label: 'HELLO',
+            alt: 'HELLO',
+            imageUrl: 'https://tr.rbxcdn.com/180DAY-bae15f4fd078a8cb4229bee3c0bfebf3/420/420/Decal/Webp/noFilter',
+        },
+        {
+            title: 'HELLO',
+            label: 'HELLO',
+            alt: 'HELLO',
+            imageUrl: 'https://tr.rbxcdn.com/180DAY-bae15f4fd078a8cb4229bee3c0bfebf3/420/420/Decal/Webp/noFilter',
+        },
+    ],
 
-  1564574922: [
-    {
-      title: "Who are you",
-      label: "Who are you?",
-      alt: "Who are you",
-      imageUrl:
-        "https://tr.rbxcdn.com/180DAY-9219655db8561c2178c7029c0d32d89d/420/420/Decal/Webp/noFilter",
-    },
-  ],
+    1564574922: [
+        {
+            title: 'Who are you',
+            label: 'Who are you?',
+            alt: 'Who are you',
+            imageUrl: 'https://tr.rbxcdn.com/180DAY-9219655db8561c2178c7029c0d32d89d/420/420/Decal/Webp/noFilter',
+        },
+    ],
 
-  1912490: [
-    {
-      title: "GOOnett",
-      label: "GOOnett",
-      alt: "GOOnett",
-      imageUrl:
-        "https://tr.rbxcdn.com/180DAY-137fd624cf8460aed0a026086d5f2ed8/420/420/Decal/Webp/noFilter",
-    },
-    {
-      title: "Sweety honey",
-      label: "Sweety honey",
-      alt: "Honey",
-      imageUrl:
-        "https://tr.rbxcdn.com/180DAY-b0286ee7e37e59a7e9a1f0f743ec3388/420/420/Decal/Webp/noFilter",
-    },
-    {
-      title: "chill face",
-      label: "-‿-",
-      alt: "chill face",
-      imageUrl: "resources/badges/memes/pumpkin-patch.webp",
-    },
-    {
-      title: "aphid",
-      label: ">:(",
-      alt: "aphid",
-      imageUrl:
-        "https://tr.rbxcdn.com/180DAY-8435374a6cf890406c8e18631ad95389/420/420/Decal/Webp/noFilter",
-    },
-    {
-      title: "Gummy Bear's Lair",
-      label: "Gummy Bear's Lair",
-      alt: "Gummy Bear's Lair",
-      imageUrl: "resources/badges/memes/goo.png",
-    },
-    {
-      title: "WHERE IS BBM QUEST ONETT",
-      label: "WHERE IS BBM QUEST ONETT???",
-      alt: "WHERE IS BBM QUEST ONETT",
-      imageUrl: "resources/badges/memes/onett-delayer.png",
-    },
-  ],
+    1912490: [
+        {
+            title: 'GOOnett',
+            label: 'GOOnett',
+            alt: 'GOOnett',
+            imageUrl: 'https://tr.rbxcdn.com/180DAY-137fd624cf8460aed0a026086d5f2ed8/420/420/Decal/Webp/noFilter',
+        },
+        {
+            title: 'Sweety honey',
+            label: 'Sweety honey',
+            alt: 'Honey',
+            imageUrl: 'https://tr.rbxcdn.com/180DAY-b0286ee7e37e59a7e9a1f0f743ec3388/420/420/Decal/Webp/noFilter',
+        },
+        {
+            title: 'chill face',
+            label: '-‿-',
+            alt: 'chill face',
+            imageUrl: 'resources/badges/memes/pumpkin-patch.webp',
+        },
+        {
+            title: 'aphid',
+            label: '>:(',
+            alt: 'aphid',
+            imageUrl: 'https://tr.rbxcdn.com/180DAY-8435374a6cf890406c8e18631ad95389/420/420/Decal/Webp/noFilter',
+        },
+        {
+            title: "Gummy Bear's Lair",
+            label: "Gummy Bear's Lair",
+            alt: "Gummy Bear's Lair",
+            imageUrl: 'resources/badges/memes/goo.png',
+        },
+        {
+            title: 'WHERE IS BBM QUEST ONETT',
+            label: 'WHERE IS BBM QUEST ONETT???',
+            alt: 'WHERE IS BBM QUEST ONETT',
+            imageUrl: 'resources/badges/memes/onett-delayer.png',
+        },
+    ],
 
-  1267667601: [
-    {
-      title: "RoPrime Donator",
-      label: "RoPrime Donator",
-      alt: "RoPrime Donator",
-      imageUrl:
-        "https://cdn.discordapp.com/attachments/1143867107537338566/1526537536531337266/copyright_free_gilbert.png?ex=6a57625e&is=6a5610de&hm=07c5297e28ccaaa114785252c7b6fd553001fe82815aec08b71cae1c3b2f29b8&",
-    },
-  ],
-};
+    1267667601: [
+        {
+            title: 'RoPrime Donator',
+            label: 'RoPrime Donator',
+            alt: 'RoPrime Donator',
+            imageUrl:
+                'https://cdn.discordapp.com/attachments/1143867107537338566/1526537536531337266/copyright_free_gilbert.png?ex=6a57625e&is=6a5610de&hm=07c5297e28ccaaa114785252c7b6fd553001fe82815aec08b71cae1c3b2f29b8&',
+        },
+    ],
+}
 
-let applyPromise = null;
-let profileObserver = null;
-let watchTimer = null;
+let applyPromise = null
+let profileObserver = null
+let watchTimer = null
 
 function parseUserIdFromUrl(loc = globalThis.location) {
-  const match = (loc.pathname || "").match(
-    /^\/(?:[a-z]{2,3}(?:-[a-z0-9]{2,8})?\/)?users\/(\d+)\/profile(?:\/|$)/i,
-  );
-  if (!match) return null;
-  const userId = Number(match[1]);
-  return Number.isFinite(userId) && userId > 0 ? userId : null;
+    const match = (loc.pathname || '').match(
+        /^\/(?:[a-z]{2,3}(?:-[a-z0-9]{2,8})?\/)?users\/(\d+)\/profile(?:\/|$)/i,
+    )
+    if (!match) return null
+    const userId = Number(match[1])
+    return Number.isFinite(userId) && userId > 0 ? userId : null
 }
 
 function findTabContent() {
-  const custom = document.querySelector("[data-roprime-profile-tab-content]");
-  if (custom instanceof HTMLElement) return custom;
+    const custom = document.querySelector('[data-roprime-profile-tab-content]')
+    if (custom instanceof HTMLElement) return custom
 
-  const platform = document.querySelector(".profile-platform-container");
-  if (!(platform instanceof HTMLElement)) return null;
+    const platform = document.querySelector('.profile-platform-container')
+    if (!(platform instanceof HTMLElement)) return null
 
-  for (const el of platform.querySelectorAll(".profile-tab-content")) {
-    if (el.classList.contains("padding-top-xxlarge")) return el;
-  }
+    for (const el of platform.querySelectorAll('.profile-tab-content')) {
+        if (el.classList.contains('padding-top-xxlarge')) return el
+    }
 
-  return platform.querySelector(".profile-tab-content");
+    return platform.querySelector('.profile-tab-content')
 }
 
 function findExistingBadges(userId) {
-  return document.querySelector(
-    `.${ROOT_CLASS}[data-roprime-user-id="${userId}"]`,
-  );
+    return document.querySelector(
+        `.${ROOT_CLASS}[data-roprime-user-id="${userId}"]`,
+    )
 }
 
 function ensureStyles() {
-  if (document.getElementById(STYLE_ID)) return;
-  const style = document.createElement("style");
-  style.id = STYLE_ID;
-  style.textContent = `
+    if (document.getElementById(STYLE_ID)) return
+    const style = document.createElement('style')
+    style.id = STYLE_ID
+    style.textContent = `
 .${ROOT_CLASS} { margin-bottom: 24px; }
 .${ROOT_CLASS} .roprime-legacy-badges-row { display: flex; gap: 12px; }
 .${ROOT_CLASS} .roprime-legacy-badges-row-extra { display: none; }
 .${ROOT_CLASS}.is-expanded .roprime-legacy-badges-row-extra { display: flex; }
 .${ROOT_CLASS} .base-tile-thumbnail-wrapper .thumbnail-2d-container { display: grid; justify-content: center; }
-`;
-  document.head.appendChild(style);
+`
+    document.head.appendChild(style)
 }
 
 function resolveBadgeImageUrl(imageUrl) {
-  const url = String(imageUrl || "").trim();
-  if (!url) return "";
-  if (/^https?:\/\//i.test(url)) return url;
-  return getExtensionResourceUrl(url.replace(/^\//, "")) || url;
+    const url = String(imageUrl || '').trim()
+    if (!url) return ''
+    if (/^https?:\/\//i.test(url)) return url
+    return getExtensionResourceUrl(url.replace(/^\//, '')) || url
 }
 
 function normalizeCustomBadges(entry) {
-  if (Array.isArray(entry)) return entry;
-  if (entry && typeof entry === "object") return [entry];
-  return [];
+    if (Array.isArray(entry)) return entry
+    if (entry && typeof entry === 'object') return [entry]
+    return []
 }
 
 function isValidBadgeEntry(badge) {
-  return Boolean(badge?.title && badge?.label && badge?.alt && badge?.imageUrl);
+    return Boolean(badge?.title && badge?.label && badge?.alt && badge?.imageUrl)
 }
 
 function buildBadgeTileElement(badge) {
-  const imageSrc = resolveBadgeImageUrl(badge.imageUrl);
-  const item = document.createElement("div");
-  item.className = "css-izzd58-carouselItem";
-  const outer = document.createElement("div");
-  const tile = document.createElement("div");
-  tile.className = "base-tile";
-  const link = document.createElement("a");
-  link.className = "flex flex-col";
-  link.href = `${ROBLOX_BADGES_URL}#${badge.hash}`;
-  link.title = badge.title;
-  link.style.width = "150px";
-  const thumbWrap = document.createElement("div");
-  thumbWrap.className = "base-tile-thumbnail-wrapper";
-  const thumb = document.createElement("span");
-  thumb.className = "thumbnail-2d-container base-tile-thumbnail radius-medium";
-  const img = document.createElement("img");
-  img.src = imageSrc;
-  img.alt = badge.alt;
-  thumb.appendChild(img);
-  thumbWrap.appendChild(thumb);
-  const title = document.createElement("div");
-  title.className =
-    "base-tile-title content-emphasis text-title-medium padding-top-medium";
-  title.textContent = badge.label;
-  const meta = document.createElement("div");
-  meta.className =
-    "base-tile-metadata content-default text-body-medium padding-top-xsmall";
-  link.append(thumbWrap, title, meta);
-  tile.appendChild(link);
-  outer.appendChild(tile);
-  item.appendChild(outer);
-  return item;
+    const imageSrc = resolveBadgeImageUrl(badge.imageUrl)
+    const item = document.createElement('div')
+    item.className = 'css-izzd58-carouselItem'
+    const outer = document.createElement('div')
+    const tile = document.createElement('div')
+    tile.className = 'base-tile'
+    const link = document.createElement('a')
+    link.className = 'flex flex-col'
+    link.href = `${ROBLOX_BADGES_URL}#${badge.hash}`
+    link.title = badge.title
+    link.style.width = '150px'
+    const thumbWrap = document.createElement('div')
+    thumbWrap.className = 'base-tile-thumbnail-wrapper'
+    const thumb = document.createElement('span')
+    thumb.className = 'thumbnail-2d-container base-tile-thumbnail radius-medium'
+    const img = document.createElement('img')
+    img.src = imageSrc
+    img.alt = badge.alt
+    thumb.appendChild(img)
+    thumbWrap.appendChild(thumb)
+    const title = document.createElement('div')
+    title.className = 'base-tile-title content-emphasis text-title-medium padding-top-medium'
+    title.textContent = badge.label
+    const meta = document.createElement('div')
+    meta.className = 'base-tile-metadata content-default text-body-medium padding-top-xsmall'
+    link.append(thumbWrap, title, meta)
+    tile.appendChild(link)
+    outer.appendChild(tile)
+    item.appendChild(outer)
+    return item
 }
 
 function buildBadgesRoot(badges) {
-  const root = document.createElement("div");
-  root.className = `profile-badges ${ROOT_CLASS}`;
-  const container = document.createElement("div");
-  container.className = "css-17g81zd-collectionCarouselContainer";
-  const header = document.createElement("div");
-  header.className = "container-header badge-list-header";
-  const heading = document.createElement("h2");
-  heading.className =
-    "content-emphasis text-heading-small padding-none inline-block roprime-legacy-badges-title";
-  heading.textContent = "Roblox Badges";
-  header.appendChild(heading);
-  if (badges.length > BADGES_PER_ROW) {
-    const button = document.createElement("button");
-    button.type = "button";
-    button.className =
-      "btn-fixed-width btn-secondary-xs btn-more see-all-link";
-    button.dataset.roprimeSeeMore = "1";
-    button.textContent = "See More";
-    header.appendChild(button);
-  }
-  const rows = document.createElement("div");
-  rows.className = "roprime-legacy-badges-rows";
-  container.append(header, rows);
-  root.appendChild(container);
-  renderBadgeRows(root, badges);
-  return root;
+    const root = document.createElement('div')
+    root.className = `profile-badges ${ROOT_CLASS}`
+    const container = document.createElement('div')
+    container.className = 'css-17g81zd-collectionCarouselContainer'
+    const header = document.createElement('div')
+    header.className = 'container-header badge-list-header'
+    const heading = document.createElement('h2')
+    heading.className = 'content-emphasis text-heading-small padding-none inline-block roprime-legacy-badges-title'
+    heading.textContent = 'Roblox Badges'
+    header.appendChild(heading)
+    if (badges.length > BADGES_PER_ROW) {
+        const button = document.createElement('button')
+        button.type = 'button'
+        button.className = 'btn-fixed-width btn-secondary-xs btn-more see-all-link'
+        button.dataset.roprimeSeeMore = '1'
+        button.textContent = 'See More'
+        header.appendChild(button)
+    }
+    const rows = document.createElement('div')
+    rows.className = 'roprime-legacy-badges-rows'
+    container.append(header, rows)
+    root.appendChild(container)
+    renderBadgeRows(root, badges)
+    return root
 }
 
 const PLACEMENT_ANCHOR_SELECTORS = [
-  ".profile-communities",
-  ".profile-experiences",
-  ".react-friends-carousel-container",
-  ".profile-favorite-experiences",
-  ".profile-currently-wearing",
-];
+    '.profile-communities',
+    '.profile-experiences',
+    '.react-friends-carousel-container',
+    '.profile-favorite-experiences',
+    '.profile-currently-wearing',
+]
 
 function findPlacementAnchor(tabContent) {
-  if (!(tabContent instanceof HTMLElement)) return null;
-  for (const selector of PLACEMENT_ANCHOR_SELECTORS) {
-    const el = tabContent.querySelector(selector);
-    if (el instanceof HTMLElement && el.isConnected) return el;
-  }
-  return null;
+    if (!(tabContent instanceof HTMLElement)) return null
+    for (const selector of PLACEMENT_ANCHOR_SELECTORS) {
+        const el = tabContent.querySelector(selector)
+        if (el instanceof HTMLElement && el.isConnected) return el
+    }
+    return null
 }
 
 function isPlacedBelowAnchor(legacyRoot, anchor) {
-  return (
-    legacyRoot instanceof HTMLElement &&
-    anchor instanceof HTMLElement &&
-    legacyRoot.isConnected &&
-    legacyRoot.previousElementSibling === anchor
-  );
+    return (
+        legacyRoot instanceof HTMLElement &&
+        anchor instanceof HTMLElement &&
+        legacyRoot.isConnected &&
+        legacyRoot.previousElementSibling === anchor
+    )
 }
 
 /** Insert below communities / experiences / …, or at the top if none exist. */
 function placeLegacyBadges(legacyRoot, tabContent) {
-  if (!(legacyRoot instanceof HTMLElement)) return false;
-  const host =
-    tabContent instanceof HTMLElement
-      ? tabContent
-      : findTabContent() || legacyRoot.parentElement;
-  if (!(host instanceof HTMLElement)) return false;
+    if (!(legacyRoot instanceof HTMLElement)) return false
+    const host = tabContent instanceof HTMLElement ? tabContent : findTabContent() || legacyRoot.parentElement
+    if (!(host instanceof HTMLElement)) return false
 
-  const anchor = findPlacementAnchor(host);
-  if (anchor instanceof HTMLElement && anchor.parentElement) {
-    if (isPlacedBelowAnchor(legacyRoot, anchor)) return true;
-    anchor.parentElement.insertBefore(legacyRoot, anchor.nextSibling);
-    return isPlacedBelowAnchor(legacyRoot, anchor) || legacyRoot.isConnected;
-  }
+    const anchor = findPlacementAnchor(host)
+    if (anchor instanceof HTMLElement && anchor.parentElement) {
+        if (isPlacedBelowAnchor(legacyRoot, anchor)) return true
+        anchor.parentElement.insertBefore(legacyRoot, anchor.nextSibling)
+        return isPlacedBelowAnchor(legacyRoot, anchor) || legacyRoot.isConnected
+    }
 
-  if (host.firstElementChild === legacyRoot) return true;
-  host.insertBefore(legacyRoot, host.firstChild);
-  return legacyRoot.isConnected && host.contains(legacyRoot);
+    if (host.firstElementChild === legacyRoot) return true
+    host.insertBefore(legacyRoot, host.firstChild)
+    return legacyRoot.isConnected && host.contains(legacyRoot)
 }
 
 function insertBadges(tabContent, badges) {
-  const root = buildBadgesRoot(badges);
-  placeLegacyBadges(root, tabContent);
-  return root;
+    const root = buildBadgesRoot(badges)
+    placeLegacyBadges(root, tabContent)
+    return root
 }
 
 function renderBadgeRows(root, badges) {
-  const rowsContainer = root.querySelector(".roprime-legacy-badges-rows");
-  if (!(rowsContainer instanceof HTMLElement)) return;
+    const rowsContainer = root.querySelector('.roprime-legacy-badges-rows')
+    if (!(rowsContainer instanceof HTMLElement)) return
 
-  rowsContainer.textContent = "";
-  for (let i = 0; i < badges.length; i += BADGES_PER_ROW) {
-    const extra = i >= BADGES_PER_ROW ? " roprime-legacy-badges-row-extra" : "";
-    const row = document.createElement("div");
-    row.className = `roprime-legacy-badges-row${extra}`;
-    for (const badge of badges.slice(i, i + BADGES_PER_ROW)) {
-      row.appendChild(buildBadgeTileElement(badge));
+    rowsContainer.textContent = ''
+    for (let i = 0; i < badges.length; i += BADGES_PER_ROW) {
+        const extra = i >= BADGES_PER_ROW ? ' roprime-legacy-badges-row-extra' : ''
+        const row = document.createElement('div')
+        row.className = `roprime-legacy-badges-row${extra}`
+        for (const badge of badges.slice(i, i + BADGES_PER_ROW)) {
+            row.appendChild(buildBadgeTileElement(badge))
+        }
+        rowsContainer.appendChild(row)
     }
-    rowsContainer.appendChild(row);
-  }
 
-  const button = root.querySelector("[data-roprime-see-more]");
-  if (button instanceof HTMLButtonElement) {
-    const hasMore = badges.length > BADGES_PER_ROW;
-    setHidden(button, !hasMore);
-    button.style.display = hasMore ? "" : "none";
-    if (!hasMore) root.classList.remove("is-expanded");
-    button.textContent = root.classList.contains("is-expanded")
-      ? "See Less"
-      : "See More";
-  }
+    const button = root.querySelector('[data-roprime-see-more]')
+    if (button instanceof HTMLButtonElement) {
+        const hasMore = badges.length > BADGES_PER_ROW
+        setHidden(button, !hasMore)
+        button.style.display = hasMore ? '' : 'none'
+        if (!hasMore) root.classList.remove('is-expanded')
+        button.textContent = root.classList.contains('is-expanded') ? 'See Less' : 'See More'
+    }
 }
 
 function wireSeeMoreToggle(root) {
-  const button = root.querySelector("[data-roprime-see-more]");
-  if (!(button instanceof HTMLButtonElement)) return;
+    const button = root.querySelector('[data-roprime-see-more]')
+    if (!(button instanceof HTMLButtonElement)) return
 
-  button.addEventListener("click", () => {
-    const expanded = root.classList.toggle("is-expanded");
-    button.textContent = expanded ? "See Less" : "See More";
-  });
+    button.addEventListener('click', () => {
+        const expanded = root.classList.toggle('is-expanded')
+        button.textContent = expanded ? 'See Less' : 'See More'
+    })
 }
 
 async function fetchUserRobloxBadges(userId) {
-  try {
-    const response = await fetch(
-      ROBLOX_BADGES_API.replace("{userId}", String(userId)),
-      { credentials: "include" },
-    );
-    if (!response.ok) return [];
-    const data = await response.json();
-    return Array.isArray(data) ? data : [];
-  } catch {
-    return [];
-  }
+    try {
+        const response = await fetch(
+            ROBLOX_BADGES_API.replace('{userId}', String(userId)),
+            { credentials: 'include' },
+        )
+        if (!response.ok) return []
+        const data = await response.json()
+        return Array.isArray(data) ? data : []
+    } catch {
+        return []
+    }
 }
 
 function collectBadges(userId, apiBadges) {
-  const badges = [];
+    const badges = []
 
-  const custom = normalizeCustomBadges(
-    CUSTOM_BADGES[userId] ?? CUSTOM_BADGES[String(userId)],
-  );
-  for (const badge of custom) {
-    if (isValidBadgeEntry(badge)) badges.push(badge);
-  }
+    const custom = normalizeCustomBadges(
+        CUSTOM_BADGES[userId] ?? CUSTOM_BADGES[String(userId)],
+    )
+    for (const badge of custom) {
+        if (isValidBadgeEntry(badge)) badges.push(badge)
+    }
 
-  const badgeById = new Map(
-    apiBadges
-      .filter((badge) => Number.isFinite(Number(badge?.id)))
-      .map((badge) => [Number(badge.id), badge]),
-  );
+    const badgeById = new Map(
+        apiBadges
+            .filter((badge) => Number.isFinite(Number(badge?.id)))
+            .map((badge) => [Number(badge.id), badge]),
+    )
 
-  for (const id of BADGE_DISPLAY_ORDER) {
-    if (badgeById.has(id)) badges.push(BADGE_DISPLAY[id]);
-  }
+    for (const id of BADGE_DISPLAY_ORDER) {
+        if (badgeById.has(id)) badges.push(BADGE_DISPLAY[id])
+    }
 
-  return badges;
+    return badges
 }
 
 function removeLegacyBadges() {
-  for (const el of document.querySelectorAll(`.${ROOT_CLASS}`)) {
-    el.remove();
-  }
+    for (const el of document.querySelectorAll(`.${ROOT_CLASS}`)) {
+        el.remove()
+    }
 }
 
 function stopProfileWatch() {
-  if (watchTimer != null) {
-    globalThis.clearTimeout(watchTimer);
-    watchTimer = null;
-  }
-  profileObserver?.disconnect();
-  profileObserver = null;
+    if (watchTimer != null) {
+        globalThis.clearTimeout(watchTimer)
+        watchTimer = null
+    }
+    profileObserver?.disconnect()
+    profileObserver = null
 }
 
 function startProfileWatch() {
-  const userId = parseUserIdFromUrl();
-  if (profileObserver || !userId) return;
+    const userId = parseUserIdFromUrl()
+    if (profileObserver || !userId) return
 
-  profileObserver = new MutationObserver(() => {
-    const currentUserId = parseUserIdFromUrl();
-    if (!currentUserId) {
-      stopProfileWatch();
-      return;
-    }
-    if (watchTimer != null) return;
-    watchTimer = globalThis.setTimeout(() => {
-      watchTimer = null;
-      const existing = findExistingBadges(currentUserId);
-      if (existing instanceof HTMLElement && existing.isConnected) {
-        const tab = findTabContent();
-        if (tab && placeLegacyBadges(existing, tab)) {
-          // Keep watching
+    profileObserver = new MutationObserver(() => {
+        const currentUserId = parseUserIdFromUrl()
+        if (!currentUserId) {
+            stopProfileWatch()
+            return
         }
-        return;
-      }
-      void applyLegacyBadges();
-    }, 250);
-  });
-  profileObserver.observe(document.body, { childList: true, subtree: true });
+        if (watchTimer != null) return
+        watchTimer = globalThis.setTimeout(() => {
+            watchTimer = null
+            const existing = findExistingBadges(currentUserId)
+            if (existing instanceof HTMLElement && existing.isConnected) {
+                const tab = findTabContent()
+                if (tab && placeLegacyBadges(existing, tab)) {
+                    // Keep watching
+                }
+                return
+            }
+            void applyLegacyBadges()
+        }, 250)
+    })
+    profileObserver.observe(document.body, { childList: true, subtree: true })
 }
 
 async function applyLegacyBadgesNow() {
-  const userId = parseUserIdFromUrl();
-  if (!userId) {
-    stopProfileWatch();
-    removeLegacyBadges();
-    return false;
-  }
+    const userId = parseUserIdFromUrl()
+    if (!userId) {
+        stopProfileWatch()
+        removeLegacyBadges()
+        return false
+    }
 
-  const existing = findExistingBadges(userId);
-  if (existing instanceof HTMLElement && existing.isConnected) {
-    const tab = findTabContent();
-    if (tab) placeLegacyBadges(existing, tab);
-    startProfileWatch();
-    return true;
-  }
+    const existing = findExistingBadges(userId)
+    if (existing instanceof HTMLElement && existing.isConnected) {
+        const tab = findTabContent()
+        if (tab) placeLegacyBadges(existing, tab)
+        startProfileWatch()
+        return true
+    }
 
-  const tabContent = findTabContent();
-  if (!tabContent) return false;
+    const tabContent = findTabContent()
+    if (!tabContent) return false
 
-  removeLegacyBadges();
+    removeLegacyBadges()
 
-  const apiBadges = await fetchUserRobloxBadges(userId);
-  if (parseUserIdFromUrl() !== userId) return false;
+    const apiBadges = await fetchUserRobloxBadges(userId)
+    if (parseUserIdFromUrl() !== userId) return false
 
-  const badges = collectBadges(userId, apiBadges);
-  if (!badges.length) return false;
+    const badges = collectBadges(userId, apiBadges)
+    if (!badges.length) return false
 
-  if (findExistingBadges(userId)?.isConnected) {
-    const again = findExistingBadges(userId);
-    const tab = findTabContent();
-    if (again && tab) placeLegacyBadges(again, tab);
-    startProfileWatch();
-    return true;
-  }
+    if (findExistingBadges(userId)?.isConnected) {
+        const again = findExistingBadges(userId)
+        const tab = findTabContent()
+        if (again && tab) placeLegacyBadges(again, tab)
+        startProfileWatch()
+        return true
+    }
 
-  const tabContentNow = findTabContent();
-  if (!(tabContentNow instanceof HTMLElement)) return false;
+    const tabContentNow = findTabContent()
+    if (!(tabContentNow instanceof HTMLElement)) return false
 
-  ensureStyles();
-  const root = insertBadges(tabContentNow, badges);
-  if (!(root instanceof HTMLElement)) return false;
+    ensureStyles()
+    const root = insertBadges(tabContentNow, badges)
+    if (!(root instanceof HTMLElement)) return false
 
-  root.dataset.roprimeUserId = String(userId);
-  wireSeeMoreToggle(root);
-  startProfileWatch();
-  return true;
+    root.dataset.roprimeUserId = String(userId)
+    wireSeeMoreToggle(root)
+    startProfileWatch()
+    return true
 }
 
 function applyLegacyBadges() {
-  if (applyPromise) return applyPromise;
-  applyPromise = applyLegacyBadgesNow().finally(() => {
-    applyPromise = null;
-  });
-  return applyPromise;
+    if (applyPromise) return applyPromise
+    applyPromise = applyLegacyBadgesNow().finally(() => {
+        applyPromise = null
+    })
+    return applyPromise
 }
 
 function onRouteChange() {
-  stopProfileWatch();
+    stopProfileWatch()
 
-  if (!parseUserIdFromUrl()) {
-    removeLegacyBadges();
-    return;
-  }
-
-  const userId = parseUserIdFromUrl();
-  void applyLegacyBadges().then(() => {
-    if (userId === parseUserIdFromUrl() && !findExistingBadges(userId)) {
-      startProfileWatch();
+    if (!parseUserIdFromUrl()) {
+        removeLegacyBadges()
+        return
     }
-  });
+
+    const userId = parseUserIdFromUrl()
+    void applyLegacyBadges().then(() => {
+        if (userId === parseUserIdFromUrl() && !findExistingBadges(userId)) {
+            startProfileWatch()
+        }
+    })
 }
 
 if (!globalThis.__roprimeLegacyBadgesInstalled) {
-  globalThis.__roprimeLegacyBadgesInstalled = true;
-  globalThis.addEventListener("roprime-location-change", onRouteChange);
-  globalThis.addEventListener("popstate", onRouteChange);
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", onRouteChange, {
-      once: true,
-    });
-  } else {
-    onRouteChange();
-  }
+    globalThis.__roprimeLegacyBadgesInstalled = true
+    globalThis.addEventListener('roprime-location-change', onRouteChange)
+    globalThis.addEventListener('popstate', onRouteChange)
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', onRouteChange, {
+            once: true,
+        })
+    } else {
+        onRouteChange()
+    }
 }

@@ -1,105 +1,102 @@
 .verify-email-container {
-  background-color: transparent; /* Helping Roblox to redesign the website */
+    background-color: transparent; /* Helping Roblox to redesign the website */
 }
 
-html
-  body:has(
-    main.container-main[data-rovalra-sidebar-collapse-ready="true"][data-rovalra-sidebar-layout-active="true"]
-  ) {
-  main.container-main[data-rovalra-sidebar-collapse-ready="true"][data-rovalra-sidebar-layout-active="true"] {
-    box-sizing: inherit;
-    margin-left: var(--left-nav-reserved-width) !important;
-    width: calc(100% - var(--left-nav-reserved-width)) !important;
-  }
+html body:has(main.container-main[data-rovalra-sidebar-collapse-ready="true"][data-rovalra-sidebar-layout-active="true"]) {
+    main.container-main[data-rovalra-sidebar-collapse-ready="true"][data-rovalra-sidebar-layout-active="true"] {
+        box-sizing: inherit;
+        margin-left: var(--left-nav-reserved-width) !important;
+        width: calc(100% - var(--left-nav-reserved-width)) !important;
+    }
 }
 
 /* Deprecated */
 #rovalra-free-roblox-plus-themes-notice {
-  display: none;
+    display: none;
 }
 
 .icon-presence.icon-studio {
-  position: relative;
-  z-index: 2;
+    position: relative;
+    z-index: 2;
 }
 
 .icon-presence.roseal-offline-icon {
-  position: relative;
-  z-index: 2;
+    position: relative;
+    z-index: 2;
 }
 
 .nav-minimise-button {
-  display: none !important;
+    display: none !important;
 }
 
 #rovalra-sidebar-collapse-button {
-  display: none !important;
+    display: none !important;
 }
 
 #rovalra-sidebar-layout-button {
-  display: none !important;
+    display: none !important;
 }
 
 /* android layout */
 
 #app-bumper-main {
-  display: none !important;
+    display: none !important;
 }
 
 /* roblox plus free themes */
 
 [data-testid="app-theme-upsell"] {
-  display: none !important;
+    display: none !important;
 }
 
 [data-testid="app-theme-card"] .icon-regular-roblox-plus {
-  display: none !important;
+    display: none !important;
 }
 
 /* groups viewer fixes */
 
 .groups-list-sidebar {
-  border-left: none !important;
+    border-left: none !important;
 }
 
 /* fix for roblox's dropdown with light theme without actually breaking shadows */
 
 .friend-tile-dropdown,
 .in-game-friend-card--iarc {
-  border-radius: 5px !important;
+    border-radius: 5px !important;
 }
 
 /* fix for legacy roblox dropdowns divider  */
 
 .friend-tile-dropdown ul li:first-child button {
-  border-top: none;
+    border-top: none;
 }
 
-/* fix for https://www.roblox.com/my/messages corners because Roblox didn't 
+/* fix for https://www.roblox.com/my/messages corners because Roblox didn't
 * and tried to apply .overflow-hidden (probably not noticed)
 */
 
 .menu-vertical,
 .menu-secondary-container,
 .menu-secondary {
-  overflow: hidden !important;
+    overflow: hidden !important;
 }
 
 .private-message-page > :nth-child(4) > :first-child {
-  border-top-left-radius: 7px;
-  border-top-right-radius: 7px;
+    border-top-left-radius: 7px;
+    border-top-right-radius: 7px;
 }
 
 .private-message-page > :nth-child(4) > :last-child {
-  border-bottom-left-radius: 7px;
-  border-bottom-right-radius: 7px;
+    border-bottom-left-radius: 7px;
+    border-bottom-right-radius: 7px;
 }
 
 /* Support for Roblox Plus themes colors on sliders across Roblox website */
 
 * {
-  scrollbar-color: var(--color-stroke-emphasis) transparent;
-  scrollbar-width: thin;
+    scrollbar-color: var(--color-stroke-emphasis) transparent;
+    scrollbar-width: thin;
 }
 
 /* Hide sidebar separator when there is a slider in a sidebar
@@ -112,19 +109,19 @@ html
 /* Fix for Verified Badge in the new player search redesign */
 
 .player-search-verified-badge {
-  height: 16px !important;
-  width: 16px !important;
+    height: 16px !important;
+    width: 16px !important;
 }
 
 .css-1myerb2-imgWrapper {
-  margin-left: 2px;
+    margin-left: 2px;
 }
 
 .container-fluid {
-  margin-left: 12px;
-  background: transparent;
-  color: transparent;
-  background-color: transparent;
+    margin-left: 12px;
+    background: transparent;
+    color: transparent;
+    background-color: transparent;
 }
 
 /* Roblox App Design Mode */
@@ -133,7 +130,7 @@ html
   background-color: transparent !important;
   border-bottom: transparent !important;
   border-left: var(--color-navigation-background) 81px solid !important;
-  box-shadow: inset 1px 0 var(--stroke-default) !important; 
+  box-shadow: inset 1px 0 var(--stroke-default) !important;
 }
 
 .navbar-header {
@@ -155,33 +152,33 @@ html
 /* Replicate in-game emotes wheel */
 
 .emotes-radial-thumb > span {
-  background-color: transparent !important;
+    background-color: transparent !important;
 }
 
 .emotes-radial-thumb:has(.shimmer) {
-  display: none !important;
+    display: none !important;
 }
 
 /* why the hell they didn't made it already like this? */
 
 .react-chat-dialog-scroll > ul > li {
-  padding: 10px;
+    padding: 10px;
 }
 
 .react-chat-osa-inline-card {
-  border-radius: 15px;
+    border-radius: 15px;
 }
 
 /* Fix action buttons corner radius on hover */
 
 .bg-action-link > div {
-  border-radius: var(--radius-medium);
+    border-radius: var(--radius-medium);
 }
 
 /* Icon-only sidebar animated test */
 
 #wrap {
-  overflow-x: auto;
+    overflow-x: auto;
 }
 
 /* Horizonal tabs redesign (I need to make this animated)
@@ -211,5 +208,5 @@ html
 
 /* fixes max-width: 1368px; for Roblox */
 div[data-testid="sdui-page-header-background"] {
-  max-width: 100% !important;
+    max-width: 100% !important;
 }

@@ -1,86 +1,72 @@
-html.roprime-inventory-page
-  .menu-vertical-container
-  .menu-option
-  .menu-secondary-container:not([data-roprime-menu-secondary="1"]) {
-  display: none !important;
+html.roprime-inventory-page .menu-vertical-container .menu-option .menu-secondary-container:not([data-roprime-menu-secondary="1"]) {
+    display: none !important;
 }
 
 .menu-secondary-container[data-roprime-menu-secondary="1"] {
-  z-index: 10000;
-  padding-left: 3px;
-  position: fixed;
-  box-shadow: none !important;
-  overflow: visible !important;
-  pointer-events: auto;
+    z-index: 10000;
+    padding-left: 3px;
+    position: fixed;
+    box-shadow: none !important;
+    overflow: visible !important;
+    pointer-events: auto;
 }
 
 .menu-secondary-container[data-roprime-menu-secondary="1"] .menu-secondary {
-  width: 160px;
-  margin: 0;
-  list-style: none;
-  overflow: visible !important;
-  box-shadow: 0 1px 3px rgba(150, 150, 150, 0.74);
-  background-color: #fff;
-  border-radius: 8px;
+    width: 160px;
+    margin: 0;
+    list-style: none;
+    overflow: visible !important;
+    box-shadow: 0 1px 3px rgba(150, 150, 150, 0.74);
+    background-color: #fff;
+    border-radius: 8px;
 }
 
 .menu-secondary-container[data-roprime-menu-secondary="1"] .menu-secondary li,
-.menu-secondary-container[data-roprime-menu-secondary="1"]
-  .menu-secondary-option {
-  margin: 0;
-  list-style: none;
-  cursor: pointer;
-  width: 160px;
-  padding: 10px 12px;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
+.menu-secondary-container[data-roprime-menu-secondary="1"] .menu-secondary-option {
+    margin: 0;
+    list-style: none;
+    cursor: pointer;
+    width: 160px;
+    padding: 10px 12px;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
-.menu-secondary-container[data-roprime-menu-secondary="1"]
-  .menu-secondary-option:hover {
-  background-color: #f7f7f8;
+.menu-secondary-container[data-roprime-menu-secondary="1"] .menu-secondary-option:hover {
+    background-color: #f7f7f8;
 }
 
-.menu-secondary-container[data-roprime-menu-secondary="1"]
-  .menu-secondary-option:focus,
-.menu-secondary-container[data-roprime-menu-secondary="1"]
-  .menu-secondary-option.active {
-  box-shadow: inset 4px 0 #70a0ff;
+.menu-secondary-container[data-roprime-menu-secondary="1"] .menu-secondary-option:focus,
+.menu-secondary-container[data-roprime-menu-secondary="1"] .menu-secondary-option.active {
+    box-shadow: inset 4px 0 #70a0ff;
 }
 
-.menu-secondary-container[data-roprime-menu-secondary="1"]
-  .menu-secondary-option
-  .menu-text {
-  float: none;
+.menu-secondary-container[data-roprime-menu-secondary="1"] .menu-secondary-option .menu-text {
+    float: none;
 }
 
 .menu-secondary-container[data-roprime-menu-secondary="1"] .menu-secondary,
 .menu-secondary-container[data-roprime-menu-secondary="1"] .menu-secondary {
-  background-color: var(--color-surface-300);
-  color: var(--color-content-emphasis);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+    background-color: var(--color-surface-300);
+    color: var(--color-content-emphasis);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
 }
 
-.menu-secondary-container[data-roprime-menu-secondary="1"]
-  .menu-secondary-option {
-  color: var(--color-content-default);
+.menu-secondary-container[data-roprime-menu-secondary="1"] .menu-secondary-option {
+    color: var(--color-content-default);
 }
 
-.menu-secondary-container[data-roprime-menu-secondary="1"]
-  .menu-secondary-option:hover,
-.menu-secondary-container[data-roprime-menu-secondary="1"]
-  .menu-secondary-option:focus {
-  box-shadow: none;
-  color: var(--color-content-emphasis);
-  background-color: rgba(0, 0, 0, 0.1);
+.menu-secondary-container[data-roprime-menu-secondary="1"] .menu-secondary-option:hover,
+.menu-secondary-container[data-roprime-menu-secondary="1"] .menu-secondary-option:focus {
+    box-shadow: none;
+    color: var(--color-content-emphasis);
+    background-color: rgba(0, 0, 0, 0.1);
 }
 
-.menu-secondary-container[data-roprime-menu-secondary="1"]
-  .menu-secondary-option:active,
-.menu-secondary-container[data-roprime-menu-secondary="1"]
-  .menu-secondary-option.active {
-  box-shadow: none;
-  background-color: rgba(0, 0, 0, 0.1);
+.menu-secondary-container[data-roprime-menu-secondary="1"] .menu-secondary-option:active,
+.menu-secondary-container[data-roprime-menu-secondary="1"] .menu-secondary-option.active {
+    box-shadow: none;
+    background-color: rgba(0, 0, 0, 0.1);
 }

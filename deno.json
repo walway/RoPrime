@@ -29,7 +29,7 @@
           "scripts",
           "_locales"
     ],
-      "exclude": [ "/dist", "/node_modules", "/resources" ]
+      "exclude": [ "dist", "node_modules", "resources", "**/overview.md" ]
     },
   "exclude": ["dist", "node_modules"]
 }

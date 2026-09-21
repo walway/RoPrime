@@ -1,37 +1,37 @@
 [
-  {
-    "key": "RoValra - Roblox Improved",
-    "id": "njcickgebhnpgmoodjdgohkclfplejli",
-    "settingsPath": "?rovalra=info",
-    "malicious": "false"
-  },
-  {
-    "key": "RoSeal - Augmented Roblox Experience",
-    "id": "",
-    "class": "",
-    "settingsPath": "?roseal=features_home",
-    "malicious": "false"
-  },
-  {
-    "key": "roqol",
-    "id": "",
-    "settingsPath": "?tab=robloxqol&option=General",
-    "malicious": "false"
-  },
-  {
-    "key": "roprime",
-    "id": "",
-    "class": "",
-    "settingsPath": "__roprime__",
-    "malicious": "false",
-    "noToggle": true
-  },
-  {
-    "key": "RoAvatar - Roblox Avatar Editor Improved",
-    "id": "ifjleokejkklabhcfhppncfdbkmakhdp",
-    "class": "",
-    "settingsPath": "https://roblox.com/roavatar",
-    "malicious": "false",
-    "noToggle": false
-  }
+    {
+        "key": "RoValra - Roblox Improved",
+        "id": "njcickgebhnpgmoodjdgohkclfplejli",
+        "settingsPath": "?rovalra=info",
+        "malicious": "false"
+    },
+    {
+        "key": "RoSeal - Augmented Roblox Experience",
+        "id": "",
+        "class": "",
+        "settingsPath": "?roseal=features_home",
+        "malicious": "false"
+    },
+    {
+        "key": "roqol",
+        "id": "",
+        "settingsPath": "?tab=robloxqol&option=General",
+        "malicious": "false"
+    },
+    {
+        "key": "roprime",
+        "id": "",
+        "class": "",
+        "settingsPath": "__roprime__",
+        "malicious": "false",
+        "noToggle": true
+    },
+    {
+        "key": "RoAvatar - Roblox Avatar Editor Improved",
+        "id": "ifjleokejkklabhcfhppncfdbkmakhdp",
+        "class": "",
+        "settingsPath": "https://roblox.com/roavatar",
+        "malicious": "false",
+        "noToggle": false
+    }
 ]
