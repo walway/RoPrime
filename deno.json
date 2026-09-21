@@ -16,5 +16,20 @@
     "dompurify": "npm:dompurify@3.4.15",
     "web-ext": "npm:web-ext@^10.6.0"
   },
+  "fmt": {
+    "indentWidth": 4,
+      "lineWidth": 120,
+      "useTabs": false,
+      "semiColons": false,
+      "singleQuote": true,
+      "include": [
+          "src",
+          "tasks",
+          "configs",
+          "scripts",
+          "_locales"
+    ],
+      "exclude": [ "/dist", "/node_modules", "/resources" ]
+    },
   "exclude": ["dist", "node_modules"]
 }
