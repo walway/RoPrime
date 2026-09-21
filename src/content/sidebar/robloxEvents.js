@@ -1,3 +1,4 @@
+import { fetchJsonPreferBackground } from "../core/backgroundFetch.js";
 import {
   getActiveSidebarSize,
   getExtensionResourceUrl,
@@ -90,9 +91,9 @@ function parseEventsJson(raw) {
 async function fetchEventsFromUrl(url) {
   if (!url) return null;
   try {
-    const response = await fetch(url, { cache: "no-store" });
-    if (!response.ok) return null;
-    const events = parseEventsJson(await response.json());
+    const events = parseEventsJson(
+      await fetchJsonPreferBackground(url, { cache: "no-store" }),
+    );
     return events.length ? events : null;
   } catch {
     return null;

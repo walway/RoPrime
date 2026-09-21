@@ -1,3 +1,5 @@
+import { fetchTextPreferBackground } from "./backgroundFetch.js";
+
 const CLIENT_LOCALES_BASE =
   "https://raw.githubusercontent.com/walway/Roblox-Datamine/main/Client/Locales/Common";
 const UNIVERSAL_LOCALES_BASE =
@@ -171,9 +173,8 @@ function parseCsvIntoMap(csvText, target) {
 
 async function fetchLocaleCsv(baseUrl, localeFile) {
   const url = `${baseUrl}/${localeFile}.csv`;
-  const response = await fetch(url, { credentials: "omit" });
-  if (!response.ok) throw new Error(`locale ${localeFile}: ${response.status}`);
-  return response.text();
+  // Firefox applies page CSP to content-script fetch — use background.
+  return fetchTextPreferBackground(url, { credentials: "omit" });
 }
 
 async function loadLocaleMaps(localeFile) {
