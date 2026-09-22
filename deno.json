@@ -12,7 +12,7 @@
     "roavatar-renderer": "npm:roavatar-renderer@^1.9.3",
     "esbuild": "npm:esbuild@0.28.2",
     "adm-zip": "npm:adm-zip@0.6.1",
-    "dotenv": "npm:dotenv@17.4.2",
+    "dotenv": "npm:dotenv@18.0.1",
     "dompurify": "npm:dompurify@3.4.15",
     "web-ext": "npm:web-ext@^10.6.0"
   },
