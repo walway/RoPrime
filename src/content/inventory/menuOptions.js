@@ -20,7 +20,7 @@ function normalizeHref(value) {
 
 export function isInventoryPage() {
     const path = globalThis.location.pathname || ''
-    return /^\/(?:[a-z]{2,3}(?:-[a-z0-9]{2,8})?\/)?users\/inventory\/?$/i.test(
+    return /^\/(?:[a-z]{2,3}(?:-[a-z0-9]{2,8})?\/)?users\/(?:\d+\/)?inventory\/?$/i.test(
         path,
     )
 }

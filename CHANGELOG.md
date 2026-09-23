@@ -1,4 +1,9 @@
-v1.5
+1.6
+
+- Fixed Menu Options not appearing in the 3D-Party Users Inventory pages
+- Fixed Gradient Overlay on the Groups pages with Background Thumbnails
+
+1.5
 - New Profile Redesign feature
 - Free Roblox Plus themes
 - New Roblox Badges feature

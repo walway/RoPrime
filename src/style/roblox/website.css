@@ -210,3 +210,14 @@ html body:has(main.container-main[data-rovalra-sidebar-collapse-ready="true"][da
 div[data-testid="sdui-page-header-background"] {
     max-width: 100% !important;
 }
+
+/* Fix for .cover-gradient-overlay with Roblox Plus themes */
+.dark-theme .cover-gradient-overlay {
+    background: linear-gradient(
+        transparent,
+        color-mix(in srgb, var(--dark-mode-surface-0) 50%, transparent) 45%,
+        color-mix(in srgb, var(--dark-mode-surface-0) 85%, transparent) 70%,
+        var(--dark-mode-surface-0) 90%,
+        var(--dark-mode-surface-0)
+    ) !important;
+}
