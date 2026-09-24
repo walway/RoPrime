@@ -14,7 +14,7 @@
     "adm-zip": "npm:adm-zip@0.6.1",
     "dotenv": "npm:dotenv@17.4.2",
     "dompurify": "npm:dompurify@3.4.15",
-    "web-ext": "npm:web-ext@^10.6.0"
+    "web-ext": "npm:web-ext@^10.7.0"
   },
   "fmt": {
     "indentWidth": 4,
