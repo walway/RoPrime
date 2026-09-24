@@ -6,8 +6,11 @@
     "description": "__MSG_extDescription__",
     "browser_specific_settings": {
         "gecko": {
-            "id": "roprime.contact@proton.me",
-            "strict_min_version": "109.0"
+            "id": "jokepreston@gmail.com",
+            "strict_min_version": "109.0",
+            "data_collection_permissions": {
+                "required": ["none"]
+            }
         }
     },
     "permissions": ["storage", "management"],
