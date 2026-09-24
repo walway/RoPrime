@@ -27,7 +27,7 @@ You can customize Roblox with a bunch of features to your liking. Here's some fe
 - 👥 Friend Styling Reimagined
 - 👨 Profile Redesign with Avatar Preview at the center instead of the top of the page
 - ✏️ Rename wording (Communities/Groups, Marketplace/Catalog, Charts/Discover, Experiences/Games)
-- 🪒 More rounded corners
+- 🌽 More rounded corners
 - 🎛️ Custom CSS
 - 🔄 Sync settings easily
 - 🌓 Light and dark theme support for Normal, Select and Kids Roblox

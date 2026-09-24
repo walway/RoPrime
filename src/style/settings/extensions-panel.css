@@ -23,6 +23,7 @@
     flex-direction: column;
     align-self: start;
     height: auto;
+    border-radius: var(--radius-medium);
     background: var(--color-surface-300);
     overflow: hidden;
 }
