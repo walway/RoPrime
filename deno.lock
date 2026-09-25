@@ -14,7 +14,7 @@
     "npm:opentype.js@1.3.4": "1.3.4",
     "npm:prettier@*": "3.9.6",
     "npm:prism-code-editor@5.4.0": "5.4.0",
-    "npm:roavatar-renderer@^1.9.3": "1.9.3",
+    "npm:roavatar-renderer@^1.9.5": "1.9.5",
     "npm:web-ext@^10.7.0": "10.7.0"
   },
   "jsr": {
@@ -1610,8 +1610,8 @@
     "resolve-from@4.0.0": {
       "integrity": "sha512-pb/MYmXstAkysRFx8piNI1tGFNQIFA3vkE3Gq4EuA1dF6gHp/+vgZqsCGJapvy8N3Q+4o7FwvquPJcnZ7RYy4g=="
     },
-    "roavatar-renderer@1.9.3": {
-      "integrity": "sha512-nLn9B+7C0teSBQYmafWGAy/w29iaapX0o7ng+xekDLOyJ6KtcHhmhINHgwYTXbdVKe47V9HYndSgvvB8MXucWw==",
+    "roavatar-renderer@1.9.5": {
+      "integrity": "sha512-WYTbIHymwZCDkiGXT1/obIINYKxhK3Zf5zvmW6BjFUkg3cz9y4aC+7SJ250/jKQl0ZxiE22GbJsT5ll27O/dbA==",
       "dependencies": [
         "fzstd",
         "n8ao",
@@ -2005,7 +2005,7 @@
       "npm:dotenv@18.0.2",
       "npm:esbuild@0.28.2",
       "npm:prism-code-editor@5.4.0",
-      "npm:roavatar-renderer@^1.9.3",
+      "npm:roavatar-renderer@^1.9.5",
       "npm:web-ext@^10.7.0"
     ]
   }
