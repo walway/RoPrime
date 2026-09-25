@@ -1,35 +1,51 @@
 {
-  "nodeModulesDir": "none",
-  "lock": true,
-  "tasks": {
-    "build": "deno run -A tasks/build.js"
-  },
-  "imports": {
-    "@supabase/supabase-js": "npm:@supabase/supabase-js@2.116.0",
-    "prism-code-editor/setups": "npm:prism-code-editor@5.4.0/setups",
-    "prism-code-editor/languages/css": "npm:prism-code-editor@5.4.0/languages/css",
-    "prism-code-editor/prism/languages/css": "npm:prism-code-editor@5.4.0/prism/languages/css",
-    "roavatar-renderer": "npm:roavatar-renderer@^1.9.3",
-    "esbuild": "npm:esbuild@0.28.2",
-    "adm-zip": "npm:adm-zip@0.6.1",
-    "dotenv": "npm:dotenv@18.0.2",
-    "dompurify": "npm:dompurify@3.4.15",
-    "web-ext": "npm:web-ext@^10.7.0"
-  },
-  "fmt": {
-    "indentWidth": 4,
-      "lineWidth": 120,
-      "useTabs": false,
-      "semiColons": false,
-      "singleQuote": true,
-      "include": [
-          "src",
-          "tasks",
-          "configs",
-          "scripts",
-          "_locales"
-    ],
-      "exclude": [ "dist", "node_modules", "resources", "**/overview.md" ]
+    "nodeModulesDir": "none",
+    "lock": true,
+    "tasks": {
+        "build": "deno run -A tasks/build.ts"
     },
-  "exclude": ["dist", "node_modules"]
+    "imports": {
+        "@supabase/supabase-js": "npm:@supabase/supabase-js@2.116.0",
+        "@types/chrome": "npm:@types/chrome@^0.3.0",
+        "@types/firefox": "npm:@types/firefox@^0.0.34",
+        "prism-code-editor/setups": "npm:prism-code-editor@5.4.0/setups",
+        "prism-code-editor/languages/css": "npm:prism-code-editor@5.4.0/languages/css",
+        "prism-code-editor/prism/languages/css": "npm:prism-code-editor@5.4.0/prism/languages/css",
+        "roavatar-renderer": "npm:roavatar-renderer@^1.9.3",
+        "esbuild": "npm:esbuild@0.28.2",
+        "adm-zip": "npm:adm-zip@0.6.1",
+        "dotenv": "npm:dotenv@18.0.2",
+        "dompurify": "npm:dompurify@3.4.15",
+        "typescript": "npm:typescript@^7.0.2",
+        "web-ext": "npm:web-ext@^10.7.0"
+    },
+    "lint": {
+        "include": [
+            "src",
+            "tasks",
+            "configs",
+            "scripts"
+        ],
+        "exclude": ["dist", "node_modules", "resources"]
+    },
+    "fmt": {
+        "indentWidth": 4,
+        "lineWidth": 120,
+        "useTabs": false,
+        "semiColons": false,
+        "singleQuote": true,
+        "include": [
+            "src",
+            "tasks",
+            "configs",
+            "scripts",
+            "_locales"
+        ],
+        "exclude": ["dist", "node_modules", "resources", "**/overview.md"]
+    },
+    "types": [
+        "@types/firefox-webext-browser",
+        "@types/chrome"
+    ],
+    "exclude": ["dist", "node_modules"]
 }
