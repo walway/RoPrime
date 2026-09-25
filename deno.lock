@@ -9,7 +9,7 @@
     "npm:@supabase/supabase-js@2.116.0": "2.116.0",
     "npm:adm-zip@0.6.1": "0.6.1",
     "npm:dompurify@3.4.15": "3.4.15",
-    "npm:dotenv@18.0.2": "18.0.2",
+    "npm:dotenv@18.0.3": "18.0.3",
     "npm:esbuild@0.28.2": "0.28.2",
     "npm:opentype.js@1.3.4": "1.3.4",
     "npm:prettier@*": "3.9.6",
@@ -766,8 +766,8 @@
         "type-fest"
       ]
     },
-    "dotenv@18.0.2": {
-      "integrity": "sha512-wl0U3CxC0iobaryqEKpFJxzyp4AxQFYAKj/WWszXZr87vVHLi2yJv2syax5Vxt+u02xqNgE277rsc3lOKg9sPg==",
+    "dotenv@18.0.3": {
+      "integrity": "sha512-/8CJTyL817qPnfbQrJgOEcrU3fDrJkRIoXBE566wHuvIXKOCHUZhPqGPbCPi9SogjdGnreF0TlvnTgK6J/8zpA==",
       "bin": true
     },
     "ecdsa-sig-formatter@1.0.11": {
@@ -2002,7 +2002,7 @@
       "npm:@supabase/supabase-js@2.116.0",
       "npm:adm-zip@0.6.1",
       "npm:dompurify@3.4.15",
-      "npm:dotenv@18.0.2",
+      "npm:dotenv@18.0.3",
       "npm:esbuild@0.28.2",
       "npm:prism-code-editor@5.4.0",
       "npm:roavatar-renderer@^1.9.3",
