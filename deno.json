@@ -13,7 +13,7 @@
     "esbuild": "npm:esbuild@0.28.2",
     "adm-zip": "npm:adm-zip@0.6.1",
     "dotenv": "npm:dotenv@18.0.2",
-    "dompurify": "npm:dompurify@3.4.15",
+    "dompurify": "npm:dompurify@3.4.16",
     "web-ext": "npm:web-ext@^10.7.0"
   },
   "fmt": {
