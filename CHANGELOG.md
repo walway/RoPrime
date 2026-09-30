@@ -5,6 +5,7 @@
 - You can now copy direct link to the feature (Hover the title)
 - Mobile Support for Legacy Badges
 
+- Fixed toggle with RTL
 - Fixed Welcome dialog on small displays
 - Fixed Menu Options not appearing in the 3D-Party Users Inventory pages
 - Fixed Gradient Overlay on the Groups pages with Background Thumbnails
