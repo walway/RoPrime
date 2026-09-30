@@ -15,7 +15,7 @@
         "https://chromewebstore.googleapis.com/*",
         "https://lh3.googleusercontent.com/*",
         "https://*.roproxy.com/*",
-        "https://*.rotunnel.dev/*"
+        "https://*.rotunnel.com/*"
     ],
     "background": {
         "service_worker": "background.js"
