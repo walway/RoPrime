@@ -55,6 +55,7 @@ function applyCustomCssEditorLock(inner) {
     }
     if (cssEditor) {
         cssEditor.textarea.readOnly = locked
+        cssEditor.textarea.dir = 'ltr'
         cssEditor.textarea.setAttribute('aria-readonly', locked ? 'true' : 'false')
     }
     syncPlaceholder(inner)
@@ -78,6 +79,7 @@ function configureEditorShadow(host) {
 			display: block;
 		}
 		.prism-code-editor {
+            direction: ltr;
 			margin: 0;
 			border-radius: 10px;
 			overflow: visible !important;

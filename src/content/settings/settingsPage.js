@@ -931,6 +931,7 @@ function buildSettingsSyncPanel() {
     const preview = el('textarea')
     preview.classList.add('roprime-settings-preview')
     preview.spellcheck = false
+    preview.dir = 'ltr'
     previewWrap.appendChild(preview)
 
     const resetRow = el('div', 'flex justify-between items-center gap-medium')

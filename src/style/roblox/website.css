@@ -223,7 +223,6 @@ div[data-testid="sdui-page-header-background"] {
 /* Fix Roblox's popup's close button with RTL */
 
 body[dir="rtl"] .foundation-web-dialog-close-container {
-    justify-self: end;
     left: var(--size-300) !important;
     right: auto !important;
 }

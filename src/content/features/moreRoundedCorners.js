@@ -26,32 +26,11 @@ const MORE_ROUNDED_CORNERS_CSS = `
   overflow: hidden;
 }
 
-li[href="#!/accessories/head"],
-li[href="#!/avatar-animations/run"],
-li[href="#!/body-parts/torso"],
-li[href="#!/bottoms/pants"],
-li[href="#!/bundles/body-parts"],
-li[href="#!/classic-clothing/classic-pants"],
-li[href="#!/heads/heads"],
-li[href="#!/makeup/eyebrows"],
-li[href="#!/places/created-by-me"],
-li[href="#!/private-servers/my-private-servers"],
-li[href="#!/shoes/left-shoe"],
-li[href="#!/tops/t-shirts"] {
+.menu-secondary .menu-secondary-option:first-child {
   border-radius: 8px 8px 0 0;
 }
 
-li[href="#!/accessories/gear"],
-li[href="#!/avatar-animations/climb"],
-li[href="#!/body-parts/right-legs"],
-li[href="#!/bottoms/skirts"],
-li[href="#!/bundles/shoes"],
-li[href="#!/classic-clothing/classic-t-shirts"],
-li[href="#!/heads/dynamic-heads-asset"],
-li[href="#!/makeup/eyes"],
-li[href="#!/private-servers/other-private-servers"],
-li[href="#!/shoes/right-shoe"],
-li[href="#!/tops/jackets"] {
+.menu-secondary .menu-secondary-option:last-child {
   border-radius: 0 0 8px 8px;
 }
 `.trim()
