@@ -4,7 +4,7 @@
 
 .btn-toggle .toggle-flip {
     left: 2px !important;
-    justify-self: end;
+    right: auto !important;
     transition: transform 180ms ease;
 }
 
