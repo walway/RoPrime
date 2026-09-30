@@ -121,6 +121,9 @@
 }
 
 .roprime-ext-btn {
+    width: 38px;
+    height: 38px;
+    overflow: visible;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -145,6 +148,7 @@
     display: block;
     width: 18px;
     height: 18px;
+    overflow: visible;
     fill: currentColor;
 }
 
