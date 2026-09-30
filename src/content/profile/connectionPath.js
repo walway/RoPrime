@@ -1,8 +1,4 @@
-import {
-    settingsState,
-    settingsT,
-    shouldRunRoPrimeOnCurrentPage,
-} from '../core/core.js'
+import { settingsState, settingsT, shouldRunRoPrimeOnCurrentPage } from '../core/core.js'
 import { registerFeature } from '../features/registry.js'
 import { getRobloxUserId } from './robloxUserId.js'
 import { showRoPrimeContentOverlay } from '../ui/overlay.js'
@@ -197,11 +193,7 @@ function enqueueRequest(task) {
 }
 
 function parseFriendsPayload(data) {
-    const list = Array.isArray(data?.data)
-        ? data.data
-        : Array.isArray(data)
-        ? data
-        : []
+    const list = Array.isArray(data?.data) ? data.data : Array.isArray(data) ? data : []
     return list
         .map((entry) => Number(entry?.id ?? entry))
         .filter((friendId) => Number.isFinite(friendId) && friendId > 0)
@@ -227,7 +219,7 @@ async function fetchFriends(userId, { onRateLimited } = {}) {
                 fetch(endpoint.url(id), {
                     credentials: endpoint.credentials,
                     cache: 'no-store',
-                }),
+                })
             )
             if (response.status === 429) {
                 if (typeof onRateLimited === 'function') onRateLimited()
@@ -637,14 +629,9 @@ async function renderGraph(container, path) {
             ctx.restore()
             ctx.beginPath()
             ctx.arc(node.x, node.y, size, 0, Math.PI * 2)
-            const isEndpoint =
-                isPath &&
+            const isEndpoint = isPath &&
                 (node.index === 0 || node.index === pathIds.length - 1)
-            ctx.strokeStyle = isEndpoint
-                ? '#00a2ff'
-                : isPath
-                ? 'rgba(255,255,255,0.8)'
-                : 'rgba(255,255,255,0.22)'
+            ctx.strokeStyle = isEndpoint ? '#00a2ff' : isPath ? 'rgba(255,255,255,0.8)' : 'rgba(255,255,255,0.22)'
             ctx.lineWidth = Math.max(
                 isPath ? 2.2 : 1,
                 (isPath ? 2.6 : 1.1) / Math.max(globalScale, 0.55),
@@ -697,10 +684,12 @@ async function openConnectionPathOverlay(fromId, toId) {
   <div class="roprime-connection-path-spinner-wrap" data-roprime-cp-spinner>
     <span class="spinner spinner-sm spinner-block"></span>
   </div>
-  <p class="text-body-medium content-default roprime-connection-path-status" data-roprime-cp-status>${t(
-        'settings.profile.connectionPath.status.counting',
-        'Counting...',
-    )}</p>
+  <p class="text-body-medium content-default roprime-connection-path-status" data-roprime-cp-status>${
+        t(
+            'settings.profile.connectionPath.status.counting',
+            'Counting...',
+        )
+    }</p>
   <div class="roprime-connection-path-graph" data-roprime-cp-graph hidden></div>
 </div>
 `.trim()
@@ -795,8 +784,7 @@ function findButtonHost() {
     const header = document.querySelector('.user-profile-header')
     if (!(header instanceof HTMLElement)) return null
 
-    const exact =
-        header.querySelector(':scope > .flex-nowrap.gap-small.flex') ||
+    const exact = header.querySelector(':scope > .flex-nowrap.gap-small.flex') ||
         header.querySelector(':scope > .flex-nowrap .gap-small.flex') ||
         header.querySelector(':scope > .flex.flex-nowrap.gap-small') ||
         header.querySelector('.flex-nowrap.gap-small.flex')

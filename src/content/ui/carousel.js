@@ -115,9 +115,11 @@ function itemClassFromElement(el) {
 export function findLiveCarouselItemClass(excludeRoot = null) {
     const pick = (host) => {
         if (!(host instanceof HTMLElement)) return null
-        for (const el of host.querySelectorAll(
-            '#collection-carousel-item, [id="collection-carousel-item"]',
-        )) {
+        for (
+            const el of host.querySelectorAll(
+                '#collection-carousel-item, [id="collection-carousel-item"]',
+            )
+        ) {
             if (excludeRoot && excludeRoot.contains(el)) continue
             const className = itemClassFromElement(el)
             if (className) return className
@@ -130,9 +132,11 @@ export function findLiveCarouselItemClass(excludeRoot = null) {
         if (found) return found
     }
 
-    for (const el of document.querySelectorAll(
-        '#collection-carousel-item, [id="collection-carousel-item"]',
-    )) {
+    for (
+        const el of document.querySelectorAll(
+            '#collection-carousel-item, [id="collection-carousel-item"]',
+        )
+    ) {
         if (excludeRoot && excludeRoot.contains(el)) continue
         const className = itemClassFromElement(el)
         if (className) return className
@@ -149,10 +153,7 @@ export function resolveItemClass(excludeRoot = null) {
 }
 
 function findCarouselTrackClass(columnGap) {
-    const preferred =
-        columnGap >= 18
-            ? FALLBACK_CLASSES.carouselGap18
-            : FALLBACK_CLASSES.carouselGap12
+    const preferred = columnGap >= 18 ? FALLBACK_CLASSES.carouselGap18 : FALLBACK_CLASSES.carouselGap12
     const css = emotionCssText()
     if (!css) return preferred
     const re = /\.(css-[a-z0-9]+-carousel)(?![A-Za-z])/gi
@@ -195,25 +196,24 @@ export function resolveCarouselLayout(
     const size = ITEM_SIZE[collectionItemSize] || ITEM_SIZE.Small
     const columnGap = resolveColumnGap(containerWidth, layoutOverrides)
     const sideMargin = Number(layoutOverrides.sideMargin) || 0
-    const computedColumns =
-        containerWidth >= 280
-            ? Math.min(
-                  Math.max(
-                      size.minItemCount,
-                      Math.floor(
-                          (containerWidth - 2 * sideMargin + columnGap) /
-                              (size.minItemWidth + columnGap),
-                      ),
-                  ),
-                  size.maxItemCount,
-              )
-            : size.minItemCount
+    const computedColumns = containerWidth >= 280
+        ? Math.min(
+            Math.max(
+                size.minItemCount,
+                Math.floor(
+                    (containerWidth - 2 * sideMargin + columnGap) /
+                        (size.minItemWidth + columnGap),
+                ),
+            ),
+            size.maxItemCount,
+        )
+        : size.minItemCount
     const numColumns = Number.isFinite(Number(layoutOverrides.numColumns))
         ? Number(layoutOverrides.numColumns)
         : computedColumns
     const fractionalItemAmount = Number.isFinite(
-        Number(layoutOverrides.fractionalItemAmount),
-    )
+            Number(layoutOverrides.fractionalItemAmount),
+        )
         ? Number(layoutOverrides.fractionalItemAmount)
         : size.fractionalItemAmount
     return { numColumns, fractionalItemAmount, columnGap, sideMargin, size }
@@ -263,10 +263,7 @@ function buildScrollArrow(direction) {
     arrow.tabIndex = 0
     const icon = document.createElement('span')
     icon.dataset.testid = 'carousel-scroll-arrow-icon'
-    icon.className =
-        direction === 'prev'
-            ? 'icon-chevron-heavy-left'
-            : 'icon-chevron-heavy-right'
+    icon.className = direction === 'prev' ? 'icon-chevron-heavy-left' : 'icon-chevron-heavy-right'
     arrow.appendChild(icon)
     return arrow
 }
@@ -314,8 +311,7 @@ export function createEmotionCarousel({
     const itemNodes = []
 
     const cssNow = emotionCssText()
-    let itemClass =
-        findLiveCarouselItemClass() ||
+    let itemClass = findLiveCarouselItemClass() ||
         (cssNow.includes(`.${FALLBACK_CLASSES.carouselItem}`)
             ? FALLBACK_CLASSES.carouselItem
             : findLatestCarouselItemClass())
@@ -354,7 +350,6 @@ export function createEmotionCarousel({
             FALLBACK_CLASSES.collectionCarouselContainer,
         )
         if (nextCollection && root.className !== nextCollection) {
-
             root.className = nextCollection
         }
         const nextContainer = resolveCarouselContainerClass()
@@ -430,8 +425,7 @@ export function createEmotionCarousel({
 
     const syncArrows = () => {
         const { allowArrows, atStart, atEnd } = state()
-        const coarse =
-            typeof matchMedia === 'function' &&
+        const coarse = typeof matchMedia === 'function' &&
             matchMedia('(pointer: coarse) and (not (any-pointer: fine))')
                 .matches
 
@@ -456,10 +450,7 @@ export function createEmotionCarousel({
     const scrollToIndex = (nextIndex) => {
         const { maxIndex, itemWidth, gap, maxScroll } = state()
         index = Math.min(Math.max(0, nextIndex), maxIndex)
-        track.scrollLeft =
-            index >= maxIndex && maxScroll > 0
-                ? maxScroll
-                : index * (itemWidth + gap)
+        track.scrollLeft = index >= maxIndex && maxScroll > 0 ? maxScroll : index * (itemWidth + gap)
         syncArrows()
     }
 

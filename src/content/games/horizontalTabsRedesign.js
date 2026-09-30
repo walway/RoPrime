@@ -178,8 +178,7 @@ function hrefFromTab(li) {
 }
 
 function labelForTab(li, slug) {
-    const lead =
-        li.querySelector('.text-lead') ||
+    const lead = li.querySelector('.text-lead') ||
         li.querySelector('.rbx-tab-heading span') ||
         li.querySelector('a.rbx-tab-heading') ||
         li.querySelector('a')
@@ -210,8 +209,7 @@ function createShell() {
     root.setAttribute(ROOT_ATTR + '-ui', '1')
     root.dir = 'ltr'
     root.dataset.orientation = 'horizontal'
-    root.className =
-        'foundation-web-tabs flex flex-col radius-none overflow-hidden roprime-horizontal-tabs relative'
+    root.className = 'foundation-web-tabs flex flex-col radius-none overflow-hidden roprime-horizontal-tabs relative'
 
     root.innerHTML = `
 <div class="relative scroll-x" style="scrollbar-width: none;">
@@ -252,8 +250,7 @@ function syncIndicator(shell) {
     const indicator = shell.querySelector(':scope > .roprime-ht-indicator')
     if (!(tablist instanceof HTMLElement) || !(indicator instanceof HTMLElement)) return
 
-    const active =
-        tablist.querySelector('[role="tab"][data-state="active"]') ||
+    const active = tablist.querySelector('[role="tab"][data-state="active"]') ||
         tablist.querySelector('[role="tab"][aria-selected="true"]')
     if (!(active instanceof HTMLElement)) {
         indicator.style.width = '0px'
@@ -282,12 +279,11 @@ function setButtonActive(button, active) {
 
 function activateOriginalTab(li) {
     if (!(li instanceof HTMLElement)) return
-    const anchor =
-        li.querySelector('a.rbx-tab-heading[href]') ||
+    const anchor = li.querySelector('a.rbx-tab-heading[href]') ||
         li.querySelector('a.rbx-tab-heading') ||
         li.querySelector('a')
 
-        if (li.hasAttribute('href') || li.hasAttribute('ui-sref') || li.hasAttribute('ng-click')) {
+    if (li.hasAttribute('href') || li.hasAttribute('ui-sref') || li.hasAttribute('ng-click')) {
         li.click()
         return
     }
@@ -397,7 +393,6 @@ function redesignIsActive(host) {
             return false
         }
     } else if (!host.contains(shell) && shell.parentElement !== host) {
-
         return false
     }
     return true

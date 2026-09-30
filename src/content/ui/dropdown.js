@@ -304,7 +304,7 @@ function positionPopper(popper, trigger, { popperZIndex = '1050' } = {}) {
     const rect = trigger.getBoundingClientRect()
 
     const width = Math.max(rect.width, 1)
-    
+
     // Gaps
     const gap = 0
     const edgePad = 0
@@ -877,8 +877,7 @@ export function createDropdown({
         // Block page scroll
         if (event.type === 'wheel' || event.type === 'mousewheel') {
             const target = event.target
-            const inMenu =
-                target instanceof Node &&
+            const inMenu = target instanceof Node &&
                 (popper.contains(target) || root.contains(target))
             const menuScroller = popper.querySelector(
                 '[data-radix-select-viewport]',
@@ -907,7 +906,7 @@ export function createDropdown({
         ) {
             return
         }
-        
+
         if (event.cancelable) event.preventDefault()
     }
 

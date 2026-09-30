@@ -250,9 +250,7 @@ function buildBadgeTileElement(badge) {
     tile.className = 'base-tile'
     const link = document.createElement('a')
     link.className = 'flex flex-col'
-    link.href = badge.hash
-        ? `${ROBLOX_BADGES_URL}#${badge.hash}`
-        : ROBLOX_BADGES_URL
+    link.href = badge.hash ? `${ROBLOX_BADGES_URL}#${badge.hash}` : ROBLOX_BADGES_URL
     link.title = badge.title
     const thumbWrap = document.createElement('div')
     thumbWrap.className = 'base-tile-thumbnail-wrapper'
@@ -264,12 +262,10 @@ function buildBadgeTileElement(badge) {
     thumb.appendChild(img)
     thumbWrap.appendChild(thumb)
     const title = document.createElement('div')
-    title.className =
-        'base-tile-title content-emphasis text-title-medium padding-top-medium'
+    title.className = 'base-tile-title content-emphasis text-title-medium padding-top-medium'
     title.textContent = badge.label
     const meta = document.createElement('div')
-    meta.className =
-        'base-tile-metadata content-default text-body-medium padding-top-xsmall'
+    meta.className = 'base-tile-metadata content-default text-body-medium padding-top-xsmall'
     link.append(thumbWrap, title, meta)
     tile.appendChild(link)
     outer.appendChild(tile)
@@ -286,8 +282,7 @@ function buildBadgesRoot(badges) {
     const header = document.createElement('div')
     header.className = 'container-header badge-list-header'
     const heading = document.createElement('h2')
-    heading.className =
-        'content-emphasis text-heading-small padding-none inline-block roprime-legacy-badges-title'
+    heading.className = 'content-emphasis text-heading-small padding-none inline-block roprime-legacy-badges-title'
     heading.textContent = 'Roblox Badges'
     header.appendChild(heading)
 

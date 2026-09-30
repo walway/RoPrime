@@ -49,9 +49,9 @@
             const nLen = addedNodes.length;
             for (let j = 0; j < nLen; j++) {
                 const node = addedNodes[j];
-                if (node.nodeType === 1) { 
+                if (node.nodeType === 1) {
                     if (node.tagName === 'IMG') viewportObserver.observe(node);
-                    
+
                     const innerImgs = node.getElementsByTagName('img');
                     const imgLen = innerImgs.length;
                     for (let k = 0; k < imgLen; k++) {

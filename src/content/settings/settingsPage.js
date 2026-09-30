@@ -2068,13 +2068,13 @@ function findSettingsPageForFeature(featureKey) {
 
 function buildFeatureSettingsLink(featureKey, pageKey = '') {
     const key = String(featureKey || '').trim()
-    const page = String(pageKey || findSettingsPageForFeature(key) || getCurrentrp() ||
-        RP_DEFAULT_PAGE).trim() || RP_DEFAULT_PAGE
+    const page = String(
+        pageKey || findSettingsPageForFeature(key) || getCurrentrp() ||
+            RP_DEFAULT_PAGE,
+    ).trim() || RP_DEFAULT_PAGE
     const origin = globalThis.location.origin
     const prefix = getRobloxLocalePathPrefix()
-    return `${origin}${prefix}/my/account?roprime=${encodeURIComponent(page)}?feature=${
-        encodeURIComponent(key)
-    }`
+    return `${origin}${prefix}/my/account?roprime=${encodeURIComponent(page)}?feature=${encodeURIComponent(key)}`
 }
 
 function resolveFeatureKeyFromHoverTarget(target) {
@@ -2122,8 +2122,7 @@ function resolveFeatureKeyFromHoverTarget(target) {
 function createFeatureLinkCopyButton(featureKey) {
     const button = document.createElement('button')
     button.type = 'button'
-    button.className =
-        'account-change-settings-button btn-generic-edit-sm roprime-feature-link-copy'
+    button.className = 'account-change-settings-button btn-generic-edit-sm roprime-feature-link-copy'
     button.title = 'Copy feature link'
     button.setAttribute('aria-label', 'Copy feature link')
     button.dataset.roprimeFeature = String(featureKey || '')
@@ -2133,10 +2132,9 @@ function createFeatureLinkCopyButton(featureKey) {
         event.preventDefault()
         event.stopPropagation()
         const key = button.dataset.roprimeFeature || featureKey
-        const page =
-            button.closest('.roprime-settings-page')?.className.match(
-                /roprime-settings-page--([^\s]+)/,
-            )?.[1] || findSettingsPageForFeature(key) || ''
+        const page = button.closest('.roprime-settings-page')?.className.match(
+            /roprime-settings-page--([^\s]+)/,
+        )?.[1] || findSettingsPageForFeature(key) || ''
         const url = buildFeatureSettingsLink(key, page)
         try {
             await navigator.clipboard.writeText(url)
@@ -2170,8 +2168,7 @@ function ensureFeatureLinkCopyOnRow(row) {
     if (!featureKey) return
     const button = createFeatureLinkCopyButton(featureKey)
 
-    const title =
-        row.querySelector(':scope > .text-title-large.content-emphasis') ||
+    const title = row.querySelector(':scope > .text-title-large.content-emphasis') ||
         row.querySelector(
             ':scope > .flex.flex-col .text-title-large.content-emphasis',
         )
@@ -2244,8 +2241,7 @@ function scrollToFeatureFromUrl(root) {
         }
     }
 
-    const target =
-        root.querySelector(`[data-roprime-feature="${CSS.escape(featureKey)}"]`) ||
+    const target = root.querySelector(`[data-roprime-feature="${CSS.escape(featureKey)}"]`) ||
         root.querySelector(`.roprime-setting--${CSS.escape(featureKey)}`) ||
         root.querySelector(
             `.roprime-sidebar-inline-toggle--${CSS.escape(featureKey)}`,
