@@ -669,3 +669,71 @@ html.roprime-account-settings-open #user-account > #roprime-settings-host {
         opacity: 0;
     }
 }
+
+/* Feature link copy — sits directly after the title; hover-only (no focus stick). */
+.roprime-feature-title-with-copy {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+    max-width: 100%;
+}
+
+.roprime-feature-title-with-copy > .text-title-large {
+    min-width: 0;
+}
+
+.roprime-feature-link-copy {
+    opacity: 0;
+    transform: scale(0.85);
+    pointer-events: none;
+    transition:
+        opacity 160ms ease,
+        transform 160ms ease,
+        background-color 160ms ease;
+    flex: 0 0 auto;
+    padding: 2px !important;
+    min-width: 28px;
+    min-height: 28px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.roprime-feature-title-with-copy:hover .roprime-feature-link-copy {
+    opacity: 1;
+    transform: scale(1);
+    pointer-events: auto;
+}
+
+.roprime-feature-link-copy.is-copied {
+    animation: roprime-feature-link-pop 420ms ease;
+}
+
+.roprime-feature-link-flash {
+    animation: roprime-feature-link-flash 1.4s ease;
+}
+
+@keyframes roprime-feature-link-pop {
+    0% {
+        transform: scale(0.9);
+    }
+    40% {
+        transform: scale(1.12);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+@keyframes roprime-feature-link-flash {
+    0%,
+    100% {
+        box-shadow: none;
+    }
+    30%,
+    70% {
+        box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-system-emphasis) 100%, transparent);
+        border-radius: 8px;
+    }
+}

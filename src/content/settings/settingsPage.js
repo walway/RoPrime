@@ -10,6 +10,7 @@ import {
     buildPluginUrl,
     getActiveSidebarSize,
     getCurrentrp,
+    getRobloxLocalePathPrefix,
     getStorageApi,
     isExtensionContextAlive,
     isMyAccountPath,
@@ -20,6 +21,7 @@ import {
     reloadSettingsUiStrings,
     resetSettingsToDefaults,
     RP_DEFAULT_PAGE,
+    RP_PARAM_KEY,
     RP_SETTINGS_KEY,
     saveSettings,
     serializeSettingsPayload,
@@ -445,7 +447,7 @@ function buildSettingsHostContent(host) {
         if (pageCfg?.type === 'navDivider') continue
         const pageWrap = el(
             'div',
-            `${RP_SETTINGS_PAGE_CLASS} roprime-settings-page--${pageKey}`,
+            `${RP_SETTINGS_PAGE_CLASS} roprime-sidebar-panel roprime-settings-page--${pageKey}`,
         )
         setHidden(pageWrap, true)
         renderPageContent(pageWrap, pageKey)
@@ -537,7 +539,11 @@ function createSettingsCardHeaderRow(titleKeyOrItem, trailing = null) {
     const headerRow = el('div', 'flex justify-between items-center')
     const title = el('span', 'text-title-large content-emphasis')
     if (titleKeyOrItem && typeof titleKeyOrItem === 'object') {
+        title.classList.add('roprime-i18n')
         setSettingTitle(title, titleKeyOrItem)
+        if (titleKeyOrItem.key) {
+            headerRow.dataset.roprimeFeature = String(titleKeyOrItem.key)
+        }
     } else {
         title.classList.add('roprime-i18n')
         setI18n(title, titleKeyOrItem)
@@ -599,7 +605,8 @@ function createChildToggleRow(item) {
         'div',
         `flex justify-between items-center roprime-setting-child-row roprime-setting-child-row--${item.key}`,
     )
-    const title = el('span', 'text-title-large content-emphasis')
+    if (item.key) row.dataset.roprimeFeature = String(item.key)
+    const title = el('span', 'text-title-large content-emphasis roprime-i18n')
     setSettingTitle(title, item)
 
     const toggle = createToggle({
@@ -627,6 +634,7 @@ function createToggleSection(item, children = []) {
     if (children.length) {
         const card = createSettingsCardShell()
         card.classList.add('roprime-settings-card--with-children')
+        if (item.key) card.dataset.roprimeFeature = String(item.key)
         card.append(createSettingsCardHeaderRow(item, toggle))
         if (item.description || children.length) {
             card.appendChild(createSettingsCardHeaderSeparator())
@@ -641,11 +649,13 @@ function createToggleSection(item, children = []) {
         return card
     }
 
-    return createSettingsCard({
+    const card = createSettingsCard({
         title: item,
         description: item.description,
         trailing: toggle,
     })
+    if (item.key) card.dataset.roprimeFeature = String(item.key)
+    return card
 }
 
 function createSidebarInlineToggleRow(item) {
@@ -653,9 +663,10 @@ function createSidebarInlineToggleRow(item) {
         'div',
         `flex justify-between items-center roprime-sidebar-inline-toggle roprime-sidebar-inline-toggle--${item.key}`,
     )
+    if (item.key) row.dataset.roprimeFeature = String(item.key)
 
     const copy = el('div', 'flex flex-col gap-xsmall')
-    const title = el('span', 'text-title-large content-emphasis')
+    const title = el('span', 'text-title-large content-emphasis roprime-i18n')
     setSettingTitle(title, item)
     copy.appendChild(title)
     if (item.description) {
@@ -2033,6 +2044,224 @@ function syncLanguageMenuLabels(root) {
     }
 }
 
+function findSettingsPageForFeature(featureKey) {
+    const needle = String(featureKey || '').trim()
+    if (!needle) return null
+    for (const [pageKey, pageCfg] of Object.entries(SETTINGS_CONFIG)) {
+        if (pageCfg?.type === 'navDivider') continue
+        let found = null
+        const visit = (item) => {
+            if (item?.type === 'toggle' && item.key === needle) found = pageKey
+            if (item?.type === 'card' && item.id === needle) found = pageKey
+            if (item?.type === 'panel' && item.id === needle) found = pageKey
+        }
+        for (const item of pageCfg.items || []) {
+            visit(item)
+            if (item?.type === 'card') {
+                for (const nested of item.items || []) visit(nested)
+            }
+        }
+        if (found) return found
+    }
+    return null
+}
+
+function buildFeatureSettingsLink(featureKey, pageKey = '') {
+    const key = String(featureKey || '').trim()
+    const page = String(pageKey || findSettingsPageForFeature(key) || getCurrentrp() ||
+        RP_DEFAULT_PAGE).trim() || RP_DEFAULT_PAGE
+    const origin = globalThis.location.origin
+    const prefix = getRobloxLocalePathPrefix()
+    return `${origin}${prefix}/my/account?roprime=${encodeURIComponent(page)}?feature=${
+        encodeURIComponent(key)
+    }`
+}
+
+function resolveFeatureKeyFromHoverTarget(target) {
+    if (!(target instanceof Element)) return ''
+    const withData = target.closest('[data-roprime-feature]')
+    if (withData instanceof HTMLElement && withData.dataset.roprimeFeature) {
+        return String(withData.dataset.roprimeFeature)
+    }
+    const toggle = target.closest('.roprime-setting-toggle')
+    if (toggle instanceof HTMLElement) {
+        for (const cls of toggle.classList) {
+            if (cls.startsWith('roprime-setting--')) {
+                return cls.slice('roprime-setting--'.length)
+            }
+        }
+    }
+    const inline = target.closest('.roprime-sidebar-inline-toggle')
+    if (inline instanceof HTMLElement) {
+        for (const cls of inline.classList) {
+            if (cls.startsWith('roprime-sidebar-inline-toggle--')) {
+                return cls.slice('roprime-sidebar-inline-toggle--'.length)
+            }
+        }
+    }
+    const child = target.closest('.roprime-setting-child-row')
+    if (child instanceof HTMLElement) {
+        for (const cls of child.classList) {
+            if (cls.startsWith('roprime-setting-child-row--')) {
+                return cls.slice('roprime-setting-child-row--'.length)
+            }
+        }
+    }
+    const card = target.closest('.roprime-settings-card')
+    if (card instanceof HTMLElement) {
+        if (card.dataset.roprimeFeature) return String(card.dataset.roprimeFeature)
+        for (const cls of card.classList) {
+            if (cls.startsWith('roprime-') && cls.endsWith('-panel')) {
+                return cls.slice('roprime-'.length, -'-panel'.length)
+            }
+        }
+    }
+    return ''
+}
+
+function createFeatureLinkCopyButton(featureKey) {
+    const button = document.createElement('button')
+    button.type = 'button'
+    button.className =
+        'account-change-settings-button btn-generic-edit-sm roprime-feature-link-copy'
+    button.title = 'Copy feature link'
+    button.setAttribute('aria-label', 'Copy feature link')
+    button.dataset.roprimeFeature = String(featureKey || '')
+    button.innerHTML =
+        '<span class="icon-share-link" style="width:20px;height:20px;background-position:center;background-size:cover;"></span>'
+    button.addEventListener('click', async (event) => {
+        event.preventDefault()
+        event.stopPropagation()
+        const key = button.dataset.roprimeFeature || featureKey
+        const page =
+            button.closest('.roprime-settings-page')?.className.match(
+                /roprime-settings-page--([^\s]+)/,
+            )?.[1] || findSettingsPageForFeature(key) || ''
+        const url = buildFeatureSettingsLink(key, page)
+        try {
+            await navigator.clipboard.writeText(url)
+            button.classList.add('is-copied')
+            globalThis.setTimeout(() => button.classList.remove('is-copied'), 900)
+        } catch {
+            /* ignore */
+        }
+        // Drop focus so the hover only copy button hides again
+        try {
+            button.blur()
+        } catch {
+            /* ignore */
+        }
+        const active = document.activeElement
+        if (active instanceof HTMLElement && active !== document.body) {
+            try {
+                active.blur()
+            } catch {
+                /* ignore */
+            }
+        }
+    })
+    return button
+}
+
+function ensureFeatureLinkCopyOnRow(row) {
+    if (!(row instanceof HTMLElement)) return
+    if (row.querySelector('.roprime-feature-link-copy')) return
+    const featureKey = resolveFeatureKeyFromHoverTarget(row)
+    if (!featureKey) return
+    const button = createFeatureLinkCopyButton(featureKey)
+
+    const title =
+        row.querySelector(':scope > .text-title-large.content-emphasis') ||
+        row.querySelector(
+            ':scope > .flex.flex-col .text-title-large.content-emphasis',
+        )
+    if (!(title instanceof HTMLElement)) {
+        row.insertBefore(button, row.firstChild)
+        return
+    }
+
+    let wrap = title.closest('.roprime-feature-title-with-copy')
+    if (!(wrap instanceof HTMLElement)) {
+        wrap = el('div', 'roprime-feature-title-with-copy')
+        title.replaceWith(wrap)
+        wrap.appendChild(title)
+    }
+    if (!wrap.contains(button)) wrap.appendChild(button)
+}
+
+function wireFeatureLinkCopy(root) {
+    if (!(root instanceof HTMLElement)) return
+    const rows = root.querySelectorAll(
+        '.roprime-sidebar-panel .flex.justify-between.items-center, .roprime-settings-card .flex.justify-between.items-center',
+    )
+    rows.forEach((row) => ensureFeatureLinkCopyOnRow(row))
+}
+
+function getFeatureParamFromLocation() {
+    const search = globalThis.location.search || ''
+    const params = new URLSearchParams(search)
+    const direct = String(params.get('feature') || '').trim()
+    if (direct) return direct
+    const roprime = String(params.get('roprime') || '')
+    const idx = roprime.indexOf('?feature=')
+    if (idx >= 0) {
+        return decodeURIComponent(roprime.slice(idx + '?feature='.length)).trim()
+    }
+    const rawMatch = search.match(/[?&]feature=([^&?#]+)/i)
+    if (rawMatch) {
+        try {
+            return decodeURIComponent(rawMatch[1]).trim()
+        } catch {
+            return rawMatch[1].trim()
+        }
+    }
+    return ''
+}
+
+function getRoPrimePageFromLocation() {
+    const params = new URLSearchParams(globalThis.location.search || '')
+    let route = String(params.get('roprime') || '').toLowerCase()
+    const featureIdx = route.indexOf('?feature=')
+    if (featureIdx >= 0) route = route.slice(0, featureIdx)
+    return route
+}
+
+function scrollToFeatureFromUrl(root) {
+    if (!(root instanceof HTMLElement)) return
+    const featureKey = getFeatureParamFromLocation()
+    if (!featureKey) return
+
+    const pageFromUrl = getRoPrimePageFromLocation()
+    const pageForFeature = findSettingsPageForFeature(featureKey) || pageFromUrl
+    if (pageForFeature && getCurrentrp() !== pageForFeature) {
+        try {
+            const url = new URL(globalThis.location.href)
+            // Feature deep link preserving
+            url.searchParams.set(RP_PARAM_KEY, pageForFeature)
+            history.replaceState(history.state, '', url.toString())
+        } catch {
+            /* ignore */
+        }
+    }
+
+    const target =
+        root.querySelector(`[data-roprime-feature="${CSS.escape(featureKey)}"]`) ||
+        root.querySelector(`.roprime-setting--${CSS.escape(featureKey)}`) ||
+        root.querySelector(
+            `.roprime-sidebar-inline-toggle--${CSS.escape(featureKey)}`,
+        )
+
+    if (!(target instanceof HTMLElement)) return
+    globalThis.requestAnimationFrame(() => {
+        target.scrollIntoView({ behavior: 'smooth', block: 'center' })
+        target.classList.add('roprime-feature-link-flash')
+        globalThis.setTimeout(
+            () => target.classList.remove('roprime-feature-link-flash'),
+            1600,
+        )
+    })
+}
+
 function wireToggleElements(root) {
     root.querySelectorAll('.roprime-setting-toggle').forEach((toggleEl) => {
         if (toggleEl.classList.contains('roprime-bound')) return
@@ -2578,7 +2807,9 @@ function refreshSettingsUi(root) {
     root.querySelectorAll('.roprime-settings-card').forEach((card) => {
         pruneEmptySeparators(card)
     })
+    wireFeatureLinkCopy(root)
     refreshLayoutAndNav(root)
+    scrollToFeatureFromUrl(root)
 }
 
 function teardownSettings() {

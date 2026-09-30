@@ -1,11 +1,9 @@
 import { getExtensionResourceUrl } from '../core/core.js'
-import { setHidden } from '../ui/visibility.js'
+import { createEmotionCarousel } from '../ui/carousel.js'
 
 const ROBLOX_BADGES_API = 'https://accountinformation.roblox.com/v1/users/{userId}/roblox-badges'
 const ROBLOX_BADGES_URL = 'https://www.roblox.com/info/roblox-badges'
-const BADGES_PER_ROW = 6
 const ROOT_CLASS = 'roprime-legacy-badges'
-const STYLE_ID = 'roprime-legacy-badges-style'
 
 const BADGE_DISPLAY_ORDER = [18, 1, 12, 2, 8, 6, 7, 17, 3, 4, 5, 14]
 
@@ -228,20 +226,6 @@ function findExistingBadges(userId) {
     )
 }
 
-function ensureStyles() {
-    if (document.getElementById(STYLE_ID)) return
-    const style = document.createElement('style')
-    style.id = STYLE_ID
-    style.textContent = `
-.${ROOT_CLASS} { margin-bottom: 24px; }
-.${ROOT_CLASS} .roprime-legacy-badges-row { display: flex; gap: 12px; }
-.${ROOT_CLASS} .roprime-legacy-badges-row-extra { display: none; }
-.${ROOT_CLASS}.is-expanded .roprime-legacy-badges-row-extra { display: flex; }
-.${ROOT_CLASS} .base-tile-thumbnail-wrapper .thumbnail-2d-container { display: grid; justify-content: center; }
-`
-    document.head.appendChild(style)
-}
-
 function resolveBadgeImageUrl(imageUrl) {
     const url = String(imageUrl || '').trim()
     if (!url) return ''
@@ -261,16 +245,15 @@ function isValidBadgeEntry(badge) {
 
 function buildBadgeTileElement(badge) {
     const imageSrc = resolveBadgeImageUrl(badge.imageUrl)
-    const item = document.createElement('div')
-    item.className = 'css-izzd58-carouselItem'
     const outer = document.createElement('div')
     const tile = document.createElement('div')
     tile.className = 'base-tile'
     const link = document.createElement('a')
     link.className = 'flex flex-col'
-    link.href = `${ROBLOX_BADGES_URL}#${badge.hash}`
+    link.href = badge.hash
+        ? `${ROBLOX_BADGES_URL}#${badge.hash}`
+        : ROBLOX_BADGES_URL
     link.title = badge.title
-    link.style.width = '150px'
     const thumbWrap = document.createElement('div')
     thumbWrap.className = 'base-tile-thumbnail-wrapper'
     const thumb = document.createElement('span')
@@ -281,41 +264,45 @@ function buildBadgeTileElement(badge) {
     thumb.appendChild(img)
     thumbWrap.appendChild(thumb)
     const title = document.createElement('div')
-    title.className = 'base-tile-title content-emphasis text-title-medium padding-top-medium'
+    title.className =
+        'base-tile-title content-emphasis text-title-medium padding-top-medium'
     title.textContent = badge.label
     const meta = document.createElement('div')
-    meta.className = 'base-tile-metadata content-default text-body-medium padding-top-xsmall'
+    meta.className =
+        'base-tile-metadata content-default text-body-medium padding-top-xsmall'
     link.append(thumbWrap, title, meta)
     tile.appendChild(link)
     outer.appendChild(tile)
-    item.appendChild(outer)
-    return item
+    return outer
 }
 
 function buildBadgesRoot(badges) {
     const root = document.createElement('div')
     root.className = `profile-badges ${ROOT_CLASS}`
-    const container = document.createElement('div')
-    container.className = 'css-17g81zd-collectionCarouselContainer'
+
+    const profileCarousel = document.createElement('div')
+    profileCarousel.className = `profile-carousel ${ROOT_CLASS}`
+
     const header = document.createElement('div')
     header.className = 'container-header badge-list-header'
     const heading = document.createElement('h2')
-    heading.className = 'content-emphasis text-heading-small padding-none inline-block roprime-legacy-badges-title'
+    heading.className =
+        'content-emphasis text-heading-small padding-none inline-block roprime-legacy-badges-title'
     heading.textContent = 'Roblox Badges'
     header.appendChild(heading)
-    if (badges.length > BADGES_PER_ROW) {
-        const button = document.createElement('button')
-        button.type = 'button'
-        button.className = 'btn-fixed-width btn-secondary-xs btn-more see-all-link'
-        button.dataset.roprimeSeeMore = '1'
-        button.textContent = 'See More'
-        header.appendChild(button)
-    }
-    const rows = document.createElement('div')
-    rows.className = 'roprime-legacy-badges-rows'
-    container.append(header, rows)
-    root.appendChild(container)
-    renderBadgeRows(root, badges)
+
+    const tiles = badges.map((badge) => buildBadgeTileElement(badge))
+    const carousel = createEmotionCarousel({
+        items: tiles,
+        collectionItemSize: 'Small',
+        columnGap: 12,
+        header,
+        gapBetweenHeaderAndItems: 14,
+        isHorizontalScrollEnabled: true,
+    })
+    root.__roprimeCarousel = carousel
+    profileCarousel.appendChild(carousel.root)
+    root.appendChild(profileCarousel)
     return root
 }
 
@@ -345,7 +332,6 @@ function isPlacedBelowAnchor(legacyRoot, anchor) {
     )
 }
 
-/** Insert below communities / experiences / …, or at the top if none exist. */
 function placeLegacyBadges(legacyRoot, tabContent) {
     if (!(legacyRoot instanceof HTMLElement)) return false
     const host = tabContent instanceof HTMLElement ? tabContent : findTabContent() || legacyRoot.parentElement
@@ -366,42 +352,18 @@ function placeLegacyBadges(legacyRoot, tabContent) {
 function insertBadges(tabContent, badges) {
     const root = buildBadgesRoot(badges)
     placeLegacyBadges(root, tabContent)
+
+    root.__roprimeCarousel?.refresh?.()
+    globalThis.requestAnimationFrame(() => {
+        root.__roprimeCarousel?.refresh?.()
+        globalThis.requestAnimationFrame(() => root.__roprimeCarousel?.refresh?.())
+    })
     return root
 }
 
-function renderBadgeRows(root, badges) {
-    const rowsContainer = root.querySelector('.roprime-legacy-badges-rows')
-    if (!(rowsContainer instanceof HTMLElement)) return
-
-    rowsContainer.textContent = ''
-    for (let i = 0; i < badges.length; i += BADGES_PER_ROW) {
-        const extra = i >= BADGES_PER_ROW ? ' roprime-legacy-badges-row-extra' : ''
-        const row = document.createElement('div')
-        row.className = `roprime-legacy-badges-row${extra}`
-        for (const badge of badges.slice(i, i + BADGES_PER_ROW)) {
-            row.appendChild(buildBadgeTileElement(badge))
-        }
-        rowsContainer.appendChild(row)
-    }
-
-    const button = root.querySelector('[data-roprime-see-more]')
-    if (button instanceof HTMLButtonElement) {
-        const hasMore = badges.length > BADGES_PER_ROW
-        setHidden(button, !hasMore)
-        button.style.display = hasMore ? '' : 'none'
-        if (!hasMore) root.classList.remove('is-expanded')
-        button.textContent = root.classList.contains('is-expanded') ? 'See Less' : 'See More'
-    }
-}
-
-function wireSeeMoreToggle(root) {
-    const button = root.querySelector('[data-roprime-see-more]')
-    if (!(button instanceof HTMLButtonElement)) return
-
-    button.addEventListener('click', () => {
-        const expanded = root.classList.toggle('is-expanded')
-        button.textContent = expanded ? 'See Less' : 'See More'
-    })
+function refreshCarousel(root) {
+    if (!(root instanceof HTMLElement)) return
+    root.__roprimeCarousel?.refresh?.()
 }
 
 async function fetchUserRobloxBadges(userId) {
@@ -442,8 +404,12 @@ function collectBadges(userId, apiBadges) {
 }
 
 function removeLegacyBadges() {
-    for (const el of document.querySelectorAll(`.${ROOT_CLASS}`)) {
+    for (const el of document.querySelectorAll(`.profile-badges.${ROOT_CLASS}`)) {
+        el.__roprimeCarousel?.destroy?.()
         el.remove()
+    }
+    for (const el of document.querySelectorAll(`.profile-carousel.${ROOT_CLASS}`)) {
+        if (!el.closest(`.profile-badges.${ROOT_CLASS}`)) el.remove()
     }
 }
 
@@ -473,7 +439,7 @@ function startProfileWatch() {
             if (existing instanceof HTMLElement && existing.isConnected) {
                 const tab = findTabContent()
                 if (tab && placeLegacyBadges(existing, tab)) {
-                    // Keep watching
+                    refreshCarousel(existing)
                 }
                 return
             }
@@ -495,6 +461,7 @@ async function applyLegacyBadgesNow() {
     if (existing instanceof HTMLElement && existing.isConnected) {
         const tab = findTabContent()
         if (tab) placeLegacyBadges(existing, tab)
+        refreshCarousel(existing)
         startProfileWatch()
         return true
     }
@@ -521,12 +488,11 @@ async function applyLegacyBadgesNow() {
     const tabContentNow = findTabContent()
     if (!(tabContentNow instanceof HTMLElement)) return false
 
-    ensureStyles()
     const root = insertBadges(tabContentNow, badges)
     if (!(root instanceof HTMLElement)) return false
 
     root.dataset.roprimeUserId = String(userId)
-    wireSeeMoreToggle(root)
+    refreshCarousel(root)
     startProfileWatch()
     return true
 }

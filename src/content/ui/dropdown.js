@@ -1,3 +1,5 @@
+// This is really annoying so do not touch anything
+
 let dropdownIdCounter = 0
 
 const ROPRIME_FOCUS_GUARD_ATTR = 'data-roprime-focus-guard'
@@ -25,7 +27,7 @@ const DROPDOWN_CSS = `
   --alpha-color-shadow-subtle: rgba(0,0,0,.08);
   --fui-future-alpha-color-shadow-subtle: rgba(0,0,0,.08);
   --fui-future-alpha-color-system-progress: var(--light-mode-system-contrast);
-  --roprime-border-contrast: rgba(27, 37, 75, .5);
+  --roprime-border-contrast: rgba(208, 217, 251, .4);
 }
 
 .dark-theme {
@@ -101,6 +103,7 @@ const DROPDOWN_CSS = `
 
 .roprime-dropdown-popper {
   will-change: transform;
+  transition: none !important;
 }
 
 .roprime-dropdown-popper [data-radix-select-viewport] {
@@ -301,29 +304,50 @@ function positionPopper(popper, trigger, { popperZIndex = '1050' } = {}) {
     const rect = trigger.getBoundingClientRect()
 
     const width = Math.max(rect.width, 1)
-    const gap = 4
-    const edgePad = 8
+    
+    // Gaps
+    const gap = 0
+    const edgePad = 0
 
     const viewLeft = viewport.offsetLeft
     const viewRight = viewport.offsetLeft + viewport.width
     const viewMin = viewLeft + edgePad
     const viewMax = Math.max(viewMin, viewRight - width - edgePad)
 
+    // Keep the menu near the dropdown inputbox
     const attachMin = rect.left - width
     const attachMax = rect.right
     let minLeft = Math.max(viewMin, attachMin)
     let maxLeft = Math.min(viewMax, attachMax)
     if (minLeft > maxLeft) {
-        minLeft = attachMin
-        maxLeft = attachMax
+        minLeft = Math.max(viewMin, Math.min(attachMin, viewMax))
+        maxLeft = Math.min(viewMax, Math.max(attachMax, viewMin))
+        if (minLeft > maxLeft) {
+            minLeft = viewMin
+            maxLeft = viewMax
+        }
     }
 
     const stickyKey = '_rpStickyShiftX'
-    const stickyShift = Number(popper[stickyKey]) || 0
-    let left = rect.left + stickyShift
-    if (left < minLeft) left = minLeft
-    if (left > maxLeft) left = maxLeft
-    popper[stickyKey] = left - rect.left
+    const pinKey = '_rpPinnedEdge'
+
+    const idealLeft = rect.left
+    let left = idealLeft
+    const canSitOnInput = idealLeft >= minLeft && idealLeft <= maxLeft
+
+    if (canSitOnInput) {
+        popper[pinKey] = ''
+        left = idealLeft
+        popper[stickyKey] = 0
+    } else if (idealLeft < minLeft) {
+        left = minLeft
+        popper[pinKey] = 'left'
+        popper[stickyKey] = left - rect.left
+    } else {
+        left = maxLeft
+        popper[pinKey] = 'right'
+        popper[stickyKey] = left - rect.left
+    }
 
     const spaceBelow = Math.max(
         0,
@@ -642,6 +666,8 @@ export function createDropdown({
             blurActiveElementOutside(root, popper)
             ensureFocusGuards(root, popper)
             applyPageInertState()
+            popper._rpStickyShiftX = 0
+            popper._rpPinnedEdge = ''
             const position = () => positionPopper(popper, trigger, { popperZIndex })
             position()
             requestAnimationFrame(position)
@@ -848,13 +874,41 @@ export function createDropdown({
 
     const onZoomBlock = (event) => {
         if (!state.open) return
-        if (event.type === 'wheel' && event.ctrlKey) {
+        // Block page scroll
+        if (event.type === 'wheel' || event.type === 'mousewheel') {
+            const target = event.target
+            const inMenu =
+                target instanceof Node &&
+                (popper.contains(target) || root.contains(target))
+            const menuScroller = popper.querySelector(
+                '[data-radix-select-viewport]',
+            )
+            if (
+                inMenu &&
+                menuScroller instanceof HTMLElement &&
+                menuScroller.contains(target instanceof Node ? target : null)
+            ) {
+                return
+            }
             event.preventDefault()
             return
         }
         if (event.type === 'gesturestart' || event.type === 'gesturechange') {
             event.preventDefault()
         }
+    }
+
+    const onScrollBlock = (event) => {
+        if (!state.open) return
+        const target = event.target
+        if (
+            target instanceof Node &&
+            (popper.contains(target) || root.contains(target))
+        ) {
+            return
+        }
+        
+        if (event.cancelable) event.preventDefault()
     }
 
     const onTriggerKeyDown = (event) => {
@@ -930,11 +984,19 @@ export function createDropdown({
         capture: true,
         passive: false,
     })
+    document.addEventListener('mousewheel', onZoomBlock, {
+        capture: true,
+        passive: false,
+    })
     document.addEventListener('gesturestart', onZoomBlock, {
         capture: true,
         passive: false,
     })
     document.addEventListener('gesturechange', onZoomBlock, {
+        capture: true,
+        passive: false,
+    })
+    document.addEventListener('touchmove', onScrollBlock, {
         capture: true,
         passive: false,
     })
@@ -974,8 +1036,10 @@ export function createDropdown({
             globalThis.removeEventListener('blur', onWindowBlur)
             document.removeEventListener('visibilitychange', onVisibilityChange)
             document.removeEventListener('wheel', onZoomBlock, true)
+            document.removeEventListener('mousewheel', onZoomBlock, true)
             document.removeEventListener('gesturestart', onZoomBlock, true)
             document.removeEventListener('gesturechange', onZoomBlock, true)
+            document.removeEventListener('touchmove', onScrollBlock, true)
             if (visualViewport) {
                 visualViewport.removeEventListener('resize', onViewportMove)
                 visualViewport.removeEventListener('scroll', onViewportMove)

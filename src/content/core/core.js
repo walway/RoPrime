@@ -359,8 +359,11 @@ export function serializeSettingsPayload() {
         hideAgeBadgeEnabled: !!settingsState.hideAgeBadgeEnabled,
         hideExperiencesAdsEnabled: !!settingsState.hideExperiencesAdsEnabled,
         profileRedesignEnabled: !!settingsState.profileRedesignEnabled,
+        connectionPathEnabled: !!settingsState.connectionPathEnabled,
+        connectionPathAutoCountEnabled: !!settingsState.connectionPathAutoCountEnabled,
         loginPageRedesignEnabled: !!settingsState.loginPageRedesignEnabled,
         accountSwitcherRedesignEnabled: !!settingsState.accountSwitcherRedesignEnabled,
+        horizontalTabsRedesignEnabled: !!settingsState.horizontalTabsRedesignEnabled,
         developerPageUnlocked: !!settingsState.developerPageUnlocked,
         sidebarSize: settingsState.sidebarSize || 'full',
         sidebarCollapseMenuEnabled: !!settingsState.sidebarCollapseMenuEnabled,
@@ -561,11 +564,13 @@ export function getSidebarMainMarginPx() {
 export function getCurrentrp() {
     if (!isMyAccountPath()) return null
     const params = new URLSearchParams(globalThis.location.search)
-    const route = (
+    let route = (
         params.get(RP_PARAM_KEY) ||
         params.get(RP_PARAM_KEY_NEW) ||
         ''
     ).toLowerCase()
+    const featureIdx = route.indexOf('?feature=')
+    if (featureIdx >= 0) route = route.slice(0, featureIdx)
     if (route === 'design') return 'appearance'
     if (!RP_SUPPORTED_PAGES.has(route)) return null
     return route

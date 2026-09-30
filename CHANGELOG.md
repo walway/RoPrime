@@ -1,9 +1,16 @@
 1.6
 
+- New Connection Path feature
+- New Horizontal Tabs Redesign feature
+- You can now copy direct link to the feature (Hover the title)
+- Mobile Support for Legacy Badges
+
+- Fixed Welcome dialog on small displays
 - Fixed Menu Options not appearing in the 3D-Party Users Inventory pages
 - Fixed Gradient Overlay on the Groups pages with Background Thumbnails
 
 1.5
+
 - New Profile Redesign feature
 - Free Roblox Plus themes
 - New Roblox Badges feature

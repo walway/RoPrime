@@ -3,7 +3,6 @@
     margin: 15px;
     border: 2px dashed var(--color-shift-400);
     position: relative;
-    width: 408px;
     overflow: hidden;
     contain: layout size style;
     border-radius: var(--radius-medium);

@@ -78,9 +78,31 @@
                 "title": "Account Switch Page Redesign",
                 "description": "Redesigns account switch page to look new. This is completely safe as it manipulates account switch page to replace colors."
             },
+            "horizontalTabs": {
+                "title": "Horizontal Tabs Redesign",
+                "description": "Redesigns horizontal tabs on game pages and other pages with horizontal tabs with AMSR one from the Messages page."
+            },
             "profileRedesign": {
                 "title": "Profile Redesign",
-                "description": "Show all profile sections at once and adjust the header layout on profile pages. \n\n RoPrime uses [RoAvatar](https://github.com/steinann/RoAvatar) for Avatar Preview."
+                "description": "Shows all profile sections at once and adjust the layout on profile pages to make avatar preview under the profile header like before. \n\n RoPrime uses [RoAvatar](https://github.com/steinann/RoAvatar) for Avatar Preview."
+            }
+        },
+        "profile": {
+            "connectionPath": {
+                "title": "Connection Path",
+                "description": "Find the shortest friend chain between you and another player on their profile.",
+                "autoCountTitle": "Count Connection Path Automatically",
+                "autoCountDescription": "Will count your Connection Path to the user when opening the profile.",
+                "overlayTitle": "Connection Path",
+                "buttonCounted": "{$Amount} Connections",
+                "status": {
+                    "counting": "Counting...",
+                    "rateLimited": "Rate limited. Still going.",
+                    "counted": "{$Amount} Connections counted.",
+                    "noPath": "{$Amount} Connections counted. No path found.",
+                    "notFound": "No path found.",
+                    "graphFailed": "Path found. Graph failed to render."
+                }
             }
         },
         "home": {

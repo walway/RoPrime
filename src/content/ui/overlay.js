@@ -57,7 +57,7 @@ function buildOverlayMarkup({
     buttonText,
 }) {
     const iconMarkup = iconUrl
-        ? `<img class="roprime-overlay-icon-img" src="${escapeHtml(iconUrl)}" alt="" />`
+        ? `<img class="roprime-overlay-icon-img" data-roprime-overlay-icon alt="" />`
         : `<div class="app-icon-bluebg app-icon-windows size-1600" role="img" aria-label="App Icon"></div>`
 
     return `
@@ -76,7 +76,7 @@ function buildOverlayMarkup({
     style="pointer-events: auto;"
   >
     <div class="roprime-overlay-header">
-      <img src="${escapeHtml(getExtensionResourceUrl('resources/roprime-icon.png'))}" alt="" />
+      <img data-roprime-overlay-header-icon alt="" />
       <h2>${escapeHtml(headerName)}</h2>
       <div class="absolute foundation-web-dialog-close-container">
         <button
@@ -162,6 +162,20 @@ export function showRoPrimeOverlay({
             }),
         )
 
+        const overlayIcon = root.querySelector('[data-roprime-overlay-icon]')
+        if (overlayIcon instanceof HTMLImageElement) {
+            if (iconUrl) overlayIcon.src = iconUrl
+            else overlayIcon.remove()
+        }
+        const headerIcon = root.querySelector('[data-roprime-overlay-header-icon]')
+        if (headerIcon instanceof HTMLImageElement) {
+            const headerIconUrl = getExtensionResourceUrl(
+                'resources/roprime-icon.png',
+            )
+            if (headerIconUrl) headerIcon.src = headerIconUrl
+            else headerIcon.remove()
+        }
+
         const close = (accepted) => {
             removeOverlayIfPresent()
             activeOverlayPromise = null
@@ -198,6 +212,120 @@ export function showRoPrimeOverlay({
         document.addEventListener('keydown', activeOverlayKeydownHandler, true)
 
         appendOverlayWhenBodyReady(root)
+    })
+
+    return activeOverlayPromise
+}
+
+export function showRoPrimeContentOverlay({
+    heading = 'RoPrime',
+    bodyHtml = '',
+    dialogClass = '',
+    onReady = null,
+} = {}) {
+    if (activeOverlayPromise) return activeOverlayPromise
+
+    activeOverlayPromise = new Promise((resolve) => {
+        removeOverlayIfPresent()
+
+        const root = document.createElement('div')
+        root.id = OVERLAY_ROOT_ID
+        root.setAttribute('role', 'dialog')
+        root.setAttribute('aria-modal', 'true')
+        root.setAttribute('aria-labelledby', 'roprime-overlay-heading')
+
+        const extraClass = dialogClass ? ` ${dialogClass}` : ''
+        const iconUrl = getExtensionResourceUrl('resources/roprime-icon.png') || ''
+        appendParsedMarkup(
+            root,
+            `
+<div
+  data-state="open"
+  class="foundation-web-dialog-overlay padding-medium foundation-web-portal-zindex bg-common-backdrop roprime-overlay-backdrop"
+  style="pointer-events: auto;"
+>
+  <div
+    role="dialog"
+    aria-labelledby="roprime-overlay-heading"
+    data-state="open"
+    class="relative radius-large bg-surface-100 stroke-muted stroke-standard foundation-web-dialog-content shadow-transient-high download-dialog${extraClass}"
+    data-size="Medium"
+    tabindex="-1"
+    style="pointer-events: auto;"
+  >
+    <div class="roprime-overlay-header">
+      <div class="absolute foundation-web-dialog-close-container">
+        <button
+          type="button"
+          class="foundation-web-close-affordance flex stroke-none bg-none cursor-pointer relative clip group/interactable focus-visible:outline-focus disabled:outline-none bg-over-media-100 padding-small radius-circle roprime-overlay-close"
+          aria-label="Close"
+        >
+          <div
+            role="presentation"
+            class="absolute inset-[0] transition-colors group-hover/interactable:bg-[var(--color-state-hover)] group-active/interactable:bg-[var(--color-state-press)] group-disabled/interactable:bg-none"
+          ></div>
+          <span
+            role="presentation"
+            class="grow-0 shrink-0 basis-auto icon icon-regular-x size-[var(--icon-size-medium)]"
+          ></span>
+        </button>
+      </div>
+    </div>
+    <div class="padding-x-xlarge padding-top-xlarge padding-bottom-large flex flex-col items-center gap-large">
+      <img class="roprime-overlay-icon-img" data-roprime-overlay-icon alt="" />
+      <h2
+        id="roprime-overlay-heading"
+        class="text-heading-small padding-x-xxlarge padding-y-none text-align-x-center flex flex-col"
+      >
+        ${escapeHtml(heading)}
+      </h2>
+    </div>
+    <div class="padding-x-xlarge padding-bottom-xlarge roprime-overlay-custom-body">
+      ${bodyHtml}
+    </div>
+  </div>
+</div>
+`.trim(),
+        )
+
+        const iconImg = root.querySelector('[data-roprime-overlay-icon]')
+        if (iconImg instanceof HTMLImageElement) {
+            if (iconUrl) iconImg.src = iconUrl
+            else iconImg.remove()
+        }
+
+        const close = (accepted = false) => {
+            removeOverlayIfPresent()
+            activeOverlayPromise = null
+            resolve(accepted)
+        }
+
+        root
+            .querySelector('.roprime-overlay-close')
+            ?.addEventListener('click', () => close(false))
+        root
+            .querySelector('.roprime-overlay-backdrop')
+            ?.addEventListener('click', (event) => {
+                if (event.target === event.currentTarget) close(false)
+            })
+
+        activeOverlayKeydownHandler = (event) => {
+            if (event.key === 'Escape') close(false)
+        }
+        document.addEventListener('keydown', activeOverlayKeydownHandler, true)
+
+        appendOverlayWhenBodyReady(root)
+
+        if (typeof onReady === 'function') {
+            try {
+                const maybe = onReady(root, { close })
+                if (maybe && typeof maybe.then === 'function') {
+                    void maybe.catch(() => {})
+                }
+            } catch {
+                /* ignore */
+            }
+        }
     })
 
     return activeOverlayPromise
@@ -257,9 +385,7 @@ function buildVersionUpdateOverlayMarkup({ currentVersion, latestVersion }) {
       </div>
     </div>
     <div class="padding-x-xlarge padding-top-xlarge padding-bottom-large flex flex-col items-center gap-xlarge">
-      <img class="roprime-overlay-icon-img" src="${
-        escapeHtml(getExtensionResourceUrl('resources/roprime-icon.png'))
-    }" alt="" />
+      <img class="roprime-overlay-icon-img" data-roprime-overlay-icon alt="" />
       <h2
         id="roprime-overlay-heading"
         class="text-heading-small padding-x-xxlarge padding-y-none text-align-x-center flex flex-col"
@@ -340,6 +466,13 @@ export function showVersionUpdateOverlay({
                 latestVersion,
             }),
         )
+
+        const versionIcon = root.querySelector('[data-roprime-overlay-icon]')
+        if (versionIcon instanceof HTMLImageElement) {
+            const iconUrl = getExtensionResourceUrl('resources/roprime-icon.png')
+            if (iconUrl) versionIcon.src = iconUrl
+            else versionIcon.remove()
+        }
 
         const descriptionEl = root.querySelector('.roprime-version-update-description')
         if (descriptionEl instanceof HTMLElement) {

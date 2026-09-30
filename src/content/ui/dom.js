@@ -1,7 +1,11 @@
 import DOMPurify from 'dompurify'
 
+const ALLOWED_URI_REGEXP =
+    /^(?:(?:(?:f|ht)tps?|mailto|tel|callto|sms|cid|xmpp|chrome-extension|moz-extension|safari-web-extension|ms-browser-extension):|[^a-z]|[a-z+.\-]+(?:[^a-z+.\-:]|$))/i
+
 const PURIFY_OPTIONS = {
     RETURN_DOM_FRAGMENT: true,
+    ALLOWED_URI_REGEXP,
 }
 
 function getPurifyForNode(node) {

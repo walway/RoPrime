@@ -1,6 +1,6 @@
 // this is my custom backup for the roblox.com/info/roblox-badges if roblox deletes it
 //
-// selected badge uses background-color: #494d5a;
+// selected badge uses background-color: #494d5a; (background-color: var(--color-extended-gray-700);)
 //
 // import { getExtensionResourceUrl } from "../../core/core.js";
 //

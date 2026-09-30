@@ -42,10 +42,13 @@ import './memes/rickRoll.js'
 import './account/freeThemes.js'
 import './sidebar/robloxEvents.js'
 import './profile/profileRedesign.js'
+import './profile/connectionPath.js'
 import './account/classicIcon.js'
 import './inventory/menuOptions.js'
 import './ui/accountSwitcher.js'
 import './ui/loginPage.js'
+// import "./profile/upscale.js"
+import './games/horizontalTabsRedesign.js'
 
 const extensionApi = globalThis.browser || globalThis.chrome
 

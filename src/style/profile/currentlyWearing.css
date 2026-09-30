@@ -97,6 +97,47 @@
     flex: 0 0 auto;
 }
 
+.roprime-profile-wearing-cards .item-card-price {
+    display: inline-flex !important;
+    align-items: center !important;
+    vertical-align: middle !important;
+}
+
+.roprime-profile-wearing-cards .icon-robux-16-16 {
+    margin-bottom: 0 !important;
+    margin-right: 0 !important;
+    background-position: 0 -20px !important;
+}
+
+.roprime-profile-wearing-cards .thumbnail-2d-container {
+    background: transparent !important;
+}
+
+.roprime-profile-wearing-cards .item-card-thumb-container {
+    background: var(--color-surface-100) !important;
+    overflow: hidden !important;
+}
+
+.roprime-profile-wearing-cards .item-card-name {
+    padding-top: 10px !important;
+}
+
+.roprime-profile-wearing-cards .item-card-thumb-container:hover::before {
+    opacity: 1 !important;
+}
+
+.roprime-profile-wearing-cards .item-card-thumb-container::before {
+    content: "" !important;
+    background: var(--color-shift-200) !important;
+    opacity: 0 !important;
+    transition: opacity .3s ease-in-out !important;
+    position: absolute !important;
+    top: 0 !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+}
+
 .icon-filled-chevron-large-left-to-line {
     --svg: url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%2032%2032'%20width%3D'32'%20height%3D'32'%3E%3Cpath%20d%3D'M8%204.5C8.82843%204.5%209.5%205.17157%209.5%206V26C9.5%2026.8284%208.82843%2027.5%208%2027.5C7.17166%2027.4999%206.5%2026.8284%206.5%2026V6C6.5%205.17164%207.17166%204.5001%208%204.5Z'%20fill%3D'black'%2F%3E%20%3Cpath%20d%3D'M22.9395%204.93945C23.5252%204.3537%2024.4748%204.35376%2025.0605%204.93945C25.6463%205.52524%2025.6463%206.47476%2025.0605%207.06055L16.1211%2016L25.0605%2024.9395C25.6463%2025.5252%2025.6463%2026.4748%2025.0605%2027.0605C24.4748%2027.6462%2023.5252%2027.6463%2022.9395%2027.0605L12.9395%2017.0605L12.8359%2016.9463C12.3559%2016.3572%2012.3905%2015.4885%2012.9395%2014.9395L22.9395%204.93945Z'%20fill%3D'black'%2F%3E%3C%2Fsvg%3E");
 }

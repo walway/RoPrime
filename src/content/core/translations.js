@@ -72,6 +72,12 @@ const FALLBACKS = {
     'Feature.Accessibility.AppTheme.CosmicDust': 'Cosmic Dust',
     'Feature.Accessibility.AppTheme.SuperCharge': 'Super Charge',
     'Feature.Accessibility.AppTheme.CircuitRush': 'Circuit Rush',
+    'CommonUI.Features.Label.About': 'About',
+    'Feature.GameDetails.Label.Store': 'Store',
+    'Feature.GameDetails.Label.Servers': 'Servers',
+    'Feature.Avatar.Action.Shop': 'Store',
+    'Feature.VirtualEvents.EventsListTitle': 'Events',
+    'Feature.Groups.Heading.Forums': 'Forums',
 }
 
 /** @type {Map<string, string>} */
@@ -93,7 +99,7 @@ export function resolveLocaleFileName(lang = getDocumentLang()) {
         .replace(/_/g, '-')
     if (!raw) return 'en-us'
 
-    // Prefer 'es-es' instead of 'es', never 'es.csv' like I described in the comment above.
+    // Prefer 'es-es' instead of 'es', never 'es.csv' like I described in the comment above
     if (LANG_TO_FILE[raw]) return LANG_TO_FILE[raw]
 
     if (KNOWN_LOCALE_FILES.has(raw)) return raw
@@ -171,7 +177,7 @@ function parseCsvIntoMap(csvText, target) {
 
 async function fetchLocaleCsv(baseUrl, localeFile) {
     const url = `${baseUrl}/${localeFile}.csv`
-    // Firefox applies page CSP to content-script fetch — use background.
+    // Fall Firefox through Background
     return fetchTextPreferBackground(url, { credentials: 'omit' })
 }
 
