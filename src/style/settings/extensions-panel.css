@@ -80,6 +80,7 @@
 }
 
 .roprime-ext-sub {
+    height: 32px;
     margin-top: 2px;
     color: var(--color-content-default);
     font-size: 12px;
