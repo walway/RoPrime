@@ -53,11 +53,7 @@ Download buttons images are made by tahoe.be
 
 <br>
 
-## 🫂 Contribute to the extension
-
-Found a bug or have an idea? [Open an issue](https://github.com/walway/RoPrime/issues) or start a [discussion](https://github.com/walway/RoPrime/discussions). [Pull requests](https://github.com/walway/RoPrime/fork) are welcome.
-
-## Build RoPrime 
+## 🛠️ Build RoPrime
 - Install Deno - https://deno.com/
 - Clone the repository
 - Build RoPrime
@@ -66,6 +62,10 @@ Found a bug or have an idea? [Open an issue](https://github.com/walway/RoPrime/i
 # Builds all platforms in /dist folder
 deno task build
 ```
+
+## 🫂 Contribute to the extension
+
+Found a bug or have an idea? [Open an issue](https://github.com/walway/RoPrime/issues) or start a [discussion](https://github.com/walway/RoPrime/discussions). [Pull requests](https://github.com/walway/RoPrime/fork) are welcome.
 
 ## ❤️ Supporters
 
