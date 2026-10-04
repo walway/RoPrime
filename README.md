@@ -43,7 +43,7 @@ And more!
 
 RoPrime also fully supports mobile devices. You can download mobile version for Firefox and Vivaldi from the links above.
 
-Download button images are made by tahoe.be
+Download buttons images are made by tahoe.be
 
 ### From GitHub Release
 
