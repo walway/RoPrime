@@ -1,0 +1,29 @@
+.css-izzd58-carouselItem {
+    width: 151.667px;
+    height: auto;
+    flex-shrink: 0;
+}
+
+.css-1i465w8-carousel {
+    display: flex;
+    overflow-x: hidden;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    gap: 12px;
+}
+
+.css-1jynqc0-carouselContainer {
+    position: relative;
+}
+
+.css-17g81zd-collectionCarouselContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-left: 0px;
+    margin-right: 0px;
+}
+
+.profile-platform-container .profile-badges {
+    padding-bottom: var(--padding-xxlarge);
+}
