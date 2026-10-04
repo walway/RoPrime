@@ -43,6 +43,8 @@ And more!
 
 RoPrime also fully supports mobile devices. You can download mobile version for Firefox and Vivaldi from the links above.
 
+Download images by tahoe.be
+
 ### From GitHub Release
 
 - Go to `chrome://extensions` or `edge://extensions`
