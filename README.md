@@ -57,6 +57,16 @@ Download buttons images are made by tahoe.be
 
 Found a bug or have an idea? [Open an issue](https://github.com/walway/RoPrime/issues) or start a [discussion](https://github.com/walway/RoPrime/discussions). [Pull requests](https://github.com/walway/RoPrime/fork) are welcome.
 
+## Build RoPrime 
+- Install Deno - https://deno.com/
+- Clone the repository
+- Build RoPrime
+
+```bash
+# Builds all platforms in /dist folder
+deno task build
+```
+
 ## ❤️ Supporters
 
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
@@ -76,16 +86,6 @@ Found a bug or have an idea? [Open an issue](https://github.com/walway/RoPrime/i
 
 Thanks to **meflamey** for the Bengali translation<br>
 Thanks to **Ryan Lua** for helping me to fund the Chrome Developer account
-
-## 💎 Build RoPrime 
-- Install Deno - https://deno.com/
-- Clone the repository
-- Build RoPrime
-
-```bash
-# Builds all platforms in /dist folder
-deno task build
-```
 
 <h2 id="contribution">🌍 Localization</h2>
 <p>Help translate the extension into your language by following these steps:</p>
