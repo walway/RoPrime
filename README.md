@@ -38,7 +38,12 @@ And more!
 
 ## 🚀 Install RoPrime
 
-### Chrome / Edge
+[<img src="https://labels.tahoe.be/chrome_download_dark.svg" height="53" alt="Download Bonjourr for Chrome">]([https://chrome.google.com/webstore/detail/bonjourr-%C2%B7-minimalist-lig/dlnejlppicbjfcfcedcflplfjajinajd](https://chromewebstore.google.com/detail/roprime-new-era-of-roblox/jecagfkcebencfmfdjgcimhedlodfmhk))
+[<img src="https://labels.tahoe.be/firefox_download_dark.svg" height="53" alt="Download Bonjourr for Firefox">](https://addons.mozilla.org/firefox/addon/roprime/)
+
+RoPrime also fully supports mobile devices. You can download mobile version for Firefox and Vivaldi from the links above.
+
+### From GitHub Release
 
 - Go to `chrome://extensions` or `edge://extensions`
 - Enable **Developer mode**
@@ -68,9 +73,19 @@ Found a bug or have an idea? [Open an issue](https://github.com/walway/RoPrime/i
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 
 Thanks to **meflamey** for the Bengali translation<br>
-Thanks to **Ryan Lua** for helping fund the Chrome Developer account
+Thanks to **Ryan Lua** for helping me to fund the Chrome Developer account
 
-<h2 id="contribution">🌍 Localization</h2> 
+## 💎 Build RoPrime 
+- Install Deno - https://deno.com/
+- Clone the repository
+- Build RoPrime
+
+```bash
+# Builds all platforms in /dist folder
+deno task build
+```
+
+<h2 id="contribution">🌍 Localization</h2>
 <p>Help translate the extension into your language by following these steps:</p>
 <ol>
   <li><strong>Fork</strong> the extension <a href="https://github.com/walway/RoPrime/fork" target="_blank" rel="noopener">here</a>.</li>
