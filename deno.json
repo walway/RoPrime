@@ -13,7 +13,7 @@
     "force-graph": "npm:force-graph@1.52.0",
     "esbuild": "npm:esbuild@0.28.2",
     "adm-zip": "npm:adm-zip@0.6.1",
-    "dotenv": "npm:dotenv@18.0.4",
+    "dotenv": "npm:dotenv@18.0.5",
     "dompurify": "npm:dompurify@3.4.16",
     "web-ext": "npm:web-ext@^10.7.0"
   },
