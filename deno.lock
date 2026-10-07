@@ -15,7 +15,7 @@
     "npm:opentype.js@1.3.4": "1.3.4",
     "npm:prettier@*": "3.9.6",
     "npm:prism-code-editor@5.4.0": "5.4.0",
-    "npm:roavatar-renderer@^1.9.9": "1.9.9",
+    "npm:roavatar-renderer@^1.9.10": "1.9.10",
     "npm:web-ext@^10.7.0": "10.7.0"
   },
   "jsr": {
@@ -1520,7 +1520,7 @@
         "minimatch"
       ]
     },
-    "n8ao@2.0.1_postprocessing@6.39.5_three@0.185.1": {
+    "n8ao@2.0.1_postprocessing@6.39.5__three@0.185.1_three@0.185.1": {
       "integrity": "sha512-MoP1QKUdj4/3cKEnhFl917t0eQwWGER1l43ckz5mNOPyYWGRDGQbVoTOQz/VBvy01in6QVNG+AL6Xxx5AjZBYA==",
       "dependencies": [
         "postprocessing",
@@ -1778,8 +1778,8 @@
     "resolve-from@4.0.0": {
       "integrity": "sha512-pb/MYmXstAkysRFx8piNI1tGFNQIFA3vkE3Gq4EuA1dF6gHp/+vgZqsCGJapvy8N3Q+4o7FwvquPJcnZ7RYy4g=="
     },
-    "roavatar-renderer@1.9.9": {
-      "integrity": "sha512-01YNDEyAuAma/n1Do7YvChl9eRQG4xurrlVjZW09MX0Psr7HK5IIBCH+y8pEfHccvzyqw3jmOlYaQSg0SdXSbA==",
+    "roavatar-renderer@1.9.10": {
+      "integrity": "sha512-zep7lq89HLNr9TDChSky4uCzuSFlPB0c80a5CFOYfWNDVKuYDBKcfHzJ4PQXxppa/ZY3DzCu8yCKyTtg4MKk4A==",
       "dependencies": [
         "fzstd",
         "n8ao",
@@ -2177,7 +2177,7 @@
       "npm:esbuild@0.28.2",
       "npm:force-graph@1.52.0",
       "npm:prism-code-editor@5.4.0",
-      "npm:roavatar-renderer@^1.9.9",
+      "npm:roavatar-renderer@^1.9.10",
       "npm:web-ext@^10.7.0"
     ]
   }
