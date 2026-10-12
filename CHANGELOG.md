@@ -1,5 +1,6 @@
 1.6
 
+- New Old 
 - New Connection Path feature
 - New Horizontal Tabs Redesign feature
 - You can now copy direct link to the feature (Hover the title)
