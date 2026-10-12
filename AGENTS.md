@@ -1,4 +1,4 @@
-# Sample AGENTS.md file
+# Agents Guide for RoPrime
 
 RoPrime is a browser extension for roblox.com that provides design-change features.
 
@@ -6,7 +6,7 @@ RoPrime is a browser extension for roblox.com that provides design-change featur
 
 - Always use `deno task build` to build the project. If the build fails, stop and request human intervention.
 - Dependencies are managed in `deno.json` (npm: and JSR imports). Do not add or rely on `node_modules`.
-- Run `deno run -A npm:prettier --write path/to/file` to format the code and automatically fix safe linting errors.
+- Run `deno fmt` to format the code and automatically fix safe linting errors.
 
 ## PR instructions
 
