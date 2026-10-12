@@ -187,8 +187,7 @@ const CUSTOM_BADGES = {
             title: 'RoPrime Donator',
             label: 'RoPrime Donator',
             alt: 'RoPrime Donator',
-            imageUrl:
-                'resources/badges/memes/soggy.png',
+            imageUrl: 'resources/badges/memes/soggy.png',
         },
     ],
 }

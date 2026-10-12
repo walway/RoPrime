@@ -6,7 +6,8 @@
     "description": "__MSG_extDescription__",
     "permissions": [
         "storage",
-        "management"
+        "management",
+        "declarativeNetRequest"
     ],
     "host_permissions": [
         "*://*.roblox.com/*",
@@ -30,11 +31,19 @@
         "64": "resources/icons/icon64.png",
         "128": "resources/icons/icon128.png"
     },
+    "declarative_net_request": {
+        "rule_resources": [{
+            "id": "navigation_override_rules",
+            "enabled": false,
+            "path": "src/rules/Navigation/rules.json"
+        }]
+    },
     "web_accessible_resources": [
         {
             "resources": [
                 "resources/vendor/draco_decoder.js",
                 "resources/vendor/material-symbols-outlined.ttf",
+                "resources/vendor/Navigation.js",
                 "avatar-preview.js",
                 "resources/roprime-icon.png",
                 "resources/Verity.webp",

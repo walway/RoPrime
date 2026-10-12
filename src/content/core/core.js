@@ -364,6 +364,7 @@ export function serializeSettingsPayload() {
         loginPageRedesignEnabled: !!settingsState.loginPageRedesignEnabled,
         accountSwitcherRedesignEnabled: !!settingsState.accountSwitcherRedesignEnabled,
         horizontalTabsRedesignEnabled: !!settingsState.horizontalTabsRedesignEnabled,
+        topbarRedesignEnabled: !!settingsState.topbarRedesignEnabled,
         developerPageUnlocked: !!settingsState.developerPageUnlocked,
         sidebarSize: settingsState.sidebarSize || 'full',
         sidebarCollapseMenuEnabled: !!settingsState.sidebarCollapseMenuEnabled,

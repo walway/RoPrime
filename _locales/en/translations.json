@@ -10,6 +10,7 @@
         },
         "nav": {
             "appearance": "Appearance",
+            "topbar": "Topbar",
             "home": "Home",
             "settings": "Settings",
             "privacy": "Privacy & Content Restrictions",
@@ -17,6 +18,12 @@
             "info": "Info",
             "developer": "Developer",
             "profile": "Profile"
+        },
+        "topbar": {
+            "redesign": {
+                "title": "Old Topbar",
+                "description": "Returns old topbar that Roblox recently added in 2026 that broke extensions and is broken.\n\nRequires to reload the page to apply."
+            }
         },
         "appearance": {
             "rename": {
@@ -80,11 +87,11 @@
             },
             "horizontalTabs": {
                 "title": "Horizontal Tabs Redesign",
-                "description": "Redesigns horizontal tabs on game pages and other pages with horizontal tabs with AMSR one from the Messages page."
+                "description": "Restyles game page horizontal tabs to the newer Foundation tabs with an animated underline indicator."
             },
             "profileRedesign": {
                 "title": "Profile Redesign",
-                "description": "Shows all profile sections at once and adjust the layout on profile pages to make avatar preview under the profile header like before. \n\n RoPrime uses [RoAvatar](https://github.com/steinann/RoAvatar) for Avatar Preview."
+                "description": "Show all profile sections at once and adjust the header layout on profile pages. \n\n RoPrime uses [RoAvatar](https://github.com/steinann/RoAvatar) for Avatar Preview."
             }
         },
         "profile": {

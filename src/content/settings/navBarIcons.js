@@ -6,6 +6,7 @@ export const SETTINGS_NAV_ICONS = {
     search: 'search',
     appearance: 'palette',
     design: 'palette',
+    topbar: 'toolbar',
     home: 'home',
     settings: 'settings',
     privacy: 'shield',

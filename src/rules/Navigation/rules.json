@@ -1,0 +1,16 @@
+[
+    {
+        "id": 1,
+        "priority": 1,
+        "action": {
+            "type": "redirect",
+            "redirect": {
+                "extensionPath": "/resources/vendor/Navigation.js"
+            }
+        },
+        "condition": {
+            "regexFilter": "^https://js\\.rbxcdn\\.com/[a-f0-9]+-Navigation\\.js",
+            "resourceTypes": ["script"]
+        }
+    }
+]

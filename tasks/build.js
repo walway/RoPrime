@@ -201,6 +201,13 @@ function assemblePlatformDist(platform) {
     walkFiles(join(root, '_locales'), '_locales', localeFiles)
     copyPathsToDist(localeFiles, platformDistDir)
 
+    const ruleFiles = []
+    const rulesRoot = join(root, 'src/rules')
+    if (existsSync(rulesRoot)) {
+        walkFiles(rulesRoot, 'src/rules', ruleFiles)
+        copyPathsToDist(ruleFiles, platformDistDir)
+    }
+
     writeDistManifest(platform, platformDistDir)
 }
 

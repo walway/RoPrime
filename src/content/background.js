@@ -261,6 +261,74 @@ function isRobloxSender(sender) {
     }
 }
 
+const NAVIGATION_OVERRIDE_RULESET_ID = 'navigation_override_rules'
+const RP_SETTINGS_KEY = 'rpSettings'
+
+function syncNavigationOverrideRuleset(enabled) {
+    const dnr = extensionApi?.declarativeNetRequest
+    if (!dnr || typeof dnr.updateEnabledRulesets !== 'function') return Promise.resolve()
+
+    const turnOn = !!enabled
+    return new Promise((resolve) => {
+        try {
+            dnr.updateEnabledRulesets(
+                {
+                    enableRulesetIds: turnOn ? [NAVIGATION_OVERRIDE_RULESET_ID] : [],
+                    disableRulesetIds: turnOn ? [] : [NAVIGATION_OVERRIDE_RULESET_ID],
+                },
+                () => {
+                    asLastErrorMessage()
+                    resolve()
+                },
+            )
+        } catch {
+            resolve()
+        }
+    })
+}
+
+function readTopbarRedesignEnabled() {
+    return new Promise((resolve) => {
+        try {
+            const storage = extensionApi?.storage?.local
+            if (!storage) {
+                resolve(false)
+                return
+            }
+            storage.get([RP_SETTINGS_KEY], (result) => {
+                asLastErrorMessage()
+                const stored = result?.[RP_SETTINGS_KEY]
+                resolve(!!stored?.topbarRedesignEnabled)
+            })
+        } catch {
+            resolve(false)
+        }
+    })
+}
+
+async function applyTopbarRedesignFromStorage() {
+    const enabled = await readTopbarRedesignEnabled()
+    await syncNavigationOverrideRuleset(enabled)
+}
+
+try {
+    extensionApi?.runtime?.onInstalled?.addListener(() => {
+        void applyTopbarRedesignFromStorage()
+    })
+    extensionApi?.runtime?.onStartup?.addListener(() => {
+        void applyTopbarRedesignFromStorage()
+    })
+    extensionApi?.storage?.onChanged?.addListener((changes, areaName) => {
+        if (areaName !== 'local') return
+        if (!changes?.[RP_SETTINGS_KEY]) return
+        const next = changes[RP_SETTINGS_KEY]?.newValue
+        void syncNavigationOverrideRuleset(!!next?.topbarRedesignEnabled)
+    })
+    void applyTopbarRedesignFromStorage()
+} catch {
+    /* ignore */
+}
+
 extensionApi.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (!isRobloxSender(sender)) {
         sendResponse({ ok: false, error: 'forbidden_origin' })
