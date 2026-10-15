@@ -10,7 +10,7 @@ let syncing = false
 
 function preferredHref() {
     const classic = document.body instanceof HTMLElement &&
-        document.body.classList.contains('classic-theme')
+        document.body.classList.contains('theme-classic')
     return classic ? CLASSIC_ICO_HREF : DEFAULT_ICO_HREF
 }
 

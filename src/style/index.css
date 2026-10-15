@@ -1,7 +1,7 @@
 @import "./ui/toggle.css";
 @import "./topbar/ageBadge.css";
 @import "./account/app-theme.css";
-@import "./themes/classic-theme.css";
+@import "./themes/index.css";
 @import "./components/loginPage.css";
 @import "./components/accountSwitcher.css";
 @import "./settings/extensions-panel.css";

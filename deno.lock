@@ -3079,6 +3079,7 @@
       "npm:minify-all@^1.2.2",
       "npm:prism-code-editor@5.4.0",
       "npm:roavatar-renderer@^1.9.10",
+      "npm:roavatar-renderer@^1.9.10",
       "npm:web-ext@^10.7.0"
     ]
   }

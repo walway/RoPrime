@@ -18,7 +18,7 @@
     "esbuild": "npm:esbuild@0.28.2",
     "adm-zip": "npm:adm-zip@0.6.1",
     "dotenv": "npm:dotenv@18.0.7",
-    "dompurify": "npm:dompurify@3.4.16",
+    "dompurify": "npm:dompurify@3.4.17",
     "web-ext": "npm:web-ext@^10.7.0"
   },
   "lint": {
