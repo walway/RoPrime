@@ -6,6 +6,7 @@
 - You can now copy direct link to the feature (Hover the title)
 - Mobile Support for Legacy Badges
 
+- Fixed Free Roblox Plus Themes
 - Fixed Extension action buttons on Firefox
 - Fixed toggle with RTL
 - Fixed menu options border on hover
