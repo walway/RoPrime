@@ -1,3 +1,13 @@
+/*
+/* This code is not obfuscated.
+/* It contains Roblox's backend component.
+/* Roblox uses minification scripts to
+/* minify Roblox website for the
+/* production builds to make it
+/* load faster.
+*/
+
+if(window.__ROPRIME_NAVIGATION_EVALED){/* SPA */}else{window.__ROPRIME_NAVIGATION_EVALED=1;
 (!(function () {
   try {
     var e =
@@ -23301,11 +23311,19 @@
         },
         1609: function (e) {
           "use strict";
-          e.exports = window.React;
+          e.exports =
+            window.React ||
+            (window.Roblox &&
+              window.Roblox["core-scripts"] &&
+              window.Roblox["core-scripts"].react) ||
+            null;
         },
         8002: function (e) {
           "use strict";
-          e.exports = window.ReactJSX;
+          e.exports =
+            window.ReactJSX ||
+            (window.React && window.React.jsx) ||
+            null;
         },
         6001: function () {}
       },
@@ -24788,6 +24806,9 @@
         }
         var tm = window.RobloxUserProfiles,
           th = function (e) {
+            if (!tm || "function" != typeof tm.useUserProfiles) {
+              return (null == e ? void 0 : e.displayName) || "";
+            }
             var t = (0, tm.useUserProfiles)((null == e ? void 0 : e.id) == null ? [] : [e.id], [
               tm.UserProfileField.Names.DisplayName,
               tm.UserProfileField.Names.Username
@@ -81360,3 +81381,5 @@ PERFORMANCE OF THIS SOFTWARE.
     window.Roblox.BundleDetector &&
     window.Roblox.BundleDetector.bundleDetected("Navigation"));
 //# sourceMappingURL=https://sourcemaps.rbxcdn.com/navigation-cf3befc5cbd0d6e4.js.map
+
+}

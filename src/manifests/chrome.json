@@ -57,7 +57,7 @@
                 "resources/badges/*"
             ],
             "matches": [
-                "*://www.roblox.com/*",
+                "*://*.roblox.com/*",
                 "*://roblox.com/*"
             ]
         }
@@ -65,7 +65,7 @@
     "content_scripts": [
         {
             "matches": [
-                "*://www.roblox.com/*",
+                "*://*.roblox.com/*",
                 "*://roblox.com/*"
             ],
             "js": [

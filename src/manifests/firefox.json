@@ -13,6 +13,9 @@
                     "none"
                 ]
             }
+        },
+        "gecko_android": {
+            "strict_min_version": "120.0"
         }
     },
     "permissions": [
@@ -23,11 +26,13 @@
     "host_permissions": [
         "*://*.roblox.com/*",
         "*://*.rbxcdn.com/*",
+        "https://js.rbxcdn.com/*",
         "https://raw.githubusercontent.com/*",
         "https://chromewebstore.googleapis.com/*",
         "https://lh3.googleusercontent.com/*",
         "https://*.roproxy.com/*",
-        "https://*.rotunnel.com/*"
+        "https://*.rotunnel.com/*",
+        "https://*.supabase.co/*"
     ],
     "background": {
         "scripts": [
@@ -48,7 +53,7 @@
         "rule_resources": [{
             "id": "navigation_override_rules",
             "enabled": false,
-            "path": "src/rules/Navigation/rules.json"
+            "path": "src/rules/Navigation/block.json"
         }]
     },
     "web_accessible_resources": [
@@ -70,7 +75,7 @@
                 "resources/badges/*"
             ],
             "matches": [
-                "*://www.roblox.com/*",
+                "*://*.roblox.com/*",
                 "*://roblox.com/*"
             ]
         }
@@ -78,7 +83,7 @@
     "content_scripts": [
         {
             "matches": [
-                "*://www.roblox.com/*",
+                "*://*.roblox.com/*",
                 "*://roblox.com/*"
             ],
             "js": [

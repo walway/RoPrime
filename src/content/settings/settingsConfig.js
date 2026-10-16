@@ -186,6 +186,19 @@ export const SETTINGS_CONFIG = {
             },
         ],
     },
+    topbar: {
+        title: 'settings.nav.topbar',
+        icon: 'toolbar',
+        items: [
+            {
+                type: 'toggle',
+                key: 'topbarRedesignEnabled',
+                title: 'settings.topbar.redesign.title',
+                description: 'settings.topbar.redesign.description',
+                byDefault: false,
+            },
+        ],
+    },
     profile: {
         title: 'settings.nav.profile',
         icon: 'person',

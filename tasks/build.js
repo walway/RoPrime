@@ -86,6 +86,77 @@ function getDracoDecoderBanner() {
 `
 }
 
+/* Navigation.js is a prebuilt Roblox's React component for a Roblox website
+/  we are using it to keep Roblox's topbar before redesign
+/  it was compiled by their own esbuild
+/  this patches it for firefox */
+function patchNavigationVendor() {
+    const navPath = join(root, 'resources/vendor/Navigation.js')
+    if (!existsSync(navPath)) {
+        throw new Error('Missing resources/vendor/Navigation.js')
+    }
+    let text = readFileSync(navPath, 'utf8')
+    let changed = false
+
+    const oldReact = `1609: function (e) {
+          "use strict";
+          e.exports = window.React;
+        },`
+    const newReact = `1609: function (e) {
+          "use strict";
+          e.exports =
+            window.React ||
+            (window.Roblox &&
+              window.Roblox["core-scripts"] &&
+              window.Roblox["core-scripts"].react) ||
+            null;
+        },`
+    if (text.includes(oldReact)) {
+        text = text.replace(oldReact, newReact)
+        changed = true
+    }
+
+    const oldJsx = `8002: function (e) {
+          "use strict";
+          e.exports = window.ReactJSX;
+        },`
+    const newJsx = `8002: function (e) {
+          "use strict";
+          e.exports =
+            window.ReactJSX ||
+            (window.React && window.React.jsx) ||
+            null;
+        },`
+    if (text.includes(oldJsx)) {
+        text = text.replace(oldJsx, newJsx)
+        changed = true
+    }
+
+    const guard = 'window.__ROPRIME_NAVIGATION_EVALED'
+    if (!text.includes(guard)) {
+        text = `if(${guard}){/* SPA */}else{${guard}=1;\n${text}\n}\n`
+        changed = true
+    }
+
+    if (!text.includes('"function" != typeof tm.useUserProfiles')) {
+        const oldProfiles = `        var tm = window.RobloxUserProfiles,
+          th = function (e) {
+            var t = (0, tm.useUserProfiles)((null == e ? void 0 : e.id) == null ? [] : [e.id], [`
+        const newProfiles = `        var tm = window.RobloxUserProfiles,
+          th = function (e) {
+            if (!tm || "function" != typeof tm.useUserProfiles) {
+              return (null == e ? void 0 : e.displayName) || "";
+            }
+            var t = (0, tm.useUserProfiles)((null == e ? void 0 : e.id) == null ? [] : [e.id], [`
+        if (text.includes(oldProfiles)) {
+            text = text.replace(oldProfiles, newProfiles)
+            changed = true
+        }
+    }
+
+    if (changed) writeFileSync(navPath, text, 'utf8')
+}
+
 function prepareLottieAssets() {
     const lottieMinDst = join(root, 'resources/vendor/lottie.min.js')
     if (!existsSync(lottieMinDst)) {
@@ -224,6 +295,7 @@ mkdirSync(bundleDir, { recursive: true })
 
 prepareLottieAssets()
 await copyDracoDecoder()
+patchNavigationVendor()
 
 await bundleEntry(
     'src/content/content.entry.js',
