@@ -1,4 +1,4 @@
-import { fetchTextPreferBackground } from './backgroundFetch.js'
+import { api } from './api.js'
 
 const CLIENT_LOCALES_BASE = 'https://raw.githubusercontent.com/walway/Roblox-Datamine/main/Client/Locales/Common'
 const UNIVERSAL_LOCALES_BASE =
@@ -99,7 +99,7 @@ export function resolveLocaleFileName(lang = getDocumentLang()) {
         .replace(/_/g, '-')
     if (!raw) return 'en-us'
 
-    // Prefer 'es-es' instead of 'es', never 'es.csv' like I described in the comment above
+    // Prefer 'es-es' instead of 'es', never 'es.csv' like I described in the comment above.
     if (LANG_TO_FILE[raw]) return LANG_TO_FILE[raw]
 
     if (KNOWN_LOCALE_FILES.has(raw)) return raw
@@ -177,8 +177,7 @@ function parseCsvIntoMap(csvText, target) {
 
 async function fetchLocaleCsv(baseUrl, localeFile) {
     const url = `${baseUrl}/${localeFile}.csv`
-    // Fall Firefox through Background
-    return fetchTextPreferBackground(url, { credentials: 'omit' })
+    return api.text(url, { credentials: 'omit' })
 }
 
 async function loadLocaleMaps(localeFile) {

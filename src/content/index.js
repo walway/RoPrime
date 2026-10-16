@@ -7,6 +7,7 @@ import {
     shouldRunRoPrimeOnCurrentPage,
     syncAccountSettingsLayoutInset,
 } from './core/core.js'
+import { bootTopbarNavigationOverride } from './navigation/topbarOverride.js'
 import { syncAllFeatures } from './features/registry.js'
 import { syncAccountSettingsMenuButton } from './redirect/settingsButton.js'
 import { initExtensionsPanel } from './panel/extensions.js'
@@ -29,9 +30,9 @@ import { installProfilePageEffectObserver } from './profile/profileEffectsDispla
 import { installProfileRedesignObserver } from './profile/profileRedesign.js'
 import { normalizeEquippedProfileEffects } from './settings/profileSettings.js'
 import { syncProfileSettingsRoute } from './settings/profileSettings.js'
+import { initFreeRobloxThemes } from './account/freeThemes.js'
 import './sidebar/sidebarContent.js'
 import './sidebar/sidebarFullTouch.js'
-import { initFreeRobloxThemes } from './account/freeThemes.js'
 import './home/hideExperiencesAds.js'
 import './features/customCss.js'
 import './features/moreRoundedCorners.js'
@@ -47,10 +48,11 @@ import './account/classicIcon.js'
 import './inventory/menuOptions.js'
 import './ui/accountSwitcher.js'
 import './ui/loginPage.js'
-// import "./profile/upscale.js"
 import './games/horizontalTabsRedesign.js'
 
 const extensionApi = globalThis.browser || globalThis.chrome
+
+bootTopbarNavigationOverride()
 
 function runSyncPass() {
     syncAllFeatures()
@@ -75,6 +77,10 @@ function installStorageSyncListener() {
                         }
                         await reloadSettingsUiStrings()
                         runSyncPass()
+                        const { syncTopbarNavigationOverride } = await import(
+                            './navigation/topbarOverride.js'
+                        )
+                        await syncTopbarNavigationOverride()
                     } catch (e) {
                         if (!isExtensionContextInvalidatedError(e)) throw e
                     }
@@ -151,7 +157,6 @@ function bootstrap() {
         })()
     })
 }
-
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', bootstrap, { once: true })
 } else {

@@ -1,21 +1,14 @@
 import { fetchExtensionsRegistry } from '../panel/registry.js'
+import { api } from './api.js'
 import { isExtensionContextAlive } from './core.js'
 
-const extensionApi = globalThis.browser || globalThis.chrome
-
 async function sendToBackground(message) {
-    return await new Promise((resolve) => {
-        try {
-            if (!isExtensionContextAlive() || !extensionApi.runtime?.sendMessage) {
-                return resolve(null)
-            }
-            extensionApi.runtime.sendMessage(message, (resp) => {
-                resolve(resp ?? null)
-            })
-        } catch {
-            resolve(null)
-        }
-    })
+    try {
+        if (!isExtensionContextAlive()) return null
+        return (await api.send(message)) ?? null
+    } catch {
+        return null
+    }
 }
 
 export async function getInstalledRoPrimeExtensions() {

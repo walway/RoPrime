@@ -1,3 +1,4 @@
+import { api } from '../core/api.js'
 import {
     buildManifestExtensionIconUrl,
     buildRoPrimeSettingsFullUrl,
@@ -35,18 +36,12 @@ const cwsIconUrlCache = new Map()
 const cwsIconFetchPromises = new Map()
 
 async function sendToBackground(message) {
-    return await new Promise((resolve) => {
-        try {
-            if (!isExtensionContextAlive() || !extensionApi.runtime?.sendMessage) {
-                return resolve(null)
-            }
-            extensionApi.runtime.sendMessage(message, (resp) => {
-                resolve(resp ?? null)
-            })
-        } catch {
-            resolve(null)
-        }
-    })
+    try {
+        if (!isExtensionContextAlive()) return null
+        return (await api.send(message)) ?? null
+    } catch {
+        return null
+    }
 }
 
 async function hasManagementPermission() {

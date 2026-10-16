@@ -1,4 +1,4 @@
-import { fetchJsonPreferBackground } from '../core/backgroundFetch.js'
+import { api } from '../core/api.js'
 import { getExtensionResourceUrl } from '../core/core.js'
 
 export const EXTENSIONS_REGISTRY_CDN_URL =
@@ -48,7 +48,7 @@ async function fetchRegistryFromUrl(url) {
     if (!url) return null
     try {
         const extensions = parseRegistryJson(
-            await fetchJsonPreferBackground(url, { cache: 'no-store' }),
+            await api.json(url, { cache: 'no-store', credentials: 'omit' }),
         )
         return extensions.length ? extensions : null
     } catch {
