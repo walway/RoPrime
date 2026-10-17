@@ -143,6 +143,13 @@ export const SETTINGS_CONFIG = {
             },
             {
                 type: 'toggle',
+                title: 'settings.topbar.redesign.title',
+                key: 'topbarRedesignEnabled',
+                description: 'settings.topbar.redesign.description',
+                byDefault: true,
+            },
+            {
+                type: 'toggle',
                 key: 'moreRoundedCornersEnabled',
                 title: 'settings.appearance.moreRoundedCorners.title',
                 description: 'settings.appearance.moreRoundedCorners.description',
@@ -183,19 +190,6 @@ export const SETTINGS_CONFIG = {
                 title: 'settings.appearance.horizontalTabs.title',
                 description: 'settings.appearance.horizontalTabs.description',
                 byDefault: true,
-            },
-        ],
-    },
-    topbar: {
-        title: 'settings.nav.topbar',
-        icon: 'toolbar',
-        items: [
-            {
-                type: 'toggle',
-                key: 'topbarRedesignEnabled',
-                title: 'settings.topbar.redesign.title',
-                description: 'settings.topbar.redesign.description',
-                byDefault: false,
             },
         ],
     },
