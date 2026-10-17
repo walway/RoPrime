@@ -68,6 +68,8 @@ function shouldUseBackground(url) {
         const parsed = new URL(url, String(globalThis.location?.href || 'https://www.roblox.com/'))
         if (/^(chrome|moz|safari)-extension:/i.test(parsed.protocol)) return false
         if (parsed.protocol === 'blob:' || parsed.protocol === 'data:') return false
+        if (/^(?:[\w-]+\.)?githubusercontent\.com$/i.test(parsed.hostname)) return true
+        if (/\.supabase\.co$/i.test(parsed.hostname)) return true
         if (isFirefox()) {
             const pageOrigin = String(globalThis.location?.origin || '')
             if (pageOrigin && parsed.origin === pageOrigin) return false
@@ -127,8 +129,7 @@ function asArrayBuffer(body) {
 
 async function proxyBackground(url, init = {}) {
     const method = String(init.method || 'GET').toUpperCase()
-    // Honor explicit include/omit from assetFetch; only default CDN-safe omit
-    // when credentials were left unset.
+
     const credentials =
         init.credentials === 'include' || init.credentials === 'same-origin'
             ? 'include'
@@ -163,7 +164,7 @@ async function proxyBackground(url, init = {}) {
     }
 
     let buffer = asArrayBuffer(response.body)
-    // Prefer base64 when structured-clone ArrayBuffer arrived empty/missing.
+
     if (!buffer.byteLength && response.bodyBase64) {
         buffer = asArrayBuffer(response.bodyBase64)
     }
@@ -171,7 +172,7 @@ async function proxyBackground(url, init = {}) {
     if (status === 0) {
         throw new Error('background_fetch_bad_status')
     }
-    // Copy into a fresh ArrayBuffer in this realm for reliable `instanceof`.
+
     const copy = buffer.byteLength ? buffer.slice(0) : new ArrayBuffer(0)
     return new Response(copy, {
         status,
@@ -215,8 +216,7 @@ export async function rpFetch(input, init = {}) {
     }
 
     if (shouldUseBackground(url)) {
-        // Do not fall through to page fetch on Firefox — connect-src CSP blocks it
-        // and RBLXGet turns that into a fake status-500 Response (not an ArrayBuffer).
+
         return proxyBackground(url, merged)
     }
 

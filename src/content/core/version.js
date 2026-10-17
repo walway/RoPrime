@@ -113,7 +113,6 @@ async function fetchJson(url) {
         return await api.json(joined, {
             cache: 'no-store',
             credentials: 'omit',
-            headers: { 'Cache-Control': 'no-cache', Pragma: 'no-cache' },
         })
     } catch (err) {
         const msg = err instanceof Error ? err.message : String(err || '')
