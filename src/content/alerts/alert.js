@@ -135,3 +135,20 @@ export function promptCustomCssCautionNotice() {
       <p>Only paste CSS from sources you trust. Malicious CSS could change what you see or interact with on Roblox.</p>`,
     })
 }
+
+export function promptContentRevealStreamerModeCautionNotice() {
+    return showAlertModal({
+        title: 'Do you want to see this?',
+        bodyHtml: `
+      <p>You have Streamer Mode enabled. Opening this content may reveal sensitive information about you.</p>`,
+    })
+}
+
+export function promptTransactionsPageRevealStreamerModeCautionNotice() {
+    return showAlertModal({
+        title: 'Do you want to see this page?',
+        bodyHtml: `
+      <p>You have Streamer Mode enabled. Opening this page may reveal sensitive information about your transactions.</p>`,
+    })
+}
+
