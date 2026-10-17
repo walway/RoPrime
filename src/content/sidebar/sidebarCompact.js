@@ -93,6 +93,9 @@ li a[href*="/spotlight/the-hunt-roblox-20"] {
     padding: 0 !important;
     margin: 0 !important;
 }
+li:has(.icon-regular-roblox-plus) {
+    display: none !important;
+}
 .padding-top-xsmall  {
   display: none !important;
 }
