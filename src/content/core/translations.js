@@ -177,7 +177,7 @@ function parseCsvIntoMap(csvText, target) {
 
 async function fetchLocaleCsv(baseUrl, localeFile) {
     const url = `${baseUrl}/${localeFile}.csv`
-    return api.text(url, { credentials: 'omit' })
+    return api.text(url)
 }
 
 async function loadLocaleMaps(localeFile) {
