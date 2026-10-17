@@ -220,7 +220,7 @@ function themeDisplayName(theme) {
 }
 
 function isRobloxLightTheme(body = document.body) {
-    return body instanceof HTMLBodyElement && body.classList.contains('light-theme')
+    return body instanceof HTMLBodyElement && body.classList.contains('color-mode-light')
 }
 
 function themeSwatchColor(theme, body = document.body) {
