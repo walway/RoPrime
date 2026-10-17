@@ -226,3 +226,12 @@ body[dir="rtl"] .foundation-web-dialog-close-container {
     left: var(--size-300) !important;
     right: auto !important;
 }
+
+/* return white color for the icons */
+.color-mode-light .container-fluid .icon {
+    background-color: #393B3D !important;
+}
+
+.color-mode-dark .container-fluid .icon {
+    background-color: #FFFFFF !important;
+}
