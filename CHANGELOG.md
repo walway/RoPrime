@@ -1,17 +1,21 @@
 1.6
 
-- New Old 
+- Updated Classic Theme
+- New button in the new dropdown redesign
+- New Old Topbar feature
 - New Connection Path feature
 - New Horizontal Tabs Redesign feature
 - You can now copy direct link to the feature (Hover the title)
 - Mobile Support for Legacy Badges
 
+- Fixed the extension requests in Firefox
 - Fixed Free Roblox Plus Themes
 - Fixed Extension action buttons on Firefox
 - Fixed toggle with RTL
 - Fixed menu options border on hover
 - Fixed Welcome dialog on small displays
 - Fixed Roblox's Popup's close buttons with RTL
+- Fixed Horizontal Tabs Redesign bottom caret on mobile devices
 - Fixed Menu Options not appearing in the 3D-Party Users Inventory pages
 - Fixed Gradient Overlay on the Groups pages with Background Thumbnails
 
