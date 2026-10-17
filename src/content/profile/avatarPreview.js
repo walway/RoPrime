@@ -40,6 +40,17 @@ const BUTTON_CLASS =
 const LOADER_SPINNER_ATTR = 'data-roprime-avatar-loader'
 const LOADER_SHIMMER_ATTR = 'data-roprime-avatar-shimmer'
 
+// drop 3D support for Firefox until we fix it
+function isFirefoxAvatarPreview() {
+    try {
+        const ua = String(globalThis.navigator?.userAgent || '')
+        if (/firefox/i.test(ua)) return true
+        return typeof extensionApi?.runtime?.getBrowserInfo === 'function'
+    } catch {
+        return false
+    }
+}
+
 function normalizeFetchHeaders(input) {
     const output = {}
     if (!input) return output
@@ -230,6 +241,11 @@ function appendPreviewControls(host) {
     host.querySelectorAll('[data-roprime-avatar-control]').forEach((node) => {
         node.remove()
     })
+
+    // remove toggles for Firefox since it's dropped
+    if (isFirefoxAvatarPreview()) {
+        return { viewButton: null, rigButton: null }
+    }
 
     const viewButton = createButton(currentViewMode === '3d' ? '2D' : '3D')
     viewButton.dataset.roprimeAvatarControl = '1'
@@ -546,6 +562,10 @@ async function renderCurrentPreview() {
     const localMountSeq = activeMountSeq
     const localRenderSeq = ++renderSeq
     if (!(currentHost instanceof HTMLElement)) return false
+    if (isFirefoxAvatarPreview()) {
+        currentViewMode = '2d'
+        return render2DPreview(localMountSeq, localRenderSeq)
+    }
     if (currentViewMode === '3d' && !isRobloxAuthenticated()) {
         currentViewMode = '2d'
     }
@@ -811,8 +831,12 @@ export async function mountAvatarPreview(host, userId) {
     try {
         await getRobloxUserId()
     } catch {}
-    // Non-autheticated users are default to 2d and 3D requires authetication
-    currentViewMode = isRobloxAuthenticated() ? '3d' : '2d'
+    // Firefox: always 2D. Chromium: 3D when authenticated.
+    currentViewMode = isFirefoxAvatarPreview()
+        ? '2d'
+        : isRobloxAuthenticated()
+        ? '3d'
+        : '2d'
     if (!isActive()) return false
 
     if (rendererReady) {
