@@ -28,7 +28,7 @@ export const ROBLOX_THEMES_CLASSES = [
     'theme-quantum-pulse',
 
     // Special
-    'theme-halloween',
+    'theme-the-hollow',
     'theme-classic',
 ]
 
@@ -137,18 +137,18 @@ const SPECIAL_THEMES = [
         lightColor: 'rgb(255, 255, 255)',
     },
     {
-        id: 'theme-the-hollow',
-        name: 'The Hollow',
-        i18nKey: 'Feature.Accessibility.AppTheme.Halloween2026',
-        darkColor: 'rgb(255, 152, 32)',
-        lightColor: 'rgb(255, 152, 32)',
-    },
-    {
         id: 'theme-classic',
         name: 'Classic',
         i18nKey: 'Feature.Accessibility.AppTheme.Classic',
         darkColor: 'rgb(255, 73, 73)',
         lightColor: 'rgb(255, 73, 73)',
+    },
+    {
+        id: 'theme-the-hollow',
+        name: 'The Hollow',
+        i18nKey: 'Feature.Accessibility.AppTheme.Halloween2026',
+        darkColor: 'rgb(255, 152, 32)',
+        lightColor: 'rgb(255, 152, 32)',
     },
 ]
 
