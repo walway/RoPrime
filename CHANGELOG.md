@@ -1,5 +1,7 @@
 1.6
 
+- Fixed robux icon alignment under the Currently Wearing cards
+- Updated Currently Wearing cards to the new design
 - Updated Classic Theme
 - New button in the new dropdown redesign
 - New Old Topbar feature
