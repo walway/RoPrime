@@ -55,6 +55,9 @@ const STYLE_CSS = `
   background-color: var(--color-system-contrast, var(--color-content-emphasis, currentColor));
   pointer-events: none;
 }
+[${ROOT_ATTR}-ui] .scroll-x {
+  -webkit-overflow-scrolling: touch;
+}
 `.trim()
 
 let tabsObserver = null
@@ -62,6 +65,8 @@ let activeObserver = null
 let resizeObserver = null
 let resizeHandler = null
 let hashHandler = null
+let scrollHandler = null
+let scrollTarget = null
 let indicatorShell = null
 let bootObserver = null
 let bootDebounceTimer = null
@@ -69,6 +74,10 @@ let retryTimer = null
 let applyInFlight = false
 
 function onWindowResize() {
+    if (indicatorShell instanceof HTMLElement) syncIndicator(indicatorShell)
+}
+
+function onTabsScroll() {
     if (indicatorShell instanceof HTMLElement) syncIndicator(indicatorShell)
 }
 
@@ -104,8 +113,16 @@ function isCommunityDetailsPath(pathname = globalThis.location.pathname) {
     return /\/(?:communities|groups)\/\d+(?:\/[^/?#]*)?/i.test(String(pathname || ''))
 }
 
+function isFriendsListPath(pathname = globalThis.location.pathname) {
+    return /\/users\/friends\/?$/i.test(String(pathname || ''))
+}
+
 function isSupportedTabsPath(pathname = globalThis.location.pathname) {
-    return isGamesDetailsPath(pathname) || isCommunityDetailsPath(pathname)
+    return (
+        isGamesDetailsPath(pathname) ||
+        isCommunityDetailsPath(pathname) ||
+        isFriendsListPath(pathname)
+    )
 }
 
 function findTabsHost() {
@@ -115,6 +132,13 @@ function findTabsHost() {
             document.querySelector('.rbx-tabs-horizontal')
         )
     }
+    if (isFriendsListPath()) {
+        return (
+            document.querySelector(
+                '.rbx-tabs-horizontal.rbx-scrollable-tabs-horizontal',
+            ) || document.querySelector('.rbx-tabs-horizontal')
+        )
+    }
     return document.querySelector('.rbx-tabs-horizontal')
 }
 
@@ -122,6 +146,8 @@ function findOriginalTabs(host) {
     return (
         host?.querySelector(':scope > #horizontal-tabs') ||
         host?.querySelector('#horizontal-tabs') ||
+        host?.querySelector(':scope > ul.nav.nav-tabs') ||
+        host?.querySelector('ul.nav.nav-tabs') ||
         document.querySelector('#horizontal-tabs.group-foundation-tabs') ||
         document.querySelector('#horizontal-tabs') ||
         null
@@ -182,7 +208,26 @@ function labelForTab(li, slug) {
         li.querySelector('.rbx-tab-heading span') ||
         li.querySelector('a.rbx-tab-heading') ||
         li.querySelector('a')
-    const raw = String(lead?.textContent || li.textContent || '').replace(/\s+/g, ' ').trim()
+    if (!(lead instanceof HTMLElement)) return slug || 'Tab'
+
+    const clone = lead.cloneNode(true)
+    if (clone instanceof HTMLElement) {
+        clone
+            .querySelectorAll(
+                '.notification-blue, .notification-red, .rbx-tab-notification, .badge, [class*="notification"], [class*="Notification"], [class*="count"], [class*="Count"]',
+            )
+            .forEach((node) => node.remove())
+        for (const child of [...clone.childNodes]) {
+            if (child.nodeType === Node.TEXT_NODE) continue
+            if (!(child instanceof HTMLElement)) continue
+            const onlyDigits = String(child.textContent || '').replace(/\s+/g, '').match(/^\d+$/)
+            if (onlyDigits) child.remove()
+        }
+    }
+    let raw = String(clone?.textContent || lead.textContent || '')
+        .replace(/\s+/g, ' ')
+        .trim()
+        raw = raw.replace(/([A-Za-z])\d+$/, '$1').replace(/\s+\d+$/, '').trim()
     return raw || slug || 'Tab'
 }
 
@@ -213,33 +258,46 @@ function createShell() {
 
     root.innerHTML = `
 <div class="relative scroll-x" style="scrollbar-width: none;">
-  <div role="tablist" aria-orientation="horizontal" class="flex items-stretch bg-none border-0 stroke-none" tabindex="0" data-orientation="horizontal" style="outline: none;"></div>
+  <div class="relative inline-flex min-w-full flex-col width-full">
+    <div role="tablist" aria-orientation="horizontal" class="flex items-stretch bg-none border-0 stroke-none" tabindex="0" data-orientation="horizontal" style="outline: none;"></div>
+    <div class="absolute bottom-[0px] bg-system-contrast transition-all duration-200 ease-standard-out roprime-ht-indicator" style="height: var(--stroke-thick); z-index: 1; width: 0px; left: 0px; opacity: 1;"></div>
+  </div>
 </div>
-<div class="absolute bottom-[0px] bg-system-contrast transition-all duration-200 ease-standard-out roprime-ht-indicator" style="height: var(--stroke-thick); z-index: 1; width: 0px; left: 0px; opacity: 1; margin-top: 46px;"></div>
 `.trim()
     return root
 }
 
 function ensureIndicatorInTabsRoot(shell) {
     if (!(shell instanceof HTMLElement)) return
-    if (!shell.classList.contains('relative')) shell.classList.add('relative')
+    const scrollX = shell.querySelector('.scroll-x')
+    if (!(scrollX instanceof HTMLElement)) return
+    if (!scrollX.classList.contains('relative')) scrollX.classList.add('relative')
 
-    let indicator = shell.querySelector(':scope > .roprime-ht-indicator')
-    const nested = shell.querySelector('.scroll-x .roprime-ht-indicator')
-    if (!(indicator instanceof HTMLElement) && nested instanceof HTMLElement) {
-        shell.appendChild(nested)
-        indicator = nested
+    let track = scrollX.querySelector(':scope > .relative')
+    if (!(track instanceof HTMLElement)) {
+        track = document.createElement('div')
+        track.className = 'relative inline-flex min-w-full flex-col'
+        const tablist = scrollX.querySelector('[role="tablist"]')
+        if (tablist) track.appendChild(tablist)
+        scrollX.appendChild(track)
+    }
+
+    let indicator =
+        track.querySelector(':scope > .roprime-ht-indicator') ||
+        shell.querySelector('.roprime-ht-indicator')
+    if (indicator instanceof HTMLElement && indicator.parentElement !== track) {
+        track.appendChild(indicator)
     }
     if (!(indicator instanceof HTMLElement)) {
         indicator = document.createElement('div')
         indicator.className =
             'absolute bottom-[0px] bg-system-contrast transition-all duration-200 ease-standard-out roprime-ht-indicator'
-        shell.appendChild(indicator)
+        track.appendChild(indicator)
     }
     indicator.style.height = 'var(--stroke-thick)'
     indicator.style.zIndex = '1'
     indicator.style.opacity = '1'
-    indicator.style.marginTop = '46px'
+    indicator.style.marginTop = ''
     if (!indicator.style.width) indicator.style.width = '0px'
     if (!indicator.style.left) indicator.style.left = '0px'
 }
@@ -247,7 +305,7 @@ function ensureIndicatorInTabsRoot(shell) {
 function syncIndicator(shell) {
     ensureIndicatorInTabsRoot(shell)
     const tablist = shell.querySelector('[role="tablist"]')
-    const indicator = shell.querySelector(':scope > .roprime-ht-indicator')
+    const indicator = shell.querySelector('.roprime-ht-indicator')
     if (!(tablist instanceof HTMLElement) || !(indicator instanceof HTMLElement)) return
 
     const active = tablist.querySelector('[role="tab"][data-state="active"]') ||
@@ -258,15 +316,10 @@ function syncIndicator(shell) {
         return
     }
 
-    const shellRect = shell.getBoundingClientRect()
-    const btnRect = active.getBoundingClientRect()
-    const scrollX = shell.querySelector('.scroll-x')
-    const scrollLeft = scrollX instanceof HTMLElement ? scrollX.scrollLeft : 0
-    const left = Math.max(0, btnRect.left - shellRect.left + scrollLeft)
-    const width = Math.max(0, btnRect.width)
+    const left = Math.max(0, active.offsetLeft)
+    const width = Math.max(0, active.offsetWidth)
 
     indicator.style.opacity = '1'
-    indicator.style.marginTop = '46px'
     indicator.style.width = `${width}px`
     indicator.style.left = `${left}px`
 }
@@ -483,6 +536,11 @@ function disconnectObservers() {
         globalThis.removeEventListener('hashchange', hashHandler)
         hashHandler = null
     }
+    if (scrollHandler && scrollTarget) {
+        scrollTarget.removeEventListener('scroll', scrollHandler)
+    }
+    scrollHandler = null
+    scrollTarget = null
     indicatorShell = null
 }
 
@@ -531,10 +589,20 @@ function installObservers(host, original, shell) {
         resizeObserver.observe(shell)
         const tablist = shell.querySelector('[role="tablist"]')
         if (tablist) resizeObserver.observe(tablist)
+        for (const tab of shell.querySelectorAll('[role="tab"]')) {
+            if (tab instanceof HTMLElement) resizeObserver.observe(tab)
+        }
     }
 
     resizeHandler = onWindowResize
     globalThis.addEventListener('resize', resizeHandler, { passive: true })
+
+    const scrollX = shell.querySelector('.scroll-x')
+    if (scrollX instanceof HTMLElement) {
+        scrollHandler = onTabsScroll
+        scrollTarget = scrollX
+        scrollX.addEventListener('scroll', scrollHandler, { passive: true })
+    }
 
     hashHandler = () => syncFromOriginal(shell, original)
     globalThis.addEventListener('hashchange', hashHandler)
