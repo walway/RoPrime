@@ -1,5 +1,6 @@
 1.6
 
+- Added support for the new Ad in the icon only sidebar
 - Fixed robux icon alignment under the Currently Wearing cards
 - Updated Currently Wearing cards to the new design
 - Updated Classic Theme
