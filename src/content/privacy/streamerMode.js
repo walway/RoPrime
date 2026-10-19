@@ -13,6 +13,9 @@ const PENDING_ATTR = 'data-roprime-streamer-pending'
 const PAGE_OK_PREFIX = 'roprime-streamer-page-ok:'
 
 const STREAMER_MODE_CSS = `
+#nav-robux-amount {
+    display: none !important;
+}
 .foundation-web-menu.nav-foundation-menu .wallet-hidden {
     display: none !important;
 }
@@ -42,7 +45,6 @@ div[data-section-type="PAYMENTS_PRODUCT_SECTION_TYPE_TRANSFERS"] > div:first-chi
 `
 
 const ROBUX_AMOUNT_SELECTOR = [
-    '#nav-robux-amount',
     '#nav-robux-balance',
     '.icon-robux-container',
     '.amount.icon-robux-container',
