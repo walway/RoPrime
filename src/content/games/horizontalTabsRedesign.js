@@ -3,6 +3,7 @@ import { registerFeature } from '../features/registry.js'
 
 const ROOT_ATTR = 'data-roprime-horizontal-tabs'
 const STYLE_ID = 'roprime-horizontal-tabs-style'
+const THEME_CLASS = 'roprime-horizontal-tabs-theme'
 const HIDDEN_ORIGINAL_CLASS = 'roprime-horizontal-tabs-original-hidden'
 const HIDDEN_HOST_CLASS = 'roprime-horizontal-tabs-host-hidden'
 
@@ -14,30 +15,43 @@ const STATE_LAYER =
     '<div aria-hidden="true" data-testid="foundation-web-state-layer" class="absolute inset-[0] transition-colors group-hover/interactable:bg-[var(--color-state-hover)] group-active/interactable:bg-[var(--color-state-press)] group-disabled/interactable:bg-none"></div>'
 
 const STYLE_CSS = `
+.${HIDDEN_ORIGINAL_CLASS},
+.rbx-tabs-horizontal[${ROOT_ATTR}] .${HIDDEN_ORIGINAL_CLASS},
 .rbx-tabs-horizontal[${ROOT_ATTR}] > #horizontal-tabs.${HIDDEN_ORIGINAL_CLASS},
-.rbx-tabs-horizontal[${ROOT_ATTR}] > ul#horizontal-tabs.${HIDDEN_ORIGINAL_CLASS} {
+.rbx-tabs-horizontal[${ROOT_ATTR}] > ul#horizontal-tabs.${HIDDEN_ORIGINAL_CLASS},
+.rbx-tabs-horizontal[${ROOT_ATTR}] > ul.nav.nav-tabs.${HIDDEN_ORIGINAL_CLASS},
+.rbx-tabs-horizontal[${ROOT_ATTR}] ul.nav.nav-tabs.${HIDDEN_ORIGINAL_CLASS} {
   position: absolute !important;
   width: 1px !important;
   height: 1px !important;
+  max-width: 1px !important;
+  max-height: 1px !important;
   padding: 0 !important;
   margin: -1px !important;
   overflow: hidden !important;
   clip: rect(0, 0, 0, 0) !important;
+  clip-path: inset(50%) !important;
   white-space: nowrap !important;
   border: 0 !important;
   opacity: 0 !important;
+  visibility: hidden !important;
   pointer-events: none !important;
+  display: block !important;
 }
 .rbx-tabs-horizontal.${HIDDEN_HOST_CLASS} {
   position: absolute !important;
   width: 1px !important;
   height: 1px !important;
+  max-width: 1px !important;
+  max-height: 1px !important;
   padding: 0 !important;
   margin: -1px !important;
   overflow: hidden !important;
   clip: rect(0, 0, 0, 0) !important;
+  clip-path: inset(50%) !important;
   border: 0 !important;
   opacity: 0 !important;
+  visibility: hidden !important;
   pointer-events: none !important;
 }
 .rbx-tabs-horizontal[${ROOT_ATTR}] > [${ROOT_ATTR}-ui],
@@ -95,6 +109,10 @@ function clearBootDebounce() {
     }
 }
 
+function setThemeClass(enabled) {
+    document.documentElement.classList.toggle(THEME_CLASS, !!enabled)
+}
+
 function ensureStyles() {
     let style = document.getElementById(STYLE_ID)
     if (!(style instanceof HTMLStyleElement)) {
@@ -103,6 +121,58 @@ function ensureStyles() {
         ;(document.head || document.documentElement).appendChild(style)
     }
     if (style.textContent !== STYLE_CSS) style.textContent = STYLE_CSS
+}
+
+function removeStyles() {
+    document.getElementById(STYLE_ID)?.remove()
+}
+
+function hideOriginalTabsElement(original) {
+    if (!(original instanceof HTMLElement)) return
+    original.classList.add(HIDDEN_ORIGINAL_CLASS)
+    original.setAttribute('aria-hidden', 'true')
+    original.setAttribute('inert', '')
+    original.style.setProperty('position', 'absolute', 'important')
+    original.style.setProperty('width', '1px', 'important')
+    original.style.setProperty('height', '1px', 'important')
+    original.style.setProperty('max-width', '1px', 'important')
+    original.style.setProperty('max-height', '1px', 'important')
+    original.style.setProperty('padding', '0', 'important')
+    original.style.setProperty('margin', '-1px', 'important')
+    original.style.setProperty('overflow', 'hidden', 'important')
+    original.style.setProperty('clip', 'rect(0, 0, 0, 0)', 'important')
+    original.style.setProperty('clip-path', 'inset(50%)', 'important')
+    original.style.setProperty('border', '0', 'important')
+    original.style.setProperty('opacity', '0', 'important')
+    original.style.setProperty('visibility', 'hidden', 'important')
+    original.style.setProperty('pointer-events', 'none', 'important')
+}
+
+function unhideOriginalTabsElement(original) {
+    if (!(original instanceof HTMLElement)) return
+    original.classList.remove(HIDDEN_ORIGINAL_CLASS)
+    original.removeAttribute('aria-hidden')
+    original.removeAttribute('inert')
+    for (
+        const prop of [
+            'position',
+            'width',
+            'height',
+            'max-width',
+            'max-height',
+            'padding',
+            'margin',
+            'overflow',
+            'clip',
+            'clip-path',
+            'border',
+            'opacity',
+            'visibility',
+            'pointer-events',
+        ]
+    ) {
+        original.style.removeProperty(prop)
+    }
 }
 
 function isGamesDetailsPath(pathname = globalThis.location.pathname) {
@@ -227,7 +297,7 @@ function labelForTab(li, slug) {
     let raw = String(clone?.textContent || lead.textContent || '')
         .replace(/\s+/g, ' ')
         .trim()
-        raw = raw.replace(/([A-Za-z])\d+$/, '$1').replace(/\s+\d+$/, '').trim()
+    raw = raw.replace(/([A-Za-z])\d+$/, '$1').replace(/\s+\d+$/, '').trim()
     return raw || slug || 'Tab'
 }
 
@@ -282,8 +352,7 @@ function ensureIndicatorInTabsRoot(shell) {
         scrollX.appendChild(track)
     }
 
-    let indicator =
-        track.querySelector(':scope > .roprime-ht-indicator') ||
+    let indicator = track.querySelector(':scope > .roprime-ht-indicator') ||
         shell.querySelector('.roprime-ht-indicator')
     if (indicator instanceof HTMLElement && indicator.parentElement !== track) {
         track.appendChild(indicator)
@@ -550,7 +619,7 @@ function removeRedesign() {
     disconnectObservers()
     document.querySelectorAll(`[${ROOT_ATTR}-ui]`).forEach((node) => node.remove())
     document.querySelectorAll(`.${HIDDEN_ORIGINAL_CLASS}`).forEach((node) => {
-        node.classList.remove(HIDDEN_ORIGINAL_CLASS)
+        unhideOriginalTabsElement(node)
     })
     document.querySelectorAll(`.${HIDDEN_HOST_CLASS}`).forEach((node) => {
         node.classList.remove(HIDDEN_HOST_CLASS)
@@ -558,6 +627,7 @@ function removeRedesign() {
     document.querySelectorAll(`.rbx-tabs-horizontal[${ROOT_ATTR}]`).forEach((host) => {
         host.removeAttribute(ROOT_ATTR)
     })
+    removeStyles()
 }
 
 function installObservers(host, original, shell) {
@@ -628,18 +698,19 @@ function placeShellInGroupContent(contentHost, shell) {
 }
 
 function applyHorizontalTabsRedesign() {
-    ensureStyles()
     ensureBootObserver()
 
-    if (
-        !shouldRunRoPrimeOnCurrentPage() ||
-        !settingsState.horizontalTabsRedesignEnabled ||
-        !isSupportedTabsPath()
-    ) {
+    const featureOn = shouldRunRoPrimeOnCurrentPage() &&
+        !!settingsState.horizontalTabsRedesignEnabled
+    setThemeClass(featureOn)
+
+    if (!featureOn || !isSupportedTabsPath()) {
         stopBootObserver()
         removeRedesign()
         return
     }
+
+    ensureStyles()
 
     const host = findTabsHost()
     const original = findOriginalTabs(host)
@@ -652,7 +723,7 @@ function applyHorizontalTabsRedesign() {
     applyInFlight = true
     try {
         host.setAttribute(ROOT_ATTR, '1')
-        original.classList.add(HIDDEN_ORIGINAL_CLASS)
+        hideOriginalTabsElement(original)
 
         const community = isCommunityDetailsPath()
         const groupContent = community ? findGroupContentHost() : null
