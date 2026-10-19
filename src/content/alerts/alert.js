@@ -40,7 +40,7 @@ function appendAlertWhenBodyReady(root) {
     document.addEventListener('DOMContentLoaded', onDomReady, { once: true })
 }
 
-function showAlertModal({ title, bodyHtml, okLabel = 'Ok' }) {
+function showAlertModal({ title, bodyHtml, okLabel = 'Ok', cancelLabel = '' }) {
     if (activeAlertPromise) return activeAlertPromise
 
     activeAlertPromise = new Promise((resolve) => {
@@ -51,6 +51,16 @@ function showAlertModal({ title, bodyHtml, okLabel = 'Ok' }) {
         root.setAttribute('role', 'dialog')
         root.setAttribute('aria-modal', 'true')
         root.setAttribute('aria-labelledby', 'roprime-alert-title')
+
+        const cancelButtonHtml = cancelLabel
+            ? `
+      <button type="button" class="foundation-web-button relative clip group/interactable focus-visible:outline-focus disabled:outline-none cursor-pointer relative flex items-center justify-center stroke-none padding-y-none select-none radius-medium text-label-large height-1200 padding-x-medium bg-surface-300 content-default roprime-alert-cancel">
+        <div role="presentation" class="absolute inset-[0] transition-colors group-hover/interactable:bg-[var(--color-state-hover)] group-active/interactable:bg-[var(--color-state-press)] group-disabled/interactable:bg-none"></div>
+        <span class="flex items-center min-width-0 gap-small">
+          <span class="padding-y-xsmall text-truncate-end text-no-wrap roprime-alert-cancel-label"></span>
+        </span>
+      </button>`
+            : ''
 
         appendParsedMarkup(
             root,
@@ -68,6 +78,7 @@ function showAlertModal({ title, bodyHtml, okLabel = 'Ok' }) {
       <div class="roprime-alert-body"></div>
     </div>
     <div class="padding-x-xlarge padding-bottom-xlarge flex gap-medium justify-end">
+      ${cancelButtonHtml}
       <button type="button" class="foundation-web-button relative clip group/interactable focus-visible:outline-focus disabled:outline-none cursor-pointer relative flex items-center justify-center stroke-none padding-y-none select-none radius-medium text-label-large height-1200 padding-x-medium bg-action-emphasis content-action-emphasis roprime-alert-ok">
         <div role="presentation" class="absolute inset-[0] transition-colors group-hover/interactable:bg-[var(--color-state-hover)] group-active/interactable:bg-[var(--color-state-press)] group-disabled/interactable:bg-none"></div>
         <span class="flex items-center min-width-0 gap-small">
@@ -86,6 +97,8 @@ function showAlertModal({ title, bodyHtml, okLabel = 'Ok' }) {
         if (bodyEl) appendParsedMarkup(bodyEl, bodyHtml)
         const okLabelEl = root.querySelector('.roprime-alert-ok-label')
         if (okLabelEl) okLabelEl.textContent = okLabel
+        const cancelLabelEl = root.querySelector('.roprime-alert-cancel-label')
+        if (cancelLabelEl) cancelLabelEl.textContent = cancelLabel
 
         const close = (accepted) => {
             removeAlertIfPresent()
@@ -95,6 +108,9 @@ function showAlertModal({ title, bodyHtml, okLabel = 'Ok' }) {
 
         root.querySelector('.roprime-alert-ok')?.addEventListener('click', () => {
             close(true)
+        })
+        root.querySelector('.roprime-alert-cancel')?.addEventListener('click', () => {
+            close(false)
         })
         root
             .querySelector('.roprime-alert-close')
@@ -136,19 +152,22 @@ export function promptCustomCssCautionNotice() {
     })
 }
 
-export function promptContentRevealStreamerModeCautionNotice() {
-    return showAlertModal({
-        title: 'Do you want to see this?',
-        bodyHtml: `
-      <p>You have Streamer Mode enabled. Opening this content may reveal sensitive information about you.</p>`,
-    })
-}
-
-export function promptTransactionsPageRevealStreamerModeCautionNotice() {
+export function promptPageRevealStreamerModeCautionNotice() {
     return showAlertModal({
         title: 'Do you want to see this page?',
         bodyHtml: `
-      <p>You have Streamer Mode enabled. Opening this page may reveal sensitive information about your transactions.</p>`,
+      <p>You have Streamer Mode enabled. Opening this page may reveal sensitive billing or transaction information on stream.</p>`,
+        okLabel: 'Yes',
+        cancelLabel: 'No',
     })
 }
 
+export function promptContentRevealStreamerModeCautionNotice() {
+    return showAlertModal({
+        title: 'Reveal hidden content?',
+        bodyHtml: `
+      <p>You have Streamer Mode enabled. Revealing this content may show sensitive account or transaction information on stream.</p>`,
+        okLabel: 'Yes',
+        cancelLabel: 'No',
+    })
+}

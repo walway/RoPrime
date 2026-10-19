@@ -1,5 +1,9 @@
 import { langList } from '../../i18n/i18n-config.js'
-import { collectSupportedPages, collectToggleDefaults } from '../settings/settingsConfig.js'
+import {
+    collectSupportedPages,
+    collectToggleDefaults,
+    createSupportedPageResolver,
+} from '../settings/settingsConfig.js'
 import { SIDEBAR_FULL_RESERVED_PX } from '../sidebar/sidebarLayout.js'
 
 const extensionApi = globalThis.browser || globalThis.chrome
@@ -13,6 +17,7 @@ export const RP_PARAM_KEY = 'roprime'
 export const RP_PARAM_KEY_NEW = 'roprime-new'
 export const RP_DEFAULT_PAGE = 'info'
 export const RP_SUPPORTED_PAGES = collectSupportedPages()
+const RP_SUPPORTED_PAGE_RESOLVER = createSupportedPageResolver(RP_SUPPORTED_PAGES)
 export const RP_SETTINGS_KEY = 'rpSettings'
 export const RP_SETTINGS_FLAT_INNER_ID = 'rp-settings-flat-inner'
 export const RP_SETTINGS_INNER_ID = RP_SETTINGS_FLAT_INNER_ID
@@ -364,6 +369,7 @@ export function serializeSettingsPayload() {
         loginPageRedesignEnabled: !!settingsState.loginPageRedesignEnabled,
         accountSwitcherRedesignEnabled: !!settingsState.accountSwitcherRedesignEnabled,
         horizontalTabsRedesignEnabled: !!settingsState.horizontalTabsRedesignEnabled,
+        streamerModeEnabled: !!settingsState.streamerModeEnabled,
         topbarRedesignEnabled: !!settingsState.topbarRedesignEnabled,
         developerPageUnlocked: !!settingsState.developerPageUnlocked,
         sidebarSize: settingsState.sidebarSize || 'full',
@@ -500,12 +506,15 @@ export function isOnRoPrimeSettingsPage() {
     return isPluginRoute()
 }
 
+export function resolveSupportedPage(route) {
+    return RP_SUPPORTED_PAGE_RESOLVER.resolve(route)
+}
+
 export function getLegacyRoPrimePageFromUrl() {
     if (!isMyAccountPath()) return null
     const params = new URLSearchParams(globalThis.location.search)
     if (params.has(RP_PARAM_KEY_NEW)) return null
-    const route = (params.get(RP_PARAM_KEY) || '').toLowerCase()
-    return RP_SUPPORTED_PAGES.has(route) ? route : null
+    return resolveSupportedPage(params.get(RP_PARAM_KEY) || '')
 }
 
 export function isForeignAccountPluginRoute() {
@@ -513,8 +522,8 @@ export function isForeignAccountPluginRoute() {
     const params = new URLSearchParams(globalThis.location.search)
     if (params.has(RP_PARAM_KEY_NEW)) return !isPluginRoute()
     if (params.has(RP_PARAM_KEY)) {
-        const route = (params.get(RP_PARAM_KEY) || '').toLowerCase()
-        return route !== '' && !RP_SUPPORTED_PAGES.has(route)
+        const route = params.get(RP_PARAM_KEY) || ''
+        return route !== '' && !RP_SUPPORTED_PAGE_RESOLVER.has(route)
     }
     return Array.from(params.keys()).length > 0
 }
@@ -565,16 +574,11 @@ export function getSidebarMainMarginPx() {
 export function getCurrentrp() {
     if (!isMyAccountPath()) return null
     const params = new URLSearchParams(globalThis.location.search)
-    let route = (
-        params.get(RP_PARAM_KEY) ||
-        params.get(RP_PARAM_KEY_NEW) ||
-        ''
-    ).toLowerCase()
-    const featureIdx = route.indexOf('?feature=')
+    let route = params.get(RP_PARAM_KEY) || params.get(RP_PARAM_KEY_NEW) || ''
+    const featureIdx = route.toLowerCase().indexOf('?feature=')
     if (featureIdx >= 0) route = route.slice(0, featureIdx)
-    if (route === 'design') return 'appearance'
-    if (!RP_SUPPORTED_PAGES.has(route)) return null
-    return route
+    if (route.toLowerCase() === 'design') return 'appearance'
+    return resolveSupportedPage(route)
 }
 
 export function buildPluginUrl(page = RP_DEFAULT_PAGE) {

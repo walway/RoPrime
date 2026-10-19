@@ -20,6 +20,7 @@ import {
     normalizeSidebarSizeMode,
     reloadSettingsUiStrings,
     resetSettingsToDefaults,
+    resolveSupportedPage,
     RP_DEFAULT_PAGE,
     RP_PARAM_KEY,
     RP_SETTINGS_KEY,
@@ -2045,6 +2046,75 @@ function syncLanguageMenuLabels(root) {
     }
 }
 
+function findSettingsItemByFeatureKey(featureKey) {
+    const needle = String(featureKey || '').trim()
+    if (!needle) return null
+    for (const pageCfg of Object.values(SETTINGS_CONFIG)) {
+        if (pageCfg?.type === 'navDivider') continue
+        for (const item of pageCfg.items || []) {
+            if (item?.type === 'toggle' && item.key === needle) return item
+            if (item?.type === 'card' && item.id === needle) return item
+            if (item?.type === 'panel' && item.id === needle) return item
+            if (item?.type === 'card') {
+                for (const nested of item.items || []) {
+                    if (nested?.type === 'toggle' && nested.key === needle) {
+                        return nested
+                    }
+                }
+            }
+        }
+    }
+    return null
+}
+
+function normalizeFeatureTags(tags) {
+    if (!Array.isArray(tags)) return []
+    const out = []
+    for (const tag of tags) {
+        if (typeof tag === 'string' && tag.trim()) {
+            out.push({ label: tag.trim() })
+            continue
+        }
+        if (tag && typeof tag === 'object') {
+            const label = String(tag.label || tag.name || tag.text || '').trim()
+            if (label) out.push({ label })
+        }
+    }
+    return out
+}
+
+function getFeatureTags(featureKey) {
+    return normalizeFeatureTags(findSettingsItemByFeatureKey(featureKey)?.tags)
+}
+
+function createFeatureTagChip(label) {
+    const button = document.createElement('button')
+    button.type = 'button'
+    button.tabIndex = -1
+    button.style.textDecoration = 'none'
+    button.className =
+        'bg-inverse-surface-0 content-inverse-emphasis relative clip cursor-default select-none relative flex justify-center items-center radius-circle stroke-none padding-left-medium padding-right-medium height-700 text-label-medium roprime-feature-tag'
+    button.setAttribute('aria-hidden', 'true')
+    const span = document.createElement('span')
+    span.className = 'padding-y-xsmall text-no-wrap text-truncate-end'
+    span.textContent = label
+    button.appendChild(span)
+    return button
+}
+
+function ensureFeatureTagsInWrap(wrap, featureKey) {
+    if (!(wrap instanceof HTMLElement)) return
+    for (const old of wrap.querySelectorAll('.roprime-feature-tag')) old.remove()
+    const tags = getFeatureTags(featureKey)
+    if (!tags.length) return
+    const copyBtn = wrap.querySelector('.roprime-feature-link-copy')
+    for (const tag of tags) {
+        const chip = createFeatureTagChip(tag.label)
+        if (copyBtn) wrap.insertBefore(chip, copyBtn)
+        else wrap.appendChild(chip)
+    }
+}
+
 function findSettingsPageForFeature(featureKey) {
     const needle = String(featureKey || '').trim()
     if (!needle) return null
@@ -2184,6 +2254,7 @@ function ensureFeatureLinkCopyOnRow(row) {
         title.replaceWith(wrap)
         wrap.appendChild(title)
     }
+    ensureFeatureTagsInWrap(wrap, featureKey)
     if (!wrap.contains(button)) wrap.appendChild(button)
 }
 
@@ -2218,10 +2289,11 @@ function getFeatureParamFromLocation() {
 
 function getRoPrimePageFromLocation() {
     const params = new URLSearchParams(globalThis.location.search || '')
-    let route = String(params.get('roprime') || '').toLowerCase()
-    const featureIdx = route.indexOf('?feature=')
+    let route = String(params.get('roprime') || '')
+    const featureIdx = route.toLowerCase().indexOf('?feature=')
     if (featureIdx >= 0) route = route.slice(0, featureIdx)
-    return route
+    if (route.toLowerCase() === 'design') return 'appearance'
+    return resolveSupportedPage(route) || route
 }
 
 function scrollToFeatureFromUrl(root) {
@@ -2234,7 +2306,6 @@ function scrollToFeatureFromUrl(root) {
     if (pageForFeature && getCurrentrp() !== pageForFeature) {
         try {
             const url = new URL(globalThis.location.href)
-            // Feature deep link preserving
             url.searchParams.set(RP_PARAM_KEY, pageForFeature)
             history.replaceState(history.state, '', url.toString())
         } catch {

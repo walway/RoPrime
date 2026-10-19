@@ -10,6 +10,7 @@ export const SETTINGS_NAV_ICONS = {
     home: 'home',
     settings: 'settings',
     privacy: 'shield',
+    streamerMode: 'videocam',
     other: 'extension',
     info: 'info',
     developer: 'code',
