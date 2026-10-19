@@ -724,9 +724,9 @@ function buildPriceRow(detail, { fromBundle = false } = {}) {
     if (typeof price === 'number' && price > 0) {
         const robuxIcon = el('span', 'icon-robux-16x16')
         // Fix robux icon gap
-        robuxIcon.style.marginBottom = '0';
-        robuxIcon.style.marginRight = '0';
-        priceRow.append(robuxIcon);
+        robuxIcon.style.marginBottom = '0'
+        robuxIcon.style.marginRight = '0'
+        priceRow.append(robuxIcon)
         const amount = el('span', 'text-robux-tile')
         // Add * when item is from the bundle
         amount.textContent = fromBundle ? `${formatRobuxAmount(price)}*` : formatRobuxAmount(price)

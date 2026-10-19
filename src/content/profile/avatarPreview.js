@@ -832,11 +832,7 @@ export async function mountAvatarPreview(host, userId) {
         await getRobloxUserId()
     } catch {}
     // Firefox: always 2D. Chromium: 3D when authenticated.
-    currentViewMode = isFirefoxAvatarPreview()
-        ? '2d'
-        : isRobloxAuthenticated()
-        ? '3d'
-        : '2d'
+    currentViewMode = isFirefoxAvatarPreview() ? '2d' : isRobloxAuthenticated() ? '3d' : '2d'
     if (!isActive()) return false
 
     if (rendererReady) {

@@ -130,12 +130,11 @@ function asArrayBuffer(body) {
 async function proxyBackground(url, init = {}) {
     const method = String(init.method || 'GET').toUpperCase()
 
-    const credentials =
-        init.credentials === 'include' || init.credentials === 'same-origin'
-            ? 'include'
-            : init.credentials === 'omit'
-            ? 'omit'
-            : resolveCredentials(init.credentials)
+    const credentials = init.credentials === 'include' || init.credentials === 'same-origin'
+        ? 'include'
+        : init.credentials === 'omit'
+        ? 'omit'
+        : resolveCredentials(init.credentials)
     const headers = headersToObject(init.headers)
     if (method === 'GET' || method === 'HEAD') {
         for (const key of Object.keys(headers)) {
@@ -216,7 +215,6 @@ export async function rpFetch(input, init = {}) {
     }
 
     if (shouldUseBackground(url)) {
-
         return proxyBackground(url, merged)
     }
 

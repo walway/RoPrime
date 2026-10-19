@@ -360,7 +360,7 @@
     --color-system-success: var(--lightningcss-light,var(--light-mode-system-success))var(--lightningcss-dark,var(--dark-mode-system-success));
     --inverse-system-success: var(--lightningcss-light,var(--dark-mode-system-success))var(--lightningcss-dark,var(--light-mode-system-success));
     --color-system-warning: var(--lightningcss-light,var(--light-mode-system-warning))var(--lightningcss-dark,var(--dark-mode-system-warning));
-    --inverse-system-warning: var(--lightningcss-light,var(--dark-mode-system-warning))var(--lightningcss-dark,var(--light-mode-system-warning))
+    --inverse-system-warning: var(--lightningcss-light,var(--dark-mode-system-warning))var(--lightningcss-dark,var(--light-mode-system-warning));
 }
 
 :root {
@@ -773,7 +773,7 @@
     --color-system-success: var(--lightningcss-light,var(--light-mode-system-success))var(--lightningcss-dark,var(--dark-mode-system-success));
     --inverse-system-success: var(--lightningcss-light,var(--dark-mode-system-success))var(--lightningcss-dark,var(--light-mode-system-success));
     --color-system-warning: var(--lightningcss-light,var(--light-mode-system-warning))var(--lightningcss-dark,var(--dark-mode-system-warning));
-    --inverse-system-warning: var(--lightningcss-light,var(--dark-mode-system-warning))var(--lightningcss-dark,var(--light-mode-system-warning))
+    --inverse-system-warning: var(--lightningcss-light,var(--dark-mode-system-warning))var(--lightningcss-dark,var(--light-mode-system-warning));
 }
 
 .theme-cosmic-dust {
@@ -1122,7 +1122,7 @@
     --color-system-success: var(--lightningcss-light,var(--light-mode-system-success))var(--lightningcss-dark,var(--dark-mode-system-success));
     --inverse-system-success: var(--lightningcss-light,var(--dark-mode-system-success))var(--lightningcss-dark,var(--light-mode-system-success));
     --color-system-warning: var(--lightningcss-light,var(--light-mode-system-warning))var(--lightningcss-dark,var(--dark-mode-system-warning));
-    --inverse-system-warning: var(--lightningcss-light,var(--dark-mode-system-warning))var(--lightningcss-dark,var(--light-mode-system-warning))
+    --inverse-system-warning: var(--lightningcss-light,var(--dark-mode-system-warning))var(--lightningcss-dark,var(--light-mode-system-warning));
 }
 
 .theme-electric-lime {
@@ -1471,7 +1471,7 @@
     --color-system-success: var(--lightningcss-light,var(--light-mode-system-success))var(--lightningcss-dark,var(--dark-mode-system-success));
     --inverse-system-success: var(--lightningcss-light,var(--dark-mode-system-success))var(--lightningcss-dark,var(--light-mode-system-success));
     --color-system-warning: var(--lightningcss-light,var(--light-mode-system-warning))var(--lightningcss-dark,var(--dark-mode-system-warning));
-    --inverse-system-warning: var(--lightningcss-light,var(--dark-mode-system-warning))var(--lightningcss-dark,var(--light-mode-system-warning))
+    --inverse-system-warning: var(--lightningcss-light,var(--dark-mode-system-warning))var(--lightningcss-dark,var(--light-mode-system-warning));
 }
 
 .theme-hyper-plum {
@@ -1820,7 +1820,7 @@
     --color-system-success: var(--lightningcss-light,var(--light-mode-system-success))var(--lightningcss-dark,var(--dark-mode-system-success));
     --inverse-system-success: var(--lightningcss-light,var(--dark-mode-system-success))var(--lightningcss-dark,var(--light-mode-system-success));
     --color-system-warning: var(--lightningcss-light,var(--light-mode-system-warning))var(--lightningcss-dark,var(--dark-mode-system-warning));
-    --inverse-system-warning: var(--lightningcss-light,var(--dark-mode-system-warning))var(--lightningcss-dark,var(--light-mode-system-warning))
+    --inverse-system-warning: var(--lightningcss-light,var(--dark-mode-system-warning))var(--lightningcss-dark,var(--light-mode-system-warning));
 }
 
 .theme-inferno-blast {
@@ -2169,7 +2169,7 @@
     --color-system-success: var(--lightningcss-light,var(--light-mode-system-success))var(--lightningcss-dark,var(--dark-mode-system-success));
     --inverse-system-success: var(--lightningcss-light,var(--dark-mode-system-success))var(--lightningcss-dark,var(--light-mode-system-success));
     --color-system-warning: var(--lightningcss-light,var(--light-mode-system-warning))var(--lightningcss-dark,var(--dark-mode-system-warning));
-    --inverse-system-warning: var(--lightningcss-light,var(--dark-mode-system-warning))var(--lightningcss-dark,var(--light-mode-system-warning))
+    --inverse-system-warning: var(--lightningcss-light,var(--dark-mode-system-warning))var(--lightningcss-dark,var(--light-mode-system-warning));
 }
 
 .theme-kinetic-energy {
@@ -2518,7 +2518,7 @@
     --color-system-success: var(--lightningcss-light,var(--light-mode-system-success))var(--lightningcss-dark,var(--dark-mode-system-success));
     --inverse-system-success: var(--lightningcss-light,var(--dark-mode-system-success))var(--lightningcss-dark,var(--light-mode-system-success));
     --color-system-warning: var(--lightningcss-light,var(--light-mode-system-warning))var(--lightningcss-dark,var(--dark-mode-system-warning));
-    --inverse-system-warning: var(--lightningcss-light,var(--dark-mode-system-warning))var(--lightningcss-dark,var(--light-mode-system-warning))
+    --inverse-system-warning: var(--lightningcss-light,var(--dark-mode-system-warning))var(--lightningcss-dark,var(--light-mode-system-warning));
 }
 
 .theme-lava-glow {
@@ -2867,7 +2867,7 @@
     --color-system-success: var(--lightningcss-light,var(--light-mode-system-success))var(--lightningcss-dark,var(--dark-mode-system-success));
     --inverse-system-success: var(--lightningcss-light,var(--dark-mode-system-success))var(--lightningcss-dark,var(--light-mode-system-success));
     --color-system-warning: var(--lightningcss-light,var(--light-mode-system-warning))var(--lightningcss-dark,var(--dark-mode-system-warning));
-    --inverse-system-warning: var(--lightningcss-light,var(--dark-mode-system-warning))var(--lightningcss-dark,var(--light-mode-system-warning))
+    --inverse-system-warning: var(--lightningcss-light,var(--dark-mode-system-warning))var(--lightningcss-dark,var(--light-mode-system-warning));
 }
 
 .theme-nebula-drift {
@@ -3216,7 +3216,7 @@
     --color-system-success: var(--lightningcss-light,var(--light-mode-system-success))var(--lightningcss-dark,var(--dark-mode-system-success));
     --inverse-system-success: var(--lightningcss-light,var(--dark-mode-system-success))var(--lightningcss-dark,var(--light-mode-system-success));
     --color-system-warning: var(--lightningcss-light,var(--light-mode-system-warning))var(--lightningcss-dark,var(--dark-mode-system-warning));
-    --inverse-system-warning: var(--lightningcss-light,var(--dark-mode-system-warning))var(--lightningcss-dark,var(--light-mode-system-warning))
+    --inverse-system-warning: var(--lightningcss-light,var(--dark-mode-system-warning))var(--lightningcss-dark,var(--light-mode-system-warning));
 }
 
 .theme-nitro-frost {
@@ -3565,7 +3565,7 @@
     --color-system-success: var(--lightningcss-light,var(--light-mode-system-success))var(--lightningcss-dark,var(--dark-mode-system-success));
     --inverse-system-success: var(--lightningcss-light,var(--dark-mode-system-success))var(--lightningcss-dark,var(--light-mode-system-success));
     --color-system-warning: var(--lightningcss-light,var(--light-mode-system-warning))var(--lightningcss-dark,var(--dark-mode-system-warning));
-    --inverse-system-warning: var(--lightningcss-light,var(--dark-mode-system-warning))var(--lightningcss-dark,var(--light-mode-system-warning))
+    --inverse-system-warning: var(--lightningcss-light,var(--dark-mode-system-warning))var(--lightningcss-dark,var(--light-mode-system-warning));
 }
 
 .theme-pixel-pop {
@@ -3914,7 +3914,7 @@
     --color-system-success: var(--lightningcss-light,var(--light-mode-system-success))var(--lightningcss-dark,var(--dark-mode-system-success));
     --inverse-system-success: var(--lightningcss-light,var(--dark-mode-system-success))var(--lightningcss-dark,var(--light-mode-system-success));
     --color-system-warning: var(--lightningcss-light,var(--light-mode-system-warning))var(--lightningcss-dark,var(--dark-mode-system-warning));
-    --inverse-system-warning: var(--lightningcss-light,var(--dark-mode-system-warning))var(--lightningcss-dark,var(--light-mode-system-warning))
+    --inverse-system-warning: var(--lightningcss-light,var(--dark-mode-system-warning))var(--lightningcss-dark,var(--light-mode-system-warning));
 }
 
 .theme-polar-freeze {
@@ -4263,7 +4263,7 @@
     --color-system-success: var(--lightningcss-light,var(--light-mode-system-success))var(--lightningcss-dark,var(--dark-mode-system-success));
     --inverse-system-success: var(--lightningcss-light,var(--dark-mode-system-success))var(--lightningcss-dark,var(--light-mode-system-success));
     --color-system-warning: var(--lightningcss-light,var(--light-mode-system-warning))var(--lightningcss-dark,var(--dark-mode-system-warning));
-    --inverse-system-warning: var(--lightningcss-light,var(--dark-mode-system-warning))var(--lightningcss-dark,var(--light-mode-system-warning))
+    --inverse-system-warning: var(--lightningcss-light,var(--dark-mode-system-warning))var(--lightningcss-dark,var(--light-mode-system-warning));
 }
 
 .theme-quantum-pulse {
@@ -4612,7 +4612,7 @@
     --color-system-success: var(--lightningcss-light,var(--light-mode-system-success))var(--lightningcss-dark,var(--dark-mode-system-success));
     --inverse-system-success: var(--lightningcss-light,var(--dark-mode-system-success))var(--lightningcss-dark,var(--light-mode-system-success));
     --color-system-warning: var(--lightningcss-light,var(--light-mode-system-warning))var(--lightningcss-dark,var(--dark-mode-system-warning));
-    --inverse-system-warning: var(--lightningcss-light,var(--dark-mode-system-warning))var(--lightningcss-dark,var(--light-mode-system-warning))
+    --inverse-system-warning: var(--lightningcss-light,var(--dark-mode-system-warning))var(--lightningcss-dark,var(--light-mode-system-warning));
 }
 
 .theme-star-burst {
@@ -4961,7 +4961,7 @@
     --color-system-success: var(--lightningcss-light,var(--light-mode-system-success))var(--lightningcss-dark,var(--dark-mode-system-success));
     --inverse-system-success: var(--lightningcss-light,var(--dark-mode-system-success))var(--lightningcss-dark,var(--light-mode-system-success));
     --color-system-warning: var(--lightningcss-light,var(--light-mode-system-warning))var(--lightningcss-dark,var(--dark-mode-system-warning));
-    --inverse-system-warning: var(--lightningcss-light,var(--dark-mode-system-warning))var(--lightningcss-dark,var(--light-mode-system-warning))
+    --inverse-system-warning: var(--lightningcss-light,var(--dark-mode-system-warning))var(--lightningcss-dark,var(--light-mode-system-warning));
 }
 
 .theme-super-charge {
@@ -5310,7 +5310,7 @@
     --color-system-success: var(--lightningcss-light,var(--light-mode-system-success))var(--lightningcss-dark,var(--dark-mode-system-success));
     --inverse-system-success: var(--lightningcss-light,var(--dark-mode-system-success))var(--lightningcss-dark,var(--light-mode-system-success));
     --color-system-warning: var(--lightningcss-light,var(--light-mode-system-warning))var(--lightningcss-dark,var(--dark-mode-system-warning));
-    --inverse-system-warning: var(--lightningcss-light,var(--dark-mode-system-warning))var(--lightningcss-dark,var(--light-mode-system-warning))
+    --inverse-system-warning: var(--lightningcss-light,var(--dark-mode-system-warning))var(--lightningcss-dark,var(--light-mode-system-warning));
 }
 
 .theme-classic.classic-theme-variant-1 {
@@ -5329,5 +5329,5 @@
     --inverse-action-emphasis-background: var(--lightningcss-light,var(--dark-mode-action-emphasis-background))var(--lightningcss-dark,var(--light-mode-action-emphasis-background));
     --inverse-action-emphasis-foreground: var(--lightningcss-light,var(--dark-mode-action-emphasis-foreground))var(--lightningcss-dark,var(--light-mode-action-emphasis-foreground));
     --inverse-action-soft-emphasis-background: var(--lightningcss-light,var(--dark-mode-action-soft-emphasis-background))var(--lightningcss-dark,var(--light-mode-action-soft-emphasis-background));
-    --inverse-action-soft-emphasis-foreground: var(--lightningcss-light,var(--dark-mode-action-soft-emphasis-foreground))var(--lightningcss-dark,var(--light-mode-action-soft-emphasis-foreground))
+    --inverse-action-soft-emphasis-foreground: var(--lightningcss-light,var(--dark-mode-action-soft-emphasis-foreground))var(--lightningcss-dark,var(--light-mode-action-soft-emphasis-foreground));
 }

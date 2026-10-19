@@ -164,8 +164,7 @@ function isOurFoundationSettingsItem(el) {
     if (!el.classList.contains(RP_FOUNDATION_OWN_CLASS)) return false
     const href = String(el.getAttribute('href') || '')
     if (!href.includes('roprime=')) return false
-    const title =
-        el.querySelector('.foundation-web-menu-item-title')?.textContent?.trim() ||
+    const title = el.querySelector('.foundation-web-menu-item-title')?.textContent?.trim() ||
         ''
     return title === ROPRIME_DROPDOWN_SETTINGS_LABEL
 }
@@ -247,8 +246,7 @@ function createFoundationSettingsItem() {
     textWrap.className = 'grow-1 text-truncate-split flex flex-col gap-y-xsmall'
 
     const title = document.createElement('span')
-    title.className =
-        'foundation-web-menu-item-title text-no-wrap text-truncate-split content-emphasis'
+    title.className = 'foundation-web-menu-item-title text-no-wrap text-truncate-split content-emphasis'
     title.textContent = ROPRIME_DROPDOWN_SETTINGS_LABEL
 
     textWrap.appendChild(title)
@@ -414,13 +412,10 @@ function onDelegatedRoPrimeDropdownClick(ev) {
 
     const classic = ev.target.closest(`li.${RP_DROPDOWN_ITEM_CLASS} > a.rbx-menu-item`)
     const foundation = ev.target.closest(`a.${RP_FOUNDATION_OWN_CLASS}`)
-    const a =
-        classic instanceof HTMLAnchorElement
-            ? classic
-            : foundation instanceof HTMLAnchorElement &&
-                isOurFoundationSettingsItem(foundation)
-            ? foundation
-            : null
+    const a = classic instanceof HTMLAnchorElement ? classic : foundation instanceof HTMLAnchorElement &&
+            isOurFoundationSettingsItem(foundation)
+        ? foundation
+        : null
     if (!a) return
 
     if (classic) {
