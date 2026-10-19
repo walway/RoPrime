@@ -1,5 +1,6 @@
 1.6
 
+- New Streamer Mode feature (Beta)
 - Added support for the new Ad in the icon only sidebar
 - Fixed robux icon alignment under the Currently Wearing cards
 - Updated Currently Wearing cards to the new design
@@ -8,6 +9,7 @@
 - New Old Topbar feature
 - New Connection Path feature
 - New Horizontal Tabs Redesign feature
+- Features tags support like Beta
 - You can now copy direct link to the feature (Hover the title)
 - Mobile Support for Legacy Badges
 
