@@ -17,6 +17,7 @@ const REQUEST_GAP_MS = 350
 const RATE_LIMIT_BACKOFF_MS = 2500
 const BUTTON_LABEL = 'Connection Path'
 const COUNTED_LABEL_TEMPLATE = '{$Amount} Connections'
+const USERS_API = 'https://users.roblox.com/v1/users'
 
 // Make mirrors safe from cookies
 const FRIEND_ENDPOINTS = [
@@ -88,11 +89,61 @@ function ensureStyles() {
   height: min(560px, 62vh);
   border-radius: 12px;
   overflow: hidden;
+  position: relative;
   background: color-mix(in srgb, var(--color-surface-100) 88%, black);
 }
-.roprime-connection-path-graph canvas {
+.roprime-connection-path-graph-canvas {
+  width: 100%;
+  height: 100%;
+}
+.roprime-connection-path-graph-canvas canvas {
   width: 100% !important;
   height: 100% !important;
+}
+.roprime-connection-path-graph-loading {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  background: transparent;
+}
+.roprime-connection-path-graph-loading[hidden] {
+  display: none !important;
+}
+.roprime-connection-path-graph .force-graph-container .graph-tooltip {
+  position: relative;
+  pointer-events: auto;
+  z-index: 5;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: var(--color-surface-300);
+  color: var(--color-content-emphasis, inherit);
+  box-shadow: var(--shadow-transient-high, 0 8px 24px rgba(0, 0, 0, 0.35));
+  border: var(--stroke-standard, 1px) solid var(--color-stroke-muted, transparent);
+  max-width: min(280px, 70vw);
+}
+.roprime-connection-path-graph .force-graph-container .graph-tooltip::before {
+  content: '';
+  position: absolute;
+  top: -7px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 7px solid transparent;
+  border-right: 7px solid transparent;
+  border-bottom: 7px solid var(--color-surface-300);
+  pointer-events: none;
+}
+.roprime-cp-tooltip a {
+  text-decoration: none;
+  color: inherit;
+}
+.roprime-cp-tooltip .stylistic-alts-username {
+  text-decoration: none;
 }
 a[${BUTTON_ATTR}] .roprime-connection-path-btn-label {
   pointer-events: none;
@@ -154,6 +205,102 @@ function formatCount(n) {
         return Number(n).toLocaleString('en-US')
     } catch {
         return String(n)
+    }
+}
+
+function escapeHtml(value) {
+    return String(value ?? '')
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#39;')
+}
+
+function profileHref(userId) {
+    const id = Number(userId)
+    if (!Number.isFinite(id) || id <= 0) return '#'
+    return `/users/${id}/profile`
+}
+
+function parseCssColor(value) {
+    const raw = String(value || '').trim()
+    if (!raw) return null
+    const hex = raw.match(/^#([0-9a-f]{3}|[0-9a-f]{6}|[0-9a-f]{8})$/i)
+    if (hex) {
+        let h = hex[1]
+        if (h.length === 3) {
+            h = h.split('').map((c) => c + c).join('')
+        }
+        const n = Number.parseInt(h.slice(0, 6), 16)
+        return {
+            r: (n >> 16) & 255,
+            g: (n >> 8) & 255,
+            b: n & 255,
+            a: h.length === 8 ? Number.parseInt(h.slice(6, 8), 16) / 255 : 1,
+        }
+    }
+    const rgb = raw.match(
+        /^rgba?\(\s*([\d.]+)\s*[,\s]\s*([\d.]+)\s*[,\s]\s*([\d.]+)(?:\s*[,\s/]\s*([\d.]+%?))?\s*\)$/i,
+    )
+    if (!rgb) return null
+    const aRaw = rgb[4]
+    let a = 1
+    if (aRaw != null) {
+        a = aRaw.endsWith('%') ? Number.parseFloat(aRaw) / 100 : Number.parseFloat(aRaw)
+    }
+    return {
+        r: Number(rgb[1]),
+        g: Number(rgb[2]),
+        b: Number(rgb[3]),
+        a: Number.isFinite(a) ? a : 1,
+    }
+}
+
+function cssColorToRgba(value, alpha = null) {
+    const parsed = parseCssColor(value)
+    if (!parsed) return value || 'rgba(255,255,255,0.5)'
+    const a = alpha == null ? parsed.a : alpha
+    return `rgba(${Math.round(parsed.r)}, ${Math.round(parsed.g)}, ${Math.round(parsed.b)}, ${a})`
+}
+
+let colorProbeEl = null
+
+function ensureColorProbe() {
+    if (colorProbeEl?.isConnected) return colorProbeEl
+    const probe = document.createElement('span')
+    probe.setAttribute('aria-hidden', 'true')
+    probe.style.cssText = 'position:absolute;width:0;height:0;overflow:hidden;pointer-events:none;opacity:0;'
+    ;(document.documentElement || document.body)?.appendChild(probe)
+    colorProbeEl = probe
+    return probe
+}
+
+function resolveCssVarColor(varName, fallback) {
+    try {
+        const probe = ensureColorProbe()
+        probe.style.color = `var(${varName}, ${fallback})`
+        return globalThis.getComputedStyle(probe).color || fallback
+    } catch {
+        return fallback
+    }
+}
+
+function readGraphThemeColors() {
+    const surface100 = resolveCssVarColor('--color-surface-100', '#1f1f1f')
+    const surface300 = resolveCssVarColor('--color-surface-300', '#2f2f2f')
+    const system = resolveCssVarColor('--color-system-emphasis', '#00a2ff')
+    const strokeEmphasis = resolveCssVarColor('--color-stroke-emphasis', '#ffffff')
+    const strokeMuted = resolveCssVarColor('--color-stroke-muted', '#ffffff')
+    return {
+        pathFill: cssColorToRgba(surface100, 1),
+        friendFill: cssColorToRgba(surface300, 1),
+        pathLink: cssColorToRgba(system, 0.95),
+        endpointStroke: cssColorToRgba(system, 1),
+        pathStroke: cssColorToRgba(strokeEmphasis, 0.8),
+        friendStroke: cssColorToRgba(strokeMuted, 0.35),
+        orbitLink: cssColorToRgba(strokeMuted, 0.18),
+        webLink: cssColorToRgba(strokeMuted, 0.22),
     }
 }
 
@@ -327,9 +474,9 @@ async function findConnectionPath(fromId, toId, { onProgress } = {}) {
                     'Rate limited. Still going.',
                 )
                 : t(
-                    'settings.profile.connectionPath.status.counted',
-                    '{$Amount} Connections counted.',
-                ).replace('{$Amount}', formatCount(counted)),
+                    'settings.profile.connectionPath.status.counting',
+                    'Counting...',
+                ),
         })
         return next
     }
@@ -361,9 +508,9 @@ async function findConnectionPath(fromId, toId, { onProgress } = {}) {
     if (!meeting) {
         report({
             phase: t(
-                'settings.profile.connectionPath.status.counted',
-                '{$Amount} Connections counted.',
-            ).replace('{$Amount}', formatCount(counted)),
+                'settings.profile.connectionPath.status.noPath',
+                'No path found.',
+            ),
             done: true,
             found: false,
         })
@@ -395,13 +542,13 @@ async function findConnectionPath(fromId, toId, { onProgress } = {}) {
     report({
         phase: t(
             'settings.profile.connectionPath.status.counted',
-            '{$Amount} Connections counted.',
-        ).replace('{$Amount}', formatCount(counted)),
+            '{$Amount} Connections.',
+        ).replace('{$Amount}', formatCount(path.length)),
         done: true,
         found: true,
         path,
     })
-    return { path, counted }
+    return { path, counted, hops: path.length }
 }
 
 async function fetchHeadshots(userIds) {
@@ -437,6 +584,115 @@ async function fetchHeadshots(userIds) {
         }),
     )
     return map
+}
+
+async function fetchUserProfiles(userIds) {
+    const ids = [...new Set(userIds.map(Number).filter((id) => id > 0))]
+    const map = new Map()
+    if (!ids.length) return map
+
+    for (let i = 0; i < ids.length; i += 100) {
+        const chunk = ids.slice(i, i + 100)
+        try {
+            const response = await fetch(USERS_API, {
+                method: 'POST',
+                credentials: 'omit',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Accept: 'application/json',
+                },
+                body: JSON.stringify({
+                    userIds: chunk,
+                    excludeBannedUsers: false,
+                }),
+                cache: 'no-store',
+            })
+            if (!response.ok) continue
+            const data = await response.json()
+            for (const entry of data?.data || []) {
+                const id = Number(entry?.id)
+                if (!id) continue
+                map.set(id, {
+                    userId: id,
+                    username: String(entry?.name || '').trim(),
+                    displayName: String(
+                        entry?.displayName || entry?.name || '',
+                    ).trim(),
+                })
+            }
+        } catch {
+            /* ignore chunk */
+        }
+    }
+    return map
+}
+
+async function fetchUserProfile(userId) {
+    const id = Number(userId)
+    if (!Number.isFinite(id) || id <= 0) return null
+    try {
+        const response = await fetch(`${USERS_API}/${id}`, {
+            credentials: 'omit',
+            cache: 'force-cache',
+        })
+        if (!response.ok) return null
+        const entry = await response.json()
+        return {
+            userId: id,
+            username: String(entry?.name || '').trim(),
+            displayName: String(entry?.displayName || entry?.name || '').trim(),
+        }
+    } catch {
+        return null
+    }
+}
+
+function applyProfilesToNodes(nodes, profiles) {
+    for (const node of nodes) {
+        const userId = Number(node.userId ?? node.id)
+        const profile = profiles.get(userId)
+        if (!profile) continue
+        node.displayName = profile.displayName
+        node.username = profile.username
+        node.__tooltipEl = null
+    }
+}
+
+function nodeRadius(node, globalScale) {
+    const isPath = node?.kind === 'path'
+    return Math.max(
+        isPath ? 24 : 10,
+        (isPath ? 36 : 15) / Math.max(globalScale, 0.55),
+    )
+}
+
+function buildNodeTooltipElement(node) {
+    if (node?.__tooltipEl instanceof HTMLElement) return node.__tooltipEl
+
+    const userId = Number(node?.userId ?? node?.id)
+    const href = profileHref(userId)
+    const displayName = String(node?.displayName || '').trim()
+    const username = String(node?.username || '').trim()
+    const title = displayName || `ID: ${userId}`
+
+    const root = document.createElement('div')
+    root.className = 'flex flex-col min-width-0 roprime-cp-tooltip'
+    root.innerHTML = `
+<a href="${href}" class="items-center gap-xsmall flex min-width-0" style="text-decoration:none;color:inherit">
+  <span class="text-heading-large min-width-0 text-truncate-end text-no-wrap content-emphasis">${
+        escapeHtml(title)
+    }</span>
+</a>
+${
+        username
+            ? `<div><a href="${href}" class="stylistic-alts-username" style="text-decoration:none">@${
+                escapeHtml(username)
+            }</a></div>`
+            : ''
+    }
+`.trim()
+    if (node) node.__tooltipEl = root
+    return root
 }
 
 function attachHeadshotImages(nodes, headshots, onPaint) {
@@ -482,12 +738,13 @@ async function buildPathNeighborhood(path) {
     const pathSet = new Set(pathIds)
     const friendsByHub = new Map()
 
+    const MAX_SATELLITES = 48
     await Promise.all(
         pathIds.map(async (hubId) => {
             const friends = await fetchFriends(hubId)
             friendsByHub.set(
                 hubId,
-                friends.filter((fid) => !pathSet.has(fid)),
+                friends.filter((fid) => !pathSet.has(fid)).slice(0, MAX_SATELLITES),
             )
         }),
     )
@@ -574,106 +831,228 @@ async function buildPathNeighborhood(path) {
     return { nodes, links, pathIds }
 }
 
+function setGraphLoading(container, loading) {
+    const loader = container?.querySelector?.('[data-roprime-cp-graph-loading]')
+    if (!(loader instanceof HTMLElement)) return
+    if (loading) {
+        loader.hidden = false
+        loader.removeAttribute('hidden')
+    } else {
+        loader.hidden = true
+        loader.setAttribute('hidden', '')
+    }
+}
+
+function getGraphMount(container) {
+    if (!(container instanceof HTMLElement)) return null
+    let mount = container.querySelector('[data-roprime-cp-graph-canvas]')
+    if (!(mount instanceof HTMLElement)) {
+        mount = document.createElement('div')
+        mount.className = 'roprime-connection-path-graph-canvas'
+        mount.setAttribute('data-roprime-cp-graph-canvas', '')
+        container.appendChild(mount)
+    }
+    return mount
+}
+
 async function renderGraph(container, path) {
     if (!(container instanceof HTMLElement) || !path?.length) return
-    container.textContent = ''
-    const ForceGraph = await loadForceGraph()
-    const { nodes, links, pathIds } = await buildPathNeighborhood(path)
-    const headshots = await fetchHeadshots(nodes.map((node) => node.userId ?? node.id))
+    setGraphLoading(container, true)
+    const mount = getGraphMount(container)
+    if (!(mount instanceof HTMLElement)) return
+    mount.textContent = ''
 
-    const width = Math.max(container.clientWidth || 800, 320)
-    const height = Math.max(container.clientHeight || 480, 280)
+    try {
+        const ForceGraph = await loadForceGraph()
+        const { nodes, links, pathIds } = await buildPathNeighborhood(path)
 
-    const graph = ForceGraph()(container)
-        .graphData({ nodes, links })
-        .nodeId('id')
-        .nodeLabel((node) => `User ${node.userId ?? node.id}`)
-        .linkColor((link) => {
-            if (link.kind === 'path') return 'rgba(0,162,255,0.95)'
-            if (link.kind === 'web') return 'rgba(255,255,255,0.14)'
-            return 'rgba(255,255,255,0.1)'
-        })
-        .linkWidth((link) => {
-            if (link.kind === 'path') return 7
-            if (link.kind === 'web') return 0.8
-            return 0.55
-        })
-        .linkCurvature(0)
-        .backgroundColor('rgba(0,0,0,0)')
-        .width(width)
-        .height(height)
-        .cooldownTicks(0)
-        .enableNodeDrag(false)
-        .nodeCanvasObject((node, ctx, globalScale) => {
-            const isPath = node.kind === 'path'
-            const size = Math.max(
-                isPath ? 24 : 10,
-                (isPath ? 36 : 15) / Math.max(globalScale, 0.55),
-            )
-            ctx.save()
-            ctx.beginPath()
-            ctx.arc(node.x, node.y, size, 0, Math.PI * 2)
-            ctx.closePath()
-            ctx.fillStyle = isPath ? '#1f1f1f' : '#2f2f2f'
-            ctx.fill()
-            ctx.clip()
-            if (node.__img) {
-                ctx.drawImage(
-                    node.__img,
-                    node.x - size,
-                    node.y - size,
-                    size * 2,
-                    size * 2,
+        for (const node of nodes) {
+            node.href = profileHref(node.userId ?? node.id)
+        }
+
+        const width = Math.max(container.clientWidth || 800, 320)
+        const height = Math.max(container.clientHeight || 480, 280)
+        let theme = readGraphThemeColors()
+        let disposed = false
+        const profileInflight = new Set()
+
+        const graph = ForceGraph()(mount)
+            .graphData({ nodes, links })
+            .nodeId('id')
+            .nodeLabel((node) => buildNodeTooltipElement(node))
+            .linkColor((link) => {
+                if (link.kind === 'path') return theme.pathLink
+                if (link.kind === 'web') return theme.webLink
+                return theme.orbitLink
+            })
+            .linkWidth((link) => {
+                if (link.kind === 'path') return 7
+                if (link.kind === 'web') return 0.8
+                return 0.55
+            })
+            .linkCurvature(0)
+            .backgroundColor('rgba(0,0,0,0)')
+            .width(width)
+            .height(height)
+            .cooldownTicks(0)
+            .enableNodeDrag(false)
+            .nodeCanvasObject((node, ctx, globalScale) => {
+                const isPath = node.kind === 'path'
+                const size = nodeRadius(node, globalScale)
+                node.__r = size
+                ctx.save()
+                ctx.beginPath()
+                ctx.arc(node.x, node.y, size, 0, Math.PI * 2)
+                ctx.closePath()
+                ctx.fillStyle = isPath ? theme.pathFill : theme.friendFill
+                ctx.fill()
+                ctx.clip()
+                if (node.__img) {
+                    ctx.drawImage(
+                        node.__img,
+                        node.x - size,
+                        node.y - size,
+                        size * 2,
+                        size * 2,
+                    )
+                }
+                ctx.restore()
+                ctx.beginPath()
+                ctx.arc(node.x, node.y, size, 0, Math.PI * 2)
+                const isEndpoint = isPath &&
+                    (node.index === 0 || node.index === pathIds.length - 1)
+                ctx.strokeStyle = isEndpoint ? theme.endpointStroke : isPath ? theme.pathStroke : theme.friendStroke
+                ctx.lineWidth = Math.max(
+                    isPath ? 2.2 : 1,
+                    (isPath ? 2.6 : 1.1) / Math.max(globalScale, 0.55),
                 )
-            }
-            ctx.restore()
-            ctx.beginPath()
-            ctx.arc(node.x, node.y, size, 0, Math.PI * 2)
-            const isEndpoint = isPath &&
-                (node.index === 0 || node.index === pathIds.length - 1)
-            ctx.strokeStyle = isEndpoint ? '#00a2ff' : isPath ? 'rgba(255,255,255,0.8)' : 'rgba(255,255,255,0.22)'
-            ctx.lineWidth = Math.max(
-                isPath ? 2.2 : 1,
-                (isPath ? 2.6 : 1.1) / Math.max(globalScale, 0.55),
-            )
-            ctx.stroke()
+                ctx.stroke()
+            })
+            .nodePointerAreaPaint((node, color, ctx, globalScale) => {
+                const size = node.__r ?? nodeRadius(node, globalScale)
+                ctx.beginPath()
+                ctx.arc(node.x, node.y, size + 2, 0, Math.PI * 2)
+                ctx.fillStyle = color
+                ctx.fill()
+            })
+            .onNodeHover((node) => {
+                if (!node || disposed) return
+                const userId = Number(node.userId ?? node.id)
+                if (!userId || node.displayName || profileInflight.has(userId)) {
+                    return
+                }
+                profileInflight.add(userId)
+                void fetchUserProfile(userId).then((profile) => {
+                    profileInflight.delete(userId)
+                    if (!profile || disposed) return
+                    node.displayName = profile.displayName
+                    node.username = profile.username
+                    node.__tooltipEl = null
+                })
+            })
+            .onNodeClick((node, event) => {
+                const href = node?.href || profileHref(node?.userId ?? node?.id)
+                if (!href || href === '#') return
+                if (event?.ctrlKey || event?.metaKey || event?.button === 1) {
+                    globalThis.open(href, '_blank', 'noopener,noreferrer')
+                    return
+                }
+                globalThis.location.assign(href)
+            })
+
+        const chargeForce = graph.d3Force('charge')
+        if (chargeForce && typeof chargeForce.strength === 'function') {
+            chargeForce.strength(0)
+        }
+        const linkForce = graph.d3Force('link')
+        if (linkForce && typeof linkForce.strength === 'function') {
+            linkForce.strength(0)
+        }
+        const centerForce = graph.d3Force('center')
+        if (centerForce) {
+            graph.d3Force('center', null)
+        }
+
+        let paintQueued = false
+        const paint = () => {
+            if (disposed || paintQueued) return
+            paintQueued = true
+            requestAnimationFrame(() => {
+                paintQueued = false
+                if (disposed) return
+                try {
+                    graph.refresh()
+                } catch {
+                    /* ignore */
+                }
+            })
+        }
+
+        let themeTimer = 0
+        const themeObserver = new MutationObserver(() => {
+            if (disposed) return
+            globalThis.clearTimeout(themeTimer)
+            themeTimer = globalThis.setTimeout(() => {
+                if (disposed) return
+                theme = readGraphThemeColors()
+                paint()
+            }, 250)
         })
-
-    const chargeForce = graph.d3Force('charge')
-    if (chargeForce && typeof chargeForce.strength === 'function') {
-        chargeForce.strength(0)
-    }
-    const linkForce = graph.d3Force('link')
-    if (linkForce && typeof linkForce.strength === 'function') {
-        linkForce.strength(0)
-    }
-    const centerForce = graph.d3Force('center')
-    if (centerForce) {
-        graph.d3Force('center', null)
-    }
-
-    let paintQueued = false
-    const paint = () => {
-        if (paintQueued) return
-        paintQueued = true
-        requestAnimationFrame(() => {
-            paintQueued = false
-            try {
-                graph.refresh()
-            } catch {
-                /* ignore */
-            }
-        })
-    }
-    attachHeadshotImages(nodes, headshots, paint)
-
-    globalThis.setTimeout(() => {
         try {
-            graph.zoomToFit(400, 64)
+            themeObserver.observe(document.documentElement, {
+                attributes: true,
+                attributeFilter: ['class', 'data-theme', 'data-color-mode'],
+            })
         } catch {
             /* ignore */
         }
-    }, 80)
+
+        const cleanup = () => {
+            disposed = true
+            globalThis.clearTimeout(themeTimer)
+            try {
+                themeObserver.disconnect()
+            } catch {
+                /* ignore */
+            }
+            try {
+                graph._destructor?.()
+            } catch {
+                /* ignore */
+            }
+        }
+        container.addEventListener('roprime-cp-dispose', cleanup, { once: true })
+
+        globalThis.setTimeout(() => {
+            if (disposed) return
+            try {
+                graph.zoomToFit(400, 64)
+            } catch {
+                /* ignore */
+            }
+        }, 80)
+
+        setGraphLoading(container, false)
+
+        void (async () => {
+            try {
+                const pathProfiles = await fetchUserProfiles(pathIds)
+                if (disposed) return
+                applyProfilesToNodes(nodes, pathProfiles)
+
+                const headshots = await fetchHeadshots(
+                    nodes.map((node) => node.userId ?? node.id),
+                )
+                if (disposed) return
+                attachHeadshotImages(nodes, headshots, paint)
+            } catch (error) {
+                console.warn('RoPrime connection path enrich failed', error)
+            }
+        })()
+    } catch (error) {
+        setGraphLoading(container, false)
+        throw error
+    }
 }
 
 async function openConnectionPathOverlay(fromId, toId) {
@@ -690,7 +1069,12 @@ async function openConnectionPathOverlay(fromId, toId) {
             'Counting...',
         )
     }</p>
-  <div class="roprime-connection-path-graph" data-roprime-cp-graph hidden></div>
+  <div class="roprime-connection-path-graph" data-roprime-cp-graph hidden>
+    <div class="roprime-connection-path-graph-loading" data-roprime-cp-graph-loading>
+      <span class="spinner spinner-default spinner-block"></span>
+    </div>
+    <div class="roprime-connection-path-graph-canvas" data-roprime-cp-graph-canvas></div>
+  </div>
 </div>
 `.trim()
 
@@ -721,22 +1105,25 @@ async function openConnectionPathOverlay(fromId, toId) {
                 spinnerWrap.setAttribute('hidden', '')
             }
 
-            if (result.counted != null) {
-                updateButtonLabel(result.counted)
+            const pathLength = Array.isArray(result.path) ? result.path.length : 0
+            if (pathLength > 0) {
+                updateButtonLabel(pathLength)
             }
 
-            if (result.path?.length && graphEl instanceof HTMLElement) {
+            if (pathLength > 0 && graphEl instanceof HTMLElement) {
                 graphEl.hidden = false
+                setGraphLoading(graphEl, true)
                 if (statusEl instanceof HTMLElement) {
                     statusEl.textContent = t(
                         'settings.profile.connectionPath.status.counted',
-                        '{$Amount} Connections counted.',
-                    ).replace('{$Amount}', formatCount(result.counted))
+                        '{$Amount} Connections.',
+                    ).replace('{$Amount}', formatCount(pathLength))
                 }
                 try {
                     await renderGraph(graphEl, result.path)
                 } catch (error) {
                     console.warn('RoPrime connection path graph failed', error)
+                    setGraphLoading(graphEl, false)
                     if (statusEl instanceof HTMLElement) {
                         statusEl.textContent = t(
                             'settings.profile.connectionPath.status.graphFailed',
@@ -745,15 +1132,10 @@ async function openConnectionPathOverlay(fromId, toId) {
                     }
                 }
             } else if (statusEl instanceof HTMLElement) {
-                statusEl.textContent = result.counted
-                    ? t(
-                        'settings.profile.connectionPath.status.noPath',
-                        '{$Amount} Connections counted. No path found.',
-                    ).replace('{$Amount}', formatCount(result.counted))
-                    : t(
-                        'settings.profile.connectionPath.status.notFound',
-                        'No path found.',
-                    )
+                statusEl.textContent = t(
+                    'settings.profile.connectionPath.status.noPath',
+                    'No path found.',
+                )
             }
         },
     })
@@ -769,11 +1151,9 @@ function buildButtonLabel(amount) {
     ).replace('{$Amount}', formatCount(amount))
 }
 
-async function getCachedPathCount(fromId, toId) {
+async function getCachedPathLength(fromId, toId) {
     const cached = await idbGet(PATH_STORE, pathKey(fromId, toId))
     if (!cached) return null
-    const counted = Number(cached.counted)
-    if (Number.isFinite(counted) && counted > 0) return counted
     if (Array.isArray(cached.path) && cached.path.length) {
         return cached.path.length
     }
@@ -818,7 +1198,8 @@ function ensureButton() {
             const selfId = await getRobloxUserId()
             if (!profileId || !selfId || profileId === selfId) return
             const next = await openConnectionPathOverlay(selfId, profileId)
-            if (next?.counted != null) updateButtonLabel(next.counted)
+            const hops = Array.isArray(next?.path) ? next.path.length : 0
+            if (hops > 0) updateButtonLabel(hops)
         })()
     })
 
@@ -848,7 +1229,7 @@ async function maybeAutoCount() {
     const selfId = await getRobloxUserId()
     if (!profileId || !selfId || profileId === selfId) return
 
-    const cached = await getCachedPathCount(selfId, profileId)
+    const cached = await getCachedPathLength(selfId, profileId)
     if (cached != null) {
         updateButtonLabel(cached)
         return
@@ -866,7 +1247,8 @@ async function maybeAutoCount() {
 
     try {
         const result = await findConnectionPath(selfId, profileId)
-        updateButtonLabel(result.counted)
+        const hops = Array.isArray(result.path) ? result.path.length : 0
+        updateButtonLabel(hops > 0 ? hops : null)
     } catch {
         updateButtonLabel(null)
     }
