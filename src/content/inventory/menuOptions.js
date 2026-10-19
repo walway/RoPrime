@@ -32,8 +32,19 @@ export function isFavoritesPage() {
     )
 }
 
+export function isCommunitiesConfigurePage() {
+    const path = globalThis.location.pathname || ''
+    return /^\/(?:[a-z]{2,3}(?:-[a-z0-9]{2,8})?\/)?communities\/configure\/?$/i.test(
+        path,
+    )
+}
+
 export function isInventoryOrFavoritesPage() {
     return isInventoryPage() || isFavoritesPage()
+}
+
+export function isMenuOptionsPage() {
+    return isInventoryOrFavoritesPage() || isCommunitiesConfigurePage()
 }
 
 function currentHash() {
@@ -357,7 +368,11 @@ function syncActiveSecondaryOptions(scope = document) {
 }
 
 function cleanupInjectedMenuOptions() {
-    document.documentElement.classList.remove('roprime-inventory-page')
+    document.documentElement.classList.remove(
+        'roprime-inventory-page',
+        'roprime-favorites-page',
+        'roprime-communities-configure-page',
+    )
     for (
         const container of document.querySelectorAll(
             `.menu-secondary-container[${MARK_ATTR}="1"]`,
@@ -375,12 +390,8 @@ function syncMenuOptions() {
         cleanupInjectedMenuOptions()
         return
     }
-    if (!isInventoryOrFavoritesPage()) {
+    if (!isMenuOptionsPage()) {
         cleanupInjectedMenuOptions()
-        document.documentElement.classList.remove(
-            'roprime-inventory-page',
-            'roprime-favorites-page',
-        )
         return
     }
 
@@ -391,6 +402,10 @@ function syncMenuOptions() {
     document.documentElement.classList.toggle(
         'roprime-favorites-page',
         isFavoritesPage(),
+    )
+    document.documentElement.classList.toggle(
+        'roprime-communities-configure-page',
+        isCommunitiesConfigurePage(),
     )
     for (const entry of findMenuOptionsWithSecondary(document)) {
         ensureSecondaryForMenuOption(entry.menuOption, entry.native, entry.items)
