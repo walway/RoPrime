@@ -209,7 +209,7 @@ export const SETTINGS_CONFIG = {
                 key: 'connectionPathEnabled',
                 title: 'settings.profile.connectionPath.title',
                 description: 'settings.profile.connectionPath.description',
-                byDefault: false,
+                byDefault: true,
             },
             {
                 type: 'toggle',
@@ -245,6 +245,20 @@ export const SETTINGS_CONFIG = {
                 byDefault: false,
             },
             { type: 'panel', id: 'searchBan' },
+        ],
+    },
+    streamerMode: {
+        title: 'settings.nav.streamerMode',
+        icon: 'videocam',
+        items: [
+            {
+                type: 'toggle',
+                key: 'streamerModeEnabled',
+                title: 'settings.streamerMode.enableTitle',
+                description: 'settings.streamerMode.enableDescription',
+                byDefault: false,
+                tags: ['Beta'],
+            },
         ],
     },
     other: {
@@ -325,4 +339,23 @@ export function collectSupportedPages(extra = ['sidebar-content']) {
         pages.add(key)
     }
     return pages
+}
+
+/** Case-insensitive lookup → canonical SETTINGS_CONFIG key (e.g. streamermode → streamerMode). */
+export function createSupportedPageResolver(pages = collectSupportedPages()) {
+    const byLower = new Map()
+    for (const key of pages) {
+        if (typeof key !== 'string' || !key) continue
+        byLower.set(key.toLowerCase(), key)
+    }
+    return {
+        has(route) {
+            if (typeof route !== 'string' || !route) return false
+            return byLower.has(route.toLowerCase())
+        },
+        resolve(route) {
+            if (typeof route !== 'string' || !route) return null
+            return byLower.get(route.toLowerCase()) || null
+        },
+    }
 }
