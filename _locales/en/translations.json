@@ -14,6 +14,7 @@
             "home": "Home",
             "settings": "Settings",
             "privacy": "Privacy & Content Restrictions",
+            "streamerMode": "Streamer Mode",
             "other": "Other",
             "info": "Info",
             "developer": "Developer",
@@ -87,7 +88,7 @@
             },
             "horizontalTabs": {
                 "title": "Horizontal Tabs Redesign",
-                "description": "Restyles game page horizontal tabs to the newer Foundation tabs with an animated underline indicator."
+                "description": "Redesigns horizontal tabs across pages like one from the Messages tab."
             },
             "profileRedesign": {
                 "title": "Profile Redesign",
@@ -105,8 +106,8 @@
                 "status": {
                     "counting": "Counting...",
                     "rateLimited": "Rate limited. Still going.",
-                    "counted": "{$Amount} Connections counted.",
-                    "noPath": "{$Amount} Connections counted. No path found.",
+                    "counted": "{$Amount} Connections.",
+                    "noPath": "No path found.",
                     "notFound": "No path found.",
                     "graphFailed": "Path found. Graph failed to render."
                 }
@@ -129,6 +130,11 @@
                 "emptyHint": "No banned words yet. Add words above to block them from Discover search."
             }
         },
+        "streamerMode": {
+            "enableTitle": "Enable Streamer Mode",
+            "enableDescription": "Hides Robux balance, account contact info, and transactions. Click the spoiler to see the content. This feature is in beta."
+        },
+
         "language": {
             "title": "Language",
             "description": "Choose your language."
