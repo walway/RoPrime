@@ -1,5 +1,6 @@
 1.6
 
+- Made Roblox Plus theme section use new design
 - Added support for Halloween theme
 - New Streamer Mode feature (Beta)
 - Added support for the new Ad in the icon only sidebar
