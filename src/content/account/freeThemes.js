@@ -147,8 +147,6 @@ const SPECIAL_THEMES = [
         id: 'theme-halloween-2026',
         name: 'The Hollow',
         i18nKey: 'Feature.Accessibility.AppTheme.Halloween2026',
-        darkColor: 'rgb(255, 152, 32)',
-        lightColor: 'rgb(255, 152, 32)',
     },
 ]
 
@@ -361,7 +359,7 @@ function createThemeCard(theme) {
 
     const swatch = document.createElement('span')
     swatch.setAttribute('aria-hidden', 'true')
-    swatch.className = 'shrink-0 size-800 radius-circle stroke-standard stroke-muted overflow-hidden relative flex'
+    swatch.className = 'shrink-0 size-800 radius-circle stroke-standard stroke-muted relative flex'
     swatch.style.backgroundColor = themeSwatchColor(theme)
 
     if (theme.id === 'theme-halloween-2026') {
@@ -375,6 +373,16 @@ function createThemeCard(theme) {
 
         swatch.append(leftSide, rightSide)
     }
+
+    const name = document.createElement('span')
+    name.className = 'fill basis-0 min-width-0 text-no-wrap text-truncate-end text-body-medium content-default'
+    name.textContent = themeDisplayName(theme)
+
+    button.append(swatch, name)
+    button.addEventListener('click', () => {
+        selectTheme(theme.id)
+    })
+    return button
 }
 
 function buildThemePanel() {
