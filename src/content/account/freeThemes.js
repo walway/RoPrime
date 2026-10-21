@@ -28,7 +28,7 @@ export const ROBLOX_THEMES_CLASSES = [
     'theme-quantum-pulse',
 
     // Special
-    'theme-the-hollow',
+    'theme-halloween-2026',
     'theme-classic',
 ]
 
@@ -144,7 +144,7 @@ const SPECIAL_THEMES = [
         lightColor: 'rgb(255, 73, 73)',
     },
     {
-        id: 'theme-the-hollow',
+        id: 'theme-halloween-2026',
         name: 'The Hollow',
         i18nKey: 'Feature.Accessibility.AppTheme.Halloween2026',
         darkColor: 'rgb(255, 152, 32)',
@@ -168,7 +168,7 @@ const THEME_I18N_BY_ID = {
     'theme-inferno-blast': 'Feature.Accessibility.AppTheme.InfernoBlast',
     'theme-hyper-plum': 'Feature.Accessibility.AppTheme.HyperPlum',
     'theme-quantum-pulse': 'Feature.Accessibility.AppTheme.QuantumPulse',
-    'theme-the-hollow': 'Feature.Accessibility.AppTheme.Halloween2026',
+    'theme-halloween-2026': 'Feature.Accessibility.AppTheme.Halloween2026',
     'theme-classic': 'Feature.Accessibility.AppTheme.Classic',
 }
 
