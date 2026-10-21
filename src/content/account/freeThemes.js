@@ -369,12 +369,13 @@ function createThemeCard(theme) {
 
         const leftSide = document.createElement('div')
         leftSide.className = 'fill bg-[#e92127]'
-        
+
         const rightSide = document.createElement('div')
         rightSide.className = 'fill bg-[#0242dc]'
-        
+
         swatch.append(leftSide, rightSide)
     }
+}
 
 function buildThemePanel() {
     const section = document.createElement('div')
