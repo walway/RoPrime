@@ -173,9 +173,9 @@ const THEME_I18N_BY_ID = {
 }
 
 const TAB_SELECTED_CLASS =
-    'bg-inverse-surface-0 content-inverse-emphasis relative clip group/interactable focus-visible:outline-focus disabled:outline-none cursor-pointer relative flex justify-center items-center radius-circle stroke-none padding-left-small padding-right-small height-600 text-label-small'
+    'bg-inverse-surface-0 content-inverse-emphasis relative clip group/interactable focus-visible:outline-focus disabled:outline-none cursor-pointer relative flex justify-center items-center radius-circle stroke-none padding-left-medium padding-right-medium height-800 text-label-medium'
 const TAB_IDLE_CLASS =
-    'bg-shift-300 content-action-utility relative clip group/interactable focus-visible:outline-focus disabled:outline-none cursor-pointer relative flex justify-center items-center radius-circle stroke-none padding-left-small padding-right-small height-600 text-label-small'
+    'bg-shift-300 content-action-utility relative clip group/interactable focus-visible:outline-focus disabled:outline-none cursor-pointer relative flex justify-center items-center radius-circle stroke-none padding-left-medium padding-right-medium height-800 text-label-medium'
 const CARD_SELECTED_CLASS =
     'flex items-center gap-small width-full padding-medium radius-medium text-align-x-start stroke-standard cursor-pointer bg-shift-200 stroke-[var(--color-system-neutral)]'
 const CARD_IDLE_CLASS =
