@@ -35,8 +35,7 @@ div[data-section-type="PAYMENTS_PRODUCT_SECTION_TYPE_TRANSFERS"] > div:first-chi
     vertical-align: middle;
 }
 .roprime-spoiler[${MARK_ATTR}]:has(.icon-robux-container),
-.roprime-spoiler[${MARK_ATTR}]:has(.amount),
-.roprime-spoiler[${MARK_ATTR}]:has(#nav-robux-amount) {
+.roprime-spoiler[${MARK_ATTR}]:has(.amount) {
     display: inline-block !important;
     max-width: 100% !important;
     min-width: 0 !important;
@@ -44,24 +43,9 @@ div[data-section-type="PAYMENTS_PRODUCT_SECTION_TYPE_TRANSFERS"] > div:first-chi
 }
 `
 
-const ROBUX_AMOUNT_SELECTOR = [
-    '#nav-robux-balance',
-    '.icon-robux-container',
-    '.amount.icon-robux-container',
-    '.amount .icon-robux-container',
-    'span.amount.icon-robux-container',
-    'span.icon-robux-container',
-    '.text-robux',
-    '.text-robux-lg',
-    '.text-robux-tile',
-    '.text-robux-nav',
-    '.rbx-text-robux',
-    '.rbx-text-robux-lg',
-].join(', ')
-
 const SPOILER_TARGETS = [
     {
-        match: () => isMyAccountPath(),
+        match: () => isAccountInfoPage(),
         selector: '.settings-text-span-visible',
         gapBefore: true,
         maskLength: true,
@@ -73,13 +57,21 @@ const SPOILER_TARGETS = [
         blockLayout: true,
     },
     {
+        match: () => isAccountDataDeactivationPage(),
+        selector: '.settings-text-span-visible',
+        gapBefore: true,
+        maskLength: true,
+        compact: true,
+    },
+    {
         match: () => isBlockedUsersPage(),
         selector: '.blocked-users-container',
         blockLayout: true,
     },
     {
         match: () => true,
-        selector: ROBUX_AMOUNT_SELECTOR,
+        selector:
+            '.icon-robux-container, .amount.icon-robux-container, .amount .icon-robux-container, span.amount.icon-robux-container',
         maskLength: true,
         compact: true,
     },
@@ -263,15 +255,7 @@ function wrapWithSpoiler(entry) {
     const compact = entry.compact === true ||
         target.classList.contains('icon-robux-container') ||
         target.classList.contains('amount') ||
-        target.classList.contains('settings-text-span-visible') ||
-        target.id === 'nav-robux-amount' ||
-        target.id === 'nav-robux-balance' ||
-        target.classList.contains('rbx-text-navbar-right') ||
-        target.classList.contains('text-robux') ||
-        target.classList.contains('text-robux-lg') ||
-        target.classList.contains('text-robux-tile') ||
-        target.classList.contains('rbx-text-robux') ||
-        target.classList.contains('rbx-text-robux-lg')
+        target.classList.contains('settings-text-span-visible')
 
     if (compact) {
         spoiler.style.display = 'inline-block'
@@ -297,14 +281,13 @@ function wrapWithSpoiler(entry) {
 
     target.parentNode.insertBefore(spoiler, target)
     spoiler.appendChild(target)
-    const shortField = target.classList.contains('settings-text-span-visible')
     attachSpoiler(spoiler, {
         revealDuration: 420,
         maskLength: entry.maskLength === true || compact,
         gapBefore: entry.gapBefore === true,
         blockLayout: compact ? false : blockLayout,
         compact,
-        shortField,
+        shortField: target.classList.contains('settings-text-span-visible'),
     })
     attachSpoilerClickGate(spoiler)
 }
