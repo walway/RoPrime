@@ -361,19 +361,20 @@ function createThemeCard(theme) {
 
     const swatch = document.createElement('span')
     swatch.setAttribute('aria-hidden', 'true')
-    swatch.className = 'shrink-0 size-800 radius-circle stroke-standard stroke-muted'
+    swatch.className = 'shrink-0 size-800 radius-circle stroke-standard stroke-muted overflow-hidden relative flex'
     swatch.style.backgroundColor = themeSwatchColor(theme)
 
-    const name = document.createElement('span')
-    name.className = 'fill basis-0 min-width-0 text-no-wrap text-truncate-end text-body-medium content-default'
-    name.textContent = themeDisplayName(theme)
+    if (theme.id === 'theme-halloween-2026') {
+        swatch.style.overflow = 'hidden'
 
-    button.append(swatch, name)
-    button.addEventListener('click', () => {
-        selectTheme(theme.id)
-    })
-    return button
-}
+        const leftSide = document.createElement('div')
+        leftSide.className = 'fill bg-[#e92127]'
+        
+        const rightSide = document.createElement('div')
+        rightSide.className = 'fill bg-[#0242dc]'
+        
+        swatch.append(leftSide, rightSide)
+    }
 
 function buildThemePanel() {
     const section = document.createElement('div')
