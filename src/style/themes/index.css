@@ -5659,7 +5659,7 @@
     --color-system-success: var(--lightningcss-light,var(--light-mode-system-success))var(--lightningcss-dark,var(--dark-mode-system-success));
     --inverse-system-success: var(--lightningcss-light,var(--dark-mode-system-success))var(--lightningcss-dark,var(--light-mode-system-success));
     --color-system-warning: var(--lightningcss-light,var(--light-mode-system-warning))var(--lightningcss-dark,var(--dark-mode-system-warning));
-    --inverse-system-warning: var(--lightningcss-light,var(--dark-mode-system-warning))var(--lightningcss-dark,var(--light-mode-system-warning))
+    --inverse-system-warning: var(--lightningcss-light,var(--dark-mode-system-warning))var(--lightningcss-dark,var(--light-mode-system-warning));
 }
 
 #theme-background {
@@ -5672,11 +5672,11 @@
     top: 0;
     bottom: 0;
     left: 0;
-    right: 0
+    right: 0;
 }
 
 .theme-halloween-2026 {
-    --config-theme-background-image: url(https://images.rbxcdn.com/a157d1faf0499409.webp)
+    --config-theme-background-image: url(https://images.rbxcdn.com/a157d1faf0499409.webp);
 }
 
 .theme-classic.classic-theme-variant-1 {
