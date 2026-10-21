@@ -146,7 +146,7 @@ export const SETTINGS_CONFIG = {
                 title: 'settings.topbar.redesign.title',
                 key: 'topbarRedesignEnabled',
                 description: 'settings.topbar.redesign.description',
-                byDefault: true,
+                byDefault: false,
             },
             {
                 type: 'toggle',
