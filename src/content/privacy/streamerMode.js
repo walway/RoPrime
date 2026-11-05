@@ -16,6 +16,10 @@ const STREAMER_MODE_CSS = `
 #nav-robux-amount {
     display: none !important;
 }
+.notification-margins {
+    margin-left: 0px !important;
+    margin-right: 0px !important;
+}
 .foundation-web-menu.nav-foundation-menu .wallet-hidden {
     display: none !important;
 }
