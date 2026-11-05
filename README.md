@@ -38,8 +38,8 @@ And more!
 
 ## 🚀 Install RoPrime
 
-[<img src="https://labels.tahoe.be/chrome_download_dark.svg" height="53" alt="Download Bonjourr for Chrome">](https://chromewebstore.google.com/detail/roprime-new-era-of-roblox/jecagfkcebencfmfdjgcimhedlodfmhk)
-[<img src="https://labels.tahoe.be/firefox_download_dark.svg" height="53" alt="Download Bonjourr for Firefox">](https://addons.mozilla.org/firefox/addon/roprime/)
+[<img src="https://labels.tahoe.be/chrome_download_dark.svg" height="53" alt="Download RoPrime for Chrome">](https://chromewebstore.google.com/detail/roprime-new-era-of-roblox/jecagfkcebencfmfdjgcimhedlodfmhk)
+[<img src="https://labels.tahoe.be/firefox_download_dark.svg" height="53" alt="Download RoPrime for Firefox">](https://addons.mozilla.org/firefox/addon/roprime/)
 
 RoPrime also fully supports mobile devices. You can download mobile version for Firefox and Vivaldi from the links above.
 
