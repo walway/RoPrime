@@ -8,7 +8,7 @@
     "jsr:@std/path@^1.0.6": "1.1.6",
     "npm:@supabase/supabase-js@2.118.0": "2.118.0",
     "npm:adm-zip@0.6.1": "0.6.1",
-    "npm:dompurify@3.4.17": "3.4.17",
+    "npm:dompurify@3.5.0": "3.5.0",
     "npm:dotenv@18.0.8": "18.0.8",
     "npm:esbuild@0.28.2": "0.28.2",
     "npm:force-graph@1.52.0": "1.52.0",
@@ -1067,8 +1067,8 @@
         "domelementtype"
       ]
     },
-    "dompurify@3.4.17": {
-      "integrity": "sha512-B/pSlYVHQ58kqISD/yDjuJ1yfzI34m1gF4lAod2bwSRhiN4K5Cl3H8Af7hqB2PmTL911tdEudnnXn5FnhRoz0w==",
+    "dompurify@3.5.0": {
+      "integrity": "sha512-LYC0ZkE8P1V42JsRYTwMdme/2ET8SpOc5AA2eOFjP/IadvRd2fwiT4TVz5vkfy0XUx12aS2UaRkTnfVPNOv9vw==",
       "optionalDependencies": [
         "@types/trusted-types"
       ]
@@ -2067,7 +2067,7 @@
     "mute-stdout@2.0.0": {
       "integrity": "sha512-32GSKM3Wyc8dg/p39lWPKYu8zci9mJFzV1Np9Of0ZEpe6Fhssn/FbI7ywAMd40uX+p3ZKh3T5EeCFv81qS3HmQ=="
     },
-    "n8ao@2.0.1_postprocessing@6.39.5_three@0.185.1": {
+    "n8ao@2.0.1_postprocessing@6.39.5__three@0.185.1_three@0.185.1": {
       "integrity": "sha512-MoP1QKUdj4/3cKEnhFl917t0eQwWGER1l43ckz5mNOPyYWGRDGQbVoTOQz/VBvy01in6QVNG+AL6Xxx5AjZBYA==",
       "dependencies": [
         "postprocessing",
@@ -3084,7 +3084,7 @@
     "dependencies": [
       "npm:@supabase/supabase-js@2.118.0",
       "npm:adm-zip@0.6.1",
-      "npm:dompurify@3.4.17",
+      "npm:dompurify@3.5.0",
       "npm:dotenv@18.0.8",
       "npm:esbuild@0.28.2",
       "npm:force-graph@1.52.0",
